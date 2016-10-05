@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".gui.MainMenuActivity"
+    tools:deviceIds="wear">
+
+    <TextView
+        android:id="@+id/text_view_screen_header"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="top"
+        android:background="@color/base_primary"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_small"
+        android:text="@string/app_name"/>
+
+    <FrameLayout
+        android:id="@+id/frame_layout_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:id="@+id/text_view_screen_footer"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="bottom"
+        android:background="@color/base_primary"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_size_small"
+        android:text="@string/app_name"/>
+
+</android.support.wearable.view.BoxInsetLayout>

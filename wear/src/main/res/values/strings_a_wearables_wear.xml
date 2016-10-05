@@ -1,0 +1,63 @@
+<resources>
+
+    <!-- Name of application -->
+    <string name="app_name">Locus Map</string>
+    <!-- Button with application info -->
+    <string name="about_application">About application</string>
+    <!-- Visible label on screen -->
+    <string name="azimuth">Azimuth</string>
+    <!-- text on button to cancel current action -->
+    <string name="cancel">Cancel</string>
+    <!-- Visible label on screen -->
+    <string name="distance">Distance</string>
+    <!-- Label for menu -->
+    <string name="guidance">Guidance</string>
+    <!-- header for track record profile chooser -->
+    <string name="choose_track_rec_profile">Choose track record profile</string>
+    <!-- title in main loading screen -->
+    <string name="init">Initializing</string>
+    <!-- description in loading screen -->
+    <string name="init_connecting_to_device">Connecting to device…</string>
+    <!-- description in loading screen -->
+    <string name="init_contacting_locus">Contacting Locus Map…</string>
+    <!-- title for loading action -->
+    <string name="init_loading_profiles">Loading track recording profiles</string>
+    <!-- description in loading screen -->
+    <string name="init_node_not_connected">Device not connected</string>
+    <!-- Information that we needs new version of Locus -->
+    <string name="invalid_locus_version">Version of Locus Map is too old. Please update to new version.</string>
+    <!-- Information that Locus needs to run -->
+    <string name="locus_not_running">Locus is not running</string>
+    <!-- Label for panel with distance to navigation command -->
+    <string name="navigation_command">Command</string>
+    <!-- Label visible when no target is selected -->
+    <string name="no_target">No target</string>
+    <!-- Title of preference activity -->
+    <string name="preference_activity_title">Locus SmartWatch settings</string>
+    <!-- Information string for users -->
+    <string name="periodic_updates_not_enabled">Periodic updates are not enabled</string>
+    <!-- title for track recording -->
+    <string name="recording">Recording…</string>
+    <!-- Visible label on screen -->
+    <string name="speed">Speed</string>
+    <!-- Start Locus label for buttons -->
+    <string name="start_locus">Start Locus</string>
+    <!-- Visible label on screen -->
+    <string name="time">Time</string>
+    <!-- Label for menu -->
+    <string name="track_record">Track record</string>
+    <!-- Label for menu -->
+    <string name="track_record_no_profiles">No profiles are defined for track recording</string>
+    <!-- title visible in case, device cannot be contacted -->
+    <string name="unable_to_connect">Unable to connect</string>
+    <!-- description visible in case, device cannot be contacted -->
+    <string name="unable_to_connect_desc">Connection to device cannot be established.</string>
+    <!-- Unknown problem happen -->
+    <string name="unknown_problem">Unknown problem</string>
+    <!-- version of application -->
+    <string name="version">Version</string>
+    <!-- Extension is currently waiting on new data -->
+    <string name="waiting_on_new_data">Waiting on new data</string>
+    <!-- title for a screen -->
+    <string name="warning">Warning</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="32dp"
+    android:layout_marginRight="32dp"
+    android:gravity="center">
+
+    <android.support.wearable.view.DelayedConfirmationView
+        android:id="@+id/delayed_view_confirm"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_cancel_white"
+        app:circle_border_color="@color/base_colorButtonNormal"
+        app:circle_border_width="6dp"
+        app:circle_color="@color/base_primary"
+        app:circle_radius="@dimen/track_rec_btn_radius"/>
+
+    <TextView
+        style="@style/TextView.InitializingTitle"
+        android:id="@+id/text_view_title"
+        android:layout_width="wrap_content"
+        android:text="@string/cancel"
+        android:textColor="@color/grey" />
+
+</LinearLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.asamm.locus.addon.wearables.gui.lists.ListItemLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="horizontal"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ImageView
+        android:id="@+id/image_view_icon"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="left|center_vertical"
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextViewListTitle" />
+
+        <TextView
+            style="@style/TextViewListDesc" />
+
+    </LinearLayout>
+
+</com.asamm.locus.addon.wearables.gui.lists.ListItemLayout>
