@@ -191,16 +191,19 @@ public class TrackRecordActivity extends CustomActivity {
         // prepare core
         View view = clearContainer(R.layout.layout_track_record_control);
         LocusInfo locusInfo = getDeviceComm().getDataContainer().getLocusInfo();
-        TextView tv01Title = (TextView)
-                view.findViewById(R.id.text_view_title_01);
+        /*TextView tv01Title = (TextView)
+                view.findViewById(R.id.text_view_title_01);*/
         TextView tv01Value = (TextView)
                 view.findViewById(R.id.text_view_info_01);
-        TextView tv02Title = (TextView)
-                view.findViewById(R.id.text_view_title_02);
+        /*TextView tv02Title = (TextView)
+                view.findViewById(R.id.text_view_title_02);*/
         TextView tv02Value = (TextView)
                 view.findViewById(R.id.text_view_info_02);
         TextView tv03Value = (TextView)
                 view.findViewById(R.id.text_view_info_03);
+        TextView tv04Value = (TextView)
+                view.findViewById(R.id.text_view_info_04);
+
 
         // set buttons
         final ImageButton btnStop = (ImageButton)
@@ -272,24 +275,27 @@ public class TrackRecordActivity extends CustomActivity {
         setScreenHeader(cont.getTrackRecProfileName());
 
         // text view with value 1
-        tv01Title.setText(R.string.time);
+        //tv01Title.setText(R.string.time);
         tv01Value.setText(TIME_FORMAT.format(recStats.getTotalTime()));
 
         // text view with value 2
-        tv02Title.setText(R.string.speed);
-        float speedValue = 0.0f;
-        if (cont.isEnabledMyLocation()) {
-            speedValue = cont.getLocMyLocation().getSpeed();
-        }
-        String speed = UtilsFormat.formatSpeed(
-                locusInfo.getUnitsFormatSpeed(), speedValue, false);
-        tv02Value.setText(speed);
+        //tv02Title.setText(R.string.distance);
+        String avgspeed = UtilsFormat.formatSpeed(
+                locusInfo.getUnitsFormatSpeed(), recStats.getSpeedAverage(false), false);
+        tv02Value.setText(avgspeed);
 
         // text view with value 3
+        String elevationgain = UtilsFormat.formatAltitude(
+                locusInfo.getUnitsFormatAltitude(), recStats.getElePositiveHeight(), false);
+        tv03Value.setText(elevationgain);
+
+        // text view with value 4
         String distance = UtilsFormat.formatDistance(
                 locusInfo.getUnitsFormatLength(), recStats.getTotalLength(), false);
-        tv03Value.setText(distance);
+        tv04Value.setText(distance);
+
     }
+
 
     /**
      * Handle tap on certain track recording profile.
