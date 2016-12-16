@@ -48,7 +48,7 @@ public abstract class CustomActivity extends WearableActivity {
     // main layout
     public FrameLayout mContainer;
     // main screen title
-    private TextView mTvHeader;
+    //private TextView mTvHeader;
 
     // state of current activity
     private State mCurrentState = State.ON_CREATE;
@@ -68,8 +68,8 @@ public abstract class CustomActivity extends WearableActivity {
         // generate main views
         mContainer = (FrameLayout)
                 findViewById(R.id.frame_layout_main);
-        mTvHeader = (TextView)
-                findViewById(R.id.text_view_screen_header);
+        /*mTvHeader = (TextView)
+                findViewById(R.id.text_view_screen_header);*/
 
         // prepare parameters
         mInflater = (LayoutInflater)
@@ -204,9 +204,9 @@ public abstract class CustomActivity extends WearableActivity {
      * Define screen title.
      * @param title visible text
      */
-    protected void setScreenHeader(CharSequence title) {
+    /*protected void setScreenHeader(CharSequence title) {
         mTvHeader.setText(title);
-    }
+    }*/
 
     /**
      * Check if system is ready, if not return to main menu.

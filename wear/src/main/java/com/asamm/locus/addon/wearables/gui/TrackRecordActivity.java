@@ -272,7 +272,7 @@ public class TrackRecordActivity extends CustomActivity {
         }
 
         // update title
-        setScreenHeader(cont.getTrackRecProfileName());
+        //setScreenHeader(cont.getTrackRecProfileName());
 
         // text view with value 1
         //tv01Title.setText(R.string.time);

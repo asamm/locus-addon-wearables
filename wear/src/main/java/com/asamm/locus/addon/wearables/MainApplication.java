@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.asamm.locus.addon.wearables.gui.CustomActivity;
+import com.asamm.locus.addon.wearables.gui.MainMenuActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,6 +20,7 @@ public class MainApplication extends Application {
 
     // tag for logger
     private static final String TAG = "MainApplication";
+    private static CustomActivity m_LastActivity;
 
     @Override
     public void onCreate() {
@@ -95,16 +97,26 @@ public class MainApplication extends Application {
      */
     public static void activityOnResume(CustomActivity act) {
         // set current activity
+        Log.d(TAG, "activityOnResume old,new,last: " + getCurrentActivity());
+        Log.d(TAG, "activityOnResume " + act);
+        Log.d(TAG, "activityOnResume " + m_LastActivity);
+        if (!MainMenuActivity.class.isAssignableFrom(act.getClass()))
+            m_LastActivity = act;
         CustomActivity oldAct = getCurrentActivity();
         if (oldAct == null || oldAct == act) {
             // just set current activity, for sure
-            setCurrentActivity(act);
+            Log.d(TAG, "activityOnResume: 1");
+            //if (m_LastActivity == null)
+                setCurrentActivity(act);
+            /*else
+                setCurrentActivity(m_LastActivity);*/
         } else {
             // check state of old custom activity
             if (oldAct.getCurrentState() == CustomActivity.State.ON_START ||
                     oldAct.getCurrentState() == CustomActivity.State.ON_PAUSE ||
                     oldAct.getCurrentState() == CustomActivity.State.ON_STOP) {
                 setCurrentActivity(act);
+                Log.d(TAG, "activityOnResume: 2");
             }
         }
     }
