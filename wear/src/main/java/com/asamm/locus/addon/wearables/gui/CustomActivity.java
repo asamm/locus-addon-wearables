@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.DelayedConfirmationView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -56,7 +57,7 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Logger.logD(TAG, "onCreate()");
+        Logger.logD(TAG, "onCreate() " + this.getClass());
         setContentView(R.layout.activity_main);
 
         // set state
@@ -66,8 +67,7 @@ public abstract class CustomActivity extends WearableActivity {
         MainApplication.activityOnCreate(this);
 
         // generate main views
-        mContainer = (FrameLayout)
-                findViewById(R.id.frame_layout_main);
+        mContainer = (FrameLayout) findViewById(R.id.frame_layout_main);
         /*mTvHeader = (TextView)
                 findViewById(R.id.text_view_screen_header);*/
 
@@ -90,7 +90,7 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Logger.logD(TAG, "onStart()");
+        Logger.logD(TAG, "onStart() " + this.getClass());
 
         // set state
         mCurrentState = State.ON_START;
@@ -110,7 +110,7 @@ public abstract class CustomActivity extends WearableActivity {
 
     public void onResume() {
         super.onResume();
-        Logger.logD(TAG, "onResume()");
+        Logger.logD(TAG, "onResume() "+ this.getClass());
 
         // set state
         mCurrentState = State.ON_RESUME;
@@ -122,7 +122,7 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     public void onPause() {
         super.onPause();
-
+        Log.d(TAG, "onPause() " + this.getClass());
         // set state
         mCurrentState = State.ON_PAUSE;
     }
@@ -130,7 +130,7 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     public void onStop() {
         super.onStop();
-        Logger.logD(TAG, "onStop()");
+        Logger.logD(TAG, "onStop() " + this.getClass());
 
         // set state
         mCurrentState = State.ON_STOP;
@@ -142,7 +142,7 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Logger.logD(TAG, "onDestroy()");
+        Logger.logD(TAG, "onDestroy() " + this.getClass());
 
         // set state
         mCurrentState = State.ON_DESTROY;
@@ -216,7 +216,7 @@ public abstract class CustomActivity extends WearableActivity {
         //
         if (!getDeviceComm().isReady()) {
             Logger.logW(TAG, "onStart(), " +
-                    "connection not ready");
+                    "connection not ready " + this.getClass());
             finish();
             return true;
         }
@@ -288,7 +288,6 @@ public abstract class CustomActivity extends WearableActivity {
 
         // inflate new layout and insert ite
         mInflater.inflate(newLayout, mContainer, true);
-
         // return layout
         mLastInflatedView = newLayout;
         return mContainer.getChildAt(0);

@@ -3,6 +3,7 @@ package com.asamm.locus.addon.wearables.gui;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -245,6 +246,7 @@ public class MainMenuActivity extends CustomActivity {
 
         @Override
         public void onClick(View v) {
+            Log.d(TAG, "onClick: " + v);
             if (v == ibMenu01) {
                 Intent intent = new Intent(act, MapActivity.class);
                 startActivity(intent);

@@ -1,7 +1,11 @@
 package com.asamm.locus.addon.wearables.gui;
 
 import android.graphics.Bitmap;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +28,8 @@ public class MapActivity extends CustomActivity {
     // reference to map view
     private ImageView mMapView;
 
+    public int zoomLevel = 17;
+
     // NAVIGATION PANEL
 
     // main container
@@ -36,6 +42,8 @@ public class MapActivity extends CustomActivity {
     private TextView mTvNavPanelDistValue;
     // distance to next command (units)
     private TextView mTvNavPanelDistUnits;
+    //zoom level info
+    private TextView mZoomInfo;
 
     @Override
     protected boolean checkIfDeviceReady() {
@@ -93,6 +101,9 @@ public class MapActivity extends CustomActivity {
                     view.findViewById(R.id.text_view_dist_value);
             mTvNavPanelDistUnits = (TextView)
                     view.findViewById(R.id.text_view_dist_units);
+            mZoomInfo = (TextView)
+                    view.findViewById(R.id.textView_map_zoomlevel);
+
         }
 
         // view for map
@@ -105,6 +116,35 @@ public class MapActivity extends CustomActivity {
 
         // set navigation panel
         refreshPanelNavigation();
+
+        //refresh zoom level text view
+        mZoomInfo.setText( String.valueOf(zoomLevel));
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams( FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        switch (zoomLevel)
+        {
+            case 20: params.gravity = Gravity.RIGHT | Gravity.BOTTOM; break;
+            case 18: params.gravity = Gravity.RIGHT | Gravity.TOP; break;
+            default: params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL; break;
+        }
+        mZoomInfo.setLayoutParams(params);
+
+        // listener for onClick events
+        View.OnTouchListener onTouch = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getY() > 200)
+                    zoomLevel = 20;
+                else
+                if (event.getY() < 100)
+                    zoomLevel = 18;
+                else
+                  zoomLevel = 19;
+                return false;
+            }
+        };
+
+        mMapView.setOnTouchListener( onTouch );
+
     }
 
     /**************************************************/

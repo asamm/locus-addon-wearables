@@ -1,18 +1,38 @@
 package com.asamm.locus.addon.wearables.gui;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.wearable.view.DelayedConfirmationView;
+import android.support.wearable.view.DotsPageIndicator;
+import android.support.wearable.view.GridPagerAdapter;
+import android.support.wearable.view.GridViewPager;
 import android.support.wearable.view.WearableListView;
+import android.text.Layout;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wearables.R;
 import com.asamm.locus.addon.wearables.gui.lists.ListItemAdapter;
 import com.asamm.locus.addon.wearables.gui.lists.ListItemLayout;
 import com.asamm.locus.addon.wearables.utils.DataContainer;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -24,6 +44,7 @@ import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.UtilsBitmap;
 import locus.api.android.utils.UtilsFormat;
+import locus.api.objects.extra.Location;
 import locus.api.objects.extra.TrackStats;
 
 /**
@@ -38,9 +59,17 @@ public class TrackRecordActivity extends CustomActivity {
     // time format
     public static final SimpleDateFormat TIME_FORMAT =
             new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
     static {
         TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC+0"));
     }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+    private boolean m_isGridCreated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +77,10 @@ public class TrackRecordActivity extends CustomActivity {
 
         // request profiles
         getDeviceComm().performTrackRecordingGetProfiles();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     // ABSTRACT FUNCTIONS
@@ -64,6 +97,7 @@ public class TrackRecordActivity extends CustomActivity {
 
     /**
      * Refresh current layout.
+     *
      * @param forceReload <code>true</code> to ignore for example confirmation screen
      */
     private void refreshLayout(boolean forceReload) {
@@ -92,7 +126,7 @@ public class TrackRecordActivity extends CustomActivity {
 
                 // check if data are available
                 if (getDeviceComm().getLastUpdate() == null) {
-                    displayScreenInfo("Info", "Info");
+                    displayScreenInfo("Reconnecting", "Reconnecting...");
                     return;
                 }
 
@@ -184,25 +218,48 @@ public class TrackRecordActivity extends CustomActivity {
         });
     }
 
+
+
     private void displayScreenTrackRecordRunning(UpdateContainer cont) {
-        boolean initialize = !isContainerVisible(R.layout.layout_track_record_control);
+        if (!m_isGridCreated)
+        {
+            // prepare core
+            View view = clearContainer(R.layout.layout_grid_view_pager);
+
+            GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
+
+            //---Assigns an adapter to provide the content for this pager---
+            pager.setAdapter(new TrackRecordAdapter(this));
+            DotsPageIndicator dotsPageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
+            dotsPageIndicator.setPager(pager);
+            m_isGridCreated = true;
+
+        }
+
+        boolean cpanel_visible = !isContainerVisible(R.layout.layout_track_record_control);
+        boolean stat_visible = !isContainerVisible(R.layout.layout_track_statistic);
+        boolean stat2_visible = !isContainerVisible(R.layout.layout_track_statistic2);
+
         TrackStats recStats = cont.getTrackRecStats();
 
         // prepare core
-        View view = clearContainer(R.layout.layout_track_record_control);
+        View view = clearContainer(R.layout.layout_grid_view_pager);
         LocusInfo locusInfo = getDeviceComm().getDataContainer().getLocusInfo();
-        /*TextView tv01Title = (TextView)
-                view.findViewById(R.id.text_view_title_01);*/
-        TextView tv01Value = (TextView)
-                view.findViewById(R.id.text_view_info_01);
-        /*TextView tv02Title = (TextView)
-                view.findViewById(R.id.text_view_title_02);*/
-        TextView tv02Value = (TextView)
-                view.findViewById(R.id.text_view_info_02);
-        TextView tv03Value = (TextView)
-                view.findViewById(R.id.text_view_info_03);
-        TextView tv04Value = (TextView)
-                view.findViewById(R.id.text_view_info_04);
+
+        TextView tvTimeValue = (TextView)
+                view.findViewById(R.id.text_view_info_time);
+        TextView tvAltitudeValue = (TextView)
+                view.findViewById(R.id.text_view_info_altitude);
+        TextView tvAvgSpeedValue = (TextView)
+                view.findViewById(R.id.text_view_info_avgspeed);
+        TextView tvDistanceValue = (TextView)
+                view.findViewById(R.id.text_view_info_distance);
+        TextView tvHrRateValue = (TextView)
+                view.findViewById(R.id.text_view_info_hrrate);
+        TextView tvHrMaxValue = (TextView)
+                view.findViewById(R.id.text_view_info_hrmax);
+        TextView tvHrAvgValue = (TextView)
+                view.findViewById(R.id.text_view_info_hravg);
 
 
         // set buttons
@@ -215,13 +272,15 @@ public class TrackRecordActivity extends CustomActivity {
 
         // set icons
         if (!cont.isTrackRecPaused()) {
-            btnPause.setImageResource(R.drawable.ic_96_track_recording_pause);
+            if (btnPause != null)
+              btnPause.setImageResource(R.drawable.ic_96_track_recording_pause);
         } else {
-            btnPause.setImageResource(R.drawable.ic_96_track_recording_pause_pressed);
+            if (btnPause != null)
+              btnPause.setImageResource(R.drawable.ic_96_track_recording_pause_pressed);
         }
 
         // set basics
-        if (initialize) {
+        if (cpanel_visible) {
             // listener for delay events
             final DelayedConfirmationView.DelayedConfirmationListener onDelay =
                     new DelayedConfirmationView.DelayedConfirmationListener() {
@@ -266,38 +325,97 @@ public class TrackRecordActivity extends CustomActivity {
             };
 
             // set basic listeners
-            btnStop.setOnClickListener(onClick);
-            btnPause.setOnClickListener(onClick);
-            btnAddWpt.setOnClickListener(onClick);
+            if (btnStop != null)
+                btnStop.setOnClickListener(onClick);
+            if (btnPause != null)
+                btnPause.setOnClickListener(onClick);
+            if (btnAddWpt != null)
+                btnAddWpt.setOnClickListener(onClick);
+
+            TextView tvBatteryLevelPhoneValue = (TextView)
+                    view.findViewById(R.id.text_view_battery_level_phone);
+            TextView tvBatteryLevelWatchValue = (TextView)
+                    view.findViewById(R.id.text_view_battery_level_watch);
+
+            if (tvBatteryLevelPhoneValue != null)
+                tvBatteryLevelPhoneValue.setText(cont.getDeviceBatteryValue() + "%");
+
+            if (tvBatteryLevelWatchValue != null) {
+                Intent batteryStatus = getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                int batteryPct = 0;
+
+                if (scale != 0)
+                    batteryPct = (int)((level / (float) scale) * 100);
+
+                if (batteryPct != 0)
+                    tvBatteryLevelWatchValue.setText(batteryPct + "%");
+                else
+                    tvBatteryLevelWatchValue.setText(batteryPct + "-");
+            }
+
+
         }
 
         // update title
         //setScreenHeader(cont.getTrackRecProfileName());
 
-        // text view with value 1
-        //tv01Title.setText(R.string.time);
-        tv01Value.setText(TIME_FORMAT.format(recStats.getTotalTime()));
+        if (stat_visible) {
+            // text view time
+            if (tvTimeValue != null)
+                tvTimeValue.setText(TIME_FORMAT.format(recStats.getTotalTime()));
 
-        // text view with value 2
-        //tv02Title.setText(R.string.distance);
-        String avgspeed = UtilsFormat.formatSpeed(
-                locusInfo.getUnitsFormatSpeed(), recStats.getSpeedAverage(false), false);
-        tv02Value.setText(avgspeed);
+            // text view avg speed
+            String avgspeed = UtilsFormat.formatSpeed(
+                    locusInfo.getUnitsFormatSpeed(), recStats.getSpeedAverage(false), false);
+            if (tvAvgSpeedValue != null)
+                tvAvgSpeedValue.setText(avgspeed);
 
-        // text view with value 3
-        String elevationgain = UtilsFormat.formatAltitude(
-                locusInfo.getUnitsFormatAltitude(), recStats.getElePositiveHeight(), false);
-        tv03Value.setText(elevationgain);
+            // text view elevation
+            String elevationgain = UtilsFormat.formatAltitude(
+                    locusInfo.getUnitsFormatAltitude(), recStats.getElePositiveHeight(), false);
+            if (tvAltitudeValue != null)
+                tvAltitudeValue.setText(elevationgain);
 
-        // text view with value 4
-        String distance = UtilsFormat.formatDistance(
-                locusInfo.getUnitsFormatLength(), recStats.getTotalLength(), false);
-        tv04Value.setText(distance);
+            // text view distance
+            String distance = UtilsFormat.formatDistance(
+                    locusInfo.getUnitsFormatLength(), recStats.getTotalLength(), false);
+            if (tvDistanceValue != null)
+                tvDistanceValue.setText(distance);
+        }
 
+        if (stat2_visible) {
+            // text view heart rate avg
+            String hrmAvg = String.valueOf(recStats.getHrmAverage());
+            if (tvHrAvgValue != null)
+                tvHrAvgValue.setText(hrmAvg);
+
+            // text view heart rate max
+            String hrmMax = String.valueOf(recStats.getHrmMax());
+            if (tvHrMaxValue != null)
+                tvHrMaxValue.setText(hrmMax);
+
+            //get heart rate
+            int hrRate = 0;
+            Location myLocation = cont.getLocMyLocation();
+            if (myLocation != null)
+                if (myLocation.hasSensorHeartRate())
+                    hrRate = myLocation.getSensorHeartRate();
+
+            // text view heart rate bpm
+            if (tvHrRateValue != null) {
+                if (hrRate == 0)
+                    tvHrRateValue.setText("-");
+                else
+                    tvHrRateValue.setText(String.valueOf(hrRate));
+            }
+        }
     }
 
     /**
      * Handle tap on certain track recording profile.
+     *
      * @param profileId ID of tapped profile
      */
     private void onTrackRecordProfileSelected(long profileId) {
@@ -320,5 +438,98 @@ public class TrackRecordActivity extends CustomActivity {
 
         // start track recording
         getDeviceComm().performTrackRecordStart(selectedProfile.getName());
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("TrackRecord Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
+    }
+
+
+    public class TrackRecordAdapter extends GridPagerAdapter {
+        final Context mContext;
+
+        public TrackRecordAdapter(final Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public int getRowCount() {
+            return 1;
+        }
+
+        @Override
+        public int getColumnCount(int i) {
+            return 3;
+        }
+
+        //---Go to current column when scrolling up or down (instead of default column 0)---
+        @Override
+        public int getCurrentColumnForRow(int row, int currentColumn) {
+            return currentColumn;
+        }
+
+        //---Return our car image based on the provided row and column---
+        @Override
+        public Object instantiateItem(ViewGroup viewGroup, int row, int col) {
+            View view;
+
+            switch (col) {
+                default:
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_track_statistic, null);
+                    break;
+                case 1:
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_track_statistic2, null);
+                    break;
+                case 2:
+                    view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_track_record_control, null);
+            }
+
+            viewGroup.addView(view);
+
+            refreshLayout(false);
+            return view;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup viewGroup, int i, int i2, Object o) {
+            viewGroup.removeView((View) o);
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object o) {
+            return view.equals(o);
+        }
     }
 }
