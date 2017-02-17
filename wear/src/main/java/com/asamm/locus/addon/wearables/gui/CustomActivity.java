@@ -154,18 +154,23 @@ public abstract class CustomActivity extends WearableActivity {
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
         updateDisplay();
+        getDeviceComm().setAmbientMode(true);
+        Log.d(TAG, "onEnterAmbient: ");
     }
 
     @Override
     public void onUpdateAmbient() {
         super.onUpdateAmbient();
         updateDisplay();
+        Log.d(TAG, "onUpdateAmbient: ");
     }
 
     @Override
     public void onExitAmbient() {
         updateDisplay();
         super.onExitAmbient();
+        getDeviceComm().setAmbientMode(false);
+        Log.d(TAG, "onExitAmbient: ");
     }
 
     private void updateDisplay() {

@@ -1,107 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/black"
+    android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center">
 
-            <TextView
-                style="@style/TextViewDashboardValue"
-                android:id="@+id/text_view_info_01"
-                android:textSize="18sp"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/image_view_watch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_watch" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                style="@style/TextViewDashboardValue"
-                android:id="@+id/text_view_info_02"
-                android:textSize="18sp"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linear_layout_track_rec_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/track_rec_btn_size"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_stop"
-            android:src="@drawable/ic_96_track_recording_stop" />
-
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_pause"
-            android:src="@drawable/ic_96_track_recording_pause" />
-
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_add_wpt"
-            android:src="@drawable/ic_96_track_recording_add_wpt" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/image_view_phone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_phone" />
 
             <TextView
                 style="@style/TextViewDashboardTitle"
-                android:id="@+id/text_view_info_03"
-                android:textSize="18sp"
-                android:layout_height="match_parent"
-                android:gravity="center" />
-        </LinearLayout>
+                android:id="@+id/text_view_battery_level_info"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="@color/white"
+                />
 
-        <LinearLayout
-            android:layout_width="0dp"
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
+            android:layout_weight="0"
+            android:gravity="center">
             <TextView
                 style="@style/TextViewDashboardTitle"
-                android:id="@+id/text_view_info_04"
-                android:textSize="18sp"
+                android:id="@+id/text_view_battery_level_watch"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="%"
+                android:textColor="@color/white"
+                />
+            <TextView
+                style="@style/TextViewDashboardTitle"
+                android:id="@+id/text_view_battery_level_phone"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="%"
+                android:textColor="@color/white"
+                />
+            <ImageView
+                android:id="@+id/image_view_battery"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_battery" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center" />
-        </LinearLayout>
+                android:orientation="horizontal">
 
-    </LinearLayout>
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_stop"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_stop" />
 
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_pause"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_pause" />
+
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_add_wpt"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_add_wpt" />
+
+
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

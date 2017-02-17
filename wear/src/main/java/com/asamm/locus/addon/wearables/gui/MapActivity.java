@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wearables.gui;
 
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -28,7 +29,8 @@ public class MapActivity extends CustomActivity {
     // reference to map view
     private ImageView mMapView;
 
-    public int zoomLevel = 17;
+    public int zoomLevel;
+    public int defaultZoomLevel;
 
     // NAVIGATION PANEL
 
@@ -44,6 +46,13 @@ public class MapActivity extends CustomActivity {
     private TextView mTvNavPanelDistUnits;
     //zoom level info
     private TextView mZoomInfo;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        zoomLevel = getDeviceComm().getLastUpdate().getMapZoomLevel();
+        defaultZoomLevel = zoomLevel;
+    }
 
     @Override
     protected boolean checkIfDeviceReady() {
@@ -104,6 +113,24 @@ public class MapActivity extends CustomActivity {
             mZoomInfo = (TextView)
                     view.findViewById(R.id.textView_map_zoomlevel);
 
+            // listener for onClick events
+            View.OnTouchListener onTouch = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getY() > 200)
+                        zoomLevel = 20;
+                    else
+                    if (event.getY() < 100)
+                        zoomLevel = 18;
+                    else
+                        zoomLevel = 19;
+                    return false;
+                }
+            };
+
+            mMapView.setOnTouchListener( onTouch );
+
+
         }
 
         // view for map
@@ -120,30 +147,17 @@ public class MapActivity extends CustomActivity {
         //refresh zoom level text view
         mZoomInfo.setText( String.valueOf(zoomLevel));
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams( FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        switch (zoomLevel)
-        {
-            case 20: params.gravity = Gravity.RIGHT | Gravity.BOTTOM; break;
-            case 18: params.gravity = Gravity.RIGHT | Gravity.TOP; break;
-            default: params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL; break;
-        }
+
+        if (zoomLevel == 20)
+            params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+        else
+            if (zoomLevel == 18)
+              params.gravity = Gravity.RIGHT | Gravity.TOP;
+            else
+                params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+
         mZoomInfo.setLayoutParams(params);
 
-        // listener for onClick events
-        View.OnTouchListener onTouch = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getY() > 200)
-                    zoomLevel = 20;
-                else
-                if (event.getY() < 100)
-                    zoomLevel = 18;
-                else
-                  zoomLevel = 19;
-                return false;
-            }
-        };
-
-        mMapView.setOnTouchListener( onTouch );
 
     }
 

@@ -72,7 +72,7 @@ public class TrackRecordActivity extends CustomActivity {
     private boolean m_isGridCreated = false;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // request profiles
@@ -81,6 +81,7 @@ public class TrackRecordActivity extends CustomActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
+        setAmbientEnabled();
     }
 
     // ABSTRACT FUNCTIONS
@@ -246,41 +247,24 @@ public class TrackRecordActivity extends CustomActivity {
         View view = clearContainer(R.layout.layout_grid_view_pager);
         LocusInfo locusInfo = getDeviceComm().getDataContainer().getLocusInfo();
 
-        TextView tvTimeValue = (TextView)
-                view.findViewById(R.id.text_view_info_time);
-        TextView tvAltitudeValue = (TextView)
-                view.findViewById(R.id.text_view_info_altitude);
-        TextView tvAvgSpeedValue = (TextView)
-                view.findViewById(R.id.text_view_info_avgspeed);
-        TextView tvDistanceValue = (TextView)
-                view.findViewById(R.id.text_view_info_distance);
-        TextView tvHrRateValue = (TextView)
-                view.findViewById(R.id.text_view_info_hrrate);
-        TextView tvHrMaxValue = (TextView)
-                view.findViewById(R.id.text_view_info_hrmax);
-        TextView tvHrAvgValue = (TextView)
-                view.findViewById(R.id.text_view_info_hravg);
-
-
-        // set buttons
-        final ImageButton btnStop = (ImageButton)
-                view.findViewById(R.id.image_view_track_rec_stop);
-        final ImageButton btnPause = (ImageButton)
-                view.findViewById(R.id.image_view_track_rec_pause);
-        final ImageButton btnAddWpt = (ImageButton)
-                view.findViewById(R.id.image_view_track_rec_add_wpt);
-
-        // set icons
-        if (!cont.isTrackRecPaused()) {
-            if (btnPause != null)
-              btnPause.setImageResource(R.drawable.ic_96_track_recording_pause);
-        } else {
-            if (btnPause != null)
-              btnPause.setImageResource(R.drawable.ic_96_track_recording_pause_pressed);
-        }
-
-        // set basics
         if (cpanel_visible) {
+            // set buttons
+            final ImageButton btnStop = (ImageButton)
+                    view.findViewById(R.id.image_view_track_rec_stop);
+            final ImageButton btnPause = (ImageButton)
+                    view.findViewById(R.id.image_view_track_rec_pause);
+            final ImageButton btnAddWpt = (ImageButton)
+                    view.findViewById(R.id.image_view_track_rec_add_wpt);
+
+            // set icons
+            if (!cont.isTrackRecPaused()) {
+                if (btnPause != null)
+                    btnPause.setImageResource(R.drawable.ic_96_track_recording_pause);
+            } else {
+                if (btnPause != null)
+                    btnPause.setImageResource(R.drawable.ic_96_track_recording_pause_pressed);
+            }
+
             // listener for delay events
             final DelayedConfirmationView.DelayedConfirmationListener onDelay =
                     new DelayedConfirmationView.DelayedConfirmationListener() {
@@ -362,6 +346,15 @@ public class TrackRecordActivity extends CustomActivity {
         //setScreenHeader(cont.getTrackRecProfileName());
 
         if (stat_visible) {
+            TextView tvTimeValue = (TextView)
+                    view.findViewById(R.id.text_view_info_time);
+            TextView tvAltitudeValue = (TextView)
+                    view.findViewById(R.id.text_view_info_altitude);
+            TextView tvAvgSpeedValue = (TextView)
+                    view.findViewById(R.id.text_view_info_avgspeed);
+            TextView tvDistanceValue = (TextView)
+                    view.findViewById(R.id.text_view_info_distance);
+
             // text view time
             if (tvTimeValue != null)
                 tvTimeValue.setText(TIME_FORMAT.format(recStats.getTotalTime()));
@@ -386,6 +379,13 @@ public class TrackRecordActivity extends CustomActivity {
         }
 
         if (stat2_visible) {
+            TextView tvHrRateValue = (TextView)
+                    view.findViewById(R.id.text_view_info_hrrate);
+            TextView tvHrMaxValue = (TextView)
+                    view.findViewById(R.id.text_view_info_hrmax);
+            TextView tvHrAvgValue = (TextView)
+                    view.findViewById(R.id.text_view_info_hravg);
+
             // text view heart rate avg
             String hrmAvg = String.valueOf(recStats.getHrmAverage());
             if (tvHrAvgValue != null)
