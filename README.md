@@ -18,8 +18,8 @@ map where I can zoom in/out.
 
 What functionalities what I have added so far:
 - when track recoding is running there are 3 different screens: 
--- screen1: time elapsed, average speed, distance, cummulative altitude.
--- screen2: actual hr, avg hr, max hr,
--- screen3: control buttons (stop, pause, add waypoint) and the battery levels of the watch and the phone.
-- Zooming function for the map screen: the screen are divided to three zones (top, middle, bottom) if you tap on a zone it will select a different zoom level (18,19,20).
+screen1: time elapsed, average speed, distance, cummulative altitude.
+screen2: actual hr, avg hr, max hr,
+screen3: control buttons (stop, pause, add waypoint) and the battery levels of the watch and the phone.
+- Zooming function on the map screen: the screen are divided to three zones (top, middle, bottom) if you tap on a zone it will select a different zoom level (18,19,20).
 - Ambient mode: when the watch is ambient mode all data will be sinchronized rarely to save battery. If the screen is the map view screen it goes to black when it is in ambient mode.
