@@ -22,9 +22,11 @@ screen1: time elapsed, average speed, distance, cummulative altitude.
 screen2: actual hr, avg hr, max hr.
 screen3: control buttons (stop, pause, add waypoint) and the battery levels of the watch and the phone.
 - Zooming function on the map screen: the screen are divided to three zones (top, middle, bottom) if you tap on a zone it will select a different zoom level (18,19,20).
-- Ambient mode: when the watch is ambient mode all data will be sinchronized rarely to save battery. If the screen is the map view screen it goes to black when it is in ambient mode.
+- Ambient mode: when the watch is in ambient mode all data will be sinchronized less often to save battery. In ambient mode the map screen switches off (goes to black).
 
 My test equipments:
 - Nexus 5 (Android 6, Marshmallow)
 - Samsung Gear Live (Android Wear 1.5), square screen (320x320)
 - Polar H7
+- On the pone:Locus Pro
+- The addon is compiled with locus-api-android:0.2.6
