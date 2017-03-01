@@ -1,6 +1,6 @@
 # Locus Map - add-on Wearables Mzperx's fork
 
-This addon is a fork of the original Locus Map - add-on Wearables. Many thanks to Asamm Software and Menion for providing it to open source!
+### This addon is a fork of the original Locus Map - add-on Wearables. Many thanks to Asamm Software and Menion for providing it to open source!
 
 The purpose of this fork to add functionalities what I would like to see when I use the watch for my workouts and my outdoor activities.
 I develop it for fun and when I have time.
