@@ -2,18 +2,18 @@
 
 ### This addon is a fork of the original Locus Map - add-on Wearables. Many thanks to Asamm Software and Menion for providing it to open source!
 
-The purpose of this fork to add functionalities what I would like to see when I use the watch for my workouts and my outdoor activities.
+The purpose of this fork to add functionalities what I would like to see when I use the watch for my workouts and for my outdoor activities.
 I develop it for fun and when I have time.
 
 My usage scenarios are: short-run (about 1 hour), long run (3-5 hours), hiking and cycling (< 8 hours). Usually I wear hr belt.
 
-My exceptations for short-run:
+My expectations for short-run:
 always-on screen, show hr, show statistical data like avg speed, distance etc...
 
 My expectation for long-run and for other long lasting activities:
-consume less battery,
-see the battery level of the watch and phone,
-aler if I left the pre-selected route,
+battery survives the activity,
+see the battery level of the watch and the phone,
+alert if I left the pre-selected route,
 map where I can zoom in/out.
 
 What functionalities what I have added so far:
@@ -29,4 +29,4 @@ My test equipments:
 - Samsung Gear Live (Android Wear 1.5), square screen (320x320)
 - Polar H7
 - On the pone:Locus Pro
-- The addon is compiled with locus-api-android:0.2.6
+- The addon is compiled with locus-api-android:0.2.7
