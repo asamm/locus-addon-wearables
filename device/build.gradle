@@ -9,7 +9,12 @@ android {
         versionName "0.3"
 
         minSdkVersion 20
-        targetSdkVersion 24
+        targetSdkVersion 23
+
+        applicationId "com.asamm.locus.addon.wearables.mzperx"
+	jackOptions {
+            enabled true
+        }
     }
 
     packagingOptions {
@@ -18,8 +23,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     // set lint in project
@@ -58,16 +63,17 @@ android {
 
 dependencies {
     // get locus API
-    compile 'com.asamm:locus-api-android:0.2.6'
+    //compile 'com.asamm:locus-api-android:0.2.7'
+    compile project(':locus-api-android')
 
     // attach wear container
-    wearApp project(':addon-wearables:wear')
+    wearApp project(':wear')
 
     // add google features
     compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:9.6.0'
+    compile 'com.google.android.gms:play-services-wearable:10.2.0'
     provided 'com.google.android.wearable:wearable:1.0.0'
 
-    compile 'com.google.android.gms:play-services:9.6.0@aar'
-    compile 'com.android.support:support-v4:24.2.1'
+    //compile 'com.google.android.gms:play-services:9.6.0@aar'
+    //compile 'com.android.support:support-v4:24.2.1'
 }

@@ -1,0 +1,63 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- General settings -->
+    <string name="pref_header_ambient_mode">Ambient mode</string>
+    <string name="pref_title_Ambient_mode">Ambient</string>
+    <string name="pref_description_Ambient_mode">Help to save battery in long lasting activity</string>
+    <string name="pref_header_map_screen">Map</string>
+    <string name="pref_header_rec_screen">Track recording</string>
+    <string name="pref_header_alarms">Alarms</string>
+
+    <!-- Ambient settings -->
+    <string name="pref_title_ambient_map_screen_off">Map off</string>
+    <string name="pref_summary_ambient_map_screen_off">Switches off the Map screen in ambient mode</string>
+    <string name="pref_title_ambient_stat_screen_off">Rec. off</string>
+    <string name="pref_summary_ambient_stat_screen_off">Switches off the Recording screen in ambient mode</string>
+    <string name="pref_title_ambient_long_refresh">Long refresh</string>
+    <string name="pref_summary_ambient_long_refresh">Refresh once per minute</string>
+
+    <!-- Map settings -->
+    <string name="pref_title_map_nav_panel">Nav. panel</string>
+    <string name="pref_title_map_zoom_top">Zoom top</string>
+    <string name="pref_summary_map_zoom_top">Zoom level when touching the top of the screen</string>
+    <string name="pref_title_map_zoom_middle">Zoom middle</string>
+    <string name="pref_title_map_zoom_bottom">Zoom bottom</string>
+
+    <string-array name="pref_zoom_levels">
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+    </string-array>
+
+
+    <!-- Track record settings -->
+    <string name="pref_title_rec_hr_screen">HR screen</string>
+    <string name="pref_summary_rec_hr_screen">enable/disable heart rate screen</string>
+
+
+    <!-- Settings for Alarms -->
+    <string name="pref_title_alarm_low_battery">Low battery</string>
+    <string-array name="pref_alarm_battery_levels">
+        <item>0</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+        <item>90</item>
+    </string-array>
+
+    <string name="pref_title_alarm_watch_battery">Watch battery</string>
+    <string name="pref_title_alarm_device_battery">Device battery</string>
+    <string name="pref_title_alarm_out_of_route">Out of route</string>
+    <string name="pref_title_vibrate">Vibrate</string>
+</resources>

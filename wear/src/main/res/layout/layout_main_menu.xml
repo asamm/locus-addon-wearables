@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="horizontal">
 
@@ -30,15 +30,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageButton
             style="@style/ButtonMainMenu"
             android:id="@+id/button_main_menu_03"
-            android:src="@drawable/ic_info_alt"/>
+            android:src="@drawable/ic_settings"/>
 
         <ImageButton
             style="@style/ButtonMainMenu"

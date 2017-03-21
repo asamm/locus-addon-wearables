@@ -1,0 +1,9 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="record_hr_on"
+        android:title="@string/pref_title_rec_hr_screen"
+        android:summary="@string/pref_summary_rec_hr_screen"
+        android:enabled="false"/>
+</PreferenceScreen>

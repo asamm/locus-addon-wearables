@@ -3,6 +3,7 @@ package com.asamm.locus.addon.wearables;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.asamm.locus.addon.wearables.utils.Const;
 import com.asamm.locus.addon.wearables.utils.DataContainer;
@@ -33,7 +34,7 @@ class RequestHandler implements
 		GoogleApiClient.OnConnectionFailedListener {
 
     // tag for logger
-    private static final String TAG = "RequestHandler";
+    private static final String TAG = "LocusAddon.ReqHandler";
 
     // instance of handler
     private static RequestHandler mInstance;
@@ -83,7 +84,7 @@ class RequestHandler implements
     private GoogleApiClient mGoogleApiClient;
 
     // Last received update from Locus
-    private UpdateContainer mLastUpdate;
+    static private UpdateContainer mLastUpdate;
 
     // target for data
     private String mToSendNodeId;
@@ -319,6 +320,7 @@ class RequestHandler implements
         if (mLastUpdate != null) {
             sendMessage(nodeId, Const.PATH_LOADED_PERIODIC_UPDATE, mLastUpdate.getAsBytes());
         } else {
+            Log.d(TAG, "loadUpdateContainer: send null data");
             sendMessage(nodeId, Const.PATH_LOADED_PERIODIC_UPDATE, null);
         }
     }

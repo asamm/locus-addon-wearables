@@ -1,6 +1,11 @@
 package com.asamm.locus.addon.wearables;
 
+import android.util.Log;
+
+import com.google.android.gms.wearable.Channel;
+import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
 
 /**
@@ -19,8 +24,9 @@ public class WearListenerService extends WearableListenerService {
 
         // let device handle it
         DeviceCommunication comm = DeviceCommunication.getInstance();
-        if (comm != null) {
+        if (comm != null ) {
             comm.handleNewData(messageEvent);
         }
     }
+
 }

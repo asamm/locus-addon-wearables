@@ -3,11 +3,14 @@ package com.asamm.locus.addon.wearables.gui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.wearable.view.DelayedConfirmationView;
 import android.support.wearable.view.DotsPageIndicator;
 import android.support.wearable.view.GridPagerAdapter;
@@ -60,6 +63,8 @@ public class TrackRecordActivity extends CustomActivity {
     public static final SimpleDateFormat TIME_FORMAT =
             new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
+    private boolean mAmbientStatScreenOff = false;
+
     static {
         TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC+0"));
     }
@@ -70,6 +75,43 @@ public class TrackRecordActivity extends CustomActivity {
      */
     private GoogleApiClient client;
     private boolean m_isGridCreated = false;
+    private Point m_activePage = null;
+
+    @Override
+    public void onExitAmbient() {
+        super.onExitAmbient();
+
+        if (!mAmbientEnabled)
+            return;
+
+        if (mAmbientStatScreenOff) {
+            final View statView = (ViewGroup) findViewById(R.id.pager);
+            statView.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    @Override
+    public void onEnterAmbient(Bundle ambientDetails) {
+        super.onEnterAmbient(ambientDetails);
+
+        if (!mAmbientEnabled)
+            return;
+
+        if (mAmbientStatScreenOff) {
+            final View statView = (ViewGroup) findViewById(R.id.pager);
+            statView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void loadPreferences( )
+    {
+        super.loadPreferences();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mAmbientStatScreenOff = sharedPreferences.getBoolean("ambient_stat_screen_off", false);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,11 +169,15 @@ public class TrackRecordActivity extends CustomActivity {
 
                 // check if data are available
                 if (getDeviceComm().getLastUpdate() == null) {
-                    displayScreenInfo("Reconnecting", "Reconnecting...");
+                    //displayScreenInfo("Reconnecting", "Reconnecting...");
+                    Log.d(TAG, "Reconnecting ");
+                    getDeviceComm().requestDataImmediatelly();
+                    //m_isGridCreated = false;
                     return;
                 }
 
                 // display main layout
+                Log.d(TAG, "refreshTrackRecordingLayout");
                 refreshTrackRecordingLayout(getDeviceComm().getLastUpdate());
             }
         });
@@ -222,13 +268,12 @@ public class TrackRecordActivity extends CustomActivity {
 
 
     private void displayScreenTrackRecordRunning(UpdateContainer cont) {
+        Log.d(TAG, "displayScreenTrackRecordRunning: ");
+        View view = clearContainer(R.layout.layout_grid_view_pager);
+        GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
+
         if (!m_isGridCreated)
         {
-            // prepare core
-            View view = clearContainer(R.layout.layout_grid_view_pager);
-
-            GridViewPager pager = (GridViewPager) findViewById(R.id.pager);
-
             //---Assigns an adapter to provide the content for this pager---
             pager.setAdapter(new TrackRecordAdapter(this));
             DotsPageIndicator dotsPageIndicator = (DotsPageIndicator) findViewById(R.id.page_indicator);
@@ -237,21 +282,23 @@ public class TrackRecordActivity extends CustomActivity {
 
         }
 
-        boolean cpanel_visible = !isContainerVisible(R.layout.layout_track_record_control);
-        boolean stat_visible = !isContainerVisible(R.layout.layout_track_statistic);
-        boolean stat2_visible = !isContainerVisible(R.layout.layout_track_statistic2);
+        Point currentPage = pager.getCurrentItem();
+
+        boolean cpanel_visible = (currentPage.x == 2 && currentPage.y == 0);
+        boolean stat_visible = (currentPage.x == 0 && currentPage.y == 0);
+        boolean stat2_visible = (currentPage.x == 1 && currentPage.y == 0);
 
         TrackStats recStats = cont.getTrackRecStats();
 
         // prepare core
-        View view = clearContainer(R.layout.layout_grid_view_pager);
         LocusInfo locusInfo = getDeviceComm().getDataContainer().getLocusInfo();
 
-        if (cpanel_visible) {
+        if (true) {
             // set buttons
             final ImageButton btnStop = (ImageButton)
                     view.findViewById(R.id.image_view_track_rec_stop);
             final ImageButton btnPause = (ImageButton)
+                    view.findViewById(R.id.image_view_track_rec_pause);
                     view.findViewById(R.id.image_view_track_rec_pause);
             final ImageButton btnAddWpt = (ImageButton)
                     view.findViewById(R.id.image_view_track_rec_add_wpt);
@@ -280,6 +327,7 @@ public class TrackRecordActivity extends CustomActivity {
 
                         @Override
                         public void onTimerSelected(View view) {
+                            m_isGridCreated = false;
                             // cancel timer with small delay, so it will not allow to click-through
                             // button to refreshed layout
                             new Handler().postDelayed(new Runnable() {
@@ -322,21 +370,10 @@ public class TrackRecordActivity extends CustomActivity {
                     view.findViewById(R.id.text_view_battery_level_watch);
 
             if (tvBatteryLevelPhoneValue != null)
-                tvBatteryLevelPhoneValue.setText(cont.getDeviceBatteryValue() + "%");
+                tvBatteryLevelPhoneValue.setText(getDeviceBatteryLevel() + "%");
 
             if (tvBatteryLevelWatchValue != null) {
-                Intent batteryStatus = getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-                int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-                int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                int batteryPct = 0;
-
-                if (scale != 0)
-                    batteryPct = (int)((level / (float) scale) * 100);
-
-                if (batteryPct != 0)
-                    tvBatteryLevelWatchValue.setText(batteryPct + "%");
-                else
-                    tvBatteryLevelWatchValue.setText(batteryPct + "-");
+                tvBatteryLevelWatchValue.setText(getWatchBatteryLevel() + "%");
             }
 
 
@@ -345,7 +382,7 @@ public class TrackRecordActivity extends CustomActivity {
         // update title
         //setScreenHeader(cont.getTrackRecProfileName());
 
-        if (stat_visible) {
+        if (true) {
             TextView tvTimeValue = (TextView)
                     view.findViewById(R.id.text_view_info_time);
             TextView tvAltitudeValue = (TextView)
@@ -356,8 +393,13 @@ public class TrackRecordActivity extends CustomActivity {
                     view.findViewById(R.id.text_view_info_distance);
 
             // text view time
-            if (tvTimeValue != null)
-                tvTimeValue.setText(TIME_FORMAT.format(recStats.getTotalTime()));
+            if (tvTimeValue != null) {
+                String time = TIME_FORMAT.format(recStats.getTotalTime());
+                if (isAmbient())
+                    tvTimeValue.setText( time.substring(0,time.length()-3) );
+                else
+                    tvTimeValue.setText(time);
+            }
 
             // text view avg speed
             String avgspeed = UtilsFormat.formatSpeed(
@@ -378,7 +420,7 @@ public class TrackRecordActivity extends CustomActivity {
                 tvDistanceValue.setText(distance);
         }
 
-        if (stat2_visible) {
+        if (true) {
             TextView tvHrRateValue = (TextView)
                     view.findViewById(R.id.text_view_info_hrrate);
             TextView tvHrMaxValue = (TextView)
@@ -514,9 +556,15 @@ public class TrackRecordActivity extends CustomActivity {
                     break;
                 case 2:
                     view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_track_record_control, null);
+                    break;
             }
 
             viewGroup.addView(view);
+            if (getApplicationContext().getResources().getConfiguration().isScreenRound())
+                view.setPadding(25, 25, 25, 25);
+            else
+                view.setPadding(0, 0, 0, 0);
+
 
             refreshLayout(false);
             return view;

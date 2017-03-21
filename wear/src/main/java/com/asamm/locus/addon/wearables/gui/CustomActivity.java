@@ -5,15 +5,22 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.BatteryManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.DelayedConfirmationView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.asamm.locus.addon.wearables.DeviceCommunication;
 import com.asamm.locus.addon.wearables.MainApplication;
@@ -54,6 +61,13 @@ public abstract class CustomActivity extends WearableActivity {
     // state of current activity
     private State mCurrentState = State.ON_CREATE;
 
+    protected boolean mAmbientEnabled = false;
+    protected boolean mScreenOffInAmbient = false;
+    protected boolean mAlarmLowBattery = false;
+    protected int mDeviceBatteryAlarm = 0;
+    protected int mWatchBatteryAlarm = 0;
+    protected boolean mLongRefreshSleep = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,9 +97,26 @@ public abstract class CustomActivity extends WearableActivity {
             finishIfNotReady();
         }
 
+        //loadPreferences();
+
         // enable ambient mode
         setAmbientEnabled();
+
     }
+
+    protected void loadPreferences( )
+    {
+        Log.d(TAG, "loadPreferences: ");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mAmbientEnabled = sharedPreferences.getBoolean("ambient_mode", false);
+        mAlarmLowBattery = sharedPreferences.getBoolean("alarm_low_battery", false);
+        mWatchBatteryAlarm = Integer.parseInt(sharedPreferences.getString("watch_low_battery_alarm", "0"));
+        mDeviceBatteryAlarm = Integer.parseInt(sharedPreferences.getString("device_low_battery_alarm", "0"));
+
+        mLongRefreshSleep = sharedPreferences.getBoolean("ambient_refresh_long", false);
+        getDeviceComm().setLongRefreshPeriod( mLongRefreshSleep );
+    }
+
 
     @Override
     public void onStart() {
@@ -117,6 +148,7 @@ public abstract class CustomActivity extends WearableActivity {
 
         // register activity
         MainApplication.activityOnResume(this);
+        loadPreferences();
     }
 
     @Override
@@ -146,6 +178,7 @@ public abstract class CustomActivity extends WearableActivity {
 
         // set state
         mCurrentState = State.ON_DESTROY;
+        MainApplication.activityOnDestroyed(this);
     }
 
     // AMBIENT MODE
@@ -154,7 +187,11 @@ public abstract class CustomActivity extends WearableActivity {
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
         updateDisplay();
-        getDeviceComm().setAmbientMode(true);
+
+        if (!mAmbientEnabled)
+            return;
+
+        getDeviceComm().onEnterAmbient();
         Log.d(TAG, "onEnterAmbient: ");
     }
 
@@ -168,9 +205,54 @@ public abstract class CustomActivity extends WearableActivity {
     @Override
     public void onExitAmbient() {
         updateDisplay();
-        super.onExitAmbient();
-        getDeviceComm().setAmbientMode(false);
+        getDeviceComm().onExitAmbient();
         Log.d(TAG, "onExitAmbient: ");
+
+        super.onExitAmbient();
+
+        if (mAlarmLowBattery) {
+            String alarmText = "";
+
+            int battery_dev = getDeviceBatteryLevel();
+            int battery_watch = getWatchBatteryLevel();
+            if (battery_dev < mDeviceBatteryAlarm && battery_dev != 0)
+                alarmText = "Dev battery: " + battery_dev + "%";
+            if (battery_watch < mWatchBatteryAlarm && battery_watch != 0 ) {
+                if (!alarmText.isEmpty())
+                    alarmText += "\n";
+                alarmText += "Watch battery: " + battery_watch + "%";
+            }
+            if (!alarmText.isEmpty()) {
+                Toast toast = Toast.makeText(getApplicationContext(), alarmText, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.BOTTOM, 0, 0);
+                toast.show();
+            }
+        }
+
+        if (!mAmbientEnabled)
+            return;
+
+    }
+
+    protected int getDeviceBatteryLevel()
+    {
+        if (getDeviceComm().getLastUpdate() != null)
+           return  getDeviceComm().getLastUpdate().getDeviceBatteryValue();
+        else
+            return 0;
+    }
+
+    protected int getWatchBatteryLevel()
+    {
+        Intent batteryStatus = getApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        int batteryPct = 0;
+
+        if (scale != 0)
+            batteryPct = (int)((level / (float) scale) * 100);
+
+        return batteryPct;
     }
 
     private void updateDisplay() {

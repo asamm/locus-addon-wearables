@@ -1,7 +1,9 @@
 package com.asamm.locus.addon.wearables.gui;
 
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -14,9 +16,13 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wearables.R;
 import com.asamm.locus.addon.wearables.utils.DataContainer;
 
+import org.w3c.dom.Text;
+
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.UtilsFormat;
+
+import locus.api.objects.enums.PointRteAction;
 import locus.api.objects.extra.ExtraData;
 import locus.api.utils.Logger;
 
@@ -31,6 +37,17 @@ public class MapActivity extends CustomActivity {
 
     public int zoomLevel;
     public int defaultZoomLevel;
+    public enum ZOOM_LEVELS {
+        ZOOM_IN(20), ZOOM_0(19), ZOOM_OUT(17);
+        private int numVal;
+        ZOOM_LEVELS(int numVal) {
+            this.numVal = numVal;
+        }
+        public int getNumVal() {
+            return numVal;
+        }
+        public void setNumVal( int val ) { numVal = val; }
+    }
 
     // NAVIGATION PANEL
 
@@ -46,12 +63,80 @@ public class MapActivity extends CustomActivity {
     private TextView mTvNavPanelDistUnits;
     //zoom level info
     private TextView mZoomInfo;
+    private TextView mGuidedDist;
+    private boolean mShowNavPanel = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        zoomLevel = getDeviceComm().getLastUpdate().getMapZoomLevel();
+
+        if (getDeviceComm().getLastUpdate() != null)
+          zoomLevel = getDeviceComm().getLastUpdate().getMapZoomLevel();
+        else
+            zoomLevel = 17;
         defaultZoomLevel = zoomLevel;
+
+        View view = findViewById(R.id.linear_layout_panel_navigation);
+        if ( mShowNavPanel) {
+            if (view != null)
+                view.setVisibility(View.VISIBLE);
+        }else
+            if (view != null)
+                view.setVisibility(View.INVISIBLE);
+
+    }
+
+    @Override
+    protected void loadPreferences( )
+    {
+        super.loadPreferences();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        mScreenOffInAmbient = sharedPreferences.getBoolean("ambient_map_screen_off", true);
+        mShowNavPanel = sharedPreferences.getBoolean("map_navigation_on", false);
+        ZOOM_LEVELS.ZOOM_IN.setNumVal( Integer.parseInt(sharedPreferences.getString("map_zoom_bottom", "20")) );
+        ZOOM_LEVELS.ZOOM_0.setNumVal( Integer.parseInt(sharedPreferences.getString("map_zoom_middle", "18")) );
+        ZOOM_LEVELS.ZOOM_OUT.setNumVal( Integer.parseInt(sharedPreferences.getString("map_zoom_top", "17")) );
+    }
+
+    @Override
+    public void onExitAmbient() {
+        super.onExitAmbient();
+
+        if (!mAmbientEnabled)
+            return;
+
+        if (mScreenOffInAmbient) {
+            View view = findViewById(R.id.image_view_map);
+            if (view != null)
+                view.setVisibility(View.VISIBLE);
+
+            /*if (mShowNavPanel) {
+                view = findViewById(R.id.linear_layout_panel_navigation);
+                if (view != null)
+                    view.setVisibility(View.VISIBLE);
+            }*/
+        }
+
+    }
+
+    @Override
+    public void onEnterAmbient(Bundle ambientDetails) {
+        super.onEnterAmbient(ambientDetails);
+
+        if (!mAmbientEnabled)
+            return;
+
+        if (mScreenOffInAmbient) {
+            View view = findViewById(R.id.image_view_map);
+            if (view != null)
+                view.setVisibility(View.INVISIBLE);
+
+        view = findViewById(R.id.linear_layout_panel_navigation);
+        if (view != null)
+            view.setVisibility( View.INVISIBLE);
+        }
+
     }
 
     @Override
@@ -112,18 +197,20 @@ public class MapActivity extends CustomActivity {
                     view.findViewById(R.id.text_view_dist_units);
             mZoomInfo = (TextView)
                     view.findViewById(R.id.textView_map_zoomlevel);
+            mGuidedDist = (TextView)
+                    view.findViewById(R.id.textView_map_distguide);
 
             // listener for onClick events
             View.OnTouchListener onTouch = new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getY() > 200)
-                        zoomLevel = 20;
+                    if (event.getY() > (mMapView.getHeight() * 2 /3))
+                        zoomLevel = ZOOM_LEVELS.ZOOM_IN.getNumVal();
                     else
-                    if (event.getY() < 100)
-                        zoomLevel = 18;
+                    if (event.getY() < (mMapView.getHeight() / 3))
+                        zoomLevel = ZOOM_LEVELS.ZOOM_OUT.getNumVal();
                     else
-                        zoomLevel = 19;
+                        zoomLevel = ZOOM_LEVELS.ZOOM_0.getNumVal();
                     return false;
                 }
             };
@@ -135,26 +222,33 @@ public class MapActivity extends CustomActivity {
 
         // view for map
         Bitmap img = getDeviceComm().getDataContainer().getMapPreview().getImage();
-		Logger.logD("XXX", "img: " + img.getWidth() + ", " + img.getHeight() + ", " +
+		/*Logger.logD("XXX", "img: " + img.getWidth() + ", " + img.getHeight() + ", " +
 				mMapView.getWidth() + ", " + mMapView.getHeight() + ", " +
 				view.getWidth() + ", " + view.getHeight() + ", " +
-				   mContainer.getWidth() + ", " + mContainer.getHeight());
+				   mContainer.getWidth() + ", " + mContainer.getHeight());*/
         mMapView.setImageBitmap(img);
 
         // set navigation panel
-        refreshPanelNavigation();
+        if (mShowNavPanel)
+          refreshPanelNavigation();
 
         //refresh zoom level text view
         mZoomInfo.setText( String.valueOf(zoomLevel));
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams( FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
-        if (zoomLevel == 20)
+        if (zoomLevel == ZOOM_LEVELS.ZOOM_IN.getNumVal())
             params.gravity = Gravity.RIGHT | Gravity.BOTTOM;
         else
-            if (zoomLevel == 18)
+            if (zoomLevel == ZOOM_LEVELS.ZOOM_OUT.getNumVal())
               params.gravity = Gravity.RIGHT | Gravity.TOP;
             else
                 params.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+
+        if (getDeviceComm().getLastUpdate() != null && getDeviceComm().getLastUpdate().getGuideTypeTrack() != null) {
+            mGuidedDist.setText(String.format("%.2f",getDeviceComm().getLastUpdate().getGuideTypeTrack().getTargetDist()));
+        }
+        else
+           mGuidedDist.setText("");
 
         mZoomInfo.setLayoutParams(params);
 
@@ -169,9 +263,13 @@ public class MapActivity extends CustomActivity {
      * Refresh panel with navigation.
      */
     private void refreshPanelNavigation() {
+        if (isAmbient())
+            return;
         // get parameters
         LocusInfo locusInfo = getDeviceComm().getDataContainer().getLocusInfo();
         UpdateContainer lastUpdate = getDeviceComm().getLastUpdate();
+        if (lastUpdate == null)
+            return;
 
         // check if navigation is active
         if (lastUpdate.getGuideType() != UpdateContainer.GUIDE_TYPE_TRACK_NAVIGATION) {
@@ -185,7 +283,7 @@ public class MapActivity extends CustomActivity {
         UpdateContainer.GuideTypeTrack navInfo = lastUpdate.getGuideTypeTrack();
 
         // action for current point
-        int action1 = navInfo.getNavPoint1Action();
+        int action1 = navInfo.getNavPoint1Action().getId();
         int img1 = getNavPointImageRes(action1);
         if (img1 != -1) {
             mIvNavPanelMiddle.setImageResource(img1);
@@ -194,7 +292,7 @@ public class MapActivity extends CustomActivity {
         }
 
         // action for next point
-        int action2 = navInfo.getNavPoint2Action();
+        int action2 = navInfo.getNavPoint2Action().getId();
         int img2 = getNavPointImageRes(action2);
         if (img2 != -1) {
             mIvNavPanelTop.setImageResource(img2);
@@ -214,7 +312,72 @@ public class MapActivity extends CustomActivity {
      * @param action navigation point action
      * @return reference to resource image
      */
+
     private static int getNavPointImageRes(int action) {
+
+            if (action == PointRteAction.CONTINUE_STRAIGHT.getId())
+                return R.drawable.ic_direction_straight;
+            if (action == PointRteAction.LEFT_SLIGHT.getId())
+                return R.drawable.ic_direction_left1;
+            if (action == PointRteAction.LEFT.getId())
+                return R.drawable.ic_direction_left2;
+            if (action == PointRteAction.LEFT_SHARP.getId())
+                return R.drawable.ic_direction_left3;
+            if (action == PointRteAction.RIGHT_SLIGHT.getId())
+                return R.drawable.ic_direction_right1;
+            if (action == PointRteAction.RIGHT.getId())
+                return R.drawable.ic_direction_right2;
+            if (action == PointRteAction.RIGHT_SHARP.getId())
+                return R.drawable.ic_direction_right3;
+            if (action == PointRteAction.STAY_LEFT.getId())
+                return R.drawable.ic_direction_stay_left;
+            if (action == PointRteAction.STAY_RIGHT.getId())
+                return R.drawable.ic_direction_stay_right;
+            if (action == PointRteAction.STAY_STRAIGHT.getId())
+                return R.drawable.ic_direction_straight;
+            if (action == PointRteAction.U_TURN.getId() || action == PointRteAction.U_TURN_LEFT.getId() || action == PointRteAction.U_TURN_RIGHT.getId())
+                return R.drawable.ic_direction_turnaround;
+            if (action == PointRteAction.EXIT_LEFT.getId())
+                return R.drawable.ic_direction_exit_left;
+            if (action == PointRteAction.EXIT_RIGHT.getId())
+                return R.drawable.ic_direction_exit_right;
+            if (action == PointRteAction.RAMP_ON_LEFT.getId())
+                return R.drawable.ic_direction_left1;
+            if (action == PointRteAction.RAMP_ON_RIGHT.getId())
+                return R.drawable.ic_direction_right1;
+            if (action == PointRteAction.RAMP_STRAIGHT.getId())
+                return R.drawable.ic_direction_straight;
+            if (action == PointRteAction.MERGE_LEFT.getId())
+                return R.drawable.ic_direction_merge_left;
+            if (action == PointRteAction.MERGE_RIGHT.getId())
+                return R.drawable.ic_direction_merge_right;
+            if (action == PointRteAction.MERGE.getId())
+                return R.drawable.ic_direction_straight;
+            if (action == PointRteAction.ARRIVE_DEST.getId() || action == PointRteAction.ARRIVE_DEST_LEFT.getId() || action == PointRteAction.ARRIVE_DEST_RIGHT.getId())
+                return R.drawable.ic_direction_finnish;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_1.getId())
+                return R.drawable.ic_direction_roundabout_1;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_2.getId())
+                return R.drawable.ic_direction_roundabout_2;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_3.getId())
+                return R.drawable.ic_direction_roundabout_3;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_4.getId())
+                return R.drawable.ic_direction_roundabout_4;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_5.getId())
+                return R.drawable.ic_direction_roundabout_5;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_6.getId())
+                return R.drawable.ic_direction_roundabout_6;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_7.getId())
+                return R.drawable.ic_direction_roundabout_7;
+            if (action == PointRteAction.ROUNDABOUT_EXIT_8.getId())
+                return R.drawable.ic_direction_roundabout_8;
+            if (action == PointRteAction.PASS_PLACE.getId())
+                return R.drawable.ic_direction_finnish;
+
+            return -1; //default
+    }
+
+/*    private static int getNavPointImageRes(int action) {
         switch (action) {
             case ExtraData.VALUE_RTE_ACTION_CONTINUE_STRAIGHT:
                 return R.drawable.ic_direction_straight;
@@ -281,5 +444,5 @@ public class MapActivity extends CustomActivity {
             default:
                 return -1;
         }
-    }
+    }*/
 }

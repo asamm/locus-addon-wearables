@@ -254,7 +254,8 @@ public class MainMenuActivity extends CustomActivity {
                 Intent intent = new Intent(act, TrackRecordActivity.class);
                 startActivity(intent);
             } else if (v == ibMenu03) {
-                // TODO: 17/09/15 not yet implemented
+                Intent intent = new Intent(act, SettingsActivity.class);
+                startActivity(intent);
             } else if (v == ibMenu04) {
                 // TODO: 17/09/15 not yet implemented
             }

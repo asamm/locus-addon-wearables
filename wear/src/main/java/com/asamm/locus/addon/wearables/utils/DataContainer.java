@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wearables.utils;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -117,7 +119,8 @@ public class DataContainer extends Storable {
         // merge version
         if (container.getLocusVersion() != null) {
             mLocusVersion = container.getLocusVersion();
-        }
+        }else
+            Log.d(TAG, "mergeContainer: getLocusVersion() is null");
 
         // merge info
         if (container.getLocusInfo() != null) {

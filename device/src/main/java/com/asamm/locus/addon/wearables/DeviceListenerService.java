@@ -22,7 +22,7 @@ public class DeviceListenerService extends WearableListenerService  {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         String path = messageEvent.getPath();
-		Logger.logD("DeviceListenerService", "onMessageReceived(" + messageEvent + "), " +
+		Logger.logD("LocusAddon.DevListSrv", "onMessageReceived(" + messageEvent + "), " +
 				"path:" + path);
 
 		// cancel timer if any message has arrived

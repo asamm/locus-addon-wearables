@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<android.support.wearable.view.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
+    android:layout_width="match_parent"
     android:background="@color/black"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:padding="0dp"
+    android:id="@+id/box_inset_layout_control">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -110,4 +111,4 @@
             </LinearLayout>
         </TableRow>
     </TableLayout>
-</LinearLayout>
+</android.support.wearable.view.BoxInsetLayout>

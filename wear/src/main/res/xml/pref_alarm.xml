@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="alarm_low_battery"
+        android:title="@string/pref_title_alarm_low_battery"
+        />
+    <ListPreference
+        android:defaultValue="10"
+        android:entries="@array/pref_alarm_battery_levels"
+        android:entryValues="@array/pref_alarm_battery_levels"
+        android:key="watch_low_battery_alarm"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_alarm_watch_battery" />
+
+    <ListPreference
+        android:defaultValue="10"
+        android:entries="@array/pref_alarm_battery_levels"
+        android:entryValues="@array/pref_alarm_battery_levels"
+        android:key="device_low_battery_alarm"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_alarm_device_battery" />
+
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="alarm_out_of_route"
+        android:title="@string/pref_title_alarm_out_of_route"
+        android:enabled="false"  />
+</PreferenceScreen>
