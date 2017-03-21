@@ -24,6 +24,11 @@ screen3: control buttons (stop, pause, add waypoint) and the battery levels of t
 - Zooming function on the map screen: the screen are divided to three zones (top, middle, bottom) if you tap on a zone it will select a different zoom level (18,19,20).
 - Ambient mode: when the watch is in ambient mode all data will be sinchronized less often to save battery. In ambient mode the map screen switches off (goes to black).
 
+Settings panel where you can customize the following settings:
+- Ambient mode where you can control screen switching on/off and set long refresh period (once per minute). For the best battery saving set the all options to on.
+- Alarms where you can set up low battery alarm for device or for watch. This is a visual alarm.
+- Map screen: where you can switch on/off navigation panel and you can set up the zoom levels.
+
 My test equipments:
 - Nexus 5 (Android 6, Marshmallow)
 - Samsung Gear Live (Android Wear 1.5), square screen (320x320)
