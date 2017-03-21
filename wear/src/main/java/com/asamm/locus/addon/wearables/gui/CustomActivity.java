@@ -215,9 +215,9 @@ public abstract class CustomActivity extends WearableActivity {
 
             int battery_dev = getDeviceBatteryLevel();
             int battery_watch = getWatchBatteryLevel();
-            if (battery_dev < mDeviceBatteryAlarm && battery_dev != 0)
+            if (battery_dev <= mDeviceBatteryAlarm && battery_dev != 0)
                 alarmText = "Dev battery: " + battery_dev + "%";
-            if (battery_watch < mWatchBatteryAlarm && battery_watch != 0 ) {
+            if (battery_watch <= mWatchBatteryAlarm && battery_watch != 0 ) {
                 if (!alarmText.isEmpty())
                     alarmText += "\n";
                 alarmText += "Watch battery: " + battery_watch + "%";
