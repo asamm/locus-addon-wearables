@@ -11,6 +11,7 @@ import locus.api.android.utils.LocusUtils;
 import locus.api.android.utils.exceptions.RequiredVersionMissingException;
 import locus.api.utils.Logger;
 
+
 /**
  * Created by menion on 17/08/15.
  * Asamm Software, s. r. o.
@@ -18,7 +19,7 @@ import locus.api.utils.Logger;
 public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 
     // tag for logger
-    private static final String TAG = "PeriodicUpdatesHandler";
+    private static final String TAG = "LocusAddon.PeriodicUpdatesHandler";
 
     @Override
     public void onReceive(final Context context, Intent intent) {

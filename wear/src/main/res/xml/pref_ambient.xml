@@ -1,0 +1,28 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="ambient_mode"
+        android:summary="@string/pref_description_Ambient_mode"
+        android:title="@string/pref_title_Ambient_mode" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="ambient_map_screen_off"
+        android:summary="@string/pref_summary_ambient_map_screen_off"
+        android:title="@string/pref_title_ambient_map_screen_off"
+        android:dependency="ambient_mode"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="ambient_stat_screen_off"
+        android:summary="@string/pref_summary_ambient_stat_screen_off"
+        android:title="@string/pref_title_ambient_stat_screen_off"
+        android:dependency="ambient_mode"/>
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="ambient_refresh_long"
+        android:summary="@string/pref_summary_ambient_long_refresh"
+        android:title="@string/pref_title_ambient_long_refresh"
+        android:dependency="ambient_mode"
+        />
+
+</PreferenceScreen>

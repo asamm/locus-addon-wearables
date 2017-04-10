@@ -2,6 +2,7 @@ package com.asamm.locus.addon.wearables;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.asamm.locus.addon.wearables.gui.CustomActivity;
 import com.asamm.locus.addon.wearables.gui.MapActivity;
@@ -32,9 +33,53 @@ public class DeviceCommunication implements
 
     // tag for logger
     private static final String TAG = DeviceCommunication.class.getSimpleName();
+    //sleep in ms between two refresh
+    private static final int INTERVAL_MINUTE = 60000;
+    private static final int INTERVAL_10SECS = 10000;
+    private static final int sleepOnActive  = 2500;
+    private static final int sleepOnEnteringAmbient  = 5000;
+    private static final int sleepOnExitingAmbient  = 500;
 
+    /**************************************************/
+    // PRIVATE PART
     // stored singleton
     private static DeviceCommunication mInstance;
+    private static int sleepOnAmbient  = 10000;
+    /**************************************************/
+
+    // Google API client
+    private GoogleApiClient mGoogleApiClient;
+    // refresher for updates
+    private Thread mRefresher;
+    // the connected node to send the message to
+    private Node mNode;
+    // current fresh data container
+    private DataContainer mDataContainer;
+    // last container with data from periodic updates
+    private UpdateContainer mLastData;
+	// handler for messages
+	private MessageSender mSender;
+    //ambient mode
+    private boolean mAmbientMode=false;
+    private int refreshSleep = sleepOnActive;
+    private boolean mJustExitedFromAmbient = false;
+    private boolean mJustEnteredToAmbient = false;
+    /**
+     * Default constructor.
+     */
+    private DeviceCommunication(MainApplication app) {
+        Logger.logD(TAG, "DeviceCommunication(" + app + ")");
+        mGoogleApiClient = new GoogleApiClient.Builder(app).
+                addApi(Wearable.API).
+                addConnectionCallbacks(this).
+                addOnConnectionFailedListener(this).
+                build();
+        mGoogleApiClient.connect();
+        mNode = null;
+        mDataContainer = new DataContainer();
+        mRefresher = null;
+		mSender = new MessageSender();
+    }
 
     static void initialize(MainApplication app) {
         destroyInstance();
@@ -59,40 +104,21 @@ public class DeviceCommunication implements
         mInstance = null;
     }
 
-    /**************************************************/
-    // PRIVATE PART
-    /**************************************************/
+    public boolean isAmbientMode() {
+        return mAmbientMode;
+    }
 
-    // Google API client
-    private GoogleApiClient mGoogleApiClient;
-    // refresher for updates
-    private Thread mRefresher;
-    // the connected node to send the message to
-    private Node mNode;
+    public void onEnterAmbient()
+    {
+        this.mAmbientMode = true;
+        this.mJustEnteredToAmbient = true;
+    }
 
-    // current fresh data container
-    private DataContainer mDataContainer;
-    // last container with data from periodic updates
-    private UpdateContainer mLastData;
-
-	// handler for messages
-	private MessageSender mSender;
-
-    /**
-     * Default constructor.
-     */
-    private DeviceCommunication(MainApplication app) {
-        Logger.logD(TAG, "DeviceCommunication(" + app + ")");
-        mGoogleApiClient = new GoogleApiClient.Builder(app).
-                addApi(Wearable.API).
-                addConnectionCallbacks(this).
-                addOnConnectionFailedListener(this).
-                build();
-        mGoogleApiClient.connect();
-        mNode = null;
-        mDataContainer = new DataContainer();
-        mRefresher = null;
-		mSender = new MessageSender();
+    public void onExitAmbient()
+    {
+        this.mAmbientMode = false;
+        this.mJustExitedFromAmbient = true;
+        requestDataImmediatelly();
     }
 
     /**
@@ -111,25 +137,61 @@ public class DeviceCommunication implements
         }
     }
 
+    public void requestDataImmediatelly() {
+
+        if (mRefresher != null) {
+            synchronized (mRefresher) {
+                mRefresher.notify();
+            }
+        }
+    }
+
+
+    private int calculateRefreshSleep()
+    {
+        int ret;
+
+        if (mAmbientMode) {
+            if (mJustEnteredToAmbient) {
+                ret = sleepOnEnteringAmbient;
+                mJustEnteredToAmbient = false;
+            } else
+                ret = sleepOnAmbient;
+        }else {
+            if (mJustExitedFromAmbient ) {
+                if (MainApplication.getCurrentActivity() instanceof MapActivity)
+                    ret = sleepOnExitingAmbient; //request data again
+                else
+                    ret = sleepOnActive;
+                mJustExitedFromAmbient = false;
+            } else
+                ret = sleepOnActive;
+        }
+
+        return ret;
+    }
+
     /**
      * Start thread that will take care about refreshing of content.
      */
+
     private void startRefresher() {
         // class for periodic checks.
-        final Runnable mChecker = new Runnable() {
-
+        final class ThreadChecker extends Thread{
             @Override
-            public void run() {
+            public void run(){
                 try {
                     // repeat actions till system is running
                     int counter = 0;
                     while (mGoogleApiClient.isConnected() && mRefresher != null) {
-                        if (getLastUpdate() == null) {
-                            Thread.sleep(1000);
-                        } else {
-                            Thread.sleep(2500);
+                        synchronized (this) {
+                            if (getLastUpdate() == null) {
+                                this.wait(1000);
+                            } else {
+                                Log.d(TAG, "refreshSleep: " + refreshSleep);
+                                this.wait(refreshSleep);
+                            }
                         }
-
                         // increase counter
                         counter++;
 
@@ -140,21 +202,31 @@ public class DeviceCommunication implements
 
                         // perform update
                         boolean reloadBase = !isReady() || counter % 5 == 0;
-                        performUpdateOfData(reloadBase);
+                        if (reloadBase) {
+                            performUpdateOfData(true);
+                            performUpdateOfData(false);
+                        }else
+                            performUpdateOfData(false);
+
 
                         // refresh map
-                        if (MainApplication.getCurrentActivity() instanceof MapActivity) {
-                            performGetMapPreview();
-                        }
+                        if (!mAmbientMode || mJustEnteredToAmbient)
+                            if (MainApplication.getCurrentActivity() instanceof MapActivity) {
+                                performGetMapPreview();
+                            }
+
+                        refreshSleep = calculateRefreshSleep();
+
                     }
                 } catch (Exception e) {
                     Logger.logE(TAG, "startRefresher()", e);
                 }
             }
-        };
+
+            }
 
         // prepare and start refresher
-        mRefresher = new Thread(mChecker);
+        mRefresher = new ThreadChecker();
         mRefresher.setPriority(Thread.MIN_PRIORITY);
         mRefresher.start();
     }
@@ -278,7 +350,7 @@ public class DeviceCommunication implements
                     mDataContainer.mergeContainer(new DataContainer(event.getData()));
 
                     // request new periodic updates now
-                    performUpdateOfData(false);
+                    //performUpdateOfData(false);
                     break;
                 case Const.PATH_LOADED_PERIODIC_UPDATE:
                     // get loaded data
@@ -296,7 +368,6 @@ public class DeviceCommunication implements
                     return;
             }
 
-            // refresh main layout
             refreshLayout();
         } catch (IOException e) {
             Logger.logE(TAG, "handleNewData(" + event + ")", e);
@@ -324,10 +395,16 @@ public class DeviceCommunication implements
             return;
         }
 
+        Log.d(TAG, "performGetMapPreview last MapZoomLevel: " + getLastUpdate().getMapZoomLevel());
+
         // generate path (set zero coordinates to get always centered map)
         String path = Const.PATH_GET_MAP_PREVIEW;
         path += 0.0 + "/" + 0.0 + "/";
-        path += getLastUpdate().getMapZoomLevel() + "/";
+        if (act != null)
+            path += ((MapActivity) act).zoomLevel + "/";
+        else
+            path += getLastUpdate().getMapZoomLevel() + "/";
+
         path += (width * 2) + "/" + (height * 2) + "/";
 
         // finally send message with request
@@ -436,6 +513,15 @@ public class DeviceCommunication implements
     }
 
 	// MESSAGE SENDER
+
+	public void setLongRefreshPeriod( boolean value )
+    {
+        if (value)
+            sleepOnAmbient = INTERVAL_MINUTE;
+        else
+            sleepOnAmbient = INTERVAL_10SECS;
+
+    }
 
 	private class MessageSender {
 

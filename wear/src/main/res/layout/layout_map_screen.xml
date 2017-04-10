@@ -4,22 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black">
 
     <ImageView
         android:id="@+id/image_view_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"
+        />
 
-    <LinearLayout
+/*    <LinearLayout
         android:id="@+id/linear_layout_panel_navigation"
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:background="@color/panel_map_side"
         android:orientation="vertical"
-        android:gravity="right|center_vertical">
+        android:gravity="right|center_vertical"
+        android:visibility="invisible"
+        >
 
         <View
             android:layout_width="match_parent"
@@ -67,6 +71,21 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-    </LinearLayout>
+    </LinearLayout> */
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_map_zoomlevel"
+        android:gravity="top|right"
+        android:layout_gravity="top|right" />
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView_map_distguide"
+        android:gravity="top|right"
+        android:layout_gravity="top|center" />
 
 </FrameLayout>

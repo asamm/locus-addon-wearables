@@ -1,0 +1,25 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- These settings headers are only used on tablets. -->
+
+    <header
+        android:fragment="com.asamm.locus.addon.wearables.gui.SettingsActivity$AmbientPreferenceFragment"
+        android:icon="@drawable/ic_sleep_40"
+        android:title="@string/pref_header_ambient_mode" />
+
+    <header
+        android:fragment="com.asamm.locus.addon.wearables.gui.SettingsActivity$AlarmPreferenceFragment"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="@string/pref_header_alarms" />
+
+    <header
+        android:fragment="com.asamm.locus.addon.wearables.gui.SettingsActivity$MapScreenPreferenceFragment"
+        android:icon="@drawable/ic_map_40"
+        android:title="@string/pref_header_map_screen" />
+
+    <header
+        android:fragment="com.asamm.locus.addon.wearables.gui.SettingsActivity$RecScreenPreferenceFragment"
+        android:icon="@drawable/ic_track_record_40"
+        android:title="@string/pref_header_rec_screen" />
+
+</preference-headers>

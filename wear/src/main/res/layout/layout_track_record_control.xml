@@ -1,91 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.wearable.view.BoxInsetLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:background="@color/black"
+    android:padding="0dp"
+    android:id="@+id/box_inset_layout_control">
 
-    <LinearLayout
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/image_view_watch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_watch" />
+
+            <ImageView
+                android:id="@+id/image_view_phone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_phone" />
 
             <TextView
                 style="@style/TextViewDashboardTitle"
-                android:id="@+id/text_view_title_01"
-                android:gravity="right|center_vertical"
-                android:paddingRight="16dp"/>
+                android:id="@+id/text_view_battery_level_info"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text=""
+                android:textColor="@color/white"
+                />
 
-            <TextView
-                style="@style/TextViewDashboardValue"
-                android:id="@+id/text_view_info_01" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
+            android:layout_weight="0"
+            android:gravity="center">
             <TextView
                 style="@style/TextViewDashboardTitle"
-                android:id="@+id/text_view_title_02"
-                android:gravity="left|center_vertical"
-                android:paddingLeft="16dp" />
-
+                android:id="@+id/text_view_battery_level_watch"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="%"
+                android:textColor="@color/white"
+                />
             <TextView
-                style="@style/TextViewDashboardValue"
-                android:id="@+id/text_view_info_02" />
-        </LinearLayout>
+                style="@style/TextViewDashboardTitle"
+                android:id="@+id/text_view_battery_level_phone"
+                android:textSize="20sp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="%"
+                android:textColor="@color/white"
+                />
+            <ImageView
+                android:id="@+id/image_view_battery"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/ic_battery" />
 
-    </LinearLayout>
+        </TableRow>
 
-    <LinearLayout
-        android:id="@+id/linear_layout_track_rec_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/track_rec_btn_size"
-        android:orientation="horizontal"
-        android:gravity="center">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center">
 
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_stop"
-            android:src="@drawable/ic_96_track_recording_stop" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_pause"
-            android:src="@drawable/ic_96_track_recording_pause" />
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_stop"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_stop" />
 
-        <ImageButton
-            style="@style/ButtonTrackRecord"
-            android:id="@+id/image_view_track_rec_add_wpt"
-            android:src="@drawable/ic_96_track_recording_add_wpt" />
-    </LinearLayout>
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_pause"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_pause" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/image_view_track_rec_add_wpt"
+                    style="@style/ButtonTrackRecord"
+                    android:src="@drawable/ic_96_track_recording_add_wpt" />
 
-        <TextView
-            style="@style/TextViewDashboardValue"
-            android:id="@+id/text_view_info_03"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_size_huge"/>
 
-    </LinearLayout>
-
-</LinearLayout>
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+</android.support.wearable.view.BoxInsetLayout>

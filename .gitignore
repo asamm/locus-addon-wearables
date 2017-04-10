@@ -39,3 +39,16 @@ captures/
 
 # Keystore files
 *.jks
+
+*.iml
+.gitignore
+.idea/
+.core/
+.DS_Store
+.externalNativeBuild
+*.gradle
+gradlew.bat
+gradlew
+gradle/wrapper/gradle-wrapper.jar
+*.properties
+device/build.gradle

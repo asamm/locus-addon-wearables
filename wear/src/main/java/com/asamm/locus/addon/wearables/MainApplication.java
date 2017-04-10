@@ -1,9 +1,15 @@
 package com.asamm.locus.addon.wearables;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
+import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 
 import com.asamm.locus.addon.wearables.gui.CustomActivity;
+import com.asamm.locus.addon.wearables.gui.MainMenuActivity;
+import com.asamm.locus.addon.wearables.gui.MapActivity;
+import com.asamm.locus.addon.wearables.gui.TrackRecordActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,6 +25,7 @@ public class MainApplication extends Application {
 
     // tag for logger
     private static final String TAG = "MainApplication";
+    private static CustomActivity m_LastActivity;
 
     @Override
     public void onCreate() {
@@ -89,22 +96,45 @@ public class MainApplication extends Application {
         DeviceCommunication.getInstance().checkConnection(act);
     }
 
+
+    public static void activityOnDestroyed( Activity act) {
+        m_LastActivity = null;
+    }
     /**
      * Called when activity move to "onResume" state.
      * @param act current activity
      */
     public static void activityOnResume(CustomActivity act) {
         // set current activity
+        Log.d(TAG, "activityOnResume old " + getCurrentActivity());
+        Log.d(TAG, "activityOnResume new " + act);
+        Log.d(TAG, "activityOnResume last " + m_LastActivity);
+        if ( !(act instanceof MainMenuActivity) )
+            m_LastActivity = act;
         CustomActivity oldAct = getCurrentActivity();
         if (oldAct == null || oldAct == act) {
             // just set current activity, for sure
             setCurrentActivity(act);
+            Log.d(TAG, "activityOnResume: 1");
+            if ( m_LastActivity instanceof MapActivity || m_LastActivity instanceof TrackRecordActivity )
+            {
+                Log.d(TAG, "activityOnResume: 2");
+                Intent intent;
+                if ( m_LastActivity instanceof TrackRecordActivity)
+                  intent = new Intent(act, TrackRecordActivity.class);
+                else
+                  intent = new Intent(act, MapActivity.class);
+
+                act.startActivity(intent);
+            }
+
         } else {
             // check state of old custom activity
             if (oldAct.getCurrentState() == CustomActivity.State.ON_START ||
                     oldAct.getCurrentState() == CustomActivity.State.ON_PAUSE ||
                     oldAct.getCurrentState() == CustomActivity.State.ON_STOP) {
                 setCurrentActivity(act);
+                Log.d(TAG, "activityOnResume: 2");
             }
         }
     }
