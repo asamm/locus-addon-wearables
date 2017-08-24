@@ -58,7 +58,7 @@ android {
 
 dependencies {
     // get locus API
-    compile 'com.asamm:locus-api-android:0.2.6'
+    compile 'com.asamm:locus-api-android:0.2.10'
 
     // attach wear container
     wearApp project(':addon-wearables:wear')
@@ -68,6 +68,4 @@ dependencies {
     compile 'com.google.android.gms:play-services-wearable:9.6.0'
     provided 'com.google.android.wearable:wearable:1.0.0'
 
-    compile 'com.google.android.gms:play-services:9.6.0@aar'
-    compile 'com.android.support:support-v4:24.2.1'
 }

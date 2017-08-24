@@ -58,7 +58,7 @@ android {
 
 dependencies {
     // get locus API
-    compile 'com.asamm:locus-api-android:0.2.6'
+    compile 'com.asamm:locus-api-android:0.2.10'
 
     // add Google stuff
     compile 'com.google.android.support:wearable:1.4.0'
