@@ -12,7 +12,8 @@ import com.asamm.locus.addon.wearables.utils.DataContainer;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.UtilsFormat;
-import locus.api.objects.extra.ExtraData;
+
+import locus.api.objects.enums.PointRteAction;
 import locus.api.utils.Logger;
 
 /**
@@ -131,7 +132,7 @@ public class MapActivity extends CustomActivity {
         UpdateContainer.GuideTypeTrack navInfo = lastUpdate.getGuideTypeTrack();
 
         // action for current point
-        int action1 = navInfo.getNavPoint1Action();
+        PointRteAction action1 = navInfo.getNavPoint1Action();
         int img1 = getNavPointImageRes(action1);
         if (img1 != -1) {
             mIvNavPanelMiddle.setImageResource(img1);
@@ -140,7 +141,7 @@ public class MapActivity extends CustomActivity {
         }
 
         // action for next point
-        int action2 = navInfo.getNavPoint2Action();
+        PointRteAction action2 = navInfo.getNavPoint2Action();
         int img2 = getNavPointImageRes(action2);
         if (img2 != -1) {
             mIvNavPanelTop.setImageResource(img2);
@@ -160,69 +161,69 @@ public class MapActivity extends CustomActivity {
      * @param action navigation point action
      * @return reference to resource image
      */
-    private static int getNavPointImageRes(int action) {
+    private static int getNavPointImageRes(PointRteAction action) {
         switch (action) {
-            case ExtraData.VALUE_RTE_ACTION_CONTINUE_STRAIGHT:
+            case CONTINUE_STRAIGHT:
                 return R.drawable.ic_direction_straight;
-            case ExtraData.VALUE_RTE_ACTION_LEFT_SLIGHT:
+            case LEFT_SLIGHT:
                 return R.drawable.ic_direction_left1;
-            case ExtraData.VALUE_RTE_ACTION_LEFT:
+            case LEFT:
                 return R.drawable.ic_direction_left2;
-            case ExtraData.VALUE_RTE_ACTION_LEFT_SHARP:
+            case LEFT_SHARP:
                 return R.drawable.ic_direction_left3;
-            case ExtraData.VALUE_RTE_ACTION_RIGHT_SLIGHT:
+            case RIGHT_SLIGHT:
                 return R.drawable.ic_direction_right1;
-            case ExtraData.VALUE_RTE_ACTION_RIGHT:
+            case RIGHT:
                 return R.drawable.ic_direction_right2;
-            case ExtraData.VALUE_RTE_ACTION_RIGHT_SHARP:
+            case RIGHT_SHARP:
                 return R.drawable.ic_direction_right3;
-            case ExtraData.VALUE_RTE_ACTION_STAY_LEFT:
+            case STAY_LEFT:
                 return R.drawable.ic_direction_stay_left;
-            case ExtraData.VALUE_RTE_ACTION_STAY_RIGHT:
+            case STAY_RIGHT:
                 return R.drawable.ic_direction_stay_right;
-            case ExtraData.VALUE_RTE_ACTION_STAY_STRAIGHT:
+            case STAY_STRAIGHT:
                 return R.drawable.ic_direction_straight;
-            case ExtraData.VALUE_RTE_ACTION_U_TURN:
-            case ExtraData.VALUE_RTE_ACTION_U_TURN_LEFT:
-            case ExtraData.VALUE_RTE_ACTION_U_TURN_RIGHT:
+            case U_TURN:
+            case U_TURN_LEFT:
+            case U_TURN_RIGHT:
                 return R.drawable.ic_direction_turnaround;
-            case ExtraData.VALUE_RTE_ACTION_EXIT_LEFT:
+            case EXIT_LEFT:
                 return R.drawable.ic_direction_exit_left;
-            case ExtraData.VALUE_RTE_ACTION_EXIT_RIGHT:
+            case EXIT_RIGHT:
                 return R.drawable.ic_direction_exit_right;
-            case ExtraData.VALUE_RTE_ACTION_RAMP_ON_LEFT:
+            case RAMP_ON_LEFT:
                 return R.drawable.ic_direction_left1;
-            case ExtraData.VALUE_RTE_ACTION_RAMP_ON_RIGHT:
+            case RAMP_ON_RIGHT:
                 return R.drawable.ic_direction_right1;
-            case ExtraData.VALUE_RTE_ACTION_RAMP_STRAIGHT:
+            case RAMP_STRAIGHT:
                 return R.drawable.ic_direction_straight;
-            case ExtraData.VALUE_RTE_ACTION_MERGE_LEFT:
+            case MERGE_LEFT:
                 return R.drawable.ic_direction_merge_left;
-            case ExtraData.VALUE_RTE_ACTION_MERGE_RIGHT:
+            case MERGE_RIGHT:
                 return R.drawable.ic_direction_merge_right;
-            case ExtraData.VALUE_RTE_ACTION_MERGE:
+            case MERGE:
                 return R.drawable.ic_direction_straight;
-            case ExtraData.VALUE_RTE_ACTION_ARRIVE_DEST:
-            case ExtraData.VALUE_RTE_ACTION_ARRIVE_DEST_LEFT:
-            case ExtraData.VALUE_RTE_ACTION_ARRIVE_DEST_RIGHT:
+            case ARRIVE_DEST:
+            case ARRIVE_DEST_LEFT:
+            case ARRIVE_DEST_RIGHT:
                 return R.drawable.ic_direction_finnish;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_1:
+            case ROUNDABOUT_EXIT_1:
                 return R.drawable.ic_direction_roundabout_1;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_2:
+            case ROUNDABOUT_EXIT_2:
                 return R.drawable.ic_direction_roundabout_2;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_3:
+            case ROUNDABOUT_EXIT_3:
                 return R.drawable.ic_direction_roundabout_3;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_4:
+            case ROUNDABOUT_EXIT_4:
                 return R.drawable.ic_direction_roundabout_4;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_5:
+            case ROUNDABOUT_EXIT_5:
                 return R.drawable.ic_direction_roundabout_5;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_6:
+            case ROUNDABOUT_EXIT_6:
                 return R.drawable.ic_direction_roundabout_6;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_7:
+            case ROUNDABOUT_EXIT_7:
                 return R.drawable.ic_direction_roundabout_7;
-            case ExtraData.VALUE_RTE_ACTION_ROUNDABOUT_EXIT_8:
+            case ROUNDABOUT_EXIT_8:
                 return R.drawable.ic_direction_roundabout_8;
-            case ExtraData.VALUE_RTE_ACTION_PASS_PLACE:
+            case PASS_PLACE:
                 return R.drawable.ic_direction_finnish;
             default:
                 return -1;

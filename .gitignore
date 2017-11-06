@@ -39,3 +39,6 @@ captures/
 
 # Keystore files
 *.jks
+
+#idea files
+.idea/

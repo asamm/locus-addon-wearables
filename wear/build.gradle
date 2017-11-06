@@ -5,11 +5,11 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-        versionCode 2
-        versionName "0.2"
+        versionCode 3
+        versionName "0.3"
 
-        minSdkVersion 20
-        targetSdkVersion 24
+        minSdkVersion 23
+        targetSdkVersion 26
     }
 
     packagingOptions {
@@ -58,10 +58,9 @@ android {
 
 dependencies {
     // get locus API
-    compile 'com.asamm:locus-api-android:0.2.10'
+    implementation lib.locus_api_android
 
     // add Google stuff
-    compile 'com.google.android.support:wearable:1.4.0'
-    compile 'com.google.android.gms:play-services-wearable:9.6.0'
-    provided 'com.google.android.wearable:wearable:1.0.0'
+    implementation lib.support_wearable
+    implementation 'com.google.android.gms:play-services-wearable:11.4.2'
 }
