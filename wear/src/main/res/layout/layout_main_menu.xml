@@ -18,12 +18,12 @@
 
         <ImageButton
             style="@style/ButtonMainMenu"
-            android:id="@+id/button_main_menu_01"
+            android:id="@+id/button_main_menu_01_map"
             android:src="@drawable/ic_map_black"/>
 
         <ImageButton
             style="@style/ButtonMainMenu"
-            android:id="@+id/button_main_menu_02"
+            android:id="@+id/button_main_menu_02_track"
             android:src="@drawable/ic_track_record_alt"/>
 
     </LinearLayout>

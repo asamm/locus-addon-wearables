@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.DelayedConfirmationView;
 import android.view.LayoutInflater;
@@ -39,6 +40,9 @@ public abstract class CustomActivity extends WearableActivity {
         ON_STOP,
         ON_DESTROY
     }
+
+    /** Key for preference storing simple name of the last active activity */
+    public static final String PREF_LAST_ACTIVITY = "PREF_LAST_ACTIVITY";
 
     // inflater for fast layout load
     private LayoutInflater mInflater;
@@ -137,6 +141,13 @@ public abstract class CustomActivity extends WearableActivity {
 
         // register activity
         MainApplication.activityOnStop(this);
+
+        if (isSavedActivity()) {
+            // persist which activity was opened last
+            PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putString(CustomActivity.PREF_LAST_ACTIVITY, this.getClass().getSimpleName())
+                    .commit();
+        }
     }
 
     @Override
@@ -325,6 +336,11 @@ public abstract class CustomActivity extends WearableActivity {
      */
     public abstract void refreshLayout();
 
+    /**
+     * @return whether activity should save that it was last opened activity to be reopened
+     *         after possible application restart.
+     */
+    public boolean isSavedActivity() {return true;}
     /**************************************************/
     // INFO SCREEN
     /**************************************************/

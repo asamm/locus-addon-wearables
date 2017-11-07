@@ -142,6 +142,8 @@ public class MainApplication extends Application {
 
     // reference to current activity
     private static CustomActivity mCurrentActivity;
+// TODO cejnar currently not used, delete if not used for activity saving/restoring
+    private static boolean mIsLastActivityNull = true;
 
     // timer for termination
     private static Timer mTimerTerminate;
@@ -175,7 +177,6 @@ public class MainApplication extends Application {
             mTimerTerminate.cancel();
             mTimerTerminate = null;
         }
-
         // register activity
         if (mCurrentActivity == null && act != null) {
             Logger.logW(TAG, " - application restored");
@@ -200,6 +201,11 @@ public class MainApplication extends Application {
             mTimerTerminate.schedule(terminateTask,
                     TimeUnit.SECONDS.toMillis(10));
         }
+        mIsLastActivityNull = mCurrentActivity == null;
         mCurrentActivity = act;
+    }
+
+    public static boolean isLastAcitivityNull() {
+        return mIsLastActivityNull;
     }
 }

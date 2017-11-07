@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import com.asamm.locus.addon.wearables.DeviceCommunication;
 import com.asamm.locus.addon.wearables.R;
 import com.asamm.locus.addon.wearables.gui.custom.InfoPanel;
+import com.asamm.locus.addon.wearables.gui.dispatch.ActivityDispatchFactory;
 import com.assam.locus.addon.wearables.common.Const;
 import com.assam.locus.addon.wearables.common.DataContainer;
 
@@ -29,8 +30,11 @@ public class MainMenuActivity extends CustomActivity {
     @Override
     public void onStart() {
         super.onStart();
-
-        // display loading system
+        /*
+        Intent i = ActivityDispatchFactory.createFromSavedState(this);
+        if (MainApplication.isLastAcitivityNull() && i != null) {
+            // TODO cejnar start stored activity, not working properly yet
+        } */
         displayLoadingFragment();
     }
 
@@ -109,7 +113,7 @@ public class MainMenuActivity extends CustomActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             // inflate layout
             View view = inflater.inflate(R.layout.layout_info_panel, container, false);
 
@@ -226,17 +230,13 @@ public class MainMenuActivity extends CustomActivity {
             View view = inflater.inflate(R.layout.layout_main_menu, container, false);
 
             // get reference to buttons
-            ibMenu01 = (ImageButton)
-                    view.findViewById(R.id.button_main_menu_01);
+            ibMenu01 = view.findViewById(R.id.button_main_menu_01_map);
             ibMenu01.setOnClickListener(this);
-            ibMenu02 = (ImageButton)
-                    view.findViewById(R.id.button_main_menu_02);
+            ibMenu02 = view.findViewById(R.id.button_main_menu_02_track);
             ibMenu02.setOnClickListener(this);
-            ibMenu03 = (ImageButton)
-                    view.findViewById(R.id.button_main_menu_03);
+            ibMenu03 = view.findViewById(R.id.button_main_menu_03);
             ibMenu03.setOnClickListener(this);
-            ibMenu04 = (ImageButton)
-                    view.findViewById(R.id.button_main_menu_04);
+            ibMenu04 = view.findViewById(R.id.button_main_menu_04);
             ibMenu04.setOnClickListener(this);
 
             // return inflated view
@@ -245,16 +245,9 @@ public class MainMenuActivity extends CustomActivity {
 
         @Override
         public void onClick(View v) {
-            if (v == ibMenu01) {
-                Intent intent = new Intent(act, MapActivity.class);
-                startActivity(intent);
-            } else if (v == ibMenu02) {
-                Intent intent = new Intent(act, TrackRecordActivity.class);
-                startActivity(intent);
-            } else if (v == ibMenu03) {
-                // TODO: 17/09/15 not yet implemented
-            } else if (v == ibMenu04) {
-                // TODO: 17/09/15 not yet implemented
+            Intent i = ActivityDispatchFactory.createForMainMenuButton(getContext(), v.getId());
+            if (i != null) {
+                startActivity(i);
             }
         }
     }
