@@ -25,8 +25,9 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".gui.MainMenuActivity"
-            android:launchMode="singleInstance"
+            android:name=".gui.MainMenuActivityOld"
+            android:launchMode="standard"
+            android:alwaysRetainTaskState="true"
             android:configChanges="orientation|keyboardHidden" >
 
             <intent-filter>
@@ -36,13 +37,13 @@
         </activity>
 
         <activity
-            android:name=".gui.MapActivity"
-            android:launchMode="singleInstance"
+            android:name=".gui.MapActivityOld"
+            android:launchMode="standard"
             android:configChanges="orientation|keyboardHidden" />
 
         <activity
             android:name=".gui.TrackRecordActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="standard"
             android:configChanges="orientation|keyboardHidden" />
 
         <!-- register service for events -->
@@ -57,6 +58,14 @@
                     android:host="*"
                     android:pathPrefix="/locus_map/wearable" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data android:scheme="wear"
+                    android:host="*"
+                    android:pathPrefix="/locus_map/wearable" />
+            </intent-filter>
+
         </service>
     </application>
 

@@ -5,7 +5,7 @@
     android:id="@+id/boxInsetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".gui.MainMenuActivity"
+    tools:context=".gui.MainMenuActivityOld"
     tools:deviceIds="wear">
 
     <TextView

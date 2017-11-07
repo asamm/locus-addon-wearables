@@ -20,7 +20,7 @@ import locus.api.utils.Logger;
  * Created by menion on 16/08/15.
  * Asamm Software, s. r. o.
  */
-public class MapActivity extends CustomActivity {
+public class MapActivityOld extends CustomActivityOld {
 
     // reference to map view
     private ImageView mMapView;

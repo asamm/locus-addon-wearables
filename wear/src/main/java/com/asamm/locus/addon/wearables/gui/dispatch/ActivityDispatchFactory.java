@@ -6,8 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.asamm.locus.addon.wearables.R;
-import com.asamm.locus.addon.wearables.gui.CustomActivity;
-import com.asamm.locus.addon.wearables.gui.MapActivity;
+import com.asamm.locus.addon.wearables.gui.CustomActivityOld;
+import com.asamm.locus.addon.wearables.gui.MapActivityOld;
 import com.asamm.locus.addon.wearables.gui.TrackRecordActivity;
 
 /**
@@ -34,7 +34,7 @@ public class ActivityDispatchFactory {
         final String activityNameSimple;
         switch (buttonId) {
             case R.id.button_main_menu_01_map:
-                activityNameSimple = MapActivity.class.getSimpleName();
+                activityNameSimple = MapActivityOld.class.getSimpleName();
                 break;
             case R.id.button_main_menu_02_track:
                 activityNameSimple = TrackRecordActivity.class.getSimpleName();
@@ -55,7 +55,7 @@ public class ActivityDispatchFactory {
      */
     public static Intent createFromSavedState(Context c) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
-        String savedState = p.getString(CustomActivity.PREF_LAST_ACTIVITY, "");
+        String savedState = p.getString(CustomActivityOld.PREF_LAST_ACTIVITY, "");
         return createIntentFromActivityName(c, savedState);
     }
 
@@ -63,8 +63,8 @@ public class ActivityDispatchFactory {
         final Class<?> activity;
         if (TrackRecordActivity.class.getSimpleName().equals(activityNameSimple)) {
             activity = TrackRecordActivity.class;
-        } else if (MapActivity.class.getSimpleName().equals(activityNameSimple)) {
-            activity = MapActivity.class;
+        } else if (MapActivityOld.class.getSimpleName().equals(activityNameSimple)) {
+            activity = MapActivityOld.class;
         } else {
             activity = null;
         }

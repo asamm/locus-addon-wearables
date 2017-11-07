@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 
 import com.assam.locus.addon.wearables.common.Const;
 import com.assam.locus.addon.wearables.common.DataContainer;
-import com.asamm.locus.addon.wearables.gui.CustomActivity;
-import com.asamm.locus.addon.wearables.gui.MapActivity;
+import com.asamm.locus.addon.wearables.gui.CustomActivityOld;
+import com.asamm.locus.addon.wearables.gui.MapActivityOld;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -27,25 +27,25 @@ import locus.api.utils.Logger;
  * Created by menion on 07/08/15.
  * Asamm Software, s. r. o.
  */
-public class DeviceCommunication implements
+public class DeviceCommunicationOld implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     // tag for logger
-    private static final String TAG = DeviceCommunication.class.getSimpleName();
+    private static final String TAG = DeviceCommunicationOld.class.getSimpleName();
 
     // stored singleton
-    private static DeviceCommunication mInstance;
+    private static DeviceCommunicationOld mInstance;
 
-    static void initialize(MainApplication app) {
+    static void initialize(MainApplicationOld app) {
         destroyInstance();
-        mInstance = new DeviceCommunication(app);
+        mInstance = new DeviceCommunicationOld(app);
     }
 
     /**
      * Get current instance if exists. Do not create a new if do not exists.
      * @return instance of deviceCommunication or 'null' if not exists
      */
-    public static DeviceCommunication getInstance() {
+    public static DeviceCommunicationOld getInstance() {
         return mInstance;
     }
 
@@ -81,8 +81,8 @@ public class DeviceCommunication implements
     /**
      * Default constructor.
      */
-    private DeviceCommunication(MainApplication app) {
-        Logger.logD(TAG, "DeviceCommunication(" + app + ")");
+    private DeviceCommunicationOld(MainApplicationOld app) {
+        Logger.logD(TAG, "DeviceCommunicationOld(" + app + ")");
         mGoogleApiClient = new GoogleApiClient.Builder(app).
                 addApi(Wearable.API).
                 addConnectionCallbacks(this).
@@ -143,7 +143,7 @@ public class DeviceCommunication implements
                         performUpdateOfData(reloadBase);
 
                         // refresh map
-                        if (MainApplication.getCurrentActivity() instanceof MapActivity) {
+                        if (MainApplicationOld.getCurrentActivity() instanceof MapActivityOld) {
                             performGetMapPreview();
                         }
                     }
@@ -165,7 +165,7 @@ public class DeviceCommunication implements
      * Called when screen is started.
      * @param act started activity
      */
-	void checkConnection(CustomActivity act) {
+	void checkConnection(CustomActivityOld act) {
         Logger.logD(TAG, "checkConnection(" + act + "), " +
                 "connected:" + mGoogleApiClient.isConnected() + ", " +
                 "connecting:" + mGoogleApiClient.isConnecting() + ", " +
@@ -226,7 +226,7 @@ public class DeviceCommunication implements
      * Refresh layout of activity.
      */
     private void refreshLayout() {
-        CustomActivity act = MainApplication.getCurrentActivity();
+        CustomActivityOld act = MainApplicationOld.getCurrentActivity();
         if (act != null && !act.isFinishing()) {
             act.refreshLayout();
         }
@@ -315,7 +315,7 @@ public class DeviceCommunication implements
         }
 
         // check existence of activity
-        CustomActivity act = MainApplication.getCurrentActivity();
+        CustomActivityOld act = MainApplicationOld.getCurrentActivity();
         int width  = act.getWindow().getDecorView().getWidth();
         int height = act.getWindow().getDecorView().getHeight();
         if (width <= 0 || height <= 0) {
@@ -487,7 +487,7 @@ public class DeviceCommunication implements
 			}
 
 			// check activity
-			if (!MainApplication.existCurrentActivity() && !mDisconnectAfterSend) {
+			if (!MainApplicationOld.existCurrentActivity() && !mDisconnectAfterSend) {
 				Logger.logD(TAG, "handleMessagesQueue(), " +
 						"activity not attached");
 				return;

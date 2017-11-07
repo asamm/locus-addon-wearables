@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wearables;
 
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
@@ -15,12 +17,23 @@ public class WearListenerService extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 //        Logger.logW(TAG, "onMessageReceived(" + messageEvent.getPath() + "), " +
-//                "comm:" + DeviceCommunication.getInstance());
+//                "comm:" + DeviceCommunicationOld.getInstance());
 
         // let device handle it
-        DeviceCommunication comm = DeviceCommunication.getInstance();
+        DeviceCommunicationOld comm = DeviceCommunicationOld.getInstance();
         if (comm != null) {
             comm.handleNewData(messageEvent);
+        }
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEventBuffer) {
+        for (DataEvent event : dataEventBuffer) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                handleDataEvent(event);
+            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+                // DataItem deleted
+            }
         }
     }
 }

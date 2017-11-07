@@ -30,7 +30,7 @@ import locus.api.objects.extra.TrackStats;
  * Created by menion on 15/08/15.
  * Asamm Software, s. r. o.
  */
-public class TrackRecordActivity extends CustomActivity {
+public class TrackRecordActivity extends CustomActivityOld {
 
     // tag for logger
     private static final String TAG = "TrackRecordActivity";

@@ -15,8 +15,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.asamm.locus.addon.wearables.DeviceCommunication;
-import com.asamm.locus.addon.wearables.MainApplication;
+import com.asamm.locus.addon.wearables.DeviceCommunicationOld;
+import com.asamm.locus.addon.wearables.MainApplicationOld;
 import com.asamm.locus.addon.wearables.R;
 import com.asamm.locus.addon.wearables.gui.custom.InfoPanel;
 
@@ -26,10 +26,10 @@ import locus.api.utils.Logger;
  * Created by menion on 12/08/15.
  * Asamm Software, s. r. o.
  */
-public abstract class CustomActivity extends WearableActivity {
+public abstract class CustomActivityOld extends WearableActivity {
 
     // tag for logger
-    private static final String TAG = CustomActivity.class.getSimpleName();
+    private static final String TAG = CustomActivityOld.class.getSimpleName();
 
     // current activity state
     public enum State {
@@ -47,7 +47,7 @@ public abstract class CustomActivity extends WearableActivity {
     // inflater for fast layout load
     private LayoutInflater mInflater;
     // channel for communication
-    private DeviceCommunication mComm;
+    private DeviceCommunicationOld mComm;
 
     // main layout
     public FrameLayout mContainer;
@@ -67,7 +67,7 @@ public abstract class CustomActivity extends WearableActivity {
         mCurrentState = State.ON_CREATE;
 
         // register activity
-        MainApplication.activityOnCreate(this);
+        MainApplicationOld.activityOnCreate(this);
 
         // generate main views
         mContainer = (FrameLayout)
@@ -80,7 +80,7 @@ public abstract class CustomActivity extends WearableActivity {
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         // get instance of communicator
-        mComm = DeviceCommunication.getInstance();
+        mComm = DeviceCommunicationOld.getInstance();
 
         // check
         if (checkIfDeviceReady()) {
@@ -100,11 +100,11 @@ public abstract class CustomActivity extends WearableActivity {
         mCurrentState = State.ON_START;
 
         // register activity
-        MainApplication.activityOnStart(this);
+        MainApplicationOld.activityOnStart(this);
 
         // get instance of communicator (get it once more if instance was not yet
         // ready during onCreate)
-        mComm = DeviceCommunication.getInstance();
+        mComm = DeviceCommunicationOld.getInstance();
 
         // check
         if (checkIfDeviceReady()) {
@@ -120,7 +120,7 @@ public abstract class CustomActivity extends WearableActivity {
         mCurrentState = State.ON_RESUME;
 
         // register activity
-        MainApplication.activityOnResume(this);
+        MainApplicationOld.activityOnResume(this);
     }
 
     @Override
@@ -140,12 +140,12 @@ public abstract class CustomActivity extends WearableActivity {
         mCurrentState = State.ON_STOP;
 
         // register activity
-        MainApplication.activityOnStop(this);
+        MainApplicationOld.activityOnStop(this);
 
         if (isSavedActivity()) {
             // persist which activity was opened last
             PreferenceManager.getDefaultSharedPreferences(this).edit()
-                    .putString(CustomActivity.PREF_LAST_ACTIVITY, this.getClass().getSimpleName())
+                    .putString(CustomActivityOld.PREF_LAST_ACTIVITY, this.getClass().getSimpleName())
                     .commit();
         }
     }
@@ -207,7 +207,7 @@ public abstract class CustomActivity extends WearableActivity {
      * Get instance of device communication class.
      * @return device communication class
      */
-    public DeviceCommunication getDeviceComm() {
+    public DeviceCommunicationOld getDeviceComm() {
         return mComm;
     }
 
@@ -277,12 +277,12 @@ public abstract class CustomActivity extends WearableActivity {
     public static abstract class AFragmentBase extends Fragment {
 
         // current parent activity
-        CustomActivity act;
+        CustomActivityOld act;
 
         @Override
         public void onAttach(Activity act) {
             super.onAttach(act);
-            this.act = (CustomActivity) act;
+            this.act = (CustomActivityOld) act;
         }
     }
 
