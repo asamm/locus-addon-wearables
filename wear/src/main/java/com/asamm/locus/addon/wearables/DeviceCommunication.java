@@ -3,10 +3,10 @@ package com.asamm.locus.addon.wearables;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.assam.locus.addon.wearables.common.Const;
+import com.assam.locus.addon.wearables.common.DataContainer;
 import com.asamm.locus.addon.wearables.gui.CustomActivity;
 import com.asamm.locus.addon.wearables.gui.MapActivity;
-import com.asamm.locus.addon.wearables.utils.Const;
-import com.asamm.locus.addon.wearables.utils.DataContainer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;

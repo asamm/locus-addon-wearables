@@ -12,8 +12,8 @@ import android.widget.LinearLayout;
 import com.asamm.locus.addon.wearables.DeviceCommunication;
 import com.asamm.locus.addon.wearables.R;
 import com.asamm.locus.addon.wearables.gui.custom.InfoPanel;
-import com.asamm.locus.addon.wearables.utils.DataContainer;
-import com.asamm.locus.addon.wearables.utils.Const;
+import com.assam.locus.addon.wearables.common.Const;
+import com.assam.locus.addon.wearables.common.DataContainer;
 
 import locus.api.utils.Logger;
 

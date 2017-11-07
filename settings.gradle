@@ -1,2 +1,1 @@
- include ':device'
- include ':wear'
+ include ':common', ':device', ':wear'

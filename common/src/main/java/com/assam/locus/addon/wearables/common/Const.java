@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wearables.utils;
+package com.assam.locus.addon.wearables.common;
 
 /**
  * Created by menion on 07/08/15.

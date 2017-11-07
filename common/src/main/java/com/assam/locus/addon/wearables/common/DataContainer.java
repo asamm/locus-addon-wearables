@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wearables.utils;
+package com.assam.locus.addon.wearables.common;
 
 import java.io.IOException;
 import java.util.List;

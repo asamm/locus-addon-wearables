@@ -57,8 +57,8 @@ android {
 }
 
 dependencies {
-    // get locus API
-    implementation lib.locus_api_android
+
+    compile project(path: ':common')
 
     // add Google stuff
     implementation lib.support_wearable

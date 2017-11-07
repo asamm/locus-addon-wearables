@@ -1,6 +1,6 @@
 package com.asamm.locus.addon.wearables;
 
-import com.asamm.locus.addon.wearables.utils.Const;
+import com.assam.locus.addon.wearables.common.Const;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 

@@ -58,8 +58,7 @@ android {
 }
 
 dependencies {
-    // get locus API
-    implementation lib.locus_api_android
+    compile project(path: ':common')
 
     // attach wear container
     wearApp project(':wear')
@@ -67,5 +66,4 @@ dependencies {
     // add google features
     implementation lib.support_wearable
     implementation 'com.google.android.gms:play-services-wearable:11.4.2'
-
 }
