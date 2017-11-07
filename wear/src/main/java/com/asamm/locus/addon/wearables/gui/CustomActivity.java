@@ -207,6 +207,13 @@ public abstract class CustomActivity extends WearableActivity {
     protected void setScreenHeader(CharSequence title) {
         mTvHeader.setText(title);
     }
+    /**
+     * Controls visibility of the top screen header
+     * @param visibility visibility to set
+     */
+    protected void setHeaderVisibility(int visibility) {
+        mTvHeader.setVisibility(visibility);
+    }
 
     /**
      * Check if system is ready, if not return to main menu.

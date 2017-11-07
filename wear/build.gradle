@@ -63,4 +63,6 @@ dependencies {
     // add Google stuff
     implementation lib.support_wearable
     implementation 'com.google.android.gms:play-services-wearable:11.4.2'
+    implementation 'com.android.support:wear:26.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 }

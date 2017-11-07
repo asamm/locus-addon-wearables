@@ -44,6 +44,12 @@ public class MapActivity extends CustomActivity {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        setHeaderVisibility(View.GONE);
+    }
+
+    @Override
     public void refreshLayout() {
         // run in UI thread
         runOnUiThread(new Runnable() {
