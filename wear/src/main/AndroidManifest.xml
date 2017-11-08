@@ -1,72 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.asamm.locus.addon.wearables">
 
-    <uses-permission
-        android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-feature
-        android:name="android.hardware.type.watch" />
+    <uses-feature android:name="android.hardware.type.watch" />
 
     <application
+        android:name="com.asamm.locus.addon.wear.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".MainApplication"
-        android:theme="@android:style/Theme.DeviceDefault.Light" >
-
+        android:theme="@android:style/Theme.DeviceDefault.Light">
         <uses-library
             android:name="com.google.android.wearable"
-            android:required="false" />
+            android:required="true" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".gui.MainMenuActivityOld"
-            android:launchMode="standard"
+            android:name="com.asamm.locus.addon.wear.gui.MainMenuActivityOld"
             android:alwaysRetainTaskState="true"
-            android:configChanges="orientation|keyboardHidden" >
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="standard">
+        </activity>
+        <activity
+            android:name="com.asamm.locus.addon.wear.gui.MapActivityOld"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="standard" />
+        <activity
+            android:name="com.asamm.locus.addon.wear.gui.TrackRecordActivityOld"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="standard" />
 
+        <!-- register service for events -->
+        <service android:name="com.asamm.locus.addon.wear.WearListenerService">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+
+                <data
+                    android:host="*"
+                    android:pathPrefix="/locus_map/wearable"
+                    android:scheme="wear" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+
+                <data
+                    android:host="*"
+                    android:pathPrefix="/locus/wear"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+        <!--
+               Set to true if your app is Standalone, that is, it does not require the handheld
+               app to run.
+        -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="true" />
+
+        <activity
+            android:name="com.asamm.locus.addon.wear.gui.TrackRecordActivity"
+            android:label="@string/title_activity_track_record">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".gui.MapActivityOld"
-            android:launchMode="standard"
-            android:configChanges="orientation|keyboardHidden" />
-
-        <activity
-            android:name=".gui.TrackRecordActivity"
-            android:launchMode="standard"
-            android:configChanges="orientation|keyboardHidden" />
-
-        <!-- register service for events -->
-        <service
-            android:name=".WearListenerService">
-
-            <intent-filter>
-                <action
-                    android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data
-                    android:scheme="wear"
-                    android:host="*"
-                    android:pathPrefix="/locus_map/wearable" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
-                <data android:scheme="wear"
-                    android:host="*"
-                    android:pathPrefix="/locus_map/wearable" />
-            </intent-filter>
-
-        </service>
     </application>
 
 </manifest>
