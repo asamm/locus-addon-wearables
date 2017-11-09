@@ -1,5 +1,7 @@
-package com.asamm.locus.addon.wear;
+package com.asamm.locus.addon.wear.communication;
 
+import com.asamm.locus.addon.wear.DeviceCommunicationOld;
+import com.asamm.locus.addon.wear.MainApplication;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;

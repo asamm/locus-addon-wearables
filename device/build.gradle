@@ -65,5 +65,4 @@ dependencies {
 
     // add google features
     implementation lib.support_wearable
-    implementation 'com.google.android.gms:play-services-wearable:11.4.2'
 }

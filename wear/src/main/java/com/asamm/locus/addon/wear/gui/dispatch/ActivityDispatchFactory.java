@@ -20,7 +20,8 @@ import com.asamm.locus.addon.wear.gui.TrackRecordActivityOld;
 
 public class ActivityDispatchFactory {
 
-    private ActivityDispatchFactory() {}
+    private ActivityDispatchFactory() {
+    }
 
     ;
 

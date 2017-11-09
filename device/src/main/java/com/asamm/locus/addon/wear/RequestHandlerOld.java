@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.assam.locus.addon.wear.common.Const;
-import com.assam.locus.addon.wear.common.DataContainer;
+import com.assam.locus.addon.wear.common.communication.Const;
+import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -37,43 +37,6 @@ class RequestHandlerOld implements
 
     // instance of handler
     private static RequestHandlerOld mInstance;
-
-    /**
-     * Get instance of request handler.
-     * @param ctx current context
-     * @return instance of handler
-     */
-    static RequestHandlerOld getInstance(Context ctx) {
-        if (mInstance == null) {
-			synchronized (TAG) {
-				if (mInstance == null) {
-					mInstance = new RequestHandlerOld(ctx);
-				}
-			}
-        }
-        return mInstance;
-    }
-
-    /**
-     * Check if instance of handler exists.
-     * @return {@code true} if exists
-     */
-    static boolean existsInstance() {
-        return mInstance != null;
-    }
-
-    /**
-     * Destroy instance of receiver.
-     * @param ctx current context
-     */
-    static void destroyInstance(Context ctx) {
-		synchronized (TAG) {
-			if (mInstance != null) {
-				mInstance.destroy(ctx);
-			}
-			mInstance = null;
-		}
-    }
 
     /**************************************************/
     // PRIVATE
@@ -109,20 +72,6 @@ class RequestHandlerOld implements
 
         // enable receiver
         PeriodicUpdatesReceiver.enableReceiver(ctx);
-    }
-
-    /**
-     * Destroy current instance.
-     * @param ctx current context
-     */
-    private void destroy(Context ctx) {
-        Logger.logW(TAG, "onDestroy()");
-
-        // destroy GoogleAPIClient class
-        mGoogleApiClient.disconnect();
-
-        // disable receiver
-        PeriodicUpdatesReceiver.disableReceiver(ctx);
     }
 
     /**

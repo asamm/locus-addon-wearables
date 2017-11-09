@@ -15,4 +15,6 @@ android {
 dependencies {
     // get locus API
     api lib.locus_api_android
+    api 'com.google.android.gms:play-services-wearable:11.4.2'
+
 }

@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
-import com.assam.locus.addon.wear.common.DataContainer;
+import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;

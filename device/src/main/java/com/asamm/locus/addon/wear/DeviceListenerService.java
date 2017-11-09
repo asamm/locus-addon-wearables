@@ -2,8 +2,8 @@ package com.asamm.locus.addon.wear;
 
 import android.content.Context;
 
-import com.assam.locus.addon.wear.common.Const;
-import com.assam.locus.addon.wear.common.DataPath;
+import com.assam.locus.addon.wear.common.communication.Const;
+import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -25,21 +25,18 @@ import locus.api.utils.Logger;
 public class DeviceListenerService extends WearableListenerService {
 
     private static final String TAG = DeviceListenerService.class.getSimpleName();
+    /** Timeout in seconds after which communication services are killed
+        and locus periodic update disabled */
+    private static final int INACTVITY_TIMEOUT_SECONDS = 15;
     // timer for termination
     private static Timer mTimerTerminate;
 
-    private interface DataConsumer<T> {
-        void consume(Context c, RequestHandler rh, T newData);
-
-        boolean isTerminateRequest(T newData);
-    }
-
+    /** Messages Consumer */
     private final DataConsumer<MessageEvent> messageConsumer = new DataConsumer<MessageEvent>() {
         @Override
-        public void consume(Context c, RequestHandler rh, MessageEvent newData) {
+        public void consume(Context c, DeviceCommService rh, MessageEvent newData) {
             rh.onMessageReceived(c, newData);
         }
-
         @Override
         public boolean isTerminateRequest(MessageEvent newData) {
             String path = newData.getPath();
@@ -47,9 +44,10 @@ public class DeviceListenerService extends WearableListenerService {
         }
     };
 
+    /** DataEvent consumer */
     private final DataConsumer<DataEvent> dataEventConsumer = new DataConsumer<DataEvent>() {
         @Override
-        public void consume(Context c, RequestHandler rh, DataEvent newData) {
+        public void consume(Context c, DeviceCommService rh, DataEvent newData) {
             rh.onDataChanged(c, newData);
         }
 
@@ -60,6 +58,11 @@ public class DeviceListenerService extends WearableListenerService {
         }
     };
 
+    /**
+     * Message receive callback
+     *
+     * @param messageEvent
+     */
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
         String path = messageEvent.getPath();
@@ -68,6 +71,11 @@ public class DeviceListenerService extends WearableListenerService {
         handleDataChange(messageConsumer, messageEvent);
     }
 
+    /**
+     * DataChanged callback
+     *
+     * @param dataEventBuffer
+     */
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
         for (DataEvent event : dataEventBuffer) {
@@ -80,6 +88,12 @@ public class DeviceListenerService extends WearableListenerService {
         }
     }
 
+    /**
+     * Helper method for data consumption using supplied consumer.
+     * @param dataConsumer
+     * @param newData
+     * @param <T>
+     */
     private <T> void handleDataChange(DataConsumer<T> dataConsumer, T newData) {
         // cancel timer if any message has arrived
         if (mTimerTerminate != null) {
@@ -87,12 +101,12 @@ public class DeviceListenerService extends WearableListenerService {
             mTimerTerminate = null;
         }
 
-        // handle termination request if present, otherwise delegate data handling to RequestHandler
+        // handle termination request if present, otherwise delegate data handling to DeviceCommService
         if (dataConsumer.isTerminateRequest(newData)) {
-            RequestHandler.destroyInstance(this);
+            DeviceCommService.destroyInstance(this);
         } else {
-            if (RequestHandler.getInstance(this).isConnected()) {
-                dataConsumer.consume(this, RequestHandler.getInstance(this), newData);
+            if (DeviceCommService.getInstance(this).isConnected()) {
+                dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
             } else {
                 Logger.logE(TAG, "GAPI client not connected");
             }
@@ -103,10 +117,32 @@ public class DeviceListenerService extends WearableListenerService {
 
                 @Override
                 public void run() {
-                    RequestHandler.destroyInstance(DeviceListenerService.this);
+                    DeviceCommService.destroyInstance(DeviceListenerService.this);
                     mTimerTerminate = null;
                 }
-            }, TimeUnit.SECONDS.toMillis(15));
+            }, TimeUnit.SECONDS.toMillis(INACTVITY_TIMEOUT_SECONDS));
         }
+    }
+
+
+    /** Generic incomming data consumer with ability to detect termination request data before
+     * delegating consumption of the data. */
+    private interface DataConsumer<T> {
+        /**
+         * Processes new incoming data
+         *
+         * @param c context
+         * @param rh comm service which will handle data consumption
+         * @param newData data to consume
+         */
+        void consume(Context c, DeviceCommService rh, T newData);
+
+        /**
+         * Checks incoming data for termination request.
+         *
+         * @param newData data to consume
+         * @return
+         */
+        boolean isTerminateRequest(T newData);
     }
 }

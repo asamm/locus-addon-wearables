@@ -41,7 +41,9 @@ public abstract class CustomActivityOld extends WearableActivity {
         ON_DESTROY
     }
 
-    /** Key for preference storing simple name of the last active activity */
+    /**
+     * Key for preference storing simple name of the last active activity
+     */
     public static final String PREF_LAST_ACTIVITY = "PREF_LAST_ACTIVITY";
 
     // inflater for fast layout load
@@ -67,7 +69,7 @@ public abstract class CustomActivityOld extends WearableActivity {
         mCurrentState = State.ON_CREATE;
 
         // register activity
-        MainApplicationOld.activityOnCreate(this);
+//        MainApplicationOld.activityOnCreate(this);
 
         // generate main views
         mContainer = (FrameLayout)
@@ -197,6 +199,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Get current activity state.
+     *
      * @return current state
      */
     public State getCurrentState() {
@@ -205,6 +208,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Get instance of device communication class.
+     *
      * @return device communication class
      */
     public DeviceCommunicationOld getDeviceComm() {
@@ -213,13 +217,16 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Define screen title.
+     *
      * @param title visible text
      */
     protected void setScreenHeader(CharSequence title) {
         mTvHeader.setText(title);
     }
+
     /**
      * Controls visibility of the top screen header
+     *
      * @param visibility visibility to set
      */
     protected void setHeaderVisibility(int visibility) {
@@ -228,6 +235,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Check if system is ready, if not return to main menu.
+     *
      * @return <code>true</code> if finished
      */
     protected boolean finishIfNotReady() {
@@ -247,6 +255,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Display fragment in main screen container.
+     *
      * @param fragment fragment to display
      */
     public void displayFragment(AFragmentBase fragment) {
@@ -261,6 +270,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Get current attached fragment.
+     *
      * @return attached fragment
      */
     public AFragmentBase getDisplayedFragment() {
@@ -292,6 +302,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Clear current view container and insert new.
+     *
      * @param newLayout new layout resource IS
      * @return inflated layout
      */
@@ -314,6 +325,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Check if container is currently visible.
+     *
      * @param layoutId ID of layout
      * @return <code>true</code> if container is visible
      */
@@ -325,6 +337,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Check if device is ready, otherwise finish current activity.
+     *
      * @return <code>true</code> to perform check
      */
     protected boolean checkIfDeviceReady() {
@@ -338,25 +351,30 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * @return whether activity should save that it was last opened activity to be reopened
-     *         after possible application restart.
+     * after possible application restart.
      */
-    public boolean isSavedActivity() {return true;}
+    public boolean isSavedActivity() {
+        return true;
+    }
     /**************************************************/
     // INFO SCREEN
     /**************************************************/
 
     /**
      * Display basic information screen with content.
+     *
      * @param title title of screen
-     * @param desc optional small description
+     * @param desc  optional small description
      */
     protected void displayScreenInfo(CharSequence title, CharSequence desc) {
         getNewInfoPanel().displayInfo(title, desc);
     }
+
     /**
      * Display basic progress screen with content.
+     *
      * @param title title of screen
-     * @param desc optional small description
+     * @param desc  optional small description
      */
     protected void displayScreenProgress(CharSequence title, CharSequence desc) {
         getNewInfoPanel().displayProgress(title, desc);
@@ -376,12 +394,13 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Display confirmation view in current layout.
-     * @param delay delay for confirmation
-     * @param title title next to button
+     *
+     * @param delay    delay for confirmation
+     * @param title    title next to button
      * @param listener listener for events
      */
     public void displayConfirmationAction(long delay, int title,
-            final DelayedConfirmationView.DelayedConfirmationListener listener) {
+                                          final DelayedConfirmationView.DelayedConfirmationListener listener) {
         // get view and items
         View view = clearContainer(R.layout.layout_confirmation_panel);
 
@@ -416,6 +435,7 @@ public abstract class CustomActivityOld extends WearableActivity {
 
     /**
      * Check if any confirmation action is currently visible.
+     *
      * @return <code>true</code> if is visible
      */
     public boolean isConfirmationActionVisible() {

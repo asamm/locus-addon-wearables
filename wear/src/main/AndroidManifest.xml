@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.asamm.locus.addon.wearables">
+    package="com.asamm.locus.addon.wear">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -36,7 +36,7 @@
             android:launchMode="standard" />
 
         <!-- register service for events -->
-        <service android:name="com.asamm.locus.addon.wear.WearListenerService">
+        <service android:name="com.asamm.locus.addon.wear.communication.WearListenerService">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
 

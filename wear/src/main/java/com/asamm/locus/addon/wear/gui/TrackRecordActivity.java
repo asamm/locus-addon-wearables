@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
-import com.asamm.locus.addon.wear.DeviceCommunicationService;
 import com.asamm.locus.addon.wear.R;
-import com.assam.locus.addon.wear.common.DataPath;
-import com.assam.locus.addon.wear.common.EmptyCommand;
+import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 
 import locus.api.utils.Logger;
 
@@ -26,6 +26,6 @@ public class TrackRecordActivity extends WearableActivity {
 
     public void handleClick(View v) {
         Logger.logD(TAG, "sending Reguest");
-        DeviceCommunicationService.getInstance().sendDataItem(DataPath.GET_HAND_SHAKE, new EmptyCommand().getAsBytes());
+        WearCommService.getInstance().sendDataItem(DataPath.GET_HAND_SHAKE, new EmptyCommand());
     }
 }

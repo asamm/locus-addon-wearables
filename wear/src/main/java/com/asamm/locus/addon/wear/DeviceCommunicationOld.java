@@ -3,8 +3,8 @@ package com.asamm.locus.addon.wear;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.assam.locus.addon.wear.common.Const;
-import com.assam.locus.addon.wear.common.DataContainer;
+import com.assam.locus.addon.wear.common.communication.Const;
+import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
 import com.asamm.locus.addon.wear.gui.CustomActivityOld;
 import com.asamm.locus.addon.wear.gui.MapActivityOld;
 import com.google.android.gms.common.ConnectionResult;
@@ -269,7 +269,7 @@ public class DeviceCommunicationOld implements
      * Handle new received data.
      * @param event received data
      */
-	void handleNewData(MessageEvent event) {
+	public void handleNewData(MessageEvent event) {
         try {
             Logger.logD(TAG, "handleNewData(" + event.getPath() + ")");
             switch (event.getPath()) {

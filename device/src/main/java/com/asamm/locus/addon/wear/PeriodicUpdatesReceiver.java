@@ -12,6 +12,7 @@ import locus.api.android.utils.exceptions.RequiredVersionMissingException;
 import locus.api.utils.Logger;
 
 /**
+ * Handles logic for locus periodic updates
  * Created by menion on 17/08/15.
  * Asamm Software, s. r. o.
  */
@@ -28,7 +29,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
                     @Override
                     public void onUpdate(LocusUtils.LocusVersion locusVersion, UpdateContainer update) {
                         // check instance
-                        if (!RequestHandlerOld.existsInstance()) {
+                        if (!DeviceCommService.isInstance()) {
                             Logger.logD(TAG, "onUpdate(), " +
                                     "instance not exists");
                             disableReceiver(context);
@@ -36,27 +37,27 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
                         }
 
                         // handle data
-                        RequestHandler.getInstance(context).onUpdate(update);
+                        DeviceCommService.getInstance(context).onUpdate(update);
                     }
 
                     @Override
                     public void onIncorrectData() {
                         // check instance
-                        if (!RequestHandlerOld.existsInstance()) {
+                        if (!DeviceCommService.isInstance()) {
                             Logger.logD(TAG, "onIncorrectData(), " +
                                     "instance not exists");
                             disableReceiver(context);
                             return;
                         }
-
                         // handle data
-                        RequestHandlerOld.getInstance(context).onIncorrectData();
+                        DeviceCommService.getInstance(context).onIncorrectData();
                     }
                 });
     }
 
     /**
      * Enable updates receiver.
+     *
      * @param ctx current context
      */
     protected static void enableReceiver(Context ctx) {
@@ -71,6 +72,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 
     /**
      * Disable updates receiver.
+     *
      * @param ctx current context
      */
     protected static void disableReceiver(Context ctx) {

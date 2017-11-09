@@ -1,4 +1,4 @@
-package com.assam.locus.addon.wear.common;
+package com.assam.locus.addon.wear.common.communication.containers;
 
 import java.io.IOException;
 

@@ -5,7 +5,13 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.google.android.gms.wearable.DataItem;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import locus.api.utils.Logger;
 
@@ -15,6 +21,10 @@ import locus.api.utils.Logger;
  */
 
 public class MainApplication extends Application implements Application.ActivityLifecycleCallbacks {
+
+    private LocusWearActivity mCurrentActivity;
+    // timer for termination
+    private static Timer mTimerTerminate;
 
     // tag for logger
     private static final String TAG = MainApplication.class.getSimpleName();
@@ -49,24 +59,46 @@ public class MainApplication extends Application implements Application.Activity
 
         // notify about create of app
         Logger.logE(TAG, "onCreate()");
+        reconnectIfNeeded();
         registerActivityLifecycleCallbacks(this);
+    }
+
+    /**
+     * Destroy instance of this application.
+     */
+    public void onDestroy() {
+        Logger.logE(TAG, "onDestroy()");
+        // destroy instance of communication class
+        DeviceCommunicationOld.destroyInstance();
     }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle bundle) {
         Logger.logD(TAG, "Activity created");
+        reconnectIfNeeded();
     }
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if (!DeviceCommunicationService.isInitialized()) {
-            DeviceCommunicationService s = DeviceCommunicationService.initialize(this);
-        }
+        reconnectIfNeeded();
     }
 
     @Override
     public void onActivityResumed(Activity activity) {
-
+        // set current activity
+        LocusWearActivity oldAct = mCurrentActivity;
+        if (oldAct == null || oldAct == activity) {
+            // just set current activity, for sure
+            setCurrentActivity(activity);
+        } else {
+            // check state of old custom activity
+            switch (oldAct.getState()) {
+                case ON_START:
+                case ON_PAUSE:
+                case ON_STOP:
+                    setCurrentActivity(activity);
+            }
+        }
     }
 
     @Override
@@ -76,7 +108,10 @@ public class MainApplication extends Application implements Application.Activity
 
     @Override
     public void onActivityStopped(Activity activity) {
-
+        // activity is not visible
+        if (mCurrentActivity == activity) {
+            setCurrentActivity(null);
+        }
     }
 
     @Override
@@ -93,4 +128,49 @@ public class MainApplication extends Application implements Application.Activity
 
         Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
     }
+
+    /**
+     * Set reference to current activity.
+     * @param activity current activity
+     */
+    private void setCurrentActivity(Activity activity) {
+        LocusWearActivity act = (LocusWearActivity) activity;
+        Logger.logD(TAG, "setCurrentActivity(" + act + ")");
+
+        // if new activity is registered, end timer
+        if (act != null && mTimerTerminate != null) {
+            mTimerTerminate.cancel();
+            mTimerTerminate = null;
+        }
+        // register activity
+        if (mCurrentActivity == null && act != null) {
+            Logger.logW(TAG, " - application restored");
+        } else if (mCurrentActivity != null && act == null) {
+            Logger.logW(TAG, " - application terminated");
+
+            // start timer
+            TimerTask terminateTask = new TimerTask() {
+                @Override
+                public void run() {
+                    MainApplication.this.onDestroy();
+                }
+            };
+
+            // execute timer
+            mTimerTerminate = new Timer();
+            mTimerTerminate.schedule(terminateTask,
+                    TimeUnit.SECONDS.toMillis(10));
+        }
+        mCurrentActivity = act;
+    }
+
+    private void reconnectIfNeeded() {
+        WearCommService s = WearCommService.getInstance();
+        if (s == null) {
+            WearCommService.initialize(this);
+        } else {
+            s.reconnectIfNeeded();
+        }
+    }
+
 }

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.gui.lists.ListItemAdapter;
 import com.asamm.locus.addon.wear.gui.lists.ListItemLayout;
-import com.assam.locus.addon.wear.common.DataContainer;
+import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

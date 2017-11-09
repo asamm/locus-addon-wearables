@@ -1,4 +1,4 @@
-package com.assam.locus.addon.wear.common;
+package com.assam.locus.addon.wear.common.communication;
 
 /**
  * Created by Milan Cejnar on 08.11.2017.
