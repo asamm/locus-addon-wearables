@@ -3,10 +3,14 @@ package com.asamm.locus.addon.wear;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.Timer;
@@ -125,7 +129,17 @@ public class MainApplication extends Application implements Application.Activity
     }
 
     public void handleDataEvent(DataItem dataItem) {
+        final LocusWearActivity currentActivity = mCurrentActivity;
+        if (currentActivity != null) {
+            DataPath p = DataPath.valueOf(dataItem);
+            if (p != null) {
+                TimeStampStorable value = p.createStorableForPath(dataItem);
 
+                currentActivity.consumeNewData(p, value);
+            } else {
+                Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
+            }
+        }
         Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
     }
 

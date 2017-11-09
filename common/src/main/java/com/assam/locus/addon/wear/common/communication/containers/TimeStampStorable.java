@@ -21,6 +21,9 @@ public abstract class TimeStampStorable extends Storable {
     /** cropped 4B timestampt */
     private int mIntTimeStamp;
 
+    public TimeStampStorable(byte[] byteArray) throws IOException {
+        super(byteArray);
+    }
     @Override
     public void reset() {
         mIntTimeStamp = (int) System.currentTimeMillis();
@@ -33,11 +36,14 @@ public abstract class TimeStampStorable extends Storable {
 
     @Override
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
-        dw.write(mIntTimeStamp);
+        dw.writeInt(mIntTimeStamp);
     }
 
     public int getTimeStamp() {
         return mIntTimeStamp;
     }
 
+    public final HandShakeValue asHandShakeValue() {
+        return (HandShakeValue) this;
+    }
 }

@@ -1,5 +1,7 @@
 package com.assam.locus.addon.wear.common.communication.containers;
 
+import com.google.android.gms.wearable.DataItem;
+
 import java.io.IOException;
 
 import locus.api.utils.DataReaderBigEndian;
@@ -21,6 +23,9 @@ public class HandShakeValue extends TimeStampStorable {
         super();
     }
 
+    public HandShakeValue(byte[] data) throws IOException {
+        super(data);
+    }
     public HandShakeValue(int locusVersion, boolean locusRunning, boolean periodicUpdatesEnabled) {
         this();
         mLocusVersion = locusVersion;
@@ -51,7 +56,8 @@ public class HandShakeValue extends TimeStampStorable {
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
         super.writeObject(dw);
         dw.writeInt(mLocusVersion);
-        dw.write(new byte[]{mStatusFlag});
+        dw.write(mStatusFlag);
+        int i = 0;
     }
 
     public int getmLocusVersion() {
