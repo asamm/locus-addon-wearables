@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -98,16 +99,6 @@ public class LocusWearCommService implements
     public void reconnectIfNeeded() {
         if (!isConnected() && !isConnecting()) {
             mGoogleApiClient.connect();
-        }
-    }
-
-    protected static class Pair<T, U> {
-        protected final T first;
-        protected final U second;
-
-        protected Pair(T first, U second) {
-            this.first = first;
-            this.second = second;
         }
     }
 }

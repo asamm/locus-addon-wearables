@@ -1,15 +1,9 @@
 package com.assam.locus.addon.wear.common.communication.containers;
 
 import java.io.IOException;
-import java.util.List;
 
-import locus.api.android.ActionTools;
-import locus.api.android.utils.LocusInfo;
-import locus.api.android.utils.LocusUtils;
-import locus.api.objects.Storable;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
-import locus.api.utils.Logger;
 
 /**
  * Created by menion on 07/08/15.
@@ -49,6 +43,7 @@ public class BasicAppInfoValue extends TimeStampStorable {
 
     /**
      * Constructor based on raw byte array.
+     *
      * @param data packed data
      * @throws IOException
      */
@@ -59,6 +54,7 @@ public class BasicAppInfoValue extends TimeStampStorable {
 
     /**************************************************/
     // STORABLE PART
+
     /**************************************************/
 
     @Override
@@ -68,6 +64,7 @@ public class BasicAppInfoValue extends TimeStampStorable {
 
     @Override
     public void reset() {
+        super.reset();
         mUnitsFormatAltitude = 0;
         mUnitsFormatAngle = 0;
         mUnitsFormatArea = 0;
@@ -81,6 +78,7 @@ public class BasicAppInfoValue extends TimeStampStorable {
 
     @Override
     protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+        super.readObject(version, dr);
         mUnitsFormatAltitude = dr.readInt();
         mUnitsFormatAngle = dr.readInt();
         mUnitsFormatArea = dr.readInt();
@@ -94,6 +92,7 @@ public class BasicAppInfoValue extends TimeStampStorable {
 
     @Override
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
+        super.writeObject(dw);
         dw.writeInt(mUnitsFormatAltitude);
         dw.writeInt(mUnitsFormatAngle);
         dw.writeInt(mUnitsFormatArea);

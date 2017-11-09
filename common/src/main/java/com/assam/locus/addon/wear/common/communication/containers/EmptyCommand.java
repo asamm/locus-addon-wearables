@@ -7,6 +7,10 @@ package com.assam.locus.addon.wear.common.communication.containers;
 
 public class EmptyCommand extends TimeStampStorable {
 
+    public EmptyCommand() {
+        super();
+    }
+
     @Override
     protected int getVersion() {
         return 0;

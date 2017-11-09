@@ -39,6 +39,7 @@ public class DataContainer extends Storable {
 
     /**
      * Constructor based on raw byte array.
+     *
      * @param data packed data
      * @throws IOException
      */
@@ -48,8 +49,9 @@ public class DataContainer extends Storable {
 
     /**
      * Construct container.
-     * @param locusVersion version of active locus
-     * @param locusInfo info from Locus
+     *
+     * @param locusVersion     version of active locus
+     * @param locusInfo        info from Locus
      * @param trackRecProfiles track recording profiles
      */
     public DataContainer(LocusUtils.LocusVersion locusVersion, LocusInfo locusInfo,
@@ -62,6 +64,7 @@ public class DataContainer extends Storable {
 
     /**
      * Get current Locus version.
+     *
      * @return Locus version object
      */
     public LocusUtils.LocusVersion getLocusVersion() {
@@ -70,6 +73,7 @@ public class DataContainer extends Storable {
 
     /**
      * Get current Locus info.
+     *
      * @return current Locus info object
      */
     public LocusInfo getLocusInfo() {
@@ -78,6 +82,7 @@ public class DataContainer extends Storable {
 
     /**
      * Get current track recording profiles.
+     *
      * @return current profiles
      */
     public List<ActionTools.TrackRecordProfileSimple> getTrackRecProfiles() {
@@ -88,6 +93,7 @@ public class DataContainer extends Storable {
 
     /**
      * Get current attached map preview.
+     *
      * @return attached map preview
      */
     public ActionTools.BitmapLoadResult getMapPreview() {
@@ -96,6 +102,7 @@ public class DataContainer extends Storable {
 
     /**
      * Set new map preview to current container.
+     *
      * @param preview new map preview
      */
     public void setMapPreview(ActionTools.BitmapLoadResult preview) {
@@ -104,6 +111,7 @@ public class DataContainer extends Storable {
 
     /**
      * Merge fresh container to current existing container.
+     *
      * @param container container we wants to merge
      */
     public void mergeContainer(DataContainer container) {
@@ -137,6 +145,7 @@ public class DataContainer extends Storable {
 
     /**************************************************/
     // STORABLE PART
+
     /**************************************************/
 
     @Override

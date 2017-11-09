@@ -4,6 +4,8 @@ import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoVa
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.assam.locus.addon.wear.common.communication.containers.TrackProfileIconValue;
+import com.assam.locus.addon.wear.common.communication.containers.TrackProfileInfoValue;
 import com.google.android.gms.wearable.DataItem;
 
 import locus.api.utils.Logger;
@@ -18,6 +20,9 @@ public enum DataPath {
     PUT_HAND_SHAKE(HandShakeValue.class),
     GET_BASIC_INFO(EmptyCommand.class),
     PUT_BASIC_INFO(BasicAppInfoValue.class),
+    GET_TRACK_REC_PROFILES(EmptyCommand.class),
+    PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
+    PUT_TRACK_REC_ICON_INFO(TrackProfileIconValue.ValueList.class),
     PUT_APP_DESTROYED(EmptyCommand.class);
 
     public static final String BASE_PATH = "/locus/wear";
