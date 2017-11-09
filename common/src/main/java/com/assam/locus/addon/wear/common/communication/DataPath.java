@@ -1,5 +1,6 @@
 package com.assam.locus.addon.wear.common.communication;
 
+import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -15,6 +16,8 @@ import locus.api.utils.Logger;
 public enum DataPath {
     GET_HAND_SHAKE(EmptyCommand.class),
     PUT_HAND_SHAKE(HandShakeValue.class),
+    GET_BASIC_INFO(EmptyCommand.class),
+    PUT_BASIC_INFO(BasicAppInfoValue.class),
     PUT_APP_DESTROYED(EmptyCommand.class);
 
     public static final String BASE_PATH = "/locus/wear";

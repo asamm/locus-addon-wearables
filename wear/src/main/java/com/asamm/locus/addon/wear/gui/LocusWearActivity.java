@@ -3,6 +3,8 @@ package com.asamm.locus.addon.wear.gui;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 
+import com.asamm.locus.addon.wear.ApplicationState;
+import com.asamm.locus.addon.wear.MainApplication;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
@@ -59,8 +61,6 @@ public abstract class LocusWearActivity extends WearableActivity {
         super.onStart();
     }
 
-
-
     // current activity state
     public enum WearActivityState {
         ON_CREATE,
@@ -71,5 +71,8 @@ public abstract class LocusWearActivity extends WearableActivity {
         ON_DESTROY;
     }
 
+    protected ApplicationState getApplicationState() {
+        return ((MainApplication)this.getApplication()).getState();
+    }
     public abstract void consumeNewData(DataPath path, TimeStampStorable data);
 }

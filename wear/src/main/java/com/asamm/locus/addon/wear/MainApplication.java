@@ -5,6 +5,7 @@ import android.app.Application;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Switch;
 
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
@@ -27,6 +28,9 @@ import locus.api.utils.Logger;
 public class MainApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
     private LocusWearActivity mCurrentActivity;
+
+    private ApplicationState mState;
+
     // timer for termination
     private static Timer mTimerTerminate;
 
@@ -63,6 +67,7 @@ public class MainApplication extends Application implements Application.Activity
 
         // notify about create of app
         Logger.logE(TAG, "onCreate()");
+        mState = new ApplicationState();
         reconnectIfNeeded();
         registerActivityLifecycleCallbacks(this);
     }
@@ -134,7 +139,11 @@ public class MainApplication extends Application implements Application.Activity
             DataPath p = DataPath.valueOf(dataItem);
             if (p != null) {
                 TimeStampStorable value = p.createStorableForPath(dataItem);
-
+                switch (p) {
+                    case PUT_HAND_SHAKE:
+                        mState.setHandShakeValue(value.asHandShakeValue());
+                        break;
+                }
                 currentActivity.consumeNewData(p, value);
             } else {
                 Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
@@ -187,4 +196,16 @@ public class MainApplication extends Application implements Application.Activity
         }
     }
 
+    public ApplicationState getState() {
+        return mState;
+    }
+
+    public void onConnected() {
+        mState.setConnected(true);
+    }
+
+    public void onConnectionSuspened() {
+        mState.setConnected(false);
+        reconnectIfNeeded();
+    }
 }

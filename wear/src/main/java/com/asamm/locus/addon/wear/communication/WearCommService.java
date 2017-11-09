@@ -1,8 +1,12 @@
 package com.asamm.locus.addon.wear.communication;
 
-import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.asamm.locus.addon.wear.MainApplication;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
+import com.google.android.gms.common.ConnectionResult;
 
 /**
  * Created by Milan Cejnar on 07.11.2017.
@@ -13,15 +17,17 @@ public class WearCommService extends LocusWearCommService {
     private static String TAG = WearCommService.class.getSimpleName();
     private static WearCommService mDeviceCommunicationService;
 
-    private WearCommService(Context c) {
+    private final MainApplication mApp;
+    private WearCommService(MainApplication c) {
         super(c);
+        this.mApp = c;
     }
 
     public static WearCommService getInstance() {
         return mDeviceCommunicationService;
     }
 
-    public static WearCommService initialize(final Context c) {
+    public static WearCommService initialize(final MainApplication c) {
         if (mDeviceCommunicationService == null) {
             synchronized (TAG) {
                 if (mDeviceCommunicationService == null) {
@@ -40,4 +46,28 @@ public class WearCommService extends LocusWearCommService {
         }
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        super.onConnected(bundle);
+        final MainApplication app = this.mApp;
+        if (app != null) {
+            app.onConnected();
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        super.onConnectionFailed(connectionResult);
+        if (mApp != null) {
+            mApp.onConnectionSuspened();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        super.onConnectionSuspended(i);
+        if (mApp != null) {
+            mApp.onConnectionSuspened();
+        }
+    }
 }
