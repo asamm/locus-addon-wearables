@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.common.utils.Pair;
+import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -74,9 +75,16 @@ public class LocusWearCommService implements
     }
 
 
+    public void sendCommand(DataPath path) {
+        sendDataItem(path, new EmptyCommand());
+    }
+
     public void sendDataItem(DataPath path, Storable data) {
-        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
+        if (!mGoogleApiClient.isConnected()) {
             mUnsentData.offer(new Pair<>(path, data));
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
         } else {
             sendDataItemWithoutConnectionCheck(path, data);
         }

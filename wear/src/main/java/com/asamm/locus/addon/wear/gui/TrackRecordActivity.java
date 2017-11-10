@@ -19,6 +19,16 @@ public class TrackRecordActivity extends LocusWearActivity {
     private static final String TAG = TrackRecordActivity.class.getSimpleName();
 
     @Override
+    protected DataPath getInitialCommandType() {
+        return DataPath.GET_TRACK_REC_PROFILES;
+    }
+
+    @Override
+    protected DataPath getInitialCommandResponseType() {
+        return DataPath.PUT_TRACK_REC_PROFILE_INFO;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_record);
