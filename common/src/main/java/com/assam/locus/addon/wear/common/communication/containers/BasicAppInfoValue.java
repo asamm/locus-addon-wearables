@@ -2,6 +2,7 @@ package com.assam.locus.addon.wear.common.communication.containers;
 
 import java.io.IOException;
 
+import locus.api.android.utils.LocusInfo;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
 
@@ -41,6 +42,20 @@ public class BasicAppInfoValue extends TimeStampStorable {
         super();
     }
 
+    public BasicAppInfoValue(LocusInfo info) {
+        this();
+        if (info != null) {
+            mUnitsFormatWeight = info.getUnitsFormatWeight();
+            mUnitsFormatTemperature = info.getUnitsFormatTemperature();
+            mUnitsFormatSpeed = info.getUnitsFormatSpeed();
+            mUnitsFormatSlope = info.getUnitsFormatSlope();
+            mUnitsFormatLength = info.getUnitsFormatLength();
+            mUnitsFormatEnergy = info.getUnitsFormatEnergy();
+            mUnitsFormatArea = info.getUnitsFormatArea();
+            mUnitsFormatAngle = info.getUnitsFormatAngle();
+            mUnitsFormatAltitude = info.getUnitsFormatAltitude();
+        }
+    }
     /**
      * Constructor based on raw byte array.
      *
@@ -102,5 +117,41 @@ public class BasicAppInfoValue extends TimeStampStorable {
         dw.writeInt(mUnitsFormatSpeed);
         dw.writeInt(mUnitsFormatTemperature);
         dw.writeInt(mUnitsFormatWeight);
+    }
+
+    public int getmUnitsFormatAltitude() {
+        return mUnitsFormatAltitude;
+    }
+
+    public int getmUnitsFormatAngle() {
+        return mUnitsFormatAngle;
+    }
+
+    public int getmUnitsFormatArea() {
+        return mUnitsFormatArea;
+    }
+
+    public int getmUnitsFormatEnergy() {
+        return mUnitsFormatEnergy;
+    }
+
+    public int getmUnitsFormatLength() {
+        return mUnitsFormatLength;
+    }
+
+    public int getmUnitsFormatSlope() {
+        return mUnitsFormatSlope;
+    }
+
+    public int getmUnitsFormatSpeed() {
+        return mUnitsFormatSpeed;
+    }
+
+    public int getmUnitsFormatTemperature() {
+        return mUnitsFormatTemperature;
+    }
+
+    public int getmUnitsFormatWeight() {
+        return mUnitsFormatWeight;
     }
 }

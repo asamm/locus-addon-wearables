@@ -91,6 +91,9 @@ public class TrackProfileIconValue extends TimeStampStorable {
     }
 
     public static class ValueList extends ListStorable<TrackProfileIconValue> {
+        public ValueList(byte[] data) throws IOException {
+            super(data);
+        }
         @Override
         public Class<TrackProfileIconValue> getClazz() {
             return TrackProfileIconValue.class;

@@ -46,8 +46,4 @@ public abstract class TimeStampStorable extends Storable {
     public int getTimeStamp() {
         return mIntTimeStamp;
     }
-
-    public final HandShakeValue asHandShakeValue() {
-        return (HandShakeValue) this;
-    }
 }

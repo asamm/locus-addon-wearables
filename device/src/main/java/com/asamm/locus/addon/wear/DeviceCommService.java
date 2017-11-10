@@ -6,6 +6,7 @@ import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.assam.locus.addon.wear.common.communication.Const;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
+import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.assam.locus.addon.wear.common.communication.containers.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.TrackProfileInfoValue;
@@ -107,12 +108,28 @@ public class DeviceCommService extends LocusWearCommService {
 
     void onDataChanged(Context c, DataEvent newData) {
         DataItem item = newData.getDataItem();
-        String path = item.getUri().getPath();
-        if (DataPath.GET_HAND_SHAKE.getPath().equals(path)) {
-            HandShakeValue v = loadHandShake(c);
-            sendDataItem(DataPath.PUT_HAND_SHAKE, v);
-        } else {
-            Logger.logW(TAG, "Data changed at unknown path: " + path);
+        DataPath path = DataPath.valueOf(item);
+        switch (path) {
+            case GET_HAND_SHAKE:
+                HandShakeValue hndshk = loadHandShake(c);
+                sendDataItem(DataPath.PUT_HAND_SHAKE, hndshk);
+                break;
+            case GET_BASIC_INFO:
+                BasicAppInfoValue appInfo = loadBasicInfo(c);
+                if (appInfo != null) {
+                    sendDataItem(DataPath.PUT_BASIC_INFO, appInfo);
+                }
+                break;
+            case GET_TRACK_REC_PROFILES:
+                Pair<TrackProfileInfoValue.ValueList, TrackProfileIconValue.ValueList> profiles =
+                        loadTrackRecordProfiles(c);
+                if (profiles.first != null) {
+                    sendDataItem(DataPath.PUT_TRACK_REC_PROFILE_INFO, profiles.first);
+                    sendDataItem(DataPath.PUT_TRACK_REC_ICON_INFO, profiles.second);
+                }
+                break;
+            default:
+                Logger.logE(TAG, "Unknown request " + path);
         }
     }
 
@@ -143,7 +160,6 @@ public class DeviceCommService extends LocusWearCommService {
             }
         } catch (RequiredVersionMissingException e) {
             Logger.logE(TAG, "loadHandShake", e);
-
             // clear data
             locusVersion = null;
             locusInfo = null;
@@ -151,10 +167,39 @@ public class DeviceCommService extends LocusWearCommService {
 
         // prepare container with data and send it
         HandShakeValue value = locusVersion == null ?
-                HandShakeValue.createEmpty() :
+                new HandShakeValue() :
                 new HandShakeValue(locusVersion.getVersionCode(),
                         locusInfo != null && locusInfo.isRunning(),
                         locusInfo != null && locusInfo.isPeriodicUpdatesEnabled());
+        return value;
+    }
+
+    /**
+     * Load basic data from current Locus application.
+     */
+    private BasicAppInfoValue loadBasicInfo(Context ctx) {
+        LocusUtils.LocusVersion locusVersion;
+        LocusInfo locusInfo = null;
+
+        try {
+            // read Locus info
+            locusVersion = LocusUtils.getActiveVersion(ctx, Const.LOCUS_VERSION_CODE);
+            // check if object exists
+            if (locusVersion != null) {
+                // handle info
+                locusInfo = ActionTools.getLocusInfo(ctx, locusVersion);
+            }
+        } catch (RequiredVersionMissingException e) {
+            Logger.logE(TAG, "loadHandShake", e);
+
+            // clear data
+            locusInfo = null;
+        }
+
+        // prepare container with data and send it
+        BasicAppInfoValue value = locusInfo == null ?
+                null :
+                new BasicAppInfoValue(locusInfo);
         return value;
     }
 
@@ -164,12 +209,11 @@ public class DeviceCommService extends LocusWearCommService {
      */
     /**
      * @param ctx
-     * @param nodeId
      * @return A pair of lists. First lists contains track profiles and description.
      * Second list contains track profile icons. Both lists are the same lenght and order.
      */
     private Pair<TrackProfileInfoValue.ValueList, TrackProfileIconValue.ValueList>
-    loadTrackRecordProfiles(Context ctx, String nodeId) {
+    loadTrackRecordProfiles(Context ctx) {
         List<ActionTools.TrackRecordProfileSimple> trackRecProfiles = null;
 
         try {
@@ -184,7 +228,7 @@ public class DeviceCommService extends LocusWearCommService {
                         ctx, lv);
             }
         } catch (RequiredVersionMissingException e) {
-            Logger.logE(TAG, "loadTrackRecordProfiles(" + nodeId + ")", e);
+            Logger.logE(TAG, "loadTrackRecordProfiles()", e);
 
             // clear data
             trackRecProfiles = null;

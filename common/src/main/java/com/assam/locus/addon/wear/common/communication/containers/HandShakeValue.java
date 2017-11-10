@@ -91,7 +91,4 @@ public class HandShakeValue extends TimeStampStorable {
         return mLocusVersion < 0;
     }
 
-    public static HandShakeValue createEmpty() {
-        return new HandShakeValue();
-    }
 }

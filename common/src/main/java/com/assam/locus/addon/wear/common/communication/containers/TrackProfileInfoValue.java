@@ -1,5 +1,7 @@
 package com.assam.locus.addon.wear.common.communication.containers;
 
+import android.renderscript.Sampler;
+
 import java.io.IOException;
 
 import locus.api.android.ActionTools;
@@ -72,7 +74,7 @@ public class TrackProfileInfoValue extends TimeStampStorable {
 
     @Override
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
-        super.write(dw);
+        super.writeObject(dw);
         dw.writeLong(mId);
         dw.writeString(mName);
         dw.writeString(mDesc);
@@ -91,6 +93,9 @@ public class TrackProfileInfoValue extends TimeStampStorable {
     }
 
     public static class ValueList extends ListStorable<TrackProfileInfoValue> {
+        public ValueList(byte[] data) throws IOException {
+            super(data);
+        }
         @Override
         public Class<TrackProfileInfoValue> getClazz() {
             return TrackProfileInfoValue.class;

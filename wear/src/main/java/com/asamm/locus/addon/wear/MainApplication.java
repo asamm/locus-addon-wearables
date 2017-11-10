@@ -27,9 +27,9 @@ import locus.api.utils.Logger;
 
 public class MainApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
-    private LocusWearActivity mCurrentActivity;
+    private volatile LocusWearActivity mCurrentActivity;
 
-    private ApplicationState mState;
+    private volatile ApplicationState mState;
 
     // timer for termination
     private static Timer mTimerTerminate;
@@ -137,11 +137,12 @@ public class MainApplication extends Application implements Application.Activity
         final LocusWearActivity currentActivity = mCurrentActivity;
         if (currentActivity != null) {
             DataPath p = DataPath.valueOf(dataItem);
+            Logger.logD(TAG, "Received " + p);
             if (p != null) {
                 TimeStampStorable value = p.createStorableForPath(dataItem);
                 switch (p) {
                     case PUT_HAND_SHAKE:
-                        mState.setHandShakeValue(value.asHandShakeValue());
+                        mState.setHandShakeValue((HandShakeValue) value);
                         break;
                 }
                 currentActivity.consumeNewData(p, value);
@@ -202,6 +203,11 @@ public class MainApplication extends Application implements Application.Activity
 
     public void onConnected() {
         mState.setConnected(true);
+        LocusWearActivity act = mCurrentActivity;
+        if (act != null) {
+            act.consumeNewData(DataPath.PUT_ON_CONNECTED_EVENT, null);
+        }
+
     }
 
     public void onConnectionSuspened() {

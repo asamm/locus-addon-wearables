@@ -23,7 +23,10 @@ public enum DataPath {
     GET_TRACK_REC_PROFILES(EmptyCommand.class),
     PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
     PUT_TRACK_REC_ICON_INFO(TrackProfileIconValue.ValueList.class),
-    PUT_APP_DESTROYED(EmptyCommand.class);
+    PUT_APP_DESTROYED(EmptyCommand.class),
+    /** Fake communication data path, used for signalling activity about ON_CONNECTED event inside
+        strictly the application. Should not be used over network. */
+    PUT_ON_CONNECTED_EVENT(EmptyCommand.class);
 
     public static final String BASE_PATH = "/locus/wear";
 
@@ -48,6 +51,9 @@ public enum DataPath {
     }
 
     public TimeStampStorable createStorableForPath(DataItem item) {
+        if (mContainerClass.getSimpleName().equals(EmptyCommand.class.getSimpleName())) {
+            return null;
+        }
         try {
             return mContainerClass.getConstructor(byte[].class).newInstance(item.getData());
         } catch (Exception e) {

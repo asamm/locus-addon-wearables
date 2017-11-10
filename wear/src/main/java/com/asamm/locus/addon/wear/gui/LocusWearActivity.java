@@ -1,8 +1,8 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.ContactsContract;
 import android.support.wearable.activity.WearableActivity;
 
 import com.asamm.locus.addon.wear.ApplicationState;
@@ -10,6 +10,8 @@ import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+
+import locus.api.utils.Logger;
 
 /**
  * Base class for wearable activities
@@ -55,8 +57,9 @@ public abstract class LocusWearActivity extends WearableActivity {
      * @param data
      */
     public void consumeNewData(DataPath path, TimeStampStorable data) {
+        Logger.logD(getClass().getSimpleName(), "Incoming data " + path);
         if (mConnectionFailedTimer != null) {
-            if (path == DataPath.PUT_HAND_SHAKE) {
+            if (path == DataPath.PUT_HAND_SHAKE || path == DataPath.PUT_ON_CONNECTED_EVENT) {
                 handleConnectionFailedTimerTick();
             } else if (path == getInitialCommandResponseType()) {
                 mIsInitialRequestReceived = true;
@@ -87,9 +90,7 @@ public abstract class LocusWearActivity extends WearableActivity {
         this.mState = WearActivityState.ON_PAUSE;
         super.onPause();
     }
-    private boolean isConnectionFailedTimerCondition() {
-        return mIsInitialRequestReceived || getApplicationState().isHandShake() || WearCommService.getInstance().isConnecting();
-    }
+
     protected boolean handleConnectionFailedTimerTick() {
         boolean result = false;
         WearCommService wcs = WearCommService.getInstance();
@@ -153,9 +154,11 @@ public abstract class LocusWearActivity extends WearableActivity {
                     }
                     @Override
                     public void onFinish() {
+                        Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
                         // TODO cejnar - connection failed, handle the situation.
                     }
                 };
+                mConnectionFailedTimer.start();
         }
     }
     // current activity state

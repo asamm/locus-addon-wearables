@@ -10,6 +10,8 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.assam.locus.addon.wear.common.communication.containers.TrackProfileIconValue;
+import com.assam.locus.addon.wear.common.communication.containers.TrackProfileInfoValue;
 
 import locus.api.objects.Storable;
 import locus.api.utils.Logger;
@@ -44,9 +46,15 @@ public class TrackRecordActivity extends LocusWearActivity {
 
     @Override
     public void consumeNewData(DataPath path, TimeStampStorable data) {
+        super.consumeNewData(path, data);
         switch (path) {
-            case PUT_HAND_SHAKE:
-                Toast.makeText(this,"locus version" + data.asHandShakeValue().getmLocusVersion(), Toast.LENGTH_SHORT).show();
+            case PUT_TRACK_REC_PROFILE_INFO:
+                TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) data;
+                Logger.logD(TAG, "Loaded rec profiles " + profiles.getSize());
+                break;
+            case  PUT_TRACK_REC_ICON_INFO:
+                TrackProfileIconValue.ValueList icons = (TrackProfileIconValue.ValueList) data;
+                Logger.logD(TAG, "Loaded rec icons " + icons.getSize());
                 break;
         }
     }

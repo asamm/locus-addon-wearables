@@ -17,6 +17,7 @@ import com.google.android.gms.wearable.Wearable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import locus.api.objects.Storable;
+import locus.api.utils.Logger;
 
 /**
  * Ancestor for device and wear communication services.
@@ -91,6 +92,7 @@ public class LocusWearCommService implements
     }
 
     private void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
+        Logger.logD(getClass().getSimpleName(), "Sending " + path);
         PutDataRequest request = PutDataRequest.create(path.getPath());
         request.setData(data.getAsBytes());
         PendingResult<DataApi.DataItemResult> pendingResult =

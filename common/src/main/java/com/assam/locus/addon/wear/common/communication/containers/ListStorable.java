@@ -22,6 +22,9 @@ public abstract class ListStorable<T extends Storable> extends TimeStampStorable
         super();
     }
 
+    public ListStorable(byte[] data) throws IOException{
+        super(data);
+    }
     public abstract Class<T> getClazz();
 
     @Override
@@ -64,5 +67,10 @@ public abstract class ListStorable<T extends Storable> extends TimeStampStorable
 
     public void setStorables(List<T> storables) {
         this.mStorables = storables;
+    }
+
+
+    public int getSize() {
+        return (mStorables == null) ? 0 : mStorables.size();
     }
 }
