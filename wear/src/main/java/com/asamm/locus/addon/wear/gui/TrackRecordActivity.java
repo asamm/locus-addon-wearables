@@ -8,6 +8,7 @@ import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.fragments.TrackRecordProfileSelectFragment;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
@@ -33,7 +34,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
     private TrackRecordingStateEnum mRecordingState = null;
 
-    private ViewFlipper mRecScreenFlipper;
+    private ViewFlipper mRecViewFlipper;
 
     @Override
     protected DataPath getInitialCommandType() {
@@ -49,6 +50,7 @@ public class TrackRecordActivity extends LocusWearActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.track_record_activity);
+        mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
         // Enables Always-on
         setAmbientEnabled();
     }
@@ -88,7 +90,7 @@ public class TrackRecordActivity extends LocusWearActivity {
                                 TrackRecordingStateEnum.NOT_RECORDING;
         if (receivedState != mRecordingState) {
             if (receivedState == TrackRecordingStateEnum.NOT_RECORDING) {
-                mRecScreenFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
+                mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
                         PeriodicCommand.createStopPeriodicUpdatesCommand(PeriodicCommand.PERIODIC_ACITIVITY_TRACK_RECORDING)
                 );
@@ -96,7 +98,7 @@ public class TrackRecordActivity extends LocusWearActivity {
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
                         new PeriodicCommand(PeriodicCommand.PERIODIC_ACITIVITY_TRACK_RECORDING,
                                 REFRESH_PERIOD_MS));
-                mRecScreenFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
+                mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
                 Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
             }
             mRecordingState = receivedState;
@@ -111,7 +113,7 @@ public class TrackRecordActivity extends LocusWearActivity {
     protected void onStart() {
         super.onStart();
         mRecordingState = null;
-        mRecScreenFlipper.setDisplayedChild(0);
+        mRecViewFlipper.setDisplayedChild(0);
 
     }
 
@@ -124,7 +126,7 @@ public class TrackRecordActivity extends LocusWearActivity {
     public void handlePauseClick(View v) {
     }
 
-    public void handleNewPointClick(View v) {
+    public void handleAddWaypointClick(View v) {
 
     }
 
@@ -133,7 +135,10 @@ public class TrackRecordActivity extends LocusWearActivity {
             return;
         }
         WearCommService wcs = WearCommService.getInstance();
-        TimeStampStorable command = new TrackRecordingStateChangeValue(newState);
+        TrackProfileInfoValue v = getRecordingInfo();
+
+        TimeStampStorable command =
+                new TrackRecordingStateChangeValue(newState, v != null ? v.getName() : null);
         wcs.sendDataItem(DataPath.PUT_TRACK_REC_STATE_CHANGE, command);
     }
 
@@ -142,4 +147,15 @@ public class TrackRecordActivity extends LocusWearActivity {
                 .putString(PREF_REC_STATE, state == null ? TrackRecordingStateEnum.NOT_RECORDING.name() : state.name())
                 .apply();
     }
+
+    private TrackProfileInfoValue getRecordingInfo() {
+        TrackRecordProfileSelectFragment f =
+                (TrackRecordProfileSelectFragment) getFragmentManager()
+                        .findFragmentById(R.id.trackRecProfileSelectFragment);
+        if (f != null) {
+            return f.getmProfile();
+        }
+        return null;
+    }
+
 }

@@ -31,6 +31,7 @@ public enum DataPath {
     GET_TRACK_REC(EmptyCommand.class),
     PUT_TRACK_REC(TrackRecordingValue.class),
     PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
+    GET_ADD_WAYPOINT(EmptyCommand.class),
 
     GET_PERIODIC_DATA(PeriodicCommand.class),
 

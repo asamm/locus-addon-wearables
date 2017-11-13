@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
+import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -14,6 +15,7 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.sql.Timestamp;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import locus.api.objects.Storable;
@@ -38,7 +40,7 @@ public class LocusWearCommService implements
     /**
      * List of unsent data consisting of pairs of <PATH, DATA>
      */
-    private ConcurrentLinkedQueue<Pair<DataPath, Storable>> mUnsentData;
+    private ConcurrentLinkedQueue<Pair<DataPath, TimeStampStorable>> mUnsentData;
 
     protected LocusWearCommService(Context context) {
         this.context = context;
@@ -60,7 +62,7 @@ public class LocusWearCommService implements
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         while (!mUnsentData.isEmpty()) {
-            Pair<DataPath, Storable> toSend = mUnsentData.poll();
+            Pair<DataPath, TimeStampStorable> toSend = mUnsentData.poll();
             sendDataItem(toSend.first, toSend.second);
         }
     }
@@ -80,7 +82,7 @@ public class LocusWearCommService implements
         sendDataItem(path, new EmptyCommand());
     }
 
-    public void sendDataItem(DataPath path, Storable data) {
+    public void sendDataItem(DataPath path, TimeStampStorable data) {
         if (!mGoogleApiClient.isConnected()) {
             mUnsentData.offer(new Pair<>(path, data));
             if (!mGoogleApiClient.isConnecting()) {

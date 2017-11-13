@@ -24,11 +24,13 @@
 
         <ImageButton
             android:id="@+id/image_view_track_rec_pause"
+            android:onClick="handlePauseClick"
             style="@style/ButtonTrackRecord"
             android:src="@drawable/ic_96_track_recording_pause" />
 
         <ImageButton
             android:id="@+id/image_view_track_rec_add_wpt"
+            android:onClick="handleAddWaypointClick"
             style="@style/ButtonTrackRecord"
             android:src="@drawable/ic_96_track_recording_add_wpt" />
     </LinearLayout>

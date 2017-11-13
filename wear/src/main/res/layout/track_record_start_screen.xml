@@ -16,7 +16,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_96_track_recording_pause_pressed"
         android:onClick="handleStartClick"
-        app:layout_constraintBottom_toTopOf="@+id/fragment"
+        app:layout_constraintBottom_toTopOf="@+id/trackRecProfileSelectFragment"
         app:layout_constraintEnd_toStartOf="@+id/xGuideTrackRectStartVert83_5"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/xGuideTrackRectStartVert16_5"
@@ -25,7 +25,7 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <fragment
-        android:id="@+id/fragment"
+        android:id="@+id/trackRecProfileSelectFragment"
         android:name="com.asamm.locus.addon.wear.gui.fragments.TrackRecordProfileSelectFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

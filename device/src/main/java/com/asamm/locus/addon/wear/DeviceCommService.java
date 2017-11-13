@@ -8,9 +8,12 @@ import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
@@ -19,6 +22,8 @@ import com.google.android.gms.wearable.MessageEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import locus.api.android.ActionTools;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
@@ -44,7 +49,7 @@ public class DeviceCommService extends LocusWearCommService {
     // Last received update from Locus
     private UpdateContainer mLastUpdate;
 
-    private Timer mPeriodicDataTimer;
+    private PeriodicDataTimer mPeriodicDataTimer;
 
 
     /**
@@ -90,6 +95,10 @@ public class DeviceCommService extends LocusWearCommService {
         synchronized (TAG) {
             if (mInstance != null) {
                 mInstance.destroy();
+                if (mInstance.mPeriodicDataTimer != null) {
+                    mInstance.mPeriodicDataTimer.cancel();
+                    mInstance.mPeriodicDataTimer = null;
+                }
                 // disable receiver
                 PeriodicUpdatesReceiver.disableReceiver(ctx);
                 mInstance = null;
@@ -145,12 +154,21 @@ public class DeviceCommService extends LocusWearCommService {
                 TrackRecordingValue trv = loadTrackRecordingValue();
                 sendDataItem(DataPath.PUT_TRACK_REC, trv);
                 break;
-            case PUT_TRACK_REC_STATE_CHANGE:
+            case PUT_TRACK_REC_STATE_CHANGE: {
                 LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
-                handleRecordingStateChanged(c, lv, null); // TODO cejnar
-
+                Pair<DataPath, TrackRecordingStateChangeValue> v =
+                        parseData(newData);
+                handleRecordingStateChanged(c, lv, v.second.getRecordingState(), v.second.getmProfileName());
+            }
+                break;
+            case GET_ADD_WAYPOINT: {
+                LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
+                handleAddWpt(c, lv);
+            }
+                break;
             case GET_PERIODIC_DATA:
-
+                // TODO cejnar
+                break;
             default:
                 Logger.logE(TAG, "Unknown request " + path);
         }
@@ -164,7 +182,33 @@ public class DeviceCommService extends LocusWearCommService {
         return new Pair<>(p, null);
     }
 
+    private void setPeriodicWearUpdate(PeriodicCommand command) {
+        if ((command == null || command.isStopRequest())) {
+            if (mPeriodicDataTimer != null) {
+                mPeriodicDataTimer.cancel();
+            }
+            mPeriodicDataTimer = null;
+            return;
+        }
+        final byte activityId = command.getmPeriodicActivityId();
+        final int periodMs = command.getmPeriodMs();
+        if (mPeriodicDataTimer != null) {
+            if (mPeriodicDataTimer.periodMs == periodMs && mPeriodicDataTimer.activityId == activityId) {
+                return;
+            } else {
+                mPeriodicDataTimer.cancel();
+                mPeriodicDataTimer = null;
+            }
+        }
 
+        mPeriodicDataTimer = new PeriodicDataTimer(activityId, periodMs);
+        mPeriodicDataTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                // TODO cejnar
+            }
+        }, 0, periodMs);
+    }
 
     public static boolean isInstance() {
         return mInstance != null;
@@ -174,15 +218,33 @@ public class DeviceCommService extends LocusWearCommService {
     //      Value object create methods - reading from Locus API             //
     ///////////////////////////////////////////////////////////////////////////
 
-    private void handleRecordingStateChanged(Context ctx, LocusUtils.LocusVersion lv, String profile) {
+    private void handleAddWpt(Context ctx, LocusUtils.LocusVersion lv) {
+        try {
+            ActionTools.actionTrackRecordAddWpt(ctx, lv, true);
+        } catch (RequiredVersionMissingException e) {
+            Logger.logE(TAG, "Invalid version " + lv + ", can't add WPT", e);
+        }
+    }
 
-        ActionTools.actionTrackRecordStart(ctx, lv, profile);
+    private void handleRecordingStateChanged(Context ctx, LocusUtils.LocusVersion lv, TrackRecordingStateEnum newState, String profile) {
+        try {
+            switch (newState) {
+                case PAUSED:
+                    ActionTools.actionTrackRecordPause(ctx, lv);
+                    break;
+                case RUNNING:
+                    ActionTools.actionTrackRecordStart(ctx, lv, profile);
+                    break;
+                case NOT_RECORDING:
+                    ActionTools.actionTrackRecordStop(ctx, lv, true);
+                    break;
+            }
+            if (newState == TrackRecordingStateEnum.RUNNING) {
 
-} else if (path.equals(Const.PATH_TRACK_REC_STOP)) {
-        ActionTools.actionTrackRecordStop(ctx, lv, true);
-        } else if (path.equals(Const.PATH_TRACK_REC_PAUSE)) {
-        ActionTools.actionTrackRecordPause(ctx, lv);
-
+            }
+        } catch (RequiredVersionMissingException e) {
+            Logger.logE(TAG, "Invalid version " + lv + ", cant change track recording state.", e);
+        }
     }
 
     /**
@@ -304,4 +366,13 @@ public class DeviceCommService extends LocusWearCommService {
         return trv;
     }
 
+    private static class PeriodicDataTimer extends Timer {
+        private byte activityId;
+        private int periodMs;
+        private PeriodicDataTimer(byte activityId, int periodMs) {
+            super();
+            this.activityId = activityId;
+            this.periodMs = periodMs;
+        }
+    }
 }
