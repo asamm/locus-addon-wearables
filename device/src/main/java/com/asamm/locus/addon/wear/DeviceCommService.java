@@ -8,20 +8,24 @@ import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
-import com.assam.locus.addon.wear.common.communication.containers.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.TrackProfileInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.MessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import locus.api.android.ActionTools;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.LocusUtils;
 import locus.api.android.utils.exceptions.RequiredVersionMissingException;
+import locus.api.objects.extra.TrackStats;
 import locus.api.utils.Logger;
 
 /**
@@ -40,6 +44,9 @@ public class DeviceCommService extends LocusWearCommService {
     // Last received update from Locus
     private UpdateContainer mLastUpdate;
 
+    private Timer mPeriodicDataTimer;
+
+
     /**
      * Default constructor.
      *
@@ -47,6 +54,12 @@ public class DeviceCommService extends LocusWearCommService {
      */
     private DeviceCommService(Context ctx) {
         super(ctx);
+
+        try {
+            mLastUpdate = ActionTools.getDataUpdateContainer(ctx, LocusUtils.getActiveVersion(ctx));
+        } catch (RequiredVersionMissingException e) {
+            // TODO cejnar nepodporovat nizsi verze locus API - pouziva okamzite napr GET_TRACK_REC
+        }
         // enable receiver
         PeriodicUpdatesReceiver.enableReceiver(ctx);
     }
@@ -128,10 +141,29 @@ public class DeviceCommService extends LocusWearCommService {
                     sendDataItem(DataPath.PUT_TRACK_REC_ICON_INFO, profiles.second);
                 }
                 break;
+            case GET_TRACK_REC:
+                TrackRecordingValue trv = loadTrackRecordingValue();
+                sendDataItem(DataPath.PUT_TRACK_REC, trv);
+                break;
+            case PUT_TRACK_REC_STATE_CHANGE:
+                LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
+                handleRecordingStateChanged(c, lv, null); // TODO cejnar
+
+            case GET_PERIODIC_DATA:
+
             default:
                 Logger.logE(TAG, "Unknown request " + path);
         }
     }
+    private <E extends TimeStampStorable> Pair<DataPath, E> parseData(DataEvent event) {
+        DataPath p = DataPath.valueOf(event.getDataItem());
+        if (p != null) {
+            TimeStampStorable value = p.createStorableForPath(event.getDataItem());
+            return new Pair<>(p, (E) value);
+        }
+        return new Pair<>(p, null);
+    }
+
 
 
     public static boolean isInstance() {
@@ -141,6 +173,17 @@ public class DeviceCommService extends LocusWearCommService {
     ///////////////////////////////////////////////////////////////////////////
     //      Value object create methods - reading from Locus API             //
     ///////////////////////////////////////////////////////////////////////////
+
+    private void handleRecordingStateChanged(Context ctx, LocusUtils.LocusVersion lv, String profile) {
+
+        ActionTools.actionTrackRecordStart(ctx, lv, profile);
+
+} else if (path.equals(Const.PATH_TRACK_REC_STOP)) {
+        ActionTools.actionTrackRecordStop(ctx, lv, true);
+        } else if (path.equals(Const.PATH_TRACK_REC_PAUSE)) {
+        ActionTools.actionTrackRecordPause(ctx, lv);
+
+    }
 
     /**
      * Load basic data from current Locus application.
@@ -250,5 +293,15 @@ public class DeviceCommService extends LocusWearCommService {
         return result;
     }
 
+    private TrackRecordingValue loadTrackRecordingValue() {
+        boolean infoAvailable = mLastUpdate != null;
+        boolean trackRec = infoAvailable && mLastUpdate.isTrackRecRecording();
+        boolean trackRecPause = infoAvailable && mLastUpdate.isTrackRecPaused();
+        String profileName = infoAvailable ? mLastUpdate.getTrackRecProfileName() : "";
+        TrackStats stats = infoAvailable ? mLastUpdate.getTrackRecStats() : null;
+        TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
+                                                          profileName, stats);
+        return trv;
+    }
 
 }

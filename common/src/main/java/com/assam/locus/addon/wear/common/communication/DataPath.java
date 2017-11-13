@@ -3,9 +3,12 @@ package com.assam.locus.addon.wear.common.communication;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.assam.locus.addon.wear.common.communication.containers.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.TrackProfileInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
+import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.google.android.gms.wearable.DataItem;
 
 import locus.api.utils.Logger;
@@ -24,6 +27,14 @@ public enum DataPath {
     PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
     PUT_TRACK_REC_ICON_INFO(TrackProfileIconValue.ValueList.class),
     PUT_APP_DESTROYED(EmptyCommand.class),
+
+    GET_TRACK_REC(EmptyCommand.class),
+    PUT_TRACK_REC(TrackRecordingValue.class),
+    PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
+
+    GET_PERIODIC_DATA(PeriodicCommand.class),
+
+    GET_KEEP_ALIVE(EmptyCommand.class),
     /** Fake communication data path, used for signalling activity about ON_CONNECTED event inside
         strictly the application. Should not be used over network. */
     PUT_ON_CONNECTED_EVENT(EmptyCommand.class);

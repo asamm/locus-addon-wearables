@@ -114,7 +114,6 @@ class RequestHandlerOld implements
             Logger.logE(TAG, "onMessageReceived(" + messageEvent + ")", e);
         }
     }
-
     // GOOGLE API CLIENT - CONNECTION CALLBACK
 
     @Override

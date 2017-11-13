@@ -63,6 +63,6 @@ dependencies {
     // add Google stuff
     implementation lib.support_wearable
     implementation 'com.android.support:wear:26.0.2'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
     compileOnly 'com.google.android.wearable:wearable:2.1.0'
 }
