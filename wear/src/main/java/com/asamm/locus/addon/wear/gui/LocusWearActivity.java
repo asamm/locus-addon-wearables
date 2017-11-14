@@ -9,6 +9,7 @@ import com.asamm.locus.addon.wear.ApplicationState;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import locus.api.utils.Logger;
@@ -132,6 +133,7 @@ public abstract class LocusWearActivity extends WearableActivity {
     protected void onStop() {
         this.mState = WearActivityState.ON_STOP;
         super.onStop();
+        WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA, PeriodicCommand.createStopPeriodicUpdatesCommand());
         cancelConnectionFailedTimer();
     }
 

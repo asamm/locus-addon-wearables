@@ -3,6 +3,7 @@ package com.assam.locus.addon.wear.common.communication;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
 import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
@@ -36,6 +37,7 @@ public enum DataPath {
     GET_PERIODIC_DATA(PeriodicCommand.class),
 
     GET_KEEP_ALIVE(EmptyCommand.class),
+    PUT_MAP(MapContainer.class),
     /** Fake communication data path, used for signalling activity about ON_CONNECTED event inside
         strictly the application. Should not be used over network. */
     PUT_ON_CONNECTED_EVENT(EmptyCommand.class);
@@ -62,12 +64,12 @@ public enum DataPath {
         return mPath;
     }
 
-    public TimeStampStorable createStorableForPath(DataItem item) {
+    public <E extends TimeStampStorable> E createStorableForPath(DataItem item) {
         if (mContainerClass.getSimpleName().equals(EmptyCommand.class.getSimpleName())) {
             return null;
         }
         try {
-            return mContainerClass.getConstructor(byte[].class).newInstance(item.getData());
+            return (E) mContainerClass.getConstructor(byte[].class).newInstance(item.getData());
         } catch (Exception e) {
             Logger.logE("DataPath", "Constructor failed for " + name(), e);
             return null;

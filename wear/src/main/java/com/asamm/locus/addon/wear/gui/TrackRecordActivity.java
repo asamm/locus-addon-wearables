@@ -92,20 +92,19 @@ public class TrackRecordActivity extends LocusWearActivity {
             if (receivedState == TrackRecordingStateEnum.NOT_RECORDING) {
                 mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
-                        PeriodicCommand.createStopPeriodicUpdatesCommand(PeriodicCommand.PERIODIC_ACITIVITY_TRACK_RECORDING)
-                );
+                        PeriodicCommand.createStopPeriodicUpdatesCommand());
             } else {
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
-                        new PeriodicCommand(PeriodicCommand.PERIODIC_ACITIVITY_TRACK_RECORDING,
+                        new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_ACITIVITY_TRACK_RECORDING,
                                 REFRESH_PERIOD_MS));
                 mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
                 Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
             }
             mRecordingState = receivedState;
+        }
 
-            if (mRecordingState != TrackRecordingStateEnum.NOT_RECORDING) {
-                // TODO cejnar update fields with stats
-            }
+        if (mRecordingState != TrackRecordingStateEnum.NOT_RECORDING) {
+            // TODO cejnar update fields with stats
         }
     }
 

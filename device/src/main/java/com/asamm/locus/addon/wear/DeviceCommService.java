@@ -8,8 +8,8 @@ import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
 import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import locus.api.android.ActionTools;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
@@ -93,11 +92,12 @@ public class DeviceCommService extends LocusWearCommService {
      */
     static void destroyInstance(Context ctx) {
         synchronized (TAG) {
-            if (mInstance != null) {
-                mInstance.destroy();
-                if (mInstance.mPeriodicDataTimer != null) {
-                    mInstance.mPeriodicDataTimer.cancel();
-                    mInstance.mPeriodicDataTimer = null;
+            DeviceCommService s = mInstance;
+            if (s != null) {
+                s.destroy();
+                if (s.mPeriodicDataTimer != null) {
+                    s.mPeriodicDataTimer.cancel();
+                    s.mPeriodicDataTimer = null;
                 }
                 // disable receiver
                 PeriodicUpdatesReceiver.disableReceiver(ctx);
@@ -156,9 +156,8 @@ public class DeviceCommService extends LocusWearCommService {
                 break;
             case PUT_TRACK_REC_STATE_CHANGE: {
                 LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
-                Pair<DataPath, TrackRecordingStateChangeValue> v =
-                        parseData(newData);
-                handleRecordingStateChanged(c, lv, v.second.getRecordingState(), v.second.getmProfileName());
+                TrackRecordingStateChangeValue v = path.createStorableForPath(item);
+                handleRecordingStateChanged(c, lv, v.getRecordingState(), v.getmProfileName());
             }
                 break;
             case GET_ADD_WAYPOINT: {
@@ -166,23 +165,17 @@ public class DeviceCommService extends LocusWearCommService {
                 handleAddWpt(c, lv);
             }
                 break;
-            case GET_PERIODIC_DATA:
-                // TODO cejnar
+            case GET_PERIODIC_DATA: {
+                PeriodicCommand v = path.createStorableForPath(item);
+                handlePeriodicWearUpdate(v);
+            }
                 break;
             default:
                 Logger.logE(TAG, "Unknown request " + path);
         }
     }
-    private <E extends TimeStampStorable> Pair<DataPath, E> parseData(DataEvent event) {
-        DataPath p = DataPath.valueOf(event.getDataItem());
-        if (p != null) {
-            TimeStampStorable value = p.createStorableForPath(event.getDataItem());
-            return new Pair<>(p, (E) value);
-        }
-        return new Pair<>(p, null);
-    }
 
-    private void setPeriodicWearUpdate(PeriodicCommand command) {
+    private void handlePeriodicWearUpdate(PeriodicCommand command) {
         if ((command == null || command.isStopRequest())) {
             if (mPeriodicDataTimer != null) {
                 mPeriodicDataTimer.cancel();
@@ -201,13 +194,40 @@ public class DeviceCommService extends LocusWearCommService {
             }
         }
 
+        final TimerTask task;
+        switch ( activityId) {
+            case PeriodicCommand.IDX_PERIODIC_ACITIVITY_TRACK_RECORDING:
+                task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        TrackRecordingValue trv = loadTrackRecordingValue();
+                        sendDataItem(DataPath.PUT_TRACK_REC, trv);
+                    }
+                };
+                break;
+            case PeriodicCommand.IDX_PERIODIC_ACITIVITY_MAP:
+                task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        sendMapPeriodic();
+                    }
+                };
+                break;
+            default:
+                task = null;
+                break;
+        }
+        if (task == null) { // unknown activity id, don't start the timer
+            return;
+        }
         mPeriodicDataTimer = new PeriodicDataTimer(activityId, periodMs);
-        mPeriodicDataTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                // TODO cejnar
-            }
-        }, 0, periodMs);
+        mPeriodicDataTimer.schedule(task, 0, periodMs);
+    }
+
+    private void sendMapPeriodic() {
+        MapContainer m = new MapContainer(); // TODO cejnar keep map in memory and rewrite bitmap to save on GC?
+        sendDataItem(DataPath.PUT_MAP, m);
+        // TODO cejnar
     }
 
     public static boolean isInstance() {

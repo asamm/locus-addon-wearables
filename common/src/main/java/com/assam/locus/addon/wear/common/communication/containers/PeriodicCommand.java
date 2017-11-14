@@ -15,9 +15,9 @@ public class PeriodicCommand extends TimeStampStorable {
     public static final int PERIOD_STOP = 0;
 
     /** Activities supporting periodic messages */
-    public static final byte PERIODIC_ACITIVY_NONE = 0;
-    public static final byte PERIODIC_ACITIVITY_TRACK_RECORDING = 1;
-    public static final byte PERIODIC_ACITIVITY_MAP = 2;
+    public static final byte IDX_PERIODIC_ACITIVY_STOP_ALL = 0;
+    public static final byte IDX_PERIODIC_ACITIVITY_TRACK_RECORDING = 1;
+    public static final byte IDX_PERIODIC_ACITIVITY_MAP = 2;
 
     private byte mPeriodicActivityId;
     private int mPeriodMs;
@@ -69,8 +69,8 @@ public class PeriodicCommand extends TimeStampStorable {
         dw.writeInt(mPeriodMs);
     }
 
-    public static PeriodicCommand createStopPeriodicUpdatesCommand(byte activityIdx){
-        return new PeriodicCommand(activityIdx, PERIOD_STOP);
+    public static PeriodicCommand createStopPeriodicUpdatesCommand(){
+        return new PeriodicCommand(IDX_PERIODIC_ACITIVY_STOP_ALL, PERIOD_STOP);
     }
 
 }
