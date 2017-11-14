@@ -2,10 +2,10 @@ package com.asamm.locus.addon.wear;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
-import android.widget.Switch;
 
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
@@ -47,18 +47,22 @@ public class MainApplication extends Application implements Application.Activity
             public void logI(String tag, String msg) {
                 Log.i(tag, msg);
             }
+
             @Override
             public void logD(String tag, String msg) {
                 Log.d(tag, msg);
             }
+
             @Override
             public void logW(String tag, String msg) {
                 Log.w(tag, msg);
             }
+
             @Override
             public void logE(String tag, String msg) {
                 Log.e(tag, msg);
             }
+
             @Override
             public void logE(String tag, String msg, Exception e) {
                 Log.e(tag, msg, e);
@@ -155,6 +159,7 @@ public class MainApplication extends Application implements Application.Activity
 
     /**
      * Set reference to current activity.
+     *
      * @param activity current activity
      */
     private void setCurrentActivity(Activity activity) {
@@ -213,5 +218,15 @@ public class MainApplication extends Application implements Application.Activity
     public void onConnectionSuspened() {
         mState.setConnected(false);
         reconnectIfNeeded();
+    }
+
+    public void startLocusWearActivity(Class<? extends WearableActivity> activityToStart) {
+        if (activityToStart == null ||
+                (mCurrentActivity != null && mCurrentActivity.getClass().getSimpleName().equals(activityToStart.getSimpleName()))) {
+            return;
+        }
+        Intent i = new Intent(this, activityToStart);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 }

@@ -2,6 +2,7 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.wear.widget.drawer.WearableDrawerView;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -116,12 +117,19 @@ public class TrackRecordActivity extends LocusWearActivity {
     private void updateTrackData(TrackRecordingValue data) {
         // TODO cejnar
     }
+
     @Override
     protected void onStart() {
         super.onStart();
         model = null;
         // TODO cejnar preferences ?
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
+        WearableDrawerView mWearableNavigationDrawer = findViewById(R.id.navigation_drawer);
+        
+        //mWearableNavigationDrawer.setAdapter(new NavigationAdapter(this));
+        // Peeks navigation drawer on the top.
+        //mWearableNavigationDrawer.getController().openDrawer();
+
     }
 
     public void handleStartClick(View v) {

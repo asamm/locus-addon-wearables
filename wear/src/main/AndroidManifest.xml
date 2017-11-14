@@ -7,7 +7,7 @@
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application
-        android:name="com.asamm.locus.addon.wear.MainApplication"
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,22 +21,21 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.asamm.locus.addon.wear.gui.MainMenuActivityOld"
+            android:name=".gui.MainMenuActivityOld"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|keyboardHidden"
-            android:launchMode="standard">
-        </activity>
+            android:launchMode="standard"></activity>
         <activity
-            android:name="com.asamm.locus.addon.wear.gui.MapActivityOld"
+            android:name=".gui.MapActivityOld"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="standard" />
         <activity
-            android:name="com.asamm.locus.addon.wear.gui.TrackRecordActivityOld"
+            android:name=".gui.TrackRecordActivityOld"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="standard" />
 
         <!-- register service for events -->
-        <service android:name="com.asamm.locus.addon.wear.communication.WearListenerService">
+        <service android:name=".communication.WearListenerService">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
 
@@ -63,8 +62,17 @@
             android:value="true" />
 
         <activity
-            android:name="com.asamm.locus.addon.wear.gui.TrackRecordActivity"
+            android:name=".gui.TrackRecordActivity"
             android:label="@string/title_activity_track_record">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".gui.MapActivity"
+            android:label="@string/title_activity_map">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

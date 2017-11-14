@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.wear.widget.drawer.WearableDrawerLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,24 +13,31 @@
     tools:context="com.asamm.locus.addon.wear.gui.TrackRecordActivity"
     tools:deviceIds="wear">
 
-    <ViewFlipper
-        android:id="@+id/trackRecordViewFlipper"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <include layout="@layout/track_record_start_screen" />
+        <ViewFlipper
+            android:id="@+id/trackRecordViewFlipper"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <include layout="@layout/track_record_recording_screen" />
+            <include layout="@layout/track_record_start_screen" />
 
-    </ViewFlipper>
+            <include layout="@layout/track_record_recording_screen" />
 
-</android.support.constraint.ConstraintLayout>
+        </ViewFlipper>
+    </android.support.constraint.ConstraintLayout>
+
+    <include layout="@layout/include_navigation_drawer" />
+
+</android.support.wear.widget.drawer.WearableDrawerLayout>
 

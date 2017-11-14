@@ -1,12 +1,13 @@
 package com.asamm.locus.addon.wear.gui;
 
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.wearable.activity.WearableActivity;
+import android.view.View;
 
 import com.asamm.locus.addon.wear.ApplicationState;
 import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
@@ -16,7 +17,7 @@ import locus.api.utils.Logger;
 
 /**
  * Base class for wearable activities
- *
+ * <p>
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
  */
@@ -28,19 +29,22 @@ public abstract class LocusWearActivity extends WearableActivity {
     protected volatile boolean mInitialRequestSent = false;
     protected volatile boolean mIsInitialRequestReceived = false;
 
-    /** only used in connection failed timer to ensure handshake request is sent only once per activity start
+    /**
+     * only used in connection failed timer to ensure handshake request is sent only once per activity start
      */
     private volatile boolean mIshandShakeRequestSent = false;
 
     /**
      * Each activity should define initial command which is sent automatically onStart()
+     *
      * @return DataPath or null if activity want to just check connection on start and
-     *         not issue any other custom command.
+     * not issue any other custom command.
      */
     protected abstract DataPath getInitialCommandType();
 
     /**
      * Expected type of response for initialCommand
+     *
      * @return
      */
     protected abstract DataPath getInitialCommandResponseType();
@@ -52,8 +56,10 @@ public abstract class LocusWearActivity extends WearableActivity {
     protected void onGotInitialCommandResponse() {
 
     }
+
     /**
      * Consumes new data coming from WearListenerService
+     *
      * @param path
      * @param data
      */
@@ -102,7 +108,7 @@ public abstract class LocusWearActivity extends WearableActivity {
                 mIshandShakeRequestSent = true;
                 wcs.sendCommand(DataPath.GET_HAND_SHAKE);
             }
-        } else if (!mInitialRequestSent){
+        } else if (!mInitialRequestSent) {
             mInitialRequestSent = true;
             DataPath p = getInitialCommandType();
             if (p != null) {
@@ -149,20 +155,22 @@ public abstract class LocusWearActivity extends WearableActivity {
         super.onStart();
         // checks connection and state of initial command, if not ready, initiates countDownTimer
         if (!handleConnectionFailedTimerTick()) {
-                mConnectionFailedTimer = new CountDownTimer(8000, 400) {
-                    @Override
-                    public void onTick(long l) {
-                        handleConnectionFailedTimerTick();
-                    }
-                    @Override
-                    public void onFinish() {
-                        Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
-                        // TODO cejnar - connection failed, handle the situation.
-                    }
-                };
-                mConnectionFailedTimer.start();
+            mConnectionFailedTimer = new CountDownTimer(8000, 400) {
+                @Override
+                public void onTick(long l) {
+                    handleConnectionFailedTimerTick();
+                }
+
+                @Override
+                public void onFinish() {
+                    Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+                    // TODO cejnar - connection failed, handle the situation.
+                }
+            };
+            mConnectionFailedTimer.start();
         }
     }
+
     // current activity state
     public enum WearActivityState {
         ON_CREATE,
@@ -175,6 +183,24 @@ public abstract class LocusWearActivity extends WearableActivity {
     }
 
     protected ApplicationState getApplicationState() {
-        return ((MainApplication)this.getApplication()).getState();
+        return ((MainApplication) this.getApplication()).getState();
     }
+
+    public void handleNavigationDrawerItemClicked(View v) {
+        final Class<? extends WearableActivity> activityToStart;
+        switch (v.getId()) {
+            case R.id.navigation_drawer_item_map:
+                activityToStart = MapActivity.class;
+                break;
+            case R.id.navigation_drawer:
+                activityToStart = TrackRecordActivity.class;
+                break;
+            default:
+                activityToStart = null;
+                break;
+        }
+        ((MainApplication)getApplication()).startLocusWearActivity(activityToStart);
+
+    }
+
 }
