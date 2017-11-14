@@ -44,14 +44,15 @@ public class LocusWearCommService implements
 
     protected LocusWearCommService(Context context) {
         this.context = context;
+        mUnsentData = new ConcurrentLinkedQueue<>();
         // connect the GoogleApiClient
         mGoogleApiClient = new GoogleApiClient.Builder(context.getApplicationContext()).
                 addApi(Wearable.API).
                 addConnectionCallbacks(this).
                 addOnConnectionFailedListener(this).
                 build();
+
         mGoogleApiClient.connect();
-        mUnsentData = new ConcurrentLinkedQueue<>();
     }
 
     protected void destroy() {

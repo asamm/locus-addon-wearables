@@ -10,7 +10,6 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.fragments.TrackRecordProfileSelectFragment;
 import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
@@ -32,8 +31,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
     private static final int REFRESH_PERIOD_MS = 1000;
 
-    private TrackRecordingStateEnum mRecordingState = null;
-
+    private TrackRecordingValue model;
     private ViewFlipper mRecViewFlipper;
 
     @Override
@@ -55,11 +53,6 @@ public class TrackRecordActivity extends LocusWearActivity {
         setAmbientEnabled();
     }
 
-    public void handleClick(View v) {
-        Logger.logD(TAG, "sending Reguest");
-        WearCommService.getInstance().sendDataItem(DataPath.GET_HAND_SHAKE, new EmptyCommand());
-    }
-
     @Override
     public void consumeNewData(DataPath path, TimeStampStorable data) {
         super.consumeNewData(path, data);
@@ -79,64 +72,89 @@ public class TrackRecordActivity extends LocusWearActivity {
         }
     }
 
-    private void handlePutTrackRec(TrackRecordingValue trv) {
+    private void handlePutTrackRec(final TrackRecordingValue trv) {
         if (trv == null || !trv.isInfoAvailable()) {
             WearCommService.getInstance().sendCommand(DataPath.GET_TRACK_REC);
             return;
         }
-        TrackRecordingStateEnum receivedState =
-                trv.isTrackRecPaused() ? TrackRecordingStateEnum.PAUSED :
-                        trv.isTrackRecRecording() ? TrackRecordingStateEnum.RUNNING :
-                                TrackRecordingStateEnum.NOT_RECORDING;
-        if (receivedState != mRecordingState) {
-            if (receivedState == TrackRecordingStateEnum.NOT_RECORDING) {
-                mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
+        TrackRecordingStateEnum recordingState = model == null ? null : model.getTrackRecordingState();
+        final TrackRecordingStateEnum newRecordingState = trv.getTrackRecordingState();
+
+        final int requestScreenTransitionIdx;
+        if (newRecordingState != recordingState) {
+            if (newRecordingState == TrackRecordingStateEnum.NOT_RECORDING) {
+                requestScreenTransitionIdx = FLIPPER_START_RECORDING_SCREEN_IDX;
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
                         PeriodicCommand.createStopPeriodicUpdatesCommand());
             } else {
                 WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
                         new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_ACITIVITY_TRACK_RECORDING,
                                 REFRESH_PERIOD_MS));
-                mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
+                requestScreenTransitionIdx = FLIPPER_RECORDING_RUNNING_SCREEN_IDX;
                 Toast.makeText(this, "Recording started", Toast.LENGTH_SHORT).show();
             }
-            mRecordingState = receivedState;
+        } else {
+            requestScreenTransitionIdx = -1;
         }
+        model = trv;
 
-        if (mRecordingState != TrackRecordingStateEnum.NOT_RECORDING) {
-            // TODO cejnar update fields with stats
+        if (requestScreenTransitionIdx >= 0 || newRecordingState != TrackRecordingStateEnum.NOT_RECORDING) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (requestScreenTransitionIdx >= 0) {
+                        mRecViewFlipper.setDisplayedChild(requestScreenTransitionIdx);
+                    }
+                    if (newRecordingState != TrackRecordingStateEnum.NOT_RECORDING) {
+                        updateTrackData(trv);
+                    }
+                }
+            });
         }
     }
 
+    private void updateTrackData(TrackRecordingValue data) {
+        // TODO cejnar
+    }
     @Override
     protected void onStart() {
         super.onStart();
-        mRecordingState = null;
-        mRecViewFlipper.setDisplayedChild(0);
-
+        model = null;
+        // TODO cejnar preferences ?
+        mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
     }
 
     public void handleStartClick(View v) {
+        requestStateChange(TrackRecordingStateEnum.RECORDING);
     }
 
     public void handleStopClick(View v) {
+        requestStateChange(TrackRecordingStateEnum.NOT_RECORDING);
     }
 
     public void handlePauseClick(View v) {
+        requestStateChange(TrackRecordingStateEnum.PAUSED);
     }
 
     public void handleAddWaypointClick(View v) {
-
+        WearCommService.getInstance().sendCommand(DataPath.GET_ADD_WAYPOINT);
     }
 
+    /**
+     * Sends request to change recording state (ie. START/STOP/PAUSE) recording
+     * to the device.
+     *
+     * @param newState
+     */
     private void requestStateChange(TrackRecordingStateEnum newState) {
-        if (mRecordingState == newState || newState == null) {
+        final TrackRecordingValue model = this.model;
+        if (newState == null || (model != null && model.getTrackRecordingState() == newState)) {
             return;
         }
         WearCommService wcs = WearCommService.getInstance();
         TrackProfileInfoValue v = getRecordingInfo();
 
-        TimeStampStorable command =
+        TrackRecordingStateChangeValue command =
                 new TrackRecordingStateChangeValue(newState, v != null ? v.getName() : null);
         wcs.sendDataItem(DataPath.PUT_TRACK_REC_STATE_CHANGE, command);
     }

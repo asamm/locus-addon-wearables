@@ -118,4 +118,10 @@ public class TrackRecordingValue extends TimeStampStorable {
     public TrackStats getTrackRecStats() {
         return trackRecStats;
     }
+
+    public TrackRecordingStateEnum getTrackRecordingState() {
+        return trackRecPaused ? TrackRecordingStateEnum.PAUSED :
+                trackRecRecording ? TrackRecordingStateEnum.RECORDING :
+                        TrackRecordingStateEnum.NOT_RECORDING;
+    }
 }

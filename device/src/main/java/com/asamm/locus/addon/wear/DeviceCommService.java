@@ -60,9 +60,10 @@ public class DeviceCommService extends LocusWearCommService {
         super(ctx);
 
         try {
-            mLastUpdate = ActionTools.getDataUpdateContainer(ctx, LocusUtils.getActiveVersion(ctx));
+            LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(ctx);
+            mLastUpdate = ActionTools.getDataUpdateContainer(ctx, lv);
         } catch (RequiredVersionMissingException e) {
-            // TODO cejnar nepodporovat nizsi verze locus API - pouziva okamzite napr GET_TRACK_REC
+            // TODO cejnar maybe dont support older version of Locus API at all?
         }
         // enable receiver
         PeriodicUpdatesReceiver.enableReceiver(ctx);
@@ -135,8 +136,6 @@ public class DeviceCommService extends LocusWearCommService {
             case GET_HAND_SHAKE:
                 HandShakeValue hndshk = loadHandShake(c);
                 sendDataItem(DataPath.PUT_HAND_SHAKE, hndshk);
-                break;
-            case GET_BASIC_INFO:
                 BasicAppInfoValue appInfo = loadBasicInfo(c);
                 if (appInfo != null) {
                     sendDataItem(DataPath.PUT_BASIC_INFO, appInfo);
@@ -247,24 +246,32 @@ public class DeviceCommService extends LocusWearCommService {
     }
 
     private void handleRecordingStateChanged(Context ctx, LocusUtils.LocusVersion lv, TrackRecordingStateEnum newState, String profile) {
-        try {
-            switch (newState) {
-                case PAUSED:
-                    ActionTools.actionTrackRecordPause(ctx, lv);
-                    break;
-                case RUNNING:
-                    ActionTools.actionTrackRecordStart(ctx, lv, profile);
-                    break;
-                case NOT_RECORDING:
-                    ActionTools.actionTrackRecordStop(ctx, lv, true);
-                    break;
-            }
-            if (newState == TrackRecordingStateEnum.RUNNING) {
-
-            }
-        } catch (RequiredVersionMissingException e) {
-            Logger.logE(TAG, "Invalid version " + lv + ", cant change track recording state.", e);
+        TrackRecordingStateEnum currentRecState = null;
+        if (mLastUpdate != null) {
+            currentRecState = mLastUpdate.isTrackRecPaused() ?
+                    currentRecState = TrackRecordingStateEnum.PAUSED :
+                    mLastUpdate.isTrackRecRecording() ? TrackRecordingStateEnum.RECORDING :
+                            TrackRecordingStateEnum.NOT_RECORDING;
         }
+        if (newState != null && currentRecState != newState) {
+            try {
+                switch (newState) {
+                    case PAUSED:
+                        ActionTools.actionTrackRecordPause(ctx, lv);
+                        break;
+                    case RECORDING:
+                        ActionTools.actionTrackRecordStart(ctx, lv, profile);
+                        break;
+                    case NOT_RECORDING:
+                        ActionTools.actionTrackRecordStop(ctx, lv, true);
+                        break;
+                }
+            } catch (RequiredVersionMissingException e) {
+                Logger.logE(TAG, "Invalid version " + lv + ", cant change track recording state.", e);
+            }
+        }
+        TrackRecordingValue trv = loadTrackRecordingValue();
+        sendDataItem(DataPath.PUT_TRACK_REC, trv);
     }
 
     /**
