@@ -47,7 +47,7 @@ public class ListItemLayout extends LinearLayout implements WearableListView.OnC
 
         // prepare views
         mIvIcon = (ImageView)
-                findViewById(R.id.image_view_icon);
+                findViewById(R.id.profile_list_item_image);
         mTvTitle = (TextView)
                 findViewById(R.id.text_view_title);
         mTvDesc = (TextView)

@@ -35,6 +35,12 @@ public class TrackProfileIconValue extends TimeStampStorable {
         mImg = simpleProfile.getIcon();
     }
 
+    public TrackProfileIconValue(long id, byte[] img) {
+        this();
+        this.mId = id;
+        this.mImg = img;
+    }
+
     /**
      * Constructor based on raw byte array.
      *
@@ -91,6 +97,10 @@ public class TrackProfileIconValue extends TimeStampStorable {
 
     public byte[] getIcon() {
         return mImg;
+    }
+
+    public void setIcon(byte[] mImg) {
+        this.mImg = mImg;
     }
 
     public static class ValueList extends ListStorable<TrackProfileIconValue> {

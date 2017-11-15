@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.wear.widget.WearableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="@dimen/box_inset_layout_padding"
+    tools:context="com.asamm.locus.addon.wear.gui.ProfileListActivity"
+    scrollbars="vertical"
+    tools:deviceIds="wear">
+
+</android.support.wear.widget.WearableRecyclerView>
+

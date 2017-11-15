@@ -117,9 +117,10 @@
 
     <style name="TextViewListTitle">
         <item name="android:id">@id/text_view_title</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:paddingTop">8dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/text_size_big</item>
@@ -127,9 +128,10 @@
 
     <style name="TextViewListDesc">
         <item name="android:id">@id/text_view_desc</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:textColor">@color/dark_grey</item>
         <item name="android:textSize">@dimen/text_size_small</item>

@@ -122,11 +122,26 @@ public abstract class LocusWearActivity extends WearableActivity {
         result |= mIsInitialRequestReceived;
         if (result) {
             cancelConnectionFailedTimer();
+            onHandShakeFinished();
         }
         return result;
 
     }
 
+    /**
+     * Called after successful initial communication of the activity
+     */
+    protected void onHandShakeFinished() {
+
+    }
+
+    /**
+     * Called if the activity could not establish connection and receive required data in
+     * given time.
+     */
+    protected void onHandShakeFailed() {
+
+    }
     protected void cancelConnectionFailedTimer() {
         if (mConnectionFailedTimer != null) {
             mConnectionFailedTimer.cancel();
@@ -164,6 +179,7 @@ public abstract class LocusWearActivity extends WearableActivity {
                 @Override
                 public void onFinish() {
                     Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+                    onHandShakeFailed();
                     // TODO cejnar - connection failed, handle the situation.
                 }
             };

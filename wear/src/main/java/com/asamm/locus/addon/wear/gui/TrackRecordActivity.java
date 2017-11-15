@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.wear.widget.drawer.WearableDrawerView;
@@ -34,6 +35,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 
     private TrackRecordingValue model;
     private ViewFlipper mRecViewFlipper;
+    private volatile TrackProfileInfoValue.ValueList profileList;
+    private volatile TrackProfileIconValue.ValueList profileIcons;
+
 
     @Override
     protected DataPath getInitialCommandType() {
@@ -54,22 +58,31 @@ public class TrackRecordActivity extends LocusWearActivity {
         setAmbientEnabled();
     }
 
+    private void handleModelChanged() {
+        // TODO cejnar update state of components depending on current model
+    }
+
     @Override
     public void consumeNewData(DataPath path, TimeStampStorable data) {
         super.consumeNewData(path, data);
         switch (path) {
             case PUT_TRACK_REC_PROFILE_INFO:
                 TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) data;
+                TrackRecordActivity.this.profileList = profiles;
+                handleModelChanged();
                 Logger.logD(TAG, "Loaded rec profiles " + profiles.getSize());
                 break;
             case PUT_TRACK_REC_ICON_INFO:
                 TrackProfileIconValue.ValueList icons = (TrackProfileIconValue.ValueList) data;
+                profileIcons = icons;
+                handleModelChanged();
                 Logger.logD(TAG, "Loaded rec icons " + icons.getSize());
                 break;
             case PUT_TRACK_REC:
                 TrackRecordingValue trv = (TrackRecordingValue) data;
                 handlePutTrackRec(trv);
                 Logger.logD(TAG, "Loaded track info ");
+                break;
         }
     }
 
@@ -183,4 +196,18 @@ public class TrackRecordActivity extends LocusWearActivity {
         return null;
     }
 
+    @Override
+    protected void onHandShakeFinished() {
+        super.onHandShakeFinished();
+        WearCommService wcs = WearCommService.getInstance();
+        wcs.sendCommand(DataPath.GET_TRACK_REC_PROFILES);
+    }
+
+    public TrackProfileInfoValue.ValueList getProfileList() {
+        return profileList;
+    }
+
+    public TrackProfileIconValue.ValueList getProfileIcons() {
+        return profileIcons;
+    }
 }

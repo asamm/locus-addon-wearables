@@ -24,7 +24,7 @@
             android:name=".gui.MainMenuActivityOld"
             android:alwaysRetainTaskState="true"
             android:configChanges="orientation|keyboardHidden"
-            android:launchMode="standard"></activity>
+            android:launchMode="standard" />
         <activity
             android:name=".gui.MapActivityOld"
             android:configChanges="orientation|keyboardHidden"
@@ -79,6 +79,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".gui.ProfileListActivity"
+            android:label="@string/title_activity_profile_list"></activity>
     </application>
 
 </manifest>
