@@ -143,7 +143,7 @@ public class MainApplication extends Application implements Application.Activity
             DataPath p = DataPath.valueOf(dataItem);
             Logger.logD(TAG, "Received " + p);
             if (p != null) {
-                TimeStampStorable value = p.createStorableForPath(dataItem);
+                TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
                 switch (p) {
                     case PUT_HAND_SHAKE:
                         mState.setHandShakeValue((HandShakeValue) value);

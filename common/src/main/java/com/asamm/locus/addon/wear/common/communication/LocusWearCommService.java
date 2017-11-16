@@ -11,10 +11,16 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.Asset;
 import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataItemAsset;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import locus.api.objects.Storable;
@@ -96,7 +102,14 @@ public class LocusWearCommService implements
     private void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
         Logger.logD(getClass().getSimpleName(), "Sending " + path);
         PutDataRequest request = PutDataRequest.create(path.getPath());
-        request.setData(data.getAsBytes());
+        if (path.isAsset()) {
+            request.putAsset(DataPath.DEFAULT_ASSET_KEY, Asset.createFromBytes(data.getAsBytes()));
+        } else {
+            request.setData(data.getAsBytes());
+        }
+        if (path.isUrgent()) {
+            request.setUrgent();
+        }
         PendingResult<DataApi.DataItemResult> pendingResult =
                 Wearable.DataApi.putDataItem(mGoogleApiClient, request);
     }
@@ -111,6 +124,34 @@ public class LocusWearCommService implements
     public void reconnectIfNeeded() {
         if (!isConnected() && !isConnecting()) {
             mGoogleApiClient.connect();
+        }
+    }
+
+    public <E extends TimeStampStorable> E createStorableForPath(DataPath p, DataItem item) {
+        Class<? extends TimeStampStorable> clazz = p.getContainerClass();
+        if (clazz.getSimpleName().equals(EmptyCommand.class.getSimpleName())) {
+            return null;
+        }
+        try {
+            Map<String, DataItemAsset> assets = item.getAssets();
+            DataItemAsset asset = assets == null ? null : assets.get(DataPath.DEFAULT_ASSET_KEY);
+            if (asset == null) {
+                return (E) clazz.getConstructor(byte[].class).newInstance(item.getData());
+            } else {
+                // blocking access
+                InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
+                        mGoogleApiClient, asset).await().getInputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                int nRead;
+                byte[] buffer = new byte[0x1000];
+                while ((nRead = assetInputStream.read(buffer, 0, buffer.length)) != -1) {
+                    baos.write(buffer, 0, nRead);
+                }
+                return (E) clazz.getConstructor(byte[].class).newInstance(baos.toByteArray());
+            }
+        } catch (Exception e) {
+            Logger.logE("DataPath", "Constructor failed for " + p.name(), e);
+            return null;
         }
     }
 }

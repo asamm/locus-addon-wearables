@@ -161,7 +161,7 @@ public class DeviceCommService extends LocusWearCommService {
                 break;
             case PUT_TRACK_REC_STATE_CHANGE: {
                 lv = LocusUtils.getActiveVersion(c);
-                TrackRecordingStateChangeValue v = path.createStorableForPath(item);
+                TrackRecordingStateChangeValue v = createStorableForPath(path, item);
                 handleRecordingStateChanged(c, lv, v.getRecordingState(), v.getmProfileName());
             }
                 break;
@@ -172,7 +172,7 @@ public class DeviceCommService extends LocusWearCommService {
                 break;
             case GET_PERIODIC_DATA: {
                 lv = LocusUtils.getActiveVersion(c);
-                PeriodicCommand v = path.createStorableForPath(item);
+                PeriodicCommand v = createStorableForPath(path, item);
                 handlePeriodicWearUpdate(c, v);
             }
                 break;
@@ -458,4 +458,5 @@ public class DeviceCommService extends LocusWearCommService {
             this.periodMs = periodMs;
         }
     }
+
 }
