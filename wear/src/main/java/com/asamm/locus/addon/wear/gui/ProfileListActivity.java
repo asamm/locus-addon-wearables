@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
 import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.assam.locus.addon.wear.common.communication.containers.DataPayload;
+import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 
@@ -36,7 +38,7 @@ public class ProfileListActivity extends LocusWearActivity {
     private TrackProfileIconValue.ValueList icons;
 
     @Override
-    protected DataPath getInitialCommandType() {
+    protected DataPayload<EmptyCommand> getInitialCommandType() {
         return null;
     }
 

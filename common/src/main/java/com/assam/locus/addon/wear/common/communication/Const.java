@@ -6,6 +6,8 @@ package com.assam.locus.addon.wear.common.communication;
  */
 public class Const {
 
+	public static final int ZOOM_UNKONWN = Integer.MIN_VALUE;
+
 	// minimal version code of Locus
 	public static final int LOCUS_VERSION_CODE = 409;
 

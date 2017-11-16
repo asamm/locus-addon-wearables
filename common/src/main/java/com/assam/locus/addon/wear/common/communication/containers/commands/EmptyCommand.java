@@ -1,4 +1,6 @@
-package com.assam.locus.addon.wear.common.communication.containers;
+package com.assam.locus.addon.wear.common.communication.containers.commands;
+
+import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 /**
  * Created by Milan Cejnar on 08.11.2017.

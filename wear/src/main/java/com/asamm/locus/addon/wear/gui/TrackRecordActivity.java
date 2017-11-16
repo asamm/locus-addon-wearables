@@ -1,6 +1,5 @@
 package com.asamm.locus.addon.wear.gui;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.wear.widget.drawer.WearableDrawerView;
@@ -12,7 +11,9 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.fragments.TrackRecordProfileSelectFragment;
 import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
+import com.assam.locus.addon.wear.common.communication.containers.DataPayload;
+import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
+import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
@@ -40,8 +41,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 
     @Override
-    protected DataPath getInitialCommandType() {
-        return DataPath.GET_TRACK_REC;
+    protected DataPayload getInitialCommandType() {
+        return new DataPayload(DataPath.GET_TRACK_REC, new EmptyCommand());
     }
 
     @Override
@@ -138,7 +139,7 @@ public class TrackRecordActivity extends LocusWearActivity {
         // TODO cejnar preferences ?
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
         WearableDrawerView mWearableNavigationDrawer = findViewById(R.id.navigation_drawer);
-        
+
         //mWearableNavigationDrawer.setAdapter(new NavigationAdapter(this));
         // Peeks navigation drawer on the top.
         //mWearableNavigationDrawer.getController().openDrawer();

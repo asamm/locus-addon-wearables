@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.common.utils.Pair;
-import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
+import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -15,7 +15,6 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
-import java.sql.Timestamp;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import locus.api.objects.Storable;

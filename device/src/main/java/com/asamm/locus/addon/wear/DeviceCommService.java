@@ -7,9 +7,12 @@ import com.assam.locus.addon.wear.common.communication.Const;
 import com.assam.locus.addon.wear.common.communication.DataPath;
 import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
+import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
-import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
+import com.assam.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
+import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -29,6 +32,7 @@ import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.LocusUtils;
 import locus.api.android.utils.exceptions.RequiredVersionMissingException;
+import locus.api.objects.extra.Location;
 import locus.api.objects.extra.TrackStats;
 import locus.api.utils.Logger;
 
@@ -49,7 +53,8 @@ public class DeviceCommService extends LocusWearCommService {
     private UpdateContainer mLastUpdate;
 
     private PeriodicDataTimer mPeriodicDataTimer;
-
+    /** is updated as side effect of some selected wear requests during handling */
+    private volatile LocusUtils.LocusVersion lv;
 
     /**
      * Default constructor.
@@ -60,7 +65,7 @@ public class DeviceCommService extends LocusWearCommService {
         super(ctx);
 
         try {
-            LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(ctx);
+            lv = LocusUtils.getActiveVersion(ctx);
             mLastUpdate = ActionTools.getDataUpdateContainer(ctx, lv);
         } catch (RequiredVersionMissingException e) {
             // TODO cejnar maybe dont support older version of Locus API at all?
@@ -154,19 +159,20 @@ public class DeviceCommService extends LocusWearCommService {
                 sendDataItem(DataPath.PUT_TRACK_REC, trv);
                 break;
             case PUT_TRACK_REC_STATE_CHANGE: {
-                LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
+                lv = LocusUtils.getActiveVersion(c);
                 TrackRecordingStateChangeValue v = path.createStorableForPath(item);
                 handleRecordingStateChanged(c, lv, v.getRecordingState(), v.getmProfileName());
             }
                 break;
             case GET_ADD_WAYPOINT: {
-                LocusUtils.LocusVersion lv = LocusUtils.getActiveVersion(c);
+                lv = LocusUtils.getActiveVersion(c);
                 handleAddWpt(c, lv);
             }
                 break;
             case GET_PERIODIC_DATA: {
+                lv = LocusUtils.getActiveVersion(c);
                 PeriodicCommand v = path.createStorableForPath(item);
-                handlePeriodicWearUpdate(v);
+                handlePeriodicWearUpdate(c, v);
             }
                 break;
             default:
@@ -174,7 +180,7 @@ public class DeviceCommService extends LocusWearCommService {
         }
     }
 
-    private void handlePeriodicWearUpdate(PeriodicCommand command) {
+    private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
         if ((command == null || command.isStopRequest())) {
             if (mPeriodicDataTimer != null) {
                 mPeriodicDataTimer.cancel();
@@ -184,6 +190,7 @@ public class DeviceCommService extends LocusWearCommService {
         }
         final byte activityId = command.getmPeriodicActivityId();
         final int periodMs = command.getmPeriodMs();
+        final TimeStampStorable extra = command.getExtra();
         if (mPeriodicDataTimer != null) {
             if (mPeriodicDataTimer.periodMs == periodMs && mPeriodicDataTimer.activityId == activityId) {
                 return;
@@ -208,7 +215,7 @@ public class DeviceCommService extends LocusWearCommService {
                 task = new TimerTask() {
                     @Override
                     public void run() {
-                        sendMapPeriodic();
+                        sendMapPeriodic(ctx, ((MapPeriodicParams) extra));
                     }
                 };
                 break;
@@ -223,10 +230,40 @@ public class DeviceCommService extends LocusWearCommService {
         mPeriodicDataTimer.schedule(task, 0, periodMs);
     }
 
-    private void sendMapPeriodic() {
-        MapContainer m = new MapContainer(); // TODO cejnar keep map in memory and rewrite bitmap to save on GC?
+    private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
+        // get parameters
+        double lon = extra.getLon();
+        double lat = extra.getLat();
+        int zoom = extra.getZoom();
+        int width = extra.getWidth();
+        int height = extra.getHeight();
+
+        if (zoom == Const.ZOOM_UNKONWN) {
+            zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 0; // TODO cejnar default zoom?
+        }
+
+        // request map
+        ActionTools.BitmapLoadResult loadedMap = null;
+        try {
+            loadedMap = ActionTools.getMapPreview(ctx,
+                    lv, new Location(lat, lon),
+                    zoom, width, height, false);
+        } catch (RequiredVersionMissingException e) {
+            Logger.logE(TAG, "loadMapPreview(" + lv + ")");
+        }
+
+        // prepare container with data and send it
+        DataContainer container = new DataContainer();
+        container.setMapPreview(loadedMap);
+        LocusInfo locusInfo = null;
+        try {
+            locusInfo = ActionTools.getLocusInfo(ctx, lv);
+        } catch (RequiredVersionMissingException e) {
+            Logger.logE(TAG, "Missing required version, current version " + lv, e);
+        }
+
+        MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo);
         sendDataItem(DataPath.PUT_MAP, m);
-        // TODO cejnar
     }
 
     public static boolean isInstance() {

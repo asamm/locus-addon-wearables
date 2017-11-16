@@ -1,10 +1,10 @@
 package com.assam.locus.addon.wear.common.communication;
 
 import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.EmptyCommand;
+import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
-import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
+import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;

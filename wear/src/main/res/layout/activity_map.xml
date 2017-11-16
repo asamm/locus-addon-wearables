@@ -1,27 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="@dimen/box_inset_layout_padding"
-    tools:context="com.asamm.locus.addon.wear.gui.MapActivity"
-    tools:deviceIds="wear">
+    android:layout_height="match_parent">
 
-    <FrameLayout
+    <ImageView
+        android:id="@+id/image_view_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/inner_frame_layout_padding"
-        app:boxedEdges="all">
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:id="@+id/linear_layout_panel_navigation"
+        android:layout_width="64dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="left"
+        android:background="@color/panel_map_side"
+        android:orientation="vertical"
+        android:gravity="right|center_vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/image_view_next"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
+            android:scaleType="centerInside" />
+
+        <View
+            style="@style/SeparatorHorizontal" />
+
+        <ImageView
+            android:id="@+id/image_view_main"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:padding="4dp"
+            android:scaleType="centerInside"/>
 
         <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_view_dist_value"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/hello_world" />
+            android:layout_marginRight="4dp"
+            android:gravity="right|center_vertical"
+            android:textSize="@dimen/text_size_huge"
+            android:textStyle="bold" />
 
-    </FrameLayout>
-</android.support.wear.widget.BoxInsetLayout>
+        <TextView
+            android:id="@+id/text_view_dist_units"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-8dp"
+            android:layout_marginRight="4dp"
+            android:gravity="right|center_vertical"
+            android:textSize="@dimen/text_size_tiny"
+            android:textStyle="bold" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</FrameLayout>

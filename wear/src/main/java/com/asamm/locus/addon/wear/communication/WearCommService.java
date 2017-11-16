@@ -105,4 +105,5 @@ public class WearCommService extends LocusWearCommService {
         mRefresher.setPriority(Thread.MIN_PRIORITY);
         mRefresher.start();
     }
+
 }

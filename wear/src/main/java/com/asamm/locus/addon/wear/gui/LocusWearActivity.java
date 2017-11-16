@@ -10,7 +10,8 @@ import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.PeriodicCommand;
+import com.assam.locus.addon.wear.common.communication.containers.DataPayload;
+import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import locus.api.utils.Logger;
@@ -40,7 +41,7 @@ public abstract class LocusWearActivity extends WearableActivity {
      * @return DataPath or null if activity want to just check connection on start and
      * not issue any other custom command.
      */
-    protected abstract DataPath getInitialCommandType();
+    protected abstract DataPayload getInitialCommandType();
 
     /**
      * Expected type of response for initialCommand
@@ -110,9 +111,9 @@ public abstract class LocusWearActivity extends WearableActivity {
             }
         } else if (!mInitialRequestSent) {
             mInitialRequestSent = true;
-            DataPath p = getInitialCommandType();
+            DataPayload p = getInitialCommandType();
             if (p != null) {
-                wcs.sendCommand(p);
+                wcs.sendDataItem(p.getPath(), p.getStorable());
             } else {
                 mIsInitialRequestReceived = true;
                 onGotInitialCommandResponse();

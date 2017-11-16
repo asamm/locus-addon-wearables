@@ -81,10 +81,10 @@ public class MapActivityOld extends CustomActivityOld {
     private void refreshMapPreview() {
         // set main view
         boolean initialize = false;
-        if (!isContainerVisible(R.layout.layout_map_screen)) {
+        if (!isContainerVisible(R.layout.activity_map)) {
             initialize = true;
         }
-        View view = clearContainer(R.layout.layout_map_screen);
+        View view = clearContainer(R.layout.activity_map);
 
         // prepare views
         if (initialize) {
