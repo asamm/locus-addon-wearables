@@ -1,6 +1,6 @@
 package com.asamm.locus.addon.wear;
 
-import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 
 /**
  * Created by Milan Cejnar on 09.11.2017.

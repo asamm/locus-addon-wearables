@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.assam.locus.addon.wear.common.communication.Const;
-import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
+import com.asamm.locus.addon.wear.common.communication.Const;
+import com.asamm.locus.addon.wear.common.communication.containers.DataContainer;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;

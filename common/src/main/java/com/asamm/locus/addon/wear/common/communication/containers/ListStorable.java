@@ -1,9 +1,8 @@
-package com.assam.locus.addon.wear.common.communication.containers;
+package com.asamm.locus.addon.wear.common.communication.containers;
 
 import java.io.IOException;
 import java.util.List;
 
-import locus.api.android.ActionTools;
 import locus.api.objects.Storable;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;

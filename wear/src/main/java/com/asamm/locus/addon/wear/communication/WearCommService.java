@@ -5,9 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.MainApplication;
-import com.asamm.locus.addon.wear.MainApplicationOld;
-import com.asamm.locus.addon.wear.gui.MapActivityOld;
-import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
+import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.google.android.gms.common.ConnectionResult;
 
 import locus.api.utils.Logger;

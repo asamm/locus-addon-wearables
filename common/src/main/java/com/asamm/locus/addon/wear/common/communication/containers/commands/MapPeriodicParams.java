@@ -1,6 +1,6 @@
-package com.assam.locus.addon.wear.common.communication.containers.commands;
+package com.asamm.locus.addon.wear.common.communication.containers.commands;
 
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import java.io.IOException;
 

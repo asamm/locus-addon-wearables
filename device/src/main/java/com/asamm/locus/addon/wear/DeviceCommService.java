@@ -1,27 +1,28 @@
 package com.asamm.locus.addon.wear;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.asamm.locus.addon.wear.common.utils.Pair;
-import com.assam.locus.addon.wear.common.communication.Const;
-import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.LocusWearCommService;
-import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
-import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
-import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
-import com.assam.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
-import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.common.communication.Const;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
+import com.asamm.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.MessageEvent;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -244,6 +245,9 @@ public class DeviceCommService extends LocusWearCommService {
 
         // request map
         ActionTools.BitmapLoadResult loadedMap = null;
+        // TODO cejnar debug only
+        // compressionTest(loadedMap);
+
         try {
             loadedMap = ActionTools.getMapPreview(ctx,
                     lv, new Location(lat, lon),
@@ -252,9 +256,6 @@ public class DeviceCommService extends LocusWearCommService {
             Logger.logE(TAG, "loadMapPreview(" + lv + ")");
         }
 
-        // prepare container with data and send it
-        DataContainer container = new DataContainer();
-        container.setMapPreview(loadedMap);
         LocusInfo locusInfo = null;
         try {
             locusInfo = ActionTools.getLocusInfo(ctx, lv);
@@ -264,6 +265,24 @@ public class DeviceCommService extends LocusWearCommService {
 
         MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo);
         sendDataItem(DataPath.PUT_MAP, m);
+    }
+    // TODO cejnar debug only
+    private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {
+        Bitmap b = loadedMap.getImage();
+        ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
+        ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.JPEG, 80, baosJpeg);
+        ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.WEBP, 90, baosWebp);
+        Logger.logD(TAG, "Original: " + loadedMap.getImage().getByteCount());
+        Logger.logD(TAG, "PNG: " + baosPng.toByteArray().length);
+        Logger.logD(TAG, "JPEG: " + baosJpeg.toByteArray().length);
+        Logger.logD(TAG, "WEBP: " + baosWebp.toByteArray().length);
+        Logger.logD(TAG,"finished");
+        // TODO cejnar debug only, delete this method
+
+
     }
 
     public static boolean isInstance() {

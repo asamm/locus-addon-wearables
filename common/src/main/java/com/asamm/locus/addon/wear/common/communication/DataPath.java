@@ -1,15 +1,15 @@
-package com.assam.locus.addon.wear.common.communication;
+package com.asamm.locus.addon.wear.common.communication;
 
-import com.assam.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
-import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
-import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
-import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.google.android.gms.wearable.DataItem;
 
 import locus.api.utils.Logger;

@@ -1,6 +1,6 @@
-package com.assam.locus.addon.wear.common.communication.containers;
+package com.asamm.locus.addon.wear.common.communication.containers;
 
-import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
 
 /**
  * Created by Milan Cejnar on 16.11.2017.

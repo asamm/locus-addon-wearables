@@ -10,16 +10,16 @@ import android.widget.ViewFlipper;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.fragments.TrackRecordProfileSelectFragment;
-import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.DataPayload;
-import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
-import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
 import locus.api.utils.Logger;
 

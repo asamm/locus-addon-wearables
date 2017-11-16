@@ -1,7 +1,7 @@
-package com.assam.locus.addon.wear.common.communication.containers.trackrecording;
+package com.asamm.locus.addon.wear.common.communication.containers.trackrecording;
 
-import com.assam.locus.addon.wear.common.communication.containers.ListStorable;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.ListStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import java.io.IOException;
 
@@ -13,36 +13,41 @@ import locus.api.utils.DataWriterBigEndian;
  * Created by menion on 07/08/15.
  * Asamm Software, s. r. o.
  */
-public class TrackProfileInfoValue extends TimeStampStorable {
+public class TrackProfileIconValue extends TimeStampStorable {
 
     // tag for logger
-    private static final String TAG = TrackProfileInfoValue.class.getSimpleName();
+    private static final String TAG = TrackProfileIconValue.class.getSimpleName();
 
     private long mId;
-    private String mName;
-    private String mDesc;
+    private byte[] mImg;
 
     /**
      * Base constructor mainly for a Storable class.
      */
     @SuppressWarnings("unused")
-    public TrackProfileInfoValue() {
+    public TrackProfileIconValue() {
         super();
     }
 
-    public TrackProfileInfoValue(ActionTools.TrackRecordProfileSimple simpleProfile) {
+    public TrackProfileIconValue(ActionTools.TrackRecordProfileSimple simpleProfile) {
         this();
         mId = simpleProfile.getId();
-        mName = simpleProfile.getName();
-        mDesc = simpleProfile.getDesc();
+        mImg = simpleProfile.getIcon();
     }
+
+    public TrackProfileIconValue(long id, byte[] img) {
+        this();
+        this.mId = id;
+        this.mImg = img;
+    }
+
     /**
      * Constructor based on raw byte array.
      *
      * @param data packed data
      * @throws IOException
      */
-    public TrackProfileInfoValue(byte[] data) throws IOException {
+    public TrackProfileIconValue(byte[] data) throws IOException {
         super(data);
     }
 
@@ -61,48 +66,53 @@ public class TrackProfileInfoValue extends TimeStampStorable {
     public void reset() {
         super.reset();
         mId = 0L;
-        mName = "";
-        mDesc = "";
+        mImg = null;
     }
 
     @Override
     protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
         super.readObject(version, dr);
         mId = dr.readLong();
-        mName = dr.readString();
-        mDesc = dr.readString();
+        int imgSize = dr.readInt();
+        if (imgSize > 0) {
+            mImg = new byte[imgSize];
+            dr.readBytes(mImg);
+        }
     }
 
     @Override
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
         super.writeObject(dw);
         dw.writeLong(mId);
-        dw.writeString(mName);
-        dw.writeString(mDesc);
+        int imgSize = mImg != null ? mImg.length : 0;
+        dw.writeInt(imgSize);
+        if (imgSize > 0) {
+            dw.write(mImg);
+        }
     }
 
     public long getId() {
         return mId;
     }
 
-    public String getName() {
-        return mName;
+    public byte[] getIcon() {
+        return mImg;
     }
 
-    public String getDesc() {
-        return mDesc;
+    public void setIcon(byte[] mImg) {
+        this.mImg = mImg;
     }
 
-    public static class ValueList extends ListStorable<TrackProfileInfoValue> {
-        public ValueList() {
+    public static class ValueList extends ListStorable<TrackProfileIconValue> {
+        public ValueList(){
             super();
         }
         public ValueList(byte[] data) throws IOException {
             super(data);
         }
         @Override
-        public Class<TrackProfileInfoValue> getClazz() {
-            return TrackProfileInfoValue.class;
+        public Class<TrackProfileIconValue> getClazz() {
+            return TrackProfileIconValue.class;
         }
     }
 }

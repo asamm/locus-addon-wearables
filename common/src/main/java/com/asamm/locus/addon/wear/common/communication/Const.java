@@ -1,4 +1,4 @@
-package com.assam.locus.addon.wear.common.communication;
+package com.asamm.locus.addon.wear.common.communication;
 
 /**
  * Created by menion on 07/08/15.

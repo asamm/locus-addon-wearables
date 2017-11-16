@@ -15,8 +15,8 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.gui.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.TrackRecordActivity;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
-import com.assam.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 
 import java.io.IOException;
 

@@ -9,9 +9,9 @@ import android.util.Log;
 
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.HandShakeValue;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.Timer;

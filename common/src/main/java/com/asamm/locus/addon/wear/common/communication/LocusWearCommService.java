@@ -1,4 +1,4 @@
-package com.assam.locus.addon.wear.common.communication;
+package com.asamm.locus.addon.wear.common.communication;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.common.utils.Pair;
-import com.assam.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;

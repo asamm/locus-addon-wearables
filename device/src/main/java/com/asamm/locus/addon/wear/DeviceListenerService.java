@@ -2,8 +2,8 @@ package com.asamm.locus.addon.wear;
 
 import android.content.Context;
 
-import com.assam.locus.addon.wear.common.communication.Const;
-import com.assam.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.Const;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;

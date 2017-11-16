@@ -13,8 +13,8 @@ import com.asamm.locus.addon.wear.DeviceCommunicationOld;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.gui.custom.InfoPanel;
 import com.asamm.locus.addon.wear.gui.dispatch.ActivityDispatchFactory;
-import com.assam.locus.addon.wear.common.communication.Const;
-import com.assam.locus.addon.wear.common.communication.containers.DataContainer;
+import com.asamm.locus.addon.wear.common.communication.Const;
+import com.asamm.locus.addon.wear.common.communication.containers.DataContainer;
 
 import locus.api.utils.Logger;
 

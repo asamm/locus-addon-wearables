@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
-import com.assam.locus.addon.wear.common.communication.Const;
-import com.assam.locus.addon.wear.common.communication.DataPath;
-import com.assam.locus.addon.wear.common.communication.containers.DataPayload;
-import com.assam.locus.addon.wear.common.communication.containers.MapContainer;
-import com.assam.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.assam.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
-import com.assam.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.Const;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
+import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
