@@ -1,5 +1,10 @@
 package com.asamm.locus.addon.wear;
 
+import android.content.Context;
+import android.graphics.Point;
+import android.view.Display;
+import android.view.WindowManager;
+
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 
 /**
@@ -10,11 +15,14 @@ import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue
 public class ApplicationState {
 	private boolean connected = false;
 	private HandShakeValue handShakeValue = null;
+	private Point screenDimension = new Point();
 
-	ApplicationState() {
+
+	ApplicationState(Context c) {
+		WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		display.getSize(screenDimension);
 	}
-
-	;
 
 	public boolean isConnected() {
 		return connected;
@@ -34,5 +42,13 @@ public class ApplicationState {
 
 	public boolean isHandShake() {
 		return handShakeValue != null;
+	}
+
+	public int getScreenWidth() {
+		return screenDimension.x;
+	}
+
+	public int getScreenHeight() {
+		return screenDimension.y;
 	}
 }

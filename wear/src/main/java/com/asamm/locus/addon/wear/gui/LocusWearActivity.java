@@ -2,6 +2,8 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.wear.widget.drawer.WearableDrawerLayout;
+import android.support.wear.widget.drawer.WearableDrawerView;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
@@ -29,6 +31,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected CountDownTimer mConnectionFailedTimer;
 	protected volatile boolean mInitialRequestSent = false;
 	protected volatile boolean mIsInitialRequestReceived = false;
+	protected WearableDrawerView mDrawer;
 
 	/**
 	 * only used in connection failed timer to ensure handshake request is sent only once per activity start
@@ -170,6 +173,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onStart() {
 		this.mState = WearActivityState.ON_START;
 		super.onStart();
+		mDrawer = findViewById(R.id.navigation_drawer);
+		mDrawer.setIsAutoPeekEnabled(false);
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (!handleConnectionFailedTimerTick()) {
 			mConnectionFailedTimer = new CountDownTimer(8000, 400) {
@@ -210,15 +215,17 @@ public abstract class LocusWearActivity extends WearableActivity {
 			case R.id.navigation_drawer_item_map:
 				activityToStart = MapActivity.class;
 				break;
-			case R.id.navigation_drawer:
+			case R.id.navigation_drawer_item_track_rec:
 				activityToStart = TrackRecordActivity.class;
 				break;
 			default:
 				activityToStart = null;
 				break;
 		}
+		if (mDrawer != null) {
+			mDrawer.getController().closeDrawer();
+		}
 		((MainApplication) getApplication()).startLocusWearActivity(activityToStart);
-
 	}
 
 }

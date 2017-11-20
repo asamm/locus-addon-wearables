@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.asamm.locus.addon.wear.ApplicationState;
+import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -26,8 +28,6 @@ public class MapActivity extends LocusWearActivity {
 	// reference to map view
 	private ImageView mMapView;
 
-	// NAVIGATION PANEL
-
 	// main container
 	private LinearLayout mLlNavPanel;
 	// top navigation command (next)
@@ -43,10 +43,11 @@ public class MapActivity extends LocusWearActivity {
 
 	@Override
 	protected DataPayload<PeriodicCommand> getInitialCommandType() {
+		ApplicationState appState = ((MainApplication) getApplication()).getState();
 		final MapPeriodicParams params =
 				new MapPeriodicParams(0d, 0d, Const.ZOOM_UNKONWN,
-						getWindow().getDecorView().getWidth(),
-						getWindow().getDecorView().getHeight());
+						appState.getScreenWidth(),
+						appState.getScreenHeight());
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
 				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_ACITIVITY_MAP,
 						MAP_REFRESH_PERIOD_MS, params));
@@ -90,7 +91,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Refreshes map image view
 	 */
 	private void refreshMapView(MapContainer data) {
-		if (data != null && data.getLoadedMap() != null) {
+		if (data != null && data.getLoadedMap() != null ) {
 			mMapView.setImageBitmap(data.getLoadedMap().getImage());
 		}
 	}

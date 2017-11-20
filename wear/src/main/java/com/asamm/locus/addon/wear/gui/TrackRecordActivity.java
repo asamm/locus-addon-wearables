@@ -138,11 +138,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 		model = null;
 		// TODO cejnar preferences ?
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
-		WearableDrawerView mWearableNavigationDrawer = findViewById(R.id.navigation_drawer);
-
-		//mWearableNavigationDrawer.setAdapter(new NavigationAdapter(this));
-		// Peeks navigation drawer on the top.
-		//mWearableNavigationDrawer.getController().openDrawer();
 
 	}
 

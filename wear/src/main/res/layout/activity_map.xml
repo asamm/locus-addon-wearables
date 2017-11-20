@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.wear.widget.drawer.WearableDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    style="@style/rootActivityStyle">
 
     <ImageView
         android:id="@+id/image_view_map"
@@ -69,4 +66,6 @@
 
     </LinearLayout>
 
-</FrameLayout>
+    <include layout="@layout/include_navigation_drawer" />
+
+</android.support.wear.widget.drawer.WearableDrawerLayout>

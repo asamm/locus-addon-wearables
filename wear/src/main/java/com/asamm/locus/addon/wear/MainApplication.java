@@ -2,10 +2,13 @@ package com.asamm.locus.addon.wear;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
@@ -71,7 +74,7 @@ public class MainApplication extends Application implements Application.Activity
 
 		// notify about create of app
 		Logger.logE(TAG, "onCreate()");
-		mState = new ApplicationState();
+		mState = new ApplicationState(this);
 		reconnectIfNeeded();
 		registerActivityLifecycleCallbacks(this);
 	}
@@ -212,7 +215,6 @@ public class MainApplication extends Application implements Application.Activity
 		if (act != null) {
 			act.consumeNewData(DataPath.PUT_ON_CONNECTED_EVENT, null);
 		}
-
 	}
 
 	public void onConnectionSuspened() {

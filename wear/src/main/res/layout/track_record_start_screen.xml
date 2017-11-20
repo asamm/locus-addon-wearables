@@ -14,7 +14,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_96_track_recording_pause_pressed"
+        android:src="@drawable/ic_96_track_recording_rec"
         android:onClick="handleStartClick"
         app:layout_constraintBottom_toTopOf="@+id/trackRecProfileSelectFragment"
         app:layout_constraintEnd_toStartOf="@+id/xGuideTrackRectStartVert83_5"

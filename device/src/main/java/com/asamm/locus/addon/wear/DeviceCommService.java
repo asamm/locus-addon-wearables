@@ -138,6 +138,7 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	void onDataChanged(Context c, DataEvent newData) {
+		Logger.logD(TAG, "received "+newData.getDataItem().getUri().getPath());
 		DataItem item = newData.getDataItem();
 		DataPath path = DataPath.valueOf(item);
 		switch (path) {

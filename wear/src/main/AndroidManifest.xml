@@ -20,21 +20,8 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".gui.MapActivityOld"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="standard" />
-
         <!-- register service for events -->
         <service android:name=".communication.WearListenerService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-
-                <data
-                    android:host="*"
-                    android:pathPrefix="/locus_map/wearable"
-                    android:scheme="wear" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
 
@@ -44,26 +31,19 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
-        <meta-data
-            android:name="com.google.android.wearable.standalone"
-            android:value="true" />
 
         <activity
             android:name=".gui.TrackRecordActivity"
             android:label="@string/title_activity_track_record">
-        </activity>
-        <activity
-            android:name=".gui.MapActivity"
-            android:label="@string/title_activity_map">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".gui.MapActivity"
+            android:label="@string/title_activity_map">
         </activity>
         <activity
             android:name=".gui.ProfileListActivity"

@@ -3,6 +3,22 @@
 
     <style name="ExtensionLightTheme" parent="@android:style/Theme" />
 
+    <style name="rootActivityStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:padding">@dimen/box_inset_layout_padding</item>
+    </style>
+
+    <!-- *************************************************** -->
+    <!-- NAVIGATION DRAWER -->
+    <!-- *************************************************** -->
+    <style name="navDrawerButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:padding">20dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
     <!-- *************************************************** -->
     <!-- SEPARATORS -->
     <!-- *************************************************** -->
