@@ -44,71 +44,72 @@ import static locus.api.objects.enums.PointRteAction.U_TURN_RIGHT;
  */
 
 public class NavHelper {
-    public static int getNavPointImageRes(int pointRteActionEnumId) {
-
-        if (pointRteActionEnumId == CONTINUE_STRAIGHT.getId())
-            return R.drawable.ic_direction_straight;
-        if (pointRteActionEnumId == LEFT_SLIGHT.getId())
-            return R.drawable.ic_direction_left1;
-        if (pointRteActionEnumId == LEFT.getId())
-            return R.drawable.ic_direction_left2;
-        if (pointRteActionEnumId == LEFT_SHARP.getId())
-            return R.drawable.ic_direction_left3;
-        if (pointRteActionEnumId == RIGHT_SLIGHT.getId())
-            return R.drawable.ic_direction_right1;
-        if (pointRteActionEnumId == RIGHT.getId())
-            return R.drawable.ic_direction_right2;
-        if (pointRteActionEnumId == RIGHT_SHARP.getId())
-            return R.drawable.ic_direction_right3;
-        if (pointRteActionEnumId == STAY_LEFT.getId())
-            return R.drawable.ic_direction_stay_left;
-        if (pointRteActionEnumId == STAY_RIGHT.getId())
-            return R.drawable.ic_direction_stay_right;
-        if (pointRteActionEnumId == STAY_STRAIGHT.getId())
-            return R.drawable.ic_direction_straight;
-        if (pointRteActionEnumId == U_TURN.getId() ||
-                pointRteActionEnumId == U_TURN_LEFT.getId() ||
-                pointRteActionEnumId == U_TURN_RIGHT.getId())
-            return R.drawable.ic_direction_turnaround;
-        if (pointRteActionEnumId == EXIT_LEFT.getId())
-            return R.drawable.ic_direction_exit_left;
-        if (pointRteActionEnumId == EXIT_RIGHT.getId())
-            return R.drawable.ic_direction_exit_right;
-        if (pointRteActionEnumId == RAMP_ON_LEFT.getId())
-            return R.drawable.ic_direction_left1;
-        if (pointRteActionEnumId == RAMP_ON_RIGHT.getId())
-            return R.drawable.ic_direction_right1;
-        if (pointRteActionEnumId == RAMP_STRAIGHT.getId())
-            return R.drawable.ic_direction_straight;
-        if (pointRteActionEnumId == MERGE_LEFT.getId())
-            return R.drawable.ic_direction_merge_left;
-        if (pointRteActionEnumId == MERGE_RIGHT.getId())
-            return R.drawable.ic_direction_merge_right;
-        if (pointRteActionEnumId == MERGE.getId())
-            return R.drawable.ic_direction_straight;
-        if (pointRteActionEnumId == ARRIVE_DEST.getId() ||
-                pointRteActionEnumId == ARRIVE_DEST_LEFT.getId() ||
-                pointRteActionEnumId == ARRIVE_DEST_RIGHT.getId())
-            return R.drawable.ic_direction_finnish;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_1.getId())
-            return R.drawable.ic_direction_roundabout_1;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_2.getId())
-            return R.drawable.ic_direction_roundabout_2;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_3.getId())
-            return R.drawable.ic_direction_roundabout_3;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_4.getId())
-            return R.drawable.ic_direction_roundabout_4;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_5.getId())
-            return R.drawable.ic_direction_roundabout_5;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_6.getId())
-            return R.drawable.ic_direction_roundabout_6;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_7.getId())
-            return R.drawable.ic_direction_roundabout_7;
-        if (pointRteActionEnumId == ROUNDABOUT_EXIT_8.getId())
-            return R.drawable.ic_direction_roundabout_8;
-        if (pointRteActionEnumId == PASS_PLACE.getId())
-            return R.drawable.ic_direction_finnish;
-
-        return PointRteAction.UNDEFINED.getId();
-    }
+	public static int getNavPointImageRes(PointRteAction action) {
+		switch (action) {
+			case CONTINUE_STRAIGHT:
+				return R.drawable.ic_direction_straight;
+			case LEFT_SLIGHT:
+				return R.drawable.ic_direction_left1;
+			case LEFT:
+				return R.drawable.ic_direction_left2;
+			case LEFT_SHARP:
+				return R.drawable.ic_direction_left3;
+			case RIGHT_SLIGHT:
+				return R.drawable.ic_direction_right1;
+			case RIGHT:
+				return R.drawable.ic_direction_right2;
+			case RIGHT_SHARP:
+				return R.drawable.ic_direction_right3;
+			case STAY_LEFT:
+				return R.drawable.ic_direction_stay_left;
+			case STAY_RIGHT:
+				return R.drawable.ic_direction_stay_right;
+			case STAY_STRAIGHT:
+				return R.drawable.ic_direction_straight;
+			case U_TURN:
+			case U_TURN_LEFT:
+			case U_TURN_RIGHT:
+				return R.drawable.ic_direction_turnaround;
+			case EXIT_LEFT:
+				return R.drawable.ic_direction_exit_left;
+			case EXIT_RIGHT:
+				return R.drawable.ic_direction_exit_right;
+			case RAMP_ON_LEFT:
+				return R.drawable.ic_direction_left1;
+			case RAMP_ON_RIGHT:
+				return R.drawable.ic_direction_right1;
+			case RAMP_STRAIGHT:
+				return R.drawable.ic_direction_straight;
+			case MERGE_LEFT:
+				return R.drawable.ic_direction_merge_left;
+			case MERGE_RIGHT:
+				return R.drawable.ic_direction_merge_right;
+			case MERGE:
+				return R.drawable.ic_direction_straight;
+			case ARRIVE_DEST:
+			case ARRIVE_DEST_LEFT:
+			case ARRIVE_DEST_RIGHT:
+				return R.drawable.ic_direction_finnish;
+			case ROUNDABOUT_EXIT_1:
+				return R.drawable.ic_direction_roundabout_1;
+			case ROUNDABOUT_EXIT_2:
+				return R.drawable.ic_direction_roundabout_2;
+			case ROUNDABOUT_EXIT_3:
+				return R.drawable.ic_direction_roundabout_3;
+			case ROUNDABOUT_EXIT_4:
+				return R.drawable.ic_direction_roundabout_4;
+			case ROUNDABOUT_EXIT_5:
+				return R.drawable.ic_direction_roundabout_5;
+			case ROUNDABOUT_EXIT_6:
+				return R.drawable.ic_direction_roundabout_6;
+			case ROUNDABOUT_EXIT_7:
+				return R.drawable.ic_direction_roundabout_7;
+			case ROUNDABOUT_EXIT_8:
+				return R.drawable.ic_direction_roundabout_8;
+			case PASS_PLACE:
+				return R.drawable.ic_direction_finnish;
+			default:
+				return R.drawable.ic_direction_unknown;
+		}
+	}
 }

@@ -8,27 +8,31 @@ import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue
  */
 
 public class ApplicationState {
-    private boolean connected = false;
-    private HandShakeValue handShakeValue = null;
-    ApplicationState(){};
+	private boolean connected = false;
+	private HandShakeValue handShakeValue = null;
 
-    public boolean isConnected() {
-        return connected;
-    }
+	ApplicationState() {
+	}
 
-    void setConnected(boolean connected) {
-        this.connected = connected;
-    }
+	;
 
-    public HandShakeValue getHandShakeValue() {
-        return handShakeValue;
-    }
+	public boolean isConnected() {
+		return connected;
+	}
 
-    void setHandShakeValue(HandShakeValue handShakeValue) {
-        this.handShakeValue = handShakeValue;
-    }
+	void setConnected(boolean connected) {
+		this.connected = connected;
+	}
 
-    public boolean isHandShake() {
-        return handShakeValue != null;
-    }
+	public HandShakeValue getHandShakeValue() {
+		return handShakeValue;
+	}
+
+	void setHandShakeValue(HandShakeValue handShakeValue) {
+		this.handShakeValue = handShakeValue;
+	}
+
+	public boolean isHandShake() {
+		return handShakeValue != null;
+	}
 }

@@ -9,12 +9,12 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 
 public class EmptyCommand extends TimeStampStorable {
 
-    public EmptyCommand() {
-        super();
-    }
+	public EmptyCommand() {
+		super();
+	}
 
-    @Override
-    protected int getVersion() {
-        return 0;
-    }
+	@Override
+	protected int getVersion() {
+		return 0;
+	}
 }

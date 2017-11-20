@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<android.support.wearable.view.WearableListView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/wearable_list_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    android:gravity="center"/>

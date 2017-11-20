@@ -15,35 +15,35 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public abstract class TimeStampStorable extends Storable {
-    public TimeStampStorable() {
-        super();
-    }
+	public TimeStampStorable() {
+		super();
+	}
 
-    /**
-     * cropped 4B timestampt
-     */
-    private int mIntTimeStamp;
+	/**
+	 * cropped 4B timestampt
+	 */
+	private int mIntTimeStamp;
 
-    public TimeStampStorable(byte[] byteArray) throws IOException {
-        super(byteArray);
-    }
+	public TimeStampStorable(byte[] byteArray) throws IOException {
+		super(byteArray);
+	}
 
-    @Override
-    public void reset() {
-        mIntTimeStamp = (int) System.currentTimeMillis();
-    }
+	@Override
+	public void reset() {
+		mIntTimeStamp = (int) System.currentTimeMillis();
+	}
 
-    @Override
-    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
-        mIntTimeStamp = dr.readInt();
-    }
+	@Override
+	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+		mIntTimeStamp = dr.readInt();
+	}
 
-    @Override
-    protected void writeObject(DataWriterBigEndian dw) throws IOException {
-        dw.writeInt(mIntTimeStamp);
-    }
+	@Override
+	protected void writeObject(DataWriterBigEndian dw) throws IOException {
+		dw.writeInt(mIntTimeStamp);
+	}
 
-    public int getTimeStamp() {
-        return mIntTimeStamp;
-    }
+	public int getTimeStamp() {
+		return mIntTimeStamp;
+	}
 }

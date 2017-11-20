@@ -15,61 +15,62 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public abstract class ListStorable<T extends Storable> extends TimeStampStorable {
-    private List<T> mStorables;
+	private List<T> mStorables;
 
-    public ListStorable() {
-        super();
-    }
+	public ListStorable() {
+		super();
+	}
 
-    public ListStorable(byte[] data) throws IOException{
-        super(data);
-    }
-    public abstract Class<T> getClazz();
+	public ListStorable(byte[] data) throws IOException {
+		super(data);
+	}
 
-    @Override
-    public void reset() {
-        super.reset();
-        mStorables = null;
-    }
+	public abstract Class<T> getClazz();
 
-    @Override
-    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
-        super.readObject(version, dr);
-        // read track record profiles
-        if (dr.readBoolean()) {
-            //noinspection unchecked
-            mStorables = (List<T>)
-                    dr.readListStorable(getClazz());
-        }
-    }
+	@Override
+	public void reset() {
+		super.reset();
+		mStorables = null;
+	}
 
-    @Override
-    protected void writeObject(DataWriterBigEndian dw) throws IOException {
-        super.writeObject(dw);
-        // write track record profiles
-        if (mStorables != null) {
-            dw.writeBoolean(true);
-            dw.writeListStorable(mStorables);
-        } else {
-            dw.writeBoolean(false);
-        }
-    }
+	@Override
+	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+		super.readObject(version, dr);
+		// read track record profiles
+		if (dr.readBoolean()) {
+			//noinspection unchecked
+			mStorables = (List<T>)
+					dr.readListStorable(getClazz());
+		}
+	}
 
-    @Override
-    protected int getVersion() {
-        return 0;
-    }
+	@Override
+	protected void writeObject(DataWriterBigEndian dw) throws IOException {
+		super.writeObject(dw);
+		// write track record profiles
+		if (mStorables != null) {
+			dw.writeBoolean(true);
+			dw.writeListStorable(mStorables);
+		} else {
+			dw.writeBoolean(false);
+		}
+	}
 
-    public List<T> getStorables() {
-        return mStorables;
-    }
+	@Override
+	protected int getVersion() {
+		return 0;
+	}
 
-    public void setStorables(List<T> storables) {
-        this.mStorables = storables;
-    }
+	public List<T> getStorables() {
+		return mStorables;
+	}
+
+	public void setStorables(List<T> storables) {
+		this.mStorables = storables;
+	}
 
 
-    public int getSize() {
-        return (mStorables == null) ? 0 : mStorables.size();
-    }
+	public int getSize() {
+		return (mStorables == null) ? 0 : mStorables.size();
+	}
 }

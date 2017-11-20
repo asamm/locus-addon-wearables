@@ -21,16 +21,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".gui.MainMenuActivityOld"
-            android:alwaysRetainTaskState="true"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="standard" />
-        <activity
             android:name=".gui.MapActivityOld"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="standard" />
-        <activity
-            android:name=".gui.TrackRecordActivityOld"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="standard" />
 

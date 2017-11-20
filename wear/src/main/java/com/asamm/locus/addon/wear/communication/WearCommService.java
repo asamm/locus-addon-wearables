@@ -16,92 +16,98 @@ import locus.api.utils.Logger;
  */
 
 public class WearCommService extends LocusWearCommService {
-    private static String TAG = WearCommService.class.getSimpleName();
-    private static WearCommService mDeviceCommunicationService;
+	private static String TAG = WearCommService.class.getSimpleName();
+	private static WearCommService mDeviceCommunicationService;
 
-    private Thread mRefresher;
+	private volatile Thread mRefresher;
+	private volatile long mRefresherId;
 
-    private final MainApplication mApp;
+	private final MainApplication mApp;
 
-    private WearCommService(MainApplication c) {
-        super(c);
-        this.mApp = c;
-    }
+	private WearCommService(MainApplication c) {
+		super(c);
+		this.mApp = c;
+	}
 
-    public static WearCommService getInstance() {
-        return mDeviceCommunicationService;
-    }
+	public static WearCommService getInstance() {
+		return mDeviceCommunicationService;
+	}
 
-    public static WearCommService initialize(final MainApplication c) {
-        if (mDeviceCommunicationService == null) {
-            synchronized (TAG) {
-                if (mDeviceCommunicationService == null) {
-                    mDeviceCommunicationService = new WearCommService(c);
-                }
-            }
-        }
-        return mDeviceCommunicationService;
-    }
+	public static WearCommService initialize(final MainApplication c) {
+		if (mDeviceCommunicationService == null) {
+			synchronized (TAG) {
+				if (mDeviceCommunicationService == null) {
+					mDeviceCommunicationService = new WearCommService(c);
+				}
+			}
+		}
+		return mDeviceCommunicationService;
+	}
+	@Override
+	protected void destroy() {
+			super.destroy();
+			mRefresher = null;
+	}
 
-    public void destroy() {
-        if (mDeviceCommunicationService != null) {
-            super.destroy();
-            mDeviceCommunicationService = null;
-        }
-    }
+	public static void destroyInstance() {
+		if (mDeviceCommunicationService != null) {
+			mDeviceCommunicationService.destroy();
+		}
+	}
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        super.onConnected(bundle);
-        final MainApplication app = this.mApp;
-        if (app != null) {
-            app.onConnected();
-        }
-    }
+	@Override
+	public void onConnected(@Nullable Bundle bundle) {
+		super.onConnected(bundle);
+		startRefresher();
+		final MainApplication app = this.mApp;
+		if (app != null) {
+			app.onConnected();
+		}
+	}
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        super.onConnectionFailed(connectionResult);
-        if (mApp != null) {
-            mApp.onConnectionSuspened();
-        }
-    }
+	@Override
+	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+		super.onConnectionFailed(connectionResult);
+		if (mApp != null) {
+			mApp.onConnectionSuspened();
+		}
+	}
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        super.onConnectionSuspended(i);
-        if (mApp != null) {
-            mApp.onConnectionSuspened();
-        }
-    }
+	@Override
+	public void onConnectionSuspended(int i) {
+		super.onConnectionSuspended(i);
+		if (mApp != null) {
+			mApp.onConnectionSuspened();
+		}
+	}
 
-    /**
-     * Start thread that will take care about refreshing of content.
-     */
-    private void startRefresher() {
-        // class for periodic checks.
-        final Runnable mChecker = new Runnable() {
+	/**
+	 * Start thread that will take care about refreshing of content.
+	 */
+	private void startRefresher() {
+		// class for periodic checks.
+		final Runnable mChecker = new Runnable() {
 
-            @Override
-            public void run() {
-                try {
-                    // repeat actions till system is running
-                    int counter = 0;
-                    while (isConnected() && mRefresher != null) {
-                        Thread.sleep(3333);
-                        reconnectIfNeeded();
+			@Override
+			public void run() {
+				try {
+					while (mRefresher != null && mRefresher.getId() == mRefresherId) {
+						Thread.sleep(3333);
+						reconnectIfNeeded();
+						// TODO cejnar refresh packet
 
-                    }
-                } catch (Exception e) {
-                    Logger.logE(TAG, "startRefresher()", e);
-                }
-            }
-        };
+					}
+				} catch (Exception e) {
+					Logger.logE(TAG, "startRefresher()", e);
+				}
+			}
+		};
 
-        // prepare and start refresher
-        mRefresher = new Thread(mChecker);
-        mRefresher.setPriority(Thread.MIN_PRIORITY);
-        mRefresher.start();
-    }
+		// prepare and start refresher
+		mRefresher = new Thread(mChecker);
+		mRefresherId = mRefresher.getId();
+		mRefresher.setPriority(Thread.MIN_PRIORITY);
+		mRefresher.start();
+	}
 
 }
