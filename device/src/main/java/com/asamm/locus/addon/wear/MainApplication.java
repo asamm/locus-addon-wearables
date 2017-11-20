@@ -1,7 +1,9 @@
 package com.asamm.locus.addon.wear;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import locus.api.utils.Logger;
 

@@ -91,9 +91,7 @@ public class LocusWearCommService implements
 	public void sendDataItem(DataPath path, TimeStampStorable data) {
 		if (!mGoogleApiClient.isConnected()) {
 			mUnsentData.offer(new Pair<>(path, data));
-			if (!mGoogleApiClient.isConnecting()) {
-				mGoogleApiClient.connect();
-			}
+			reconnectIfNeeded();
 		} else {
 			sendDataItemWithoutConnectionCheck(path, data);
 		}

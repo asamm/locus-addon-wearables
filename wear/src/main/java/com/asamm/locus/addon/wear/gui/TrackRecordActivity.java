@@ -1,12 +1,15 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.wear.widget.drawer.WearableDrawerView;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
@@ -83,6 +86,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 				TrackRecordingValue trv = (TrackRecordingValue) data;
 				handlePutTrackRec(trv);
 				Logger.logD(TAG, "Loaded track info ");
+				break;
+			case PUT_ADD_WAYPOINT:
+				MainApplication.showToast();
 				break;
 		}
 	}

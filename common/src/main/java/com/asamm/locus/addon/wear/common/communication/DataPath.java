@@ -31,10 +31,11 @@ public enum DataPath {
 	PUT_TRACK_REC(TrackRecordingValue.class, false),
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
 	GET_ADD_WAYPOINT(EmptyCommand.class),
+	PUT_ADD_WAYPOINT(EmptyCommand.class),
 
 	GET_PERIODIC_DATA(PeriodicCommand.class),
 
-	GET_KEEP_ALIVE(EmptyCommand.class),
+	GET_KEEP_ALIVE(EmptyCommand.class, false, false),
 	PUT_MAP(MapContainer.class, false, true),
 	/**
 	 * Fake communication data path, used for signalling activity about ON_CONNECTED event inside

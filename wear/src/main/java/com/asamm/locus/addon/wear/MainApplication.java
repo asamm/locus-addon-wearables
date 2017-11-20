@@ -7,12 +7,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.google.android.gms.wearable.DataItem;
@@ -151,6 +152,11 @@ public class MainApplication extends Application implements Application.Activity
 					case PUT_HAND_SHAKE:
 						mState.setHandShakeValue((HandShakeValue) value);
 						break;
+					case PUT_MAP:
+						mState.setLastMapData((MapContainer) value);
+						break;
+					case PUT_TRACK_REC:
+						mState.setLastTrackRecState((TrackRecordingValue) value);
 				}
 				currentActivity.consumeNewData(p, value);
 			} else {
@@ -230,5 +236,9 @@ public class MainApplication extends Application implements Application.Activity
 		Intent i = new Intent(this, activityToStart);
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(i);
+	}
+
+	public static void showToast(Context c, String msg) {
+		Toast.makeText(c, msg, Toast.LENGTH_SHORT).show();
 	}
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.google.android.gms.common.ConnectionResult;
 
@@ -93,9 +94,7 @@ public class WearCommService extends LocusWearCommService {
 				try {
 					while (mRefresher != null && mRefresher.getId() == mRefresherId) {
 						Thread.sleep(3333);
-						reconnectIfNeeded();
-						// TODO cejnar refresh packet
-
+						sendCommand(DataPath.GET_KEEP_ALIVE);
 					}
 				} catch (Exception e) {
 					Logger.logE(TAG, "startRefresher()", e);

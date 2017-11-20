@@ -171,6 +171,7 @@ public class DeviceCommService extends LocusWearCommService {
 			case GET_ADD_WAYPOINT: {
 				lv = LocusUtils.getActiveVersion(c);
 				handleAddWpt(c, lv);
+				sendCommand(DataPath.PUT_ADD_WAYPOINT);
 			}
 			break;
 			case GET_PERIODIC_DATA: {
@@ -180,7 +181,7 @@ public class DeviceCommService extends LocusWearCommService {
 			}
 			break;
 			default:
-				Logger.logE(TAG, "Unknown request " + path);
+				Logger.logD(TAG, "Unhandled request " + path);
 		}
 	}
 
@@ -302,6 +303,7 @@ public class DeviceCommService extends LocusWearCommService {
 			ActionTools.actionTrackRecordAddWpt(ctx, lv, true);
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "Invalid version " + lv + ", can't add WPT", e);
+			throw new IllegalStateException(e);
 		}
 	}
 

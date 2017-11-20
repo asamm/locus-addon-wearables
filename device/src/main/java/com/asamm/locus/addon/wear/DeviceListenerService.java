@@ -113,11 +113,7 @@ public class DeviceListenerService extends WearableListenerService {
 		if (dataConsumer.isTerminateRequest(newData)) {
 			DeviceCommService.destroyInstance(this);
 		} else {
-			if (DeviceCommService.getInstance(this).isConnected()) {
-				dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
-			} else {
-				Logger.logE(TAG, "GAPI client not connected");
-			}
+			dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
 
 			// start "destroyer"
 			mTimerTerminate = new Timer();

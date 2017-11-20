@@ -6,6 +6,8 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
+import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
 /**
  * Created by Milan Cejnar on 09.11.2017.
@@ -50,5 +52,23 @@ public class ApplicationState {
 
 	public int getScreenHeight() {
 		return screenDimension.y;
+	}
+
+	public void setLastTrackRecState(Context ctx, TrackRecordingValue value) {
+	}
+
+	public String getLastTrackRecState(Context ctx) {
+		// TODO cejnar
+	}
+
+	public String getLastTrackRecProfileName(Context ctx) {
+		// TODO cejnar
+	}
+
+	public void setLastMapData(MapContainer value) {
+		// TODO cejnar
+	}
+	public MapContainer getLastMapData() {
+		// TODO cejnar
 	}
 }
