@@ -142,7 +142,7 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	void onDataChanged(Context c, DataEvent newData) {
-		Logger.logD(TAG, "received "+newData.getDataItem().getUri().getPath());
+		Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
 		DataItem item = newData.getDataItem();
 		DataPath path = DataPath.valueOf(item);
 		switch (path) {
@@ -177,7 +177,6 @@ public class DeviceCommService extends LocusWearCommService {
 				handleAddWpt(c, lv);
 				sendCommand(DataPath.PUT_ADD_WAYPOINT);
 			}
-			break;
 			case GET_PERIODIC_DATA: {
 				lv = LocusUtils.getActiveVersion(c);
 				PeriodicCommand v = createStorableForPath(path, item);
@@ -190,24 +189,17 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
-		if ((command == null || command.isStopRequest())) {
-			if (mPeriodicDataTimer != null) {
-				mPeriodicDataTimer.cancel();
-			}
+		if (mPeriodicDataTimer != null) {
+			mPeriodicDataTimer.cancel();
 			mPeriodicDataTimer = null;
+		}
+		if ((command == null || command.isStopRequest())) {
 			return;
 		}
+
 		final byte activityId = command.getmPeriodicActivityId();
 		final int periodMs = command.getmPeriodMs();
 		final TimeStampStorable extra = command.getExtra();
-		if (mPeriodicDataTimer != null) {
-			if (mPeriodicDataTimer.periodMs == periodMs && mPeriodicDataTimer.activityId == activityId) {
-				return;
-			} else {
-				mPeriodicDataTimer.cancel();
-				mPeriodicDataTimer = null;
-			}
-		}
 
 		final TimerTask task;
 		switch (activityId) {
@@ -248,7 +240,7 @@ public class DeviceCommService extends LocusWearCommService {
 		int height = extra.getHeight();
 
 		if (zoom == Const.ZOOM_UNKONWN) {
-			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 0; // TODO cejnar default zoom?
+			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 1; // TODO cejnar default zoom?
 		}
 
 		// request map

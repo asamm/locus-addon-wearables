@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.common.communication.containers;
 
+import com.asamm.locus.addon.wear.common.communication.Const;
+
 import java.io.IOException;
 
 import locus.api.android.ActionTools;
@@ -23,11 +25,12 @@ public class MapContainer extends TimeStampStorable {
 	private ActionTools.BitmapLoadResult mLoadedMap;
 
 	// information about type of active guidance
-	private int guideType;
-	private int navPointAction1Id;
-	private int navPointAction2Id;
-	private double navPoint1Dist;
-	private int unitsFormatLength;
+	private int mGuideType;
+	private int mNavPointAction1Id;
+	private int mNavPointAction2Id;
+	private double mNavPoint1Dist;
+	private int mUnitsFormatLength;
+	private int mZoom;
 
 	public MapContainer() {
 		super();
@@ -41,14 +44,15 @@ public class MapContainer extends TimeStampStorable {
 		this();
 		mLoadedMap = loadedMap;
 		if (mLastUpdate != null) {
-			guideType = mLastUpdate.getGuideType();
+			mZoom = mLastUpdate.getMapZoomLevel();
+			mGuideType = mLastUpdate.getGuideType();
 			UpdateContainer.GuideTypeTrack guide = mLastUpdate.getGuideTypeTrack();
 			if (guide != null) {
-				navPointAction1Id = guide.getNavPoint1Action().getId();
-				navPointAction2Id = guide.getNavPoint2Action().getId();
-				navPoint1Dist = guide.getNavPoint1Dist();
+				mNavPointAction1Id = guide.getNavPoint1Action().getId();
+				mNavPointAction2Id = guide.getNavPoint2Action().getId();
+				mNavPoint1Dist = guide.getNavPoint1Dist();
 				if (li != null) {
-					unitsFormatLength = li.getUnitsFormatLength();
+					mUnitsFormatLength = li.getUnitsFormatLength();
 				}
 			}
 		}
@@ -57,21 +61,23 @@ public class MapContainer extends TimeStampStorable {
 	public void reset() {
 		super.reset();
 		mLoadedMap = null;
-		guideType = UpdateContainer.GUIDE_TYPE_DISABLED;
-		navPointAction1Id = PointRteAction.UNDEFINED.getId();
-		navPointAction2Id = PointRteAction.UNDEFINED.getId();
-		navPoint1Dist = 0;
-		unitsFormatLength = 0;
+		mGuideType = UpdateContainer.GUIDE_TYPE_DISABLED;
+		mNavPointAction1Id = PointRteAction.UNDEFINED.getId();
+		mNavPointAction2Id = PointRteAction.UNDEFINED.getId();
+		mNavPoint1Dist = 0;
+		mUnitsFormatLength = 0;
+		mZoom = Const.ZOOM_UNKONWN;
 	}
 
 	@Override
 	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 		super.readObject(version, dr);
-		guideType = dr.readInt();
-		navPointAction1Id = dr.readInt();
-		navPointAction2Id = dr.readInt();
-		navPoint1Dist = dr.readDouble();
-		unitsFormatLength = dr.readInt();
+		mGuideType = dr.readInt();
+		mNavPointAction1Id = dr.readInt();
+		mNavPointAction2Id = dr.readInt();
+		mNavPoint1Dist = dr.readDouble();
+		mUnitsFormatLength = dr.readInt();
+		mZoom = dr.readInt();
 		boolean isMap = dr.readBoolean();
 		try {
 			mLoadedMap = isMap ? (ActionTools.BitmapLoadResult) dr.readStorable(ActionTools.BitmapLoadResult.class) : null;
@@ -84,11 +90,12 @@ public class MapContainer extends TimeStampStorable {
 	@Override
 	protected void writeObject(DataWriterBigEndian dw) throws IOException {
 		super.writeObject(dw);
-		dw.writeInt(guideType);
-		dw.writeInt(navPointAction1Id);
-		dw.writeInt(navPointAction2Id);
-		dw.writeDouble(navPoint1Dist);
-		dw.writeInt(unitsFormatLength);
+		dw.writeInt(mGuideType);
+		dw.writeInt(mNavPointAction1Id);
+		dw.writeInt(mNavPointAction2Id);
+		dw.writeDouble(mNavPoint1Dist);
+		dw.writeInt(mUnitsFormatLength);
+		dw.writeInt(mZoom);
 		boolean isMap = mLoadedMap != null;
 		dw.writeBoolean(isMap);
 		if (isMap) {
@@ -101,39 +108,44 @@ public class MapContainer extends TimeStampStorable {
 		return 0;
 	}
 
-	public int getGuideType() {
-		return guideType;
+	public int getmGuideType() {
+		return mGuideType;
 	}
 
 	public int getNavPointAction1Id() {
-		return navPointAction1Id;
+		return mNavPointAction1Id;
 	}
 
 	public void setNavPointAction1Id(int navPointAction1Id) {
-		this.navPointAction1Id = navPointAction1Id;
+		this.mNavPointAction1Id = navPointAction1Id;
 	}
 
 	public int getNavPointAction2Id() {
-		return navPointAction2Id;
+		return mNavPointAction2Id;
 	}
 
 	public void setNavPointAction2Id(int navPointAction2Id) {
-		this.navPointAction2Id = navPointAction2Id;
+		this.mNavPointAction2Id = navPointAction2Id;
 	}
 
 	public double getNavPoint1Dist() {
-		return navPoint1Dist;
+		return mNavPoint1Dist;
 	}
 
 	public int getUnitsFormatLength() {
-		return unitsFormatLength;
+		return mUnitsFormatLength;
 	}
 
 	public ActionTools.BitmapLoadResult getLoadedMap() {
 		return mLoadedMap;
 	}
 
+	public int getZoom() {
+		return mZoom;
+	}
+
 	public boolean isMapPresent() {
 		return mLoadedMap != null && mLoadedMap.getImage() != null;
 	}
+
 }

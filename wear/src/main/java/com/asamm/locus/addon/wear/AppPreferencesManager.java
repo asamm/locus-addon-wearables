@@ -1,10 +1,13 @@
 package com.asamm.locus.addon.wear;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.common.utils.Pair;
 
 /**
  * Helper class for mantaining shared preferences for this application
@@ -13,9 +16,11 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
  * Asamm Software, s.r.o.
  */
 
-class AppPreferencesManager {
-	public static final String PREF_REC_STATE = "REC_STATE";
+public class AppPreferencesManager {
+	public static final String PREF_REC_STATE    = "REC_STATE";
 	public static final String PREF_PROFILE_NAME = "PROFILE_NAME";
+	public static final String PREF_DEVICE_ZOOM  = "DEV_ZOOM";
+	public static final String PREF_WEAR_ZOOM    = "WEAR ZOOM";
 
 	public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
 		if (trackRec == null || !trackRec.isInfoAvailable()) {
@@ -40,5 +45,35 @@ class AppPreferencesManager {
 			// Do nothing, result value is preset
 		}
 		return result;
+	}
+
+	/**
+	 * Sets deviceZoom and wearZoom values if not null. Null values are ignored and not stored.
+	 *
+	 * @param ctx
+	 * @param deviceZoom
+	 * @param wearZoom
+	 */
+	public static void storeZoomValues(Context ctx, Integer deviceZoom, Integer wearZoom) {
+		SharedPreferences.Editor prefsEditor =
+				PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+		if (deviceZoom != null) {
+			prefsEditor.putInt(PREF_DEVICE_ZOOM, deviceZoom.intValue());
+		}
+		if (wearZoom != null) {
+			prefsEditor.putInt(PREF_WEAR_ZOOM, deviceZoom.intValue());
+		}
+		prefsEditor.apply();
+	}
+
+	/**
+	 *
+	 * @return pair of values - deviceZoom first, wearZomm second
+	 */
+	public static Pair<Integer, Integer> getZoomValues(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		Integer deviceZoom = prefs.getInt(PREF_DEVICE_ZOOM, Const.ZOOM_UNKONWN);
+		Integer wearZoom = prefs.getInt(PREF_WEAR_ZOOM, Const.ZOOM_UNKONWN);
+		return Pair.of(deviceZoom, wearZoom);
 	}
 }

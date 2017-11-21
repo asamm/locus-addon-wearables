@@ -13,4 +13,8 @@ public class Pair<FIRST, SECOND> {
         this.first = first;
         this.second = second;
     }
+
+    public static <FIRST, SECOND> Pair<FIRST, SECOND> of(FIRST first, SECOND second) {
+        return new Pair<>(first, second);
+    }
 }

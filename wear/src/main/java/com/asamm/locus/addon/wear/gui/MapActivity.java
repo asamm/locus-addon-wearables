@@ -1,6 +1,5 @@
 package com.asamm.locus.addon.wear.gui;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -8,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.asamm.locus.addon.wear.ApplicationState;
+import com.asamm.locus.addon.wear.ApplicationCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.Const;
@@ -18,6 +17,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
+import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
@@ -41,13 +42,16 @@ public class MapActivity extends LocusWearActivity {
 	// distance to next command (units)
 	private TextView mTvNavPanelDistUnits;
 
-	private MapContainer mlastContainer;
+	private MapContainer mLastContainer;
+
+	private int mRequestedZoom = Const.ZOOM_UNKONWN;
 
 	@Override
 	protected DataPayload<PeriodicCommand> getInitialCommandType() {
-		ApplicationState appState = ((MainApplication) getApplication()).getState();
+		ApplicationCache appState = ((MainApplication) getApplication()).getCache();
+
 		final MapPeriodicParams params =
-				new MapPeriodicParams(0d, 0d, Const.ZOOM_UNKONWN,
+				new MapPeriodicParams(0d, 0d, mRequestedZoom,
 						appState.getScreenWidth(),
 						appState.getScreenHeight());
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
@@ -81,7 +85,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Initialize view before first data arrives
 	 */
 	private void initView() {
-		ApplicationState cache = ((MainApplication)getApplication()).getState();
+		ApplicationCache cache = ((MainApplication) getApplication()).getCache();
 		MapContainer savedContainer = cache.getLastMapData();
 		if (savedContainer != null && savedContainer.isMapPresent()) {
 			refreshMapView(savedContainer);
@@ -108,7 +112,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Refreshes map image view
 	 */
 	private void refreshMapView(MapContainer data) {
-		if (data != null && data.getLoadedMap() != null ) {
+		if (data != null && data.getLoadedMap() != null) {
 			mMapView.setImageBitmap(data.getLoadedMap().getImage());
 		}
 	}
@@ -117,7 +121,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Refresh panel with navigation.
 	 */
 	private void refreshPanelNavigation(MapContainer data) {
-		if (data == null || data.getGuideType() != UpdateContainer.GUIDE_TYPE_TRACK_NAVIGATION) {
+		if (data == null || data.getmGuideType() != UpdateContainer.GUIDE_TYPE_TRACK_NAVIGATION) {
 			mLlNavPanel.setVisibility(View.GONE);
 			return;
 		}
@@ -150,10 +154,38 @@ public class MapActivity extends LocusWearActivity {
 		super.consumeNewData(path, data);
 		switch (path) {
 			case PUT_MAP:
-				mlastContainer = (MapContainer) data;
-				refreshLayout(mlastContainer);
+				mLastContainer = (MapContainer) data;
+				refreshLayout(mLastContainer);
 				break;
 		}
+	}
+
+	private int getCurrentZoom() {
+		if (mLastContainer == null) {
+			return Const.ZOOM_UNKONWN;
+		}
+		return mLastContainer.getZoom();
+	}
+
+	public void onZoomClicked(View v) {
+		// don't know current zoom or there is valid requested zoom which is already different from
+		// last known map zoom
+		// TODO cejnar fix logic, both zoom persisted, wear zoom independent
+		int currentZoom = getCurrentZoom();
+		if (currentZoom == Const.ZOOM_UNKONWN) {
+			return;
+		}
+		if (mRequestedZoom == Const.ZOOM_UNKONWN) {
+			mRequestedZoom = currentZoom;
+		}
+		// TODO cejnar min/max zoom check
+		if (v.getId() == R.id.btn_zoom_in) {
+			mRequestedZoom++;
+		} else if (v.getId() == R.id.btn_zoom_out) {
+			mRequestedZoom--;
+		}
+		DataPayload<PeriodicCommand> refreshCmd = getInitialCommandType();
+		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
 	}
 
 	@Override

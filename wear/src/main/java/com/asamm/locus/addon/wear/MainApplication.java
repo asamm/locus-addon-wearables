@@ -34,7 +34,7 @@ public class MainApplication extends Application implements Application.Activity
 
 	private volatile LocusWearActivity mCurrentActivity;
 
-	private volatile ApplicationState mState;
+	private volatile ApplicationCache mCache;
 
 	// timer for termination
 	private static Timer mTimerTerminate;
@@ -76,7 +76,7 @@ public class MainApplication extends Application implements Application.Activity
 
 		// notify about create of app
 		Logger.logE(TAG, "onCreate()");
-		mState = new ApplicationState(this);
+		mCache = new ApplicationCache(this);
 		reconnectIfNeeded();
 		registerActivityLifecycleCallbacks(this);
 	}
@@ -156,13 +156,13 @@ public class MainApplication extends Application implements Application.Activity
 				TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
 				switch (p) {
 					case PUT_HAND_SHAKE:
-						mState.setmHandShakeValue((HandShakeValue) value);
+						mCache.setmHandShakeValue((HandShakeValue) value);
 						break;
 					case PUT_MAP:
-						mState.setLastMapData((MapContainer) value);
+						mCache.setLastMapData((MapContainer) value);
 						break;
 					case PUT_TRACK_REC:
-						mState.setLastTrackRecState(this, (TrackRecordingValue) value);
+						mCache.setLastTrackRecState(this, (TrackRecordingValue) value);
 				}
 				currentActivity.consumeNewData(p, value);
 			} else {
@@ -217,8 +217,8 @@ public class MainApplication extends Application implements Application.Activity
 		}
 	}
 
-	public ApplicationState getState() {
-		return mState;
+	public ApplicationCache getCache() {
+		return mCache;
 	}
 
 	public void onConnected() {

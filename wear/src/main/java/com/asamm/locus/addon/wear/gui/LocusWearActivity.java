@@ -2,18 +2,16 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.wear.widget.drawer.WearableDrawerLayout;
 import android.support.wear.widget.drawer.WearableDrawerView;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
-import com.asamm.locus.addon.wear.ApplicationState;
+import com.asamm.locus.addon.wear.ApplicationCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 
 import locus.api.utils.Logger;
@@ -204,8 +202,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	}
 
-	protected ApplicationState getApplicationState() {
-		return ((MainApplication) this.getApplication()).getState();
+	protected ApplicationCache getApplicationState() {
+		return ((MainApplication) this.getApplication()).getCache();
 	}
 
 	public void handleNavigationDrawerItemClicked(View v) {

@@ -17,13 +17,13 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
  * Asamm Software, s.r.o.
  */
 
-public class ApplicationState {
+public class ApplicationCache {
 	private HandShakeValue mHandShakeValue = null;
 	private Point mScreenDimension = new Point();
 	private MapContainer mMapContainer;
 
 
-	ApplicationState(Context c) {
+	ApplicationCache(Context c) {
 		WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		display.getSize(mScreenDimension);
@@ -53,14 +53,6 @@ public class ApplicationState {
 	AppPreferencesManager.persistLastRecState(ctx, value);
 	}
 
-	public TrackRecordingStateEnum getLastTrackRecState(Context ctx) {
-		return AppPreferencesManager.getLastTrackRecProfileState(ctx);
-	}
-
-	public String getLastTrackRecProfileName(Context ctx) {
-		return AppPreferencesManager.getLastTrackRecProfileName(ctx);
-	}
-
 	public void setLastMapData(MapContainer mapContainer) {
 		if (mapContainer != null) {
 			mMapContainer = mapContainer;
@@ -70,4 +62,6 @@ public class ApplicationState {
 	public MapContainer getLastMapData() {
 		return mMapContainer;
 	}
+
+
 }
