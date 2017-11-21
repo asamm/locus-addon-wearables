@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -72,6 +74,21 @@ public class MapActivity extends LocusWearActivity {
 
 		// Enables Always-on
 		setAmbientEnabled();
+		initView();
+	}
+
+	/**
+	 * Initialize view before first data arrives
+	 */
+	private void initView() {
+		ApplicationState cache = ((MainApplication)getApplication()).getState();
+		MapContainer savedContainer = cache.getLastMapData();
+		if (savedContainer != null && savedContainer.isMapPresent()) {
+			refreshMapView(savedContainer);
+		} else {
+			mMapView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.map_placeholder));
+		}
+		refreshPanelNavigation(null); // hide navigation panel
 	}
 
 	public void refreshLayout(final MapContainer data) {

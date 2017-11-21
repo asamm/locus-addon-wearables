@@ -132,4 +132,8 @@ public class MapContainer extends TimeStampStorable {
 	public ActionTools.BitmapLoadResult getLoadedMap() {
 		return mLoadedMap;
 	}
+
+	public boolean isMapPresent() {
+		return mLoadedMap != null && mLoadedMap.getImage() != null;
+	}
 }
