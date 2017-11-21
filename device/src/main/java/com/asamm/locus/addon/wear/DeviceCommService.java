@@ -45,14 +45,15 @@ import locus.api.utils.Logger;
 
 public class DeviceCommService extends LocusWearCommService {
 
+	private static volatile DeviceCommService mInstance;
+
 	// tag for logger
 	private static final String TAG = DeviceCommService.class.getSimpleName();
 
-	private static DeviceCommService mInstance;
-
 	// Last received update from Locus
-	private UpdateContainer mLastUpdate;
+	private volatile UpdateContainer mLastUpdate;
 
+	// time for periodic data transmission to wear device
 	private PeriodicDataTimer mPeriodicDataTimer;
 	/**
 	 * is updated as side effect of some selected wear requests during handling
@@ -104,15 +105,18 @@ public class DeviceCommService extends LocusWearCommService {
 			DeviceCommService s = mInstance;
 			if (s != null) {
 				s.destroy();
-				if (s.mPeriodicDataTimer != null) {
-					s.mPeriodicDataTimer.cancel();
-					s.mPeriodicDataTimer = null;
-				}
 				// disable receiver
 				PeriodicUpdatesReceiver.disableReceiver(ctx);
 				mInstance = null;
 			}
 		}
+	}
+
+	@Override
+	protected void destroy() {
+		super.destroy();
+		// fake periodic command stop request to cancel timer
+		handlePeriodicWearUpdate(null, PeriodicCommand.createStopPeriodicUpdatesCommand());
 	}
 
 	/**

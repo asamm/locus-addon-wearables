@@ -7,11 +7,13 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
 /**
+ * Helper class for mantaining shared preferences for this application
+ * <p>
  * Created by Milan Cejnar on 20.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class AppPreferencesManager {
+class AppPreferencesManager {
 	public static final String PREF_REC_STATE = "REC_STATE";
 	public static final String PREF_PROFILE_NAME = "PROFILE_NAME";
 
@@ -24,10 +26,12 @@ public class AppPreferencesManager {
 				.putString(PREF_PROFILE_NAME, trackRec.getTrackRecProfileName())
 				.apply();
 	}
-	public static String getLastTrackRecProfileName(Context ctx){
+
+	public static String getLastTrackRecProfileName(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(PREF_PROFILE_NAME, null);
 	}
-	public static TrackRecordingStateEnum getLastTrackRecProfileState(Context ctx){
+
+	public static TrackRecordingStateEnum getLastTrackRecProfileState(Context ctx) {
 		String name = PreferenceManager.getDefaultSharedPreferences(ctx).getString(PREF_REC_STATE, null);
 		TrackRecordingStateEnum result = TrackRecordingStateEnum.NOT_RECORDING;
 		try {

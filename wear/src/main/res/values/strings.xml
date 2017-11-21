@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Name of application -->
+    <string name="app_name">Locus Map</string>
+    <!-- Toast message after waypoint is added during track recording -->
+    <string name="waypoint_added">Waypoint added</string>
+    <!-- text on button to cancel current action -->
+    <string name="cancel">Cancel</string>
+    <!--Warning title-->
+    <string name="warning">Warning</string>
+
+    <!--Activity titles-->
+    <string name="title_activity_track_record">Track recording</string>
+    <string name="title_activity_map">Map</string>
+    <string name="title_activity_profile_list">Select profile</string>
+</resources>

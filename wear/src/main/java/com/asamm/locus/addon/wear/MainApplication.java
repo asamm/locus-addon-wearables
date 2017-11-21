@@ -13,6 +13,7 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
@@ -129,6 +130,11 @@ public class MainApplication extends Application implements Application.Activity
 		if (mCurrentActivity == activity) {
 			setCurrentActivity(null);
 		}
+		// no activity is visible any more or currently shown activity does not consume periodic data
+		if (mCurrentActivity == null || !mCurrentActivity.isUsePeriodicData()) {
+			WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA,
+					PeriodicCommand.createStopPeriodicUpdatesCommand());
+		}
 	}
 
 	@Override
@@ -150,13 +156,13 @@ public class MainApplication extends Application implements Application.Activity
 				TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
 				switch (p) {
 					case PUT_HAND_SHAKE:
-						mState.setHandShakeValue((HandShakeValue) value);
+						mState.setmHandShakeValue((HandShakeValue) value);
 						break;
 					case PUT_MAP:
 						mState.setLastMapData((MapContainer) value);
 						break;
 					case PUT_TRACK_REC:
-						mState.setLastTrackRecState((TrackRecordingValue) value);
+						mState.setLastTrackRecState(this, (TrackRecordingValue) value);
 				}
 				currentActivity.consumeNewData(p, value);
 			} else {
@@ -216,7 +222,6 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	public void onConnected() {
-		mState.setConnected(true);
 		LocusWearActivity act = mCurrentActivity;
 		if (act != null) {
 			act.consumeNewData(DataPath.PUT_ON_CONNECTED_EVENT, null);
@@ -224,7 +229,6 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	public void onConnectionSuspened() {
-		mState.setConnected(false);
 		reconnectIfNeeded();
 	}
 

@@ -7,8 +7,10 @@ import android.support.annotation.Nullable;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 
+import locus.api.objects.Storable;
 import locus.api.utils.Logger;
 
 /**
@@ -21,13 +23,19 @@ public class WearCommService extends LocusWearCommService {
 	private static WearCommService mDeviceCommunicationService;
 
 	private volatile Thread mRefresher;
+
+	private static final long KEEP_ALIVE_TICK_MS = 5000L;
+
+	private volatile long mLastSentDataTimestamp = 0L;
+
 	private volatile long mRefresherId;
 
-	private final MainApplication mApp;
+	private MainApplication mApp;
 
 	private WearCommService(MainApplication c) {
 		super(c);
 		this.mApp = c;
+		startRefresher();
 	}
 
 	public static WearCommService getInstance() {
@@ -47,6 +55,7 @@ public class WearCommService extends LocusWearCommService {
 	@Override
 	protected void destroy() {
 			super.destroy();
+			mApp = null;
 			mRefresher = null;
 	}
 
@@ -59,7 +68,6 @@ public class WearCommService extends LocusWearCommService {
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
 		super.onConnected(bundle);
-		startRefresher();
 		final MainApplication app = this.mApp;
 		if (app != null) {
 			app.onConnected();
@@ -93,7 +101,7 @@ public class WearCommService extends LocusWearCommService {
 			public void run() {
 				try {
 					while (mRefresher != null && mRefresher.getId() == mRefresherId) {
-						Thread.sleep(3333);
+						Thread.sleep(KEEP_ALIVE_TICK_MS);
 						sendCommand(DataPath.GET_KEEP_ALIVE);
 					}
 				} catch (Exception e) {
@@ -109,4 +117,20 @@ public class WearCommService extends LocusWearCommService {
 		mRefresher.start();
 	}
 
+	@Override
+	protected void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
+		long currentTime = System.currentTimeMillis();
+		// if keep alive command but some other command was sent recently then ignore this
+		// command to save bandwith
+		if (path == DataPath.GET_KEEP_ALIVE &&
+				currentTime - mLastSentDataTimestamp <= KEEP_ALIVE_TICK_MS) {
+			return;
+		}
+		// if sending other data than keep alive command, write current time to
+		// postpone keep alive thread
+		if (path != DataPath.GET_KEEP_ALIVE) {
+			mLastSentDataTimestamp = currentTime;
+		}
+		super.sendDataItemWithoutConnectionCheck(path, data);
+	}
 }

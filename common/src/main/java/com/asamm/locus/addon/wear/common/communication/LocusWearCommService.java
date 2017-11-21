@@ -97,7 +97,7 @@ public class LocusWearCommService implements
 		}
 	}
 
-	private void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
+	protected void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
 		PutDataRequest request = PutDataRequest.create(path.getPath());
 		if (path.isAsset()) {

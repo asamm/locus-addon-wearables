@@ -88,7 +88,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 				Logger.logD(TAG, "Loaded track info ");
 				break;
 			case PUT_ADD_WAYPOINT:
-				MainApplication.showToast();
+				MainApplication.showToast(this, getResources().getString(R.string.waypoint_added));
 				break;
 		}
 	}
@@ -211,5 +211,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	public TrackProfileIconValue.ValueList getProfileIcons() {
 		return profileIcons;
+	}
+
+	@Override
+	public boolean isUsePeriodicData() {
+		return true;
 	}
 }

@@ -7,68 +7,67 @@ import android.view.WindowManager;
 
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
 /**
+ * Container class serves as a memory cache to keep some received data while the app is running.
+ *
  * Created by Milan Cejnar on 09.11.2017.
  * Asamm Software, s.r.o.
  */
 
 public class ApplicationState {
-	private boolean connected = false;
-	private HandShakeValue handShakeValue = null;
-	private Point screenDimension = new Point();
+	private HandShakeValue mHandShakeValue = null;
+	private Point mScreenDimension = new Point();
+	private MapContainer mMapContainer;
 
 
 	ApplicationState(Context c) {
 		WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
-		display.getSize(screenDimension);
+		display.getSize(mScreenDimension);
 	}
 
-	public boolean isConnected() {
-		return connected;
+	public HandShakeValue getmHandShakeValue() {
+		return mHandShakeValue;
 	}
 
-	void setConnected(boolean connected) {
-		this.connected = connected;
-	}
-
-	public HandShakeValue getHandShakeValue() {
-		return handShakeValue;
-	}
-
-	void setHandShakeValue(HandShakeValue handShakeValue) {
-		this.handShakeValue = handShakeValue;
+	void setmHandShakeValue(HandShakeValue mHandShakeValue) {
+		this.mHandShakeValue = mHandShakeValue;
 	}
 
 	public boolean isHandShake() {
-		return handShakeValue != null;
+		return mHandShakeValue != null;
 	}
 
 	public int getScreenWidth() {
-		return screenDimension.x;
+		return mScreenDimension.x;
 	}
 
 	public int getScreenHeight() {
-		return screenDimension.y;
+		return mScreenDimension.y;
 	}
 
 	public void setLastTrackRecState(Context ctx, TrackRecordingValue value) {
+	AppPreferencesManager.persistLastRecState(ctx, value);
 	}
 
-	public String getLastTrackRecState(Context ctx) {
-		// TODO cejnar
+	public TrackRecordingStateEnum getLastTrackRecState(Context ctx) {
+		return AppPreferencesManager.getLastTrackRecProfileState(ctx);
 	}
 
 	public String getLastTrackRecProfileName(Context ctx) {
-		// TODO cejnar
+		return AppPreferencesManager.getLastTrackRecProfileName(ctx);
 	}
 
-	public void setLastMapData(MapContainer value) {
-		// TODO cejnar
+	public void setLastMapData(MapContainer mapContainer) {
+		if (mapContainer != null) {
+			mMapContainer = mapContainer;
+		}
 	}
+
 	public MapContainer getLastMapData() {
-		// TODO cejnar
+		return mMapContainer;
 	}
 }

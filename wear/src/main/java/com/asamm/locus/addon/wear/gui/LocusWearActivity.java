@@ -159,7 +159,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onStop() {
 		this.mState = WearActivityState.ON_STOP;
 		super.onStop();
-		WearCommService.getInstance().sendDataItem(DataPath.GET_PERIODIC_DATA, PeriodicCommand.createStopPeriodicUpdatesCommand());
 		cancelConnectionFailedTimer();
 	}
 
@@ -228,4 +227,16 @@ public abstract class LocusWearActivity extends WearableActivity {
 		((MainApplication) getApplication()).startLocusWearActivity(activityToStart);
 	}
 
+	/**
+	 * Activities that use request for periodic data ie. Map or active track recording should
+	 * override this method and return true.
+	 *
+	 * Used when transitionig between activities to automatically disable any currently
+	 * receiving periodic data if no activity or activity withou periodic data use is shown.
+	 *
+	 * @return whether activity uses periodic data request
+	 */
+	public boolean isUsePeriodicData() {
+		return false;
+	}
 }

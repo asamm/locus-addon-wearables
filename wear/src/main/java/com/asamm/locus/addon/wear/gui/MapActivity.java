@@ -138,4 +138,9 @@ public class MapActivity extends LocusWearActivity {
 				break;
 		}
 	}
+
+	@Override
+	public boolean isUsePeriodicData() {
+		return true;
+	}
 }

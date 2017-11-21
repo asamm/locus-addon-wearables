@@ -42,10 +42,9 @@ public class DeviceListenerService extends WearableListenerService {
 		}
 
 		@Override
-		public boolean isTerminateRequest(MessageEvent newData) {
-			String path = newData.getPath();
-			//return Const.PATH_STATE_APP_DESTROYED.equals(path);
-			return false; // TODO cejnar
+		public DataPath getPath(MessageEvent newData) {
+			return null;
+			// TODO cejnar
 		}
 	};
 
@@ -59,9 +58,9 @@ public class DeviceListenerService extends WearableListenerService {
 		}
 
 		@Override
-		public boolean isTerminateRequest(DataEvent newData) {
+		public DataPath getPath(DataEvent newData) {
 			DataItem d = newData.getDataItem();
-			return DataPath.PUT_APP_DESTROYED.getPath().equals(d.getUri().getPath());
+			return DataPath.valueOf(d);
 		}
 	};
 
@@ -103,31 +102,49 @@ public class DeviceListenerService extends WearableListenerService {
 	 * @param <T>
 	 */
 	private <T> void handleDataChange(DataConsumer<T> dataConsumer, T newData) {
-		// cancel timer if any message has arrived
+		final DataPath p = dataConsumer.getPath(newData);
+		if (p == null) {
+			return; // Unknown path, ignore received data
+		}
+
+
+		// handle termination request if present, otherwise delegate data handling to DeviceCommService
+		if (p == DataPath.PUT_APP_DESTROYED) {
+			cancelTerminationTimer();
+			DeviceCommService.destroyInstance(this);
+		} else {
+			switch (p) {
+				// for following paths, refresh terminationTimer
+				case GET_KEEP_ALIVE:
+				case GET_HAND_SHAKE:
+				case GET_TRACK_REC:
+				case GET_TRACK_REC_PROFILES:
+				case GET_PERIODIC_DATA:
+					cancelTerminationTimer();
+					// start "destroyer"
+					mTimerTerminate = new Timer();
+					mTimerTerminate.schedule(new TimerTask() {
+
+						@Override
+						public void run() {
+							DeviceCommService.destroyInstance(DeviceListenerService.this);
+							mTimerTerminate = null;
+						}
+					}, TimeUnit.SECONDS.toMillis(INACTVITY_TIMEOUT_SECONDS));
+					// then for all paths try to consume data content
+				default:
+					dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
+
+			}
+		}
+	}
+
+	private void cancelTerminationTimer() {
 		if (mTimerTerminate != null) {
 			mTimerTerminate.cancel();
 			mTimerTerminate = null;
 		}
-
-		// handle termination request if present, otherwise delegate data handling to DeviceCommService
-		if (dataConsumer.isTerminateRequest(newData)) {
-			DeviceCommService.destroyInstance(this);
-		} else {
-			dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
-
-			// start "destroyer"
-			mTimerTerminate = new Timer();
-			mTimerTerminate.schedule(new TimerTask() {
-
-				@Override
-				public void run() {
-					DeviceCommService.destroyInstance(DeviceListenerService.this);
-					mTimerTerminate = null;
-				}
-			}, TimeUnit.SECONDS.toMillis(INACTVITY_TIMEOUT_SECONDS));
-		}
 	}
-
 
 	/**
 	 * Generic incomming data consumer with ability to detect termination request data before
@@ -149,6 +166,6 @@ public class DeviceListenerService extends WearableListenerService {
 		 * @param newData data to consume
 		 * @return
 		 */
-		boolean isTerminateRequest(T newData);
+		DataPath getPath(T newData);
 	}
 }
