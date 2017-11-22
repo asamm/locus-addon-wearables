@@ -30,7 +30,8 @@ public class MapContainer extends TimeStampStorable {
 	private int mNavPointAction2Id;
 	private double mNavPoint1Dist;
 	private int mUnitsFormatLength;
-	private int mZoom;
+	private int mZoomDevice;
+	private int mZoomWear;
 
 	public MapContainer() {
 		super();
@@ -40,11 +41,12 @@ public class MapContainer extends TimeStampStorable {
 		super(byteArray);
 	}
 
-	public MapContainer(ActionTools.BitmapLoadResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li) {
+	public MapContainer(ActionTools.BitmapLoadResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li, int zoom) {
 		this();
 		mLoadedMap = loadedMap;
 		if (mLastUpdate != null) {
-			mZoom = mLastUpdate.getMapZoomLevel();
+			mZoomDevice = mLastUpdate.getMapZoomLevel();
+			mZoomWear = zoom;
 			mGuideType = mLastUpdate.getGuideType();
 			UpdateContainer.GuideTypeTrack guide = mLastUpdate.getGuideTypeTrack();
 			if (guide != null) {
@@ -66,7 +68,8 @@ public class MapContainer extends TimeStampStorable {
 		mNavPointAction2Id = PointRteAction.UNDEFINED.getId();
 		mNavPoint1Dist = 0;
 		mUnitsFormatLength = 0;
-		mZoom = Const.ZOOM_UNKONWN;
+		mZoomDevice = Const.ZOOM_UNKONWN;
+		mZoomWear = Const.ZOOM_UNKONWN;
 	}
 
 	@Override
@@ -77,7 +80,8 @@ public class MapContainer extends TimeStampStorable {
 		mNavPointAction2Id = dr.readInt();
 		mNavPoint1Dist = dr.readDouble();
 		mUnitsFormatLength = dr.readInt();
-		mZoom = dr.readInt();
+		mZoomDevice = dr.readInt();
+		mZoomWear = dr.readInt();
 		boolean isMap = dr.readBoolean();
 		try {
 			mLoadedMap = isMap ? (ActionTools.BitmapLoadResult) dr.readStorable(ActionTools.BitmapLoadResult.class) : null;
@@ -95,7 +99,8 @@ public class MapContainer extends TimeStampStorable {
 		dw.writeInt(mNavPointAction2Id);
 		dw.writeDouble(mNavPoint1Dist);
 		dw.writeInt(mUnitsFormatLength);
-		dw.writeInt(mZoom);
+		dw.writeInt(mZoomDevice);
+		dw.writeInt(mZoomWear);
 		boolean isMap = mLoadedMap != null;
 		dw.writeBoolean(isMap);
 		if (isMap) {
@@ -140,12 +145,15 @@ public class MapContainer extends TimeStampStorable {
 		return mLoadedMap;
 	}
 
-	public int getZoom() {
-		return mZoom;
+	public int getZoomDevice() {
+		return mZoomDevice;
 	}
 
 	public boolean isMapPresent() {
 		return mLoadedMap != null && mLoadedMap.getImage() != null;
 	}
 
+	public int getZoomWear() {
+		return mZoomWear;
+	}
 }

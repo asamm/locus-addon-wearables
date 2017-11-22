@@ -2,11 +2,14 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.ApplicationCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
@@ -17,17 +20,19 @@ import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
+import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
 import locus.api.objects.enums.PointRteAction;
+import locus.api.utils.Logger;
 
 public class MapActivity extends LocusWearActivity {
 
 	private static final int MAP_REFRESH_PERIOD_MS = 5000;
+	private static final int SCALE_ANIMATION_DURATION_MS = 200;
 	// reference to map view
 	private ImageView mMapView;
 
@@ -42,9 +47,15 @@ public class MapActivity extends LocusWearActivity {
 	// distance to next command (units)
 	private TextView mTvNavPanelDistUnits;
 
-	private MapContainer mLastContainer;
+	private volatile MapContainer mLastContainer;
 
-	private int mRequestedZoom = Const.ZOOM_UNKONWN;
+	/**
+	 * simple mutex for temporary locking zooming function while animating
+	 */
+	private volatile boolean mZoomLock;
+
+	private volatile int mDeviceZoom;
+	private volatile int mRequestedZoom = Const.ZOOM_UNKONWN;
 
 	@Override
 	protected DataPayload<PeriodicCommand> getInitialCommandType() {
@@ -81,6 +92,20 @@ public class MapActivity extends LocusWearActivity {
 		initView();
 	}
 
+	@Override
+	protected void onStart() {
+		Pair<Integer, Integer> zooms = AppPreferencesManager.getZoomValues(this);
+		mDeviceZoom = zooms.first;
+		mRequestedZoom = zooms.second;
+		super.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		AppPreferencesManager.persistZoomValues(this, mDeviceZoom, mRequestedZoom);
+	}
+
 	/**
 	 * Initialize view before first data arrives
 	 */
@@ -97,15 +122,19 @@ public class MapActivity extends LocusWearActivity {
 
 	public void refreshLayout(final MapContainer data) {
 		// run in UI thread
-		runOnUiThread(new Runnable() {
-
-			@Override
-			public void run() {
-				// refresh layout
-				refreshMapView(data);
-				refreshPanelNavigation(data);
-			}
+		runOnUiThread(() -> {
+			refreshMapView(data);
+			refreshZoomModel(data);
+			refreshPanelNavigation(data);
 		});
+	}
+	private void refreshZoomModel(MapContainer data) {
+		// zoom on device changed right now or from last time app was opened - reset zoom to device zoom value
+		if (mDeviceZoom != data.getZoomDevice() && data.getZoomDevice() != Const.ZOOM_UNKONWN) {
+			changeZoom(data.getZoomDevice());
+		}
+		Logger.logD("","ZOOM WEAR: "+data.getZoomWear());
+		mDeviceZoom = data.getZoomDevice();
 	}
 
 	/**
@@ -114,6 +143,12 @@ public class MapActivity extends LocusWearActivity {
 	private void refreshMapView(MapContainer data) {
 		if (data != null && data.getLoadedMap() != null) {
 			mMapView.setImageBitmap(data.getLoadedMap().getImage());
+			if (data.getZoomWear() == mRequestedZoom) {
+				mMapView.animate().cancel();
+				mMapView.setScaleX(1f);
+				mMapView.setScaleY(1f);
+				mZoomLock = false;
+			}
 		}
 	}
 
@@ -160,32 +195,45 @@ public class MapActivity extends LocusWearActivity {
 		}
 	}
 
-	private int getCurrentZoom() {
-		if (mLastContainer == null) {
-			return Const.ZOOM_UNKONWN;
-		}
-		return mLastContainer.getZoom();
-	}
-
 	public void onZoomClicked(View v) {
-		// don't know current zoom or there is valid requested zoom which is already different from
-		// last known map zoom
-		// TODO cejnar fix logic, both zoom persisted, wear zoom independent
-		int currentZoom = getCurrentZoom();
-		if (currentZoom == Const.ZOOM_UNKONWN) {
+		if (mDeviceZoom == Const.ZOOM_UNKONWN || mZoomLock) {
 			return;
 		}
 		if (mRequestedZoom == Const.ZOOM_UNKONWN) {
-			mRequestedZoom = currentZoom;
+			mRequestedZoom = mDeviceZoom;
 		}
-		// TODO cejnar min/max zoom check
+		final int zoomDiff;
 		if (v.getId() == R.id.btn_zoom_in) {
-			mRequestedZoom++;
+			zoomDiff = 1;
 		} else if (v.getId() == R.id.btn_zoom_out) {
-			mRequestedZoom--;
+			zoomDiff = -1;
+		} else {
+			return;
 		}
+		mZoomLock = true;
+		if (changeZoom(mRequestedZoom + zoomDiff)) {
+			float scale = zoomDiff < 0 ? 0.5f : 2f;
+			mMapView.animate()
+					.scaleX(scale)
+					.scaleY(scale)
+					.setDuration(SCALE_ANIMATION_DURATION_MS)
+					.setInterpolator(new DecelerateInterpolator())
+					.withEndAction(() -> mZoomLock = false)
+					.start();
+		} else {
+			mZoomLock = false;
+		}
+	}
+
+	private boolean changeZoom(int newZoom) {
+		newZoom = Math.min(Math.max(newZoom, Const.ZOOM_MIN), Const.ZOOM_MAX);
+		if (newZoom == mRequestedZoom) {
+			return false;
+		}
+		mRequestedZoom = newZoom;
 		DataPayload<PeriodicCommand> refreshCmd = getInitialCommandType();
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
+		return true;
 	}
 
 	@Override

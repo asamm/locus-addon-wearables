@@ -3,13 +3,15 @@ package com.asamm.locus.addon.wear.common.communication;
 import locus.api.android.utils.LocusUtils;
 
 /**
+ * Common constants to use for both device and wear modules
  * Created by menion on 07/08/15.
  * Asamm Software, s. r. o.
  */
-public class Const {
-	public static final int ZOOM_UNKONWN = Integer.MIN_VALUE;
+public interface Const {
+	int ZOOM_UNKONWN = Integer.MIN_VALUE;
+	int ZOOM_MIN = 0;
+	int ZOOM_MAX = 22;
 
 	// minimal version code of Locus
-	public static final LocusUtils.VersionCode LOCUS_MIN_VERSION_CODE =
-			LocusUtils.VersionCode.UPDATE_13;
+	LocusUtils.VersionCode LOCUS_MIN_VERSION_CODE = LocusUtils.VersionCode.UPDATE_13;
 }

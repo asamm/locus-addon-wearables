@@ -54,14 +54,14 @@ public class AppPreferencesManager {
 	 * @param deviceZoom
 	 * @param wearZoom
 	 */
-	public static void storeZoomValues(Context ctx, Integer deviceZoom, Integer wearZoom) {
+	public static void persistZoomValues(Context ctx, Integer deviceZoom, Integer wearZoom) {
 		SharedPreferences.Editor prefsEditor =
 				PreferenceManager.getDefaultSharedPreferences(ctx).edit();
 		if (deviceZoom != null) {
 			prefsEditor.putInt(PREF_DEVICE_ZOOM, deviceZoom.intValue());
 		}
 		if (wearZoom != null) {
-			prefsEditor.putInt(PREF_WEAR_ZOOM, deviceZoom.intValue());
+			prefsEditor.putInt(PREF_WEAR_ZOOM, wearZoom.intValue());
 		}
 		prefsEditor.apply();
 	}

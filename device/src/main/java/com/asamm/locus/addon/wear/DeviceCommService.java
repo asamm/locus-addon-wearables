@@ -263,7 +263,7 @@ public class DeviceCommService extends LocusWearCommService {
 			Logger.logE(TAG, "Missing required version, current version " + lv, e);
 		}
 
-		MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo);
+		MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo, zoom);
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 
