@@ -162,10 +162,6 @@ public class DeviceCommService extends LocusWearCommService {
 					sendDataItem(DataPath.PUT_TRACK_REC_ICON_INFO, profiles.second);
 				}
 				break;
-			case GET_TRACK_REC:
-				TrackRecordingValue trv = loadTrackRecordingValue();
-				sendDataItem(DataPath.PUT_TRACK_REC, trv);
-				break;
 			case PUT_TRACK_REC_STATE_CHANGE: {
 				lv = LocusUtils.getActiveVersion(c);
 				TrackRecordingStateChangeValue v = createStorableForPath(path, item);
@@ -203,7 +199,7 @@ public class DeviceCommService extends LocusWearCommService {
 
 		final TimerTask task;
 		switch (activityId) {
-			case PeriodicCommand.IDX_PERIODIC_ACITIVITY_TRACK_RECORDING:
+			case PeriodicCommand.IDX_PERIODIC_TRACK_RECORDING:
 				task = new TimerTask() {
 					@Override
 					public void run() {
@@ -212,7 +208,7 @@ public class DeviceCommService extends LocusWearCommService {
 					}
 				};
 				break;
-			case PeriodicCommand.IDX_PERIODIC_ACITIVITY_MAP:
+			case PeriodicCommand.IDX_PERIODIC_MAP:
 				task = new TimerTask() {
 					@Override
 					public void run() {

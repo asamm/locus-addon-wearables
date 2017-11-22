@@ -33,7 +33,7 @@
         </service>
 
         <activity
-            android:name=".gui.TrackRecordActivity"
+            android:name=".gui.trackrec.TrackRecordActivity"
             android:label="@string/title_activity_track_record">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +46,7 @@
             android:label="@string/title_activity_map">
         </activity>
         <activity
-            android:name=".gui.ProfileListActivity"
+            android:name=".gui.trackrec.ProfileListActivity"
             android:label="@string/title_activity_profile_list"></activity>
     </application>
 

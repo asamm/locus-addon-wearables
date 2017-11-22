@@ -21,9 +21,9 @@ public class PeriodicCommand extends TimeStampStorable {
 	/**
 	 * Activities supporting periodic messages
 	 */
-	public static final byte IDX_PERIODIC_ACITIVY_STOP_ALL = 0;
-	public static final byte IDX_PERIODIC_ACITIVITY_TRACK_RECORDING = 1;
-	public static final byte IDX_PERIODIC_ACITIVITY_MAP = 2;
+	public static final byte IDX_PERIODIC_STOP_ALL = 0;
+	public static final byte IDX_PERIODIC_TRACK_RECORDING = 1;
+	public static final byte IDX_PERIODIC_MAP = 2;
 
 	private byte mPeriodicActivityId;
 	private int mPeriodMs;
@@ -74,7 +74,7 @@ public class PeriodicCommand extends TimeStampStorable {
 	@Override
 	public void reset() {
 		super.reset();
-		mPeriodicActivityId = IDX_PERIODIC_ACITIVY_STOP_ALL;
+		mPeriodicActivityId = IDX_PERIODIC_STOP_ALL;
 		mPeriodMs = PERIOD_STOP;
 		mExtra = null;
 	}
@@ -86,7 +86,7 @@ public class PeriodicCommand extends TimeStampStorable {
 		mPeriodMs = dr.readInt();
 		if (dr.readBoolean()) {
 			try {
-				if (mPeriodicActivityId == IDX_PERIODIC_ACITIVITY_MAP) {
+				if (mPeriodicActivityId == IDX_PERIODIC_MAP) {
 					mExtra = (MapPeriodicParams) dr.readStorable(MapPeriodicParams.class);
 				} else {
 					mExtra = (TimeStampStorable) dr.readStorable(TimeStampStorable.class);
@@ -106,7 +106,7 @@ public class PeriodicCommand extends TimeStampStorable {
 		dw.write(mPeriodicActivityId);
 		dw.writeInt(mPeriodMs);
 		boolean serializeExtra = mExtra != null
-				&& mPeriodicActivityId == IDX_PERIODIC_ACITIVITY_MAP;
+				&& mPeriodicActivityId == IDX_PERIODIC_MAP;
 		dw.writeBoolean(serializeExtra);
 		if (serializeExtra) {
 			dw.writeStorable(mExtra);
@@ -115,7 +115,7 @@ public class PeriodicCommand extends TimeStampStorable {
 	}
 
 	public static PeriodicCommand createStopPeriodicUpdatesCommand() {
-		return new PeriodicCommand(IDX_PERIODIC_ACITIVY_STOP_ALL, PERIOD_STOP);
+		return new PeriodicCommand(IDX_PERIODIC_STOP_ALL, PERIOD_STOP);
 	}
 
 	/**

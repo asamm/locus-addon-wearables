@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui;
+package com.asamm.locus.addon.wear.gui.trackrec;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
 import java.io.IOException;
 import java.util.HashMap;

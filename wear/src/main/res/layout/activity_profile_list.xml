@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="@dimen/box_inset_layout_padding"
-    tools:context="com.asamm.locus.addon.wear.gui.ProfileListActivity"
+    tools:context="com.asamm.locus.addon.wear.gui.trackrec.ProfileListActivity"
     scrollbars="vertical"
     tools:deviceIds="wear">
 

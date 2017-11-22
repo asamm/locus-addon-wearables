@@ -117,7 +117,6 @@ public class DeviceListenerService extends WearableListenerService {
 				// for following paths, refresh terminationTimer
 				case GET_KEEP_ALIVE:
 				case GET_HAND_SHAKE:
-				case GET_TRACK_REC:
 				case GET_TRACK_REC_PROFILES:
 				case GET_PERIODIC_DATA:
 					cancelTerminationTimer();

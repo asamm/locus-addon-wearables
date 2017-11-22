@@ -2,7 +2,6 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -66,7 +65,7 @@ public class MapActivity extends LocusWearActivity {
 						appState.getScreenWidth(),
 						appState.getScreenHeight());
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
-				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_ACITIVITY_MAP,
+				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_MAP,
 						MAP_REFRESH_PERIOD_MS, params));
 	}
 

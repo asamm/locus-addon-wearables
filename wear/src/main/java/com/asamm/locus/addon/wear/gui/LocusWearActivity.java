@@ -13,6 +13,7 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
 import locus.api.utils.Logger;
 

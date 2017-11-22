@@ -28,7 +28,6 @@ public enum DataPath {
 	PUT_TRACK_REC_ICON_INFO(TrackProfileIconValue.ValueList.class),
 	PUT_APP_DESTROYED(EmptyCommand.class),
 
-	GET_TRACK_REC(EmptyCommand.class),
 	PUT_TRACK_REC(TrackRecordingValue.class, false),
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
 	GET_ADD_WAYPOINT(EmptyCommand.class),
