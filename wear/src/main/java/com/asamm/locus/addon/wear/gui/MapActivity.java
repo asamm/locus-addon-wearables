@@ -114,7 +114,7 @@ public class MapActivity extends LocusWearActivity {
 		if (savedContainer != null && savedContainer.isMapPresent()) {
 			refreshMapView(savedContainer);
 		} else {
-			mMapView.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.map_placeholder));
+			mMapView.setBackground(getDrawable(R.drawable.var_map_loading_tile_256));
 		}
 		refreshPanelNavigation(null); // hide navigation panel
 	}
@@ -141,6 +141,7 @@ public class MapActivity extends LocusWearActivity {
 	 */
 	private void refreshMapView(MapContainer data) {
 		if (data != null && data.getLoadedMap() != null) {
+			mMapView.setBackground(null);
 			mMapView.setImageBitmap(data.getLoadedMap().getImage());
 			if (data.getZoomWear() == mRequestedZoom) {
 				mMapView.animate().cancel();

@@ -6,7 +6,7 @@
     android:layout_gravity="center">
 
     <ImageView
-        android:id="@+id/image_view_track_rec_pause"
+        android:id="@+id/img_track_rec_start"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -16,7 +16,7 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_96_track_recording_rec"
         android:onClick="handleStartClick"
-        app:layout_constraintBottom_toTopOf="@+id/trackRecProfileSelectFragment"
+        app:layout_constraintBottom_toTopOf="@+id/fragment_track_rec_profile_select"
         app:layout_constraintEnd_toStartOf="@+id/xGuideTrackRectStartVert83_5"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/xGuideTrackRectStartVert16_5"
@@ -25,17 +25,17 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <fragment
-        android:id="@+id/trackRecProfileSelectFragment"
+        android:id="@+id/fragment_track_rec_profile_select"
         android:name="com.asamm.locus.addon.wear.gui.trackrec.TrackRecordProfileSelectFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/xGuideTrackRectStart0"
+        android:layout_marginBottom="@dimen/outer_frame_layout_padding"
+        android:layout_marginEnd="@dimen/outer_frame_layout_padding"
+        android:layout_marginStart="@dimen/outer_frame_layout_padding"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/xGuideTrackRectStart0" />
+        app:layout_constraintTop_toTopOf="@+id/xGuideTrackRectStart0" />
 
     <android.support.constraint.Guideline
         android:id="@+id/xGuideTrackRectStart0"

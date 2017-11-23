@@ -247,7 +247,7 @@ public class DeviceCommService extends LocusWearCommService {
 		try {
 			loadedMap = ActionTools.getMapPreview(ctx,
 					lv, new Location(lat, lon),
-					zoom, width, height, false);
+					zoom, width, height, true);
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadMapPreview(" + lv + ")");
 		}

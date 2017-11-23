@@ -2,6 +2,7 @@ package com.asamm.locus.addon.wear.gui.trackrec;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
@@ -45,6 +46,12 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private TrackRecordingValue model;
 	private ViewFlipper mRecViewFlipper;
+
+	// start recording screen fields
+	private ImageView mImgStartRecording;
+
+	// recording active screen fields
+	// model
 	private volatile TrackProfileInfoValue.ValueList profileList;
 	private volatile TrackProfileIconValue.ValueList profileIcons;
 
@@ -65,6 +72,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.track_record_activity);
 		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
+		mImgStartRecording = findViewById(R.id.img_track_rec_start);
 		// Enables Always-on
 		setAmbientEnabled();
 	}
@@ -150,10 +158,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 		WearCommService.getInstance().sendCommand(DataPath.GET_ADD_WAYPOINT);
 	}
 
+	private TrackRecordProfileSelectFragment getSelectProfileFragment() {
+		return (TrackRecordProfileSelectFragment) getFragmentManager()
+						.findFragmentById(R.id.fragment_track_rec_profile_select);
+	}
+
 	private TrackProfileInfoValue getRecordingInfo() {
-		TrackRecordProfileSelectFragment f =
-				(TrackRecordProfileSelectFragment) getFragmentManager()
-						.findFragmentById(R.id.trackRecProfileSelectFragment);
+		TrackRecordProfileSelectFragment f = getSelectProfileFragment();
 		if (f != null) {
 			return f.getmProfile();
 		}
