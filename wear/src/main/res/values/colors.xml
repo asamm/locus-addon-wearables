@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="base_disabled">#80aaaaaa</color>
+
     <!-- COLORS -->
     <color name = "clr_background_dark">#051526</color>
     <color name = "clr_background_light">#092b4d</color>

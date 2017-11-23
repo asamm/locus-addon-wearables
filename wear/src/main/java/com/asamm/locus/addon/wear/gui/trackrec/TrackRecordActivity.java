@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,6 +54,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private ImageView mImgStartRecording;
 
 	// recording active screen fields
+	private ImageView mImgPauseRecording;
+	private ImageView mImgStopRecording;
+	private ImageView mImgAddWaypoint;
+	private Drawable pauseDrawable;
 	// model
 	private volatile TrackProfileInfoValue.ValueList profileList;
 	private volatile TrackProfileIconValue.ValueList profileIcons;
@@ -73,8 +80,33 @@ public class TrackRecordActivity extends LocusWearActivity {
 		setContentView(R.layout.track_record_activity);
 		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
 		mImgStartRecording = findViewById(R.id.img_track_rec_start);
+		mImgAddWaypoint = findViewById(R.id.image_view_track_rec_add_wpt);
+		mImgStopRecording = findViewById(R.id.image_view_track_rec_stop);
+		mImgPauseRecording = findViewById(R.id.image_view_track_rec_pause);
+
+		setDisabledDrawables();
 		// Enables Always-on
 		setAmbientEnabled();
+	}
+
+	// TODO cejnar debug only - generate disabled drawables programatically
+	private void setDisabledDrawables() {
+		Drawable d = DisableGuiHelper.getImageWithDisabled(this,
+				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_rec));
+		mImgStartRecording.setImageDrawable(d);
+
+		d = DisableGuiHelper.getImageWithDisabled(this,
+				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_stop));
+		mImgStopRecording.setImageDrawable(d);
+
+		d = DisableGuiHelper.getImageWithDisabled(this,
+				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_pause));
+		pauseDrawable = d;
+		mImgPauseRecording.setImageDrawable(d);
+
+		d = DisableGuiHelper.getImageWithDisabled(this,
+				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_add_wpt));
+		mImgAddWaypoint.setImageDrawable(d);
 	}
 
 	@Override
@@ -150,8 +182,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	public void handlePauseClick(View v) {
-		sendStateChangeRequest(TrackRecordingStateEnum.PAUSED);
-		stateMachine.transitionTo(PAUSED_WAITING);
+		if (stateMachine.getCurrentState() == REC ) {
+			sendStateChangeRequest(TrackRecordingStateEnum.PAUSED);
+			stateMachine.transitionTo(PAUSED_WAITING);
+		} else if (stateMachine.getCurrentState() == PAUSED){
+			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
+			stateMachine.transitionTo(REC_WAITING);
+		}
 	}
 
 	public void handleAddWaypointClick(View v) {
@@ -160,7 +197,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private TrackRecordProfileSelectFragment getSelectProfileFragment() {
 		return (TrackRecordProfileSelectFragment) getFragmentManager()
-						.findFragmentById(R.id.fragment_track_rec_profile_select);
+				.findFragmentById(R.id.fragment_track_rec_profile_select);
 	}
 
 	private TrackProfileInfoValue getRecordingInfo() {
@@ -202,25 +239,42 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	}
 
+	private void setRecScreenEnabled(boolean isEnabled) {
+		mImgPauseRecording.setEnabled(isEnabled);
+		mImgStopRecording.setEnabled(isEnabled);
+		mImgAddWaypoint.setEnabled(isEnabled);
+	}
+
+	private void setIdleScreenEnabled(boolean isEnabled) {
+		mImgStartRecording.setEnabled(isEnabled);
+	}
+
 	private void transitionToRecState() {
+		mImgPauseRecording.setImageDrawable(pauseDrawable);
+		setRecScreenEnabled(false);
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
 		Logger.logD(TAG, "setting rec screen");
 	}
 
 	private void transitionToIdlestate() {
+		setIdleScreenEnabled(false);
 		mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
 		Logger.logD(TAG, "setting idle screen");
 	}
 
 	private void transitionToPauseState() {
 		transitionToRecState();
+		// TODO cejnar set resume drawable
+		mImgPauseRecording.setImageDrawable(mImgStartRecording.getDrawable());
 	}
 
 	private void enableIdleScreen() {
+		setIdleScreenEnabled(true);
 		Logger.logD(TAG, "Enabling idle screen");
 	}
 
 	private void enableRecScreen() {
+		setRecScreenEnabled(true);
 		Logger.logD(TAG, "Enabling rec screen");
 	}
 
@@ -253,11 +307,11 @@ public class TrackRecordActivity extends LocusWearActivity {
 					HashMap<TrackRecActivityState, Runnable> uninitializedTransitions
 							= mTransitionsFunctions.get(UNINITIALIZED);
 					uninitializedTransitions.put(IDLE_WAITING,
-							TrackRecordActivity.this::enableIdleScreen);
+							TrackRecordActivity.this::transitionToIdlestate);
 					uninitializedTransitions.put(REC_WAITING,
-							TrackRecordActivity.this::enableRecScreen);
+							TrackRecordActivity.this::transitionToRecState);
 					uninitializedTransitions.put(PAUSED_WAITING,
-							TrackRecordActivity.this::enablePausedScreen);
+							TrackRecordActivity.this::transitionToPauseState);
 
 					// transitions to waiting states from main states
 					for (TrackRecActivityState toDual : Arrays.asList(IDLE, PAUSED, REC)) {
