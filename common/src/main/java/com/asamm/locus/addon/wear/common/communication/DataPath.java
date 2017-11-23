@@ -6,6 +6,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
@@ -25,16 +26,14 @@ public enum DataPath {
 	PUT_BASIC_INFO(BasicAppInfoValue.class),
 	GET_TRACK_REC_PROFILES(EmptyCommand.class),
 	PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
-	PUT_TRACK_REC_ICON_INFO(TrackProfileIconValue.ValueList.class),
 	PUT_APP_DESTROYED(EmptyCommand.class),
-
 	PUT_TRACK_REC(TrackRecordingValue.class, false),
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
+	GET_PROFILE_ICON(ProfileIconGetCommand.class),
+	PUT_PROFILE_ICON(TrackProfileIconValue.class, false),
 	GET_ADD_WAYPOINT(EmptyCommand.class),
 	PUT_ADD_WAYPOINT(EmptyCommand.class),
-
 	GET_PERIODIC_DATA(PeriodicCommand.class),
-
 	GET_KEEP_ALIVE(EmptyCommand.class, false, false),
 	PUT_MAP(MapContainer.class, false, true),
 	/**

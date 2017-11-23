@@ -95,6 +95,7 @@ public class WearCommService extends LocusWearCommService {
 	 */
 	private void startRefresher() {
 		// class for periodic checks.
+		// TODO cejnar fix running thread after application crash, use timer instead?
 		final Runnable mChecker = new Runnable() {
 
 			@Override

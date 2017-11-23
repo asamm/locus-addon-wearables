@@ -1,59 +1,46 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.asamm.locus.addon.wear.gui.trackrec.TrackRecordProfileSelectFragment">
+    app:layout_constraintHorizontal_chainStyle="spread_inside">
 
-    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/trackProfileSelectText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="2dp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_big"
+        android:background="@drawable/border_bottom"
+        app:layout_constraintStart_toEndOf="@id/trackProfileSelectIcon"
+        app:layout_constraintEnd_toStartOf="@id/imgTrackProfileSelectDotsIcon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
+    <ImageView
+        android:id="@+id/imgTrackProfileSelectDotsIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:padding="@dimen/inner_frame_layout_padding"
+        android:layout_marginTop="2dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/edit_dots"
+        app:layout_constraintBottom_toBottomOf="@id/trackProfileSelectText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/trackProfileSelectText"
+        app:layout_constraintTop_toTopOf="@id/trackProfileSelectText" />
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/border_bottom">
+    <ImageView
+        android:id="@+id/trackProfileSelectIcon"
+        android:layout_height="28dp"
+        android:layout_width="28dp"
+        android:src="@drawable/xxx_load"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/trackProfileSelectText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
 
-            <TextView
-                android:id="@+id/trackProfileSelectText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:padding="2dp"
-                android:text="textview"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_big"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="profile name"/>
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/text_size_small"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="2dp"
-                android:src="@drawable/edit_dots"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@+id/trackProfileSelectText"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </android.support.constraint.ConstraintLayout>
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="2dp"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/trackProfileSelectIcon"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:src="@drawable/xxx_load"></ImageView>
-    </TableRow>
-
-</TableLayout>
+</android.support.constraint.ConstraintLayout>

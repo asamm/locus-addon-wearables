@@ -12,6 +12,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -55,6 +56,8 @@ public class DeviceCommService extends LocusWearCommService {
 
 	// time for periodic data transmission to wear device
 	private PeriodicDataTimer mPeriodicDataTimer;
+
+	private TrackProfileIconValue.ValueList mProfileIcons;
 	/**
 	 * is updated as side effect of some selected wear requests during handling
 	 */
@@ -159,9 +162,26 @@ public class DeviceCommService extends LocusWearCommService {
 						loadTrackRecordProfiles(c);
 				if (profiles.first != null) {
 					sendDataItem(DataPath.PUT_TRACK_REC_PROFILE_INFO, profiles.first);
-					sendDataItem(DataPath.PUT_TRACK_REC_ICON_INFO, profiles.second);
+					mProfileIcons = profiles.second;
 				}
 				break;
+			case GET_PROFILE_ICON:
+				if (mProfileIcons == null) {
+					Pair<TrackProfileInfoValue.ValueList, TrackProfileIconValue.ValueList> profilesIcons =
+							loadTrackRecordProfiles(c);
+					mProfileIcons = profilesIcons.second;
+				}
+				ProfileIconGetCommand pigc = createStorableForPath(path, item);
+				if (mProfileIcons != null) {
+					for (TrackProfileIconValue icon : mProfileIcons.getStorables()) {
+						if (pigc.getProfileId() == icon.getId()) {
+							sendDataItem(DataPath.PUT_PROFILE_ICON, icon);
+							break;
+						}
+					}
+				}
+				break;
+
 			case PUT_TRACK_REC_STATE_CHANGE: {
 				lv = LocusUtils.getActiveVersion(c);
 				TrackRecordingStateChangeValue v = createStorableForPath(path, item);

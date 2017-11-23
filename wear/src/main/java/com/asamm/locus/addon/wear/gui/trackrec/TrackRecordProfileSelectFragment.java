@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.asamm.locus.addon.wear.AppPreferencesManager;
+import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
@@ -30,8 +32,6 @@ import locus.api.utils.Logger;
 public class TrackRecordProfileSelectFragment extends Fragment {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PROFILE = "ARG_PROFILE";
-	private static final String ARG_ICON = "ARG_ICON";
-	private static final int PICK_PROFILE_REQUEST = 917001;
 
 	private TrackProfileInfoValue mProfile;
 	private TrackProfileIconValue mIcon;
@@ -54,18 +54,15 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 			} catch (IOException e) {
 				mProfile = null;
 			}
-
-			arr = b.getByteArray(ARG_ICON);
-			try {
-				mIcon = arr == null ? null : new TrackProfileIconValue(arr);
-			} catch (IOException e) {
-				mIcon = null;
-			}
 		}
 	}
 
 	public void setParameters(TrackProfileInfoValue profile, TrackProfileIconValue icon) {
 		mProfile = profile;
+		// empty icon, try icon cache for match
+		if (icon == null && profile != null) {
+			icon = AppStorageManager.getIcon(getActivity(), profile.getId());
+		}
 		mIcon = icon;
 		refreshModel();
 	}
@@ -75,10 +72,8 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 			TrackRecordActivity a = (TrackRecordActivity) getActivity();
 			Intent i = new Intent(a, ProfileListActivity.class);
 			TrackProfileInfoValue.ValueList profiles = a.getProfileList();
-			TrackProfileIconValue.ValueList icons = a.getProfileIcons();
 			Bundle b = new Bundle();
 			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
-			b.putByteArray(ProfileListActivity.ARG_ICONS, icons.getAsBytes());
 			i.putExtras(b);
 			startActivityForResult(i, PICK_PROFILE_REQUEST);
 		}
@@ -89,19 +84,12 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
 			byte[] profileBytes = data.getByteArrayExtra(ARG_PROFILE);
-			byte[] iconBytes = data.getByteArrayExtra(ARG_ICON);
 			try {
-				mProfile = new TrackProfileInfoValue(profileBytes);
+				setParameters(new TrackProfileInfoValue(profileBytes), null);
 			} catch (IOException e) {
 				Logger.logE("TAG", "empty profile bytes", e);
-				return;
+
 			}
-			try {
-				mIcon = new TrackProfileIconValue(iconBytes);
-			} catch (IOException e) {
-				// do nothing, icon is nullable so this exception is OK
-			}
-			refreshModel();
 		}
 	}
 
@@ -110,9 +98,7 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 			return;
 		}
 		mTextProfileName.setText(mProfile == null ? "" : mProfile.getName());
-		if (mIcon == null) {
-			mImageProfileIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.xxx_load, null));
-		} else {
+		if (mIcon != null) {
 			mImageProfileIcon.setImageBitmap(UtilsBitmap.getBitmap(mIcon.getIcon()));
 		}
 	}
@@ -145,7 +131,6 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putByteArray(ARG_PROFILE, mProfile.getAsBytes());
-		outState.putByteArray(ARG_ICON, mIcon.getAsBytes());
 		super.onSaveInstanceState(outState);
 	}
 
@@ -159,11 +144,11 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 		super.onDetach();
 	}
 
-	public TrackProfileInfoValue getmProfile() {
+	public TrackProfileInfoValue getProfile() {
 		return mProfile;
 	}
 
-	public TrackProfileIconValue getmIcon() {
+	public TrackProfileIconValue getIcon() {
 		return mIcon;
 	}
 }

@@ -172,7 +172,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 		this.mState = WearActivityState.ON_START;
 		super.onStart();
 		mDrawer = findViewById(R.id.navigation_drawer);
-		mDrawer.setIsAutoPeekEnabled(false);
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (!handleConnectionFailedTimerTick()) {
 			mConnectionFailedTimer = new CountDownTimer(8000, 400) {
@@ -219,9 +218,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 			default:
 				activityToStart = null;
 				break;
-		}
-		if (mDrawer != null) {
-			mDrawer.getController().closeDrawer();
 		}
 		((MainApplication) getApplication()).startLocusWearActivity(activityToStart);
 	}

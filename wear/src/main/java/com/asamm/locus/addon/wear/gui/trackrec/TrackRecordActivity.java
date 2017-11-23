@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,12 +10,14 @@ import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
+import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -23,8 +27,10 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import locus.api.utils.Logger;
 
@@ -40,7 +46,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private static final String TAG = TrackRecordActivity.class.getSimpleName();
 
-	private static final String PREF_REC_STATE = "PREF_REC_STATE";
+	private static final int PICK_PROFILE_REQUEST = 1;
 
 	private static final int FLIPPER_START_RECORDING_SCREEN_IDX = 0;
 	private static final int FLIPPER_RECORDING_RUNNING_SCREEN_IDX = 1;
@@ -116,12 +122,12 @@ public class TrackRecordActivity extends LocusWearActivity {
 			case PUT_TRACK_REC_PROFILE_INFO:
 				TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) data;
 				TrackRecordActivity.this.profileList = profiles;
+				runOnUiThread(() -> onNewProfilesReceived(profiles));
 				Logger.logD(TAG, "Loaded rec profiles " + profiles.getSize());
 				break;
-			case PUT_TRACK_REC_ICON_INFO:
-				TrackProfileIconValue.ValueList icons = (TrackProfileIconValue.ValueList) data;
-				profileIcons = icons;
-				Logger.logD(TAG, "Loaded rec icons " + icons.getSize());
+			case PUT_PROFILE_ICON:
+				final TrackProfileIconValue icon = (TrackProfileIconValue) data;
+				runOnUiThread(() -> onNewIconReceived(icon));
 				break;
 			case PUT_TRACK_REC:
 				TrackRecordingValue trv = (TrackRecordingValue) data;
@@ -133,6 +139,39 @@ public class TrackRecordActivity extends LocusWearActivity {
 				break;
 		}
 	}
+
+	private void onNewProfilesReceived(TrackProfileInfoValue.ValueList profiles) {
+		TrackRecordProfileSelectFragment f = getSelectProfileFragment();
+		TrackProfileInfoValue selectedProfile = f.getProfile();
+		boolean isProfileMissing = selectedProfile == null || !profiles.getStorables().contains(selectedProfile); // TODO cejnar test the second condition branch
+		if (isProfileMissing) {
+			f.setParameters(profiles.getStorables().get(0), null);
+		}
+		doIconsInCacheCheck(profiles.getStorables());
+	}
+
+	private void onNewIconReceived(TrackProfileIconValue icon) {
+		AppStorageManager.persistIcon(this, icon);
+
+		TrackRecordProfileSelectFragment f = getSelectProfileFragment();
+		TrackProfileInfoValue selectedProfile = f.getProfile();
+		if (selectedProfile != null && selectedProfile.getId() == icon.getId()) {
+			f.setParameters(selectedProfile, icon);
+		}
+		if (profileList != null) {
+			doIconsInCacheCheck(profileList.getStorables());
+		}
+	}
+
+	private void doIconsInCacheCheck(List<TrackProfileInfoValue> profiles){
+		for (TrackProfileInfoValue info : profiles) {
+			if (!AppStorageManager.isIconCached(this, info.getId())) {
+				WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
+				break;
+			}
+		}
+	}
+
 
 	private void handlePutTrackRec(final TrackRecordingValue trv) {
 		if (trv == null || !trv.isInfoAvailable()) {
@@ -149,14 +188,41 @@ public class TrackRecordActivity extends LocusWearActivity {
 		// TODO cejnar
 	}
 
+	public void handleOpenProfileListActivityClick(View v) {
+			Intent i = new Intent(this, ProfileListActivity.class);
+			TrackProfileInfoValue.ValueList profiles = this.getProfileList();
+			Bundle b = new Bundle();
+			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
+			i.putExtras(b);
+			startActivityForResult(i, PICK_PROFILE_REQUEST);
+		}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
+			byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.ARG_PROFILES);
+			try {
+				getSelectProfileFragment().setParameters(new TrackProfileInfoValue(profileBytes), null);
+			} catch (IOException e) {
+				Logger.logE("TAG", "empty profile bytes", e);
+
+			}
+		}
+	}
+
 	@Override
 	protected void onStart() {
-		String profileName = AppPreferencesManager.getLastTrackRecProfileName(this);
+		TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
 		TrackRecordingStateEnum lastState = AppPreferencesManager.getLastTrackRecProfileState(this);
+		if (profileInfo.getName() != null) {
+			TrackRecordProfileSelectFragment f = getSelectProfileFragment();
+			f.setParameters(profileInfo, null);
+		}
 		// initialize starting model from persistence
 		model = new TrackRecordingValue(true,
 				lastState != TrackRecordingStateEnum.NOT_RECORDING,
-				lastState == TrackRecordingStateEnum.PAUSED, profileName, null);
+				lastState == TrackRecordingStateEnum.PAUSED, profileInfo.getName(), null);
 		if (lastState != TrackRecordingStateEnum.NOT_RECORDING) {
 			transitionToRecState();
 		} else {
@@ -169,6 +235,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	protected void onStop() {
 		super.onStop();
 		AppPreferencesManager.persistLastRecState(this, model);
+		AppPreferencesManager.persistLastTrackRecProfile(this, getSelectProfileFragment().getProfile());
 	}
 
 	public void handleStartClick(View v) {
@@ -203,7 +270,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private TrackProfileInfoValue getRecordingInfo() {
 		TrackRecordProfileSelectFragment f = getSelectProfileFragment();
 		if (f != null) {
-			return f.getmProfile();
+			return f.getProfile();
 		}
 		return null;
 	}

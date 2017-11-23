@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
@@ -30,13 +31,11 @@ public class ProfileListActivity extends LocusWearActivity {
 
 	private static final String TAG = "ProfileListActivity";
 	public static final String ARG_PROFILES = "ARG_PROFILES";
-	public static final String ARG_ICONS = "ARG_ICONS";
 
 	private WearableRecyclerView mRecyclerVeiw;
 	private WearableRecyclerView.Adapter adapter;
 
 	private volatile TrackProfileInfoValue.ValueList profiles;
-	private TrackProfileIconValue.ValueList icons;
 
 	@Override
 	protected DataPayload<EmptyCommand> getInitialCommandType() {
@@ -56,6 +55,9 @@ public class ProfileListActivity extends LocusWearActivity {
 		mRecyclerVeiw.setEdgeItemsCenteringEnabled(true);
 		mRecyclerVeiw.setLayoutManager(
 				new WearableLinearLayoutManager(this, new CustomScrollingLayoutCallback()));
+//		mRecyclerVeiw.setLayoutManager(
+//				new WearableLinearLayoutManager(this));
+
 		mRecyclerVeiw.setHasFixedSize(true);
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
 		if (arr != null && arr.length > 0) {
@@ -66,17 +68,8 @@ public class ProfileListActivity extends LocusWearActivity {
 				finish();
 			}
 		}
-		arr = getIntent().getExtras().getByteArray(ARG_ICONS);
-		if (arr != null && arr.length > 0) {
-			try {
-				icons = new TrackProfileIconValue.ValueList(arr);
-			} catch (IOException e) {
-				Logger.logE(TAG, "profile info constructor failed", e);
-			}
-		}
 
-		adapter = new ProfileListAdapter(profiles.getStorables().toArray(new TrackProfileInfoValue[0]),
-				icons == null ? null : icons.getStorables().toArray(new TrackProfileIconValue[0]));
+		adapter = new ProfileListAdapter(profiles.getStorables().toArray(new TrackProfileInfoValue[0]));
 		mRecyclerVeiw.setAdapter(adapter);
 
 
@@ -145,33 +138,24 @@ public class ProfileListActivity extends LocusWearActivity {
 			}
 		}
 
-		private void handleItemSelected(long modelId) {
+		private void onItemSelected(long modelId) {
 			TrackProfileModelHolder selectedHolder = model.get(modelId);
 			Intent resultIntent = new Intent();
 			resultIntent.putExtra(ARG_PROFILES, selectedHolder.mProfileInfo.getAsBytes());
-			resultIntent.putExtra(ARG_ICONS, selectedHolder.mProfileIcon.getAsBytes());
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}
 
 		// Provide a suitable constructor (depends on the kind of dataset)
-		public ProfileListAdapter(TrackProfileInfoValue[] myDataset, TrackProfileIconValue[] icons) {
+		public ProfileListAdapter(TrackProfileInfoValue[] myDataset) {
 			modelIds = new long[myDataset.length];
 			model = new HashMap<>(myDataset.length);
 			for (int i = 0; i < myDataset.length; i++) {
 				TrackProfileInfoValue v = myDataset[i];
 				modelIds[i] = v.getId();
-				model.put(v.getId(), new TrackProfileModelHolder(v.getId(), v, null));
-			}
-			if (icons != null) {
-				for (TrackProfileIconValue icon : icons) {
-					if (icon == null || icon.getIcon() == null)
-						continue;
-					TrackProfileModelHolder modelHolder = model.get(icon.getId());
-					if (modelHolder != null) {
-						modelHolder.setIcon(icon.getIcon());
-					}
-				}
+				TrackProfileIconValue icon = AppStorageManager.getIcon(ProfileListActivity.this, v.getId());
+				// TODO cejnar load icons globally and receive icon change
+				model.put(v.getId(), new TrackProfileModelHolder(v.getId(), v, icon));
 			}
 		}
 
@@ -195,7 +179,7 @@ public class ProfileListActivity extends LocusWearActivity {
 			View.OnClickListener clickHandler = new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					handleItemSelected(id);
+					onItemSelected(id);
 				}
 			};
 			TrackProfileModelHolder value = model.get(id);
