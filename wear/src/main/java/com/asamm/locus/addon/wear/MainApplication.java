@@ -39,6 +39,8 @@ public class MainApplication extends Application implements Application.Activity
 	// timer for termination
 	private static Timer mTimerTerminate;
 
+	private WatchDog mWatchDog;
+
 	// tag for logger
 	private static final String TAG = MainApplication.class.getSimpleName();
 
@@ -76,9 +78,11 @@ public class MainApplication extends Application implements Application.Activity
 
 		// notify about create of app
 		Logger.logE(TAG, "onCreate()");
-		mCache = new ApplicationCache(this);
-		reconnectIfNeeded();
 		registerActivityLifecycleCallbacks(this);
+		setTerminationTimer();
+		mCache = new ApplicationCache(this);
+		mWatchDog = new WatchDog();
+		reconnectIfNeeded();
 	}
 
 	/**
@@ -87,6 +91,8 @@ public class MainApplication extends Application implements Application.Activity
 	public void onDestroy() {
 		Logger.logE(TAG, "destroyInstance()");
 		// destroy instance of communication class
+		mWatchDog.destroy();
+		mWatchDog = null;
 		WearCommService.destroyInstance();
 	}
 
@@ -191,21 +197,24 @@ public class MainApplication extends Application implements Application.Activity
 			Logger.logW(TAG, " - application restored");
 		} else if (mCurrentActivity != null && act == null) {
 			Logger.logW(TAG, " - application terminated");
-
-			// start timer
-			TimerTask terminateTask = new TimerTask() {
-				@Override
-				public void run() {
-					MainApplication.this.onDestroy();
-				}
-			};
-
-			// execute timer
-			mTimerTerminate = new Timer();
-			mTimerTerminate.schedule(terminateTask,
-					TimeUnit.SECONDS.toMillis(10));
+			setTerminationTimer();
 		}
 		mCurrentActivity = act;
+	}
+
+	private void setTerminationTimer() {
+		// start timer
+		TimerTask terminateTask = new TimerTask() {
+			@Override
+			public void run() {
+				MainApplication.this.onDestroy();
+			}
+		};
+
+		// execute timer
+		mTimerTerminate = new Timer();
+		mTimerTerminate.schedule(terminateTask,
+				TimeUnit.SECONDS.toMillis(10));
 	}
 
 	private void reconnectIfNeeded() {

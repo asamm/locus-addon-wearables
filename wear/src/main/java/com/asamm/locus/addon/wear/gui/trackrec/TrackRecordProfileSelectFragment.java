@@ -70,6 +70,8 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 	}
 
 	public void handleOpenProfileListActivityClick(View v) {
+		if (1 == 1)
+			throw new IllegalStateException();
 		if (getActivity() instanceof TrackRecordActivity && mTextProfileName.isEnabled()) {
 			TrackRecordActivity a = (TrackRecordActivity) getActivity();
 			Intent i = new Intent(a, ProfileListActivity.class);
