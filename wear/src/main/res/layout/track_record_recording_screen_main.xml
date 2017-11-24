@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/track_main_top"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/linear_layout_track_rec_buttons">
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/track_main_bottom"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linear_layout_track_rec_buttons"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/linear_layout_track_rec_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/track_rec_btn_size"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/track_main_bottom"
+        app:layout_constraintTop_toTopOf="@id/track_main_top">
+
+        <ImageButton
+            android:id="@+id/image_view_track_rec_stop"
+            style="@style/ButtonTrackRecord"
+            android:onClick="handleStopClick"
+            android:src="@drawable/ic_96_track_recording_stop" />
+
+        <ImageButton
+            android:id="@+id/image_view_track_rec_pause"
+            style="@style/ButtonTrackRecord"
+            android:onClick="handlePauseClick"
+            android:src="@drawable/ic_96_track_recording_pause" />
+
+        <ImageButton
+            android:id="@+id/image_view_track_rec_add_wpt"
+            style="@style/ButtonTrackRecord"
+            android:onClick="handleAddWaypointClick"
+            android:src="@drawable/ic_96_track_recording_add_wpt" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

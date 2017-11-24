@@ -1,11 +1,11 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.FragmentManager;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
@@ -27,7 +27,6 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -61,10 +60,12 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private ImageView mImgPauseRecording;
 	private ImageView mImgStopRecording;
 	private ImageView mImgAddWaypoint;
+	private FrameLayout fragmentPlaceholder[] = new FrameLayout[TrackRecordActivityConfiguration.MAX_CNT_FIELDS];
+	private TrackRecordActivityConfiguration config;
 	private Drawable pauseDrawable;
+
 	// model
 	private volatile TrackProfileInfoValue.ValueList profileList;
-	private volatile TrackProfileIconValue.ValueList profileIcons;
 
 	@Override
 	protected DataPayload getInitialCommandType() {
@@ -129,7 +130,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 				break;
 			case PUT_TRACK_REC:
 				TrackRecordingValue trv = (TrackRecordingValue) data;
-				handlePutTrackRec(trv);
+				onPutTrackRec(trv);
 				Logger.logD(TAG, "Loaded track info ");
 				break;
 			case PUT_ADD_WAYPOINT:
@@ -161,7 +162,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 	}
 
-	private void doIconsInCacheCheck(List<TrackProfileInfoValue> profiles){
+	private void doIconsInCacheCheck(List<TrackProfileInfoValue> profiles) {
 		for (TrackProfileInfoValue info : profiles) {
 			if (!AppStorageManager.isIconCached(this, info.getId())) {
 				WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
@@ -170,8 +171,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 	}
 
-
-	private void handlePutTrackRec(final TrackRecordingValue trv) {
+	private void onPutTrackRec(final TrackRecordingValue trv) {
 		if (trv == null || !trv.isInfoAvailable()) {
 			DataPayload p = getInitialCommandType();
 			WearCommService.getInstance().sendDataItem(p.getPath(), p.getStorable());
@@ -179,7 +179,23 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 		runOnUiThread(() -> {
 			stateMachine.update(trv);
+			if (isRecScreenVisible()) {
+				refreshStatistics(trv);
+			}
 		});
+	}
+
+	private void refreshStatistics(TrackRecordingValue trv) {
+		if (trv == null) return;
+		FragmentManager fm = getFragmentManager();
+		int[] ids = {R.id.track_main_top, R.id.track_main_bottom};
+		for (int id : ids) {
+			((TrackStatFragment) fm.findFragmentById(id)).consumeNewStatistics(trv);
+		}
+	}
+
+	private boolean isRecScreenVisible() {
+		return mRecViewFlipper.getDisplayedChild() == FLIPPER_RECORDING_RUNNING_SCREEN_IDX;
 	}
 
 	@Override
@@ -202,6 +218,15 @@ public class TrackRecordActivity extends LocusWearActivity {
 		super.onStart();
 	}
 
+	private void loadAndInitStats() {
+		FragmentManager fm = getFragmentManager();
+		config = new TrackRecordActivityConfiguration(); // TODO cejnar Load from preferences on start
+		fm.beginTransaction()
+				.replace(R.id.track_main_top, TrackStatFragment.newInstance(config.getStatConfig()[0], false))
+				.replace(R.id.track_main_bottom, TrackStatFragment.newInstance(config.getStatConfig()[1],true))
+				.commit();
+	}
+
 	@Override
 	protected void onStop() {
 		super.onStop();
@@ -220,10 +245,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	public void handlePauseClick(View v) {
-		if (stateMachine.getCurrentState() == REC ) {
+		if (stateMachine.getCurrentState() == REC) {
 			sendStateChangeRequest(TrackRecordingStateEnum.PAUSED);
 			stateMachine.transitionTo(PAUSED_WAITING);
-		} else if (stateMachine.getCurrentState() == PAUSED){
+		} else if (stateMachine.getCurrentState() == PAUSED) {
 			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
 			stateMachine.transitionTo(REC_WAITING);
 		}
@@ -257,10 +282,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 		return profileList;
 	}
 
-	public TrackProfileIconValue.ValueList getProfileIcons() {
-		return profileIcons;
-	}
-
 	@Override
 	public boolean isUsePeriodicData() {
 		return true;
@@ -289,6 +310,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void transitionToRecState() {
+		loadAndInitStats();
 		mImgPauseRecording.setImageDrawable(pauseDrawable);
 		setRecScreenEnabled(false);
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);

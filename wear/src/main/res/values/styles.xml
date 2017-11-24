@@ -19,6 +19,23 @@
         <item name="android:padding">20dp</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
+
+    <!-- *************************************************** -->
+    <!-- STATISTICS -->
+    <!-- *************************************************** -->
+
+    <style name="statText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_size_big</item>
+    </style>
+    <style name="statIcon">
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">18dp</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
     <!-- *************************************************** -->
     <!-- SEPARATORS -->
     <!-- *************************************************** -->

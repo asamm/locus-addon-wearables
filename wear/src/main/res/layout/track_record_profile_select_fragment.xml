@@ -36,7 +36,6 @@
         android:id="@+id/trackProfileSelectIcon"
         android:layout_height="28dp"
         android:layout_width="28dp"
-        android:src="@drawable/xxx_load"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/trackProfileSelectText"
