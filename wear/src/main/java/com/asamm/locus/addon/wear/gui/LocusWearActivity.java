@@ -220,6 +220,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 				break;
 		}
 		((MainApplication) getApplication()).startLocusWearActivity(activityToStart);
+		if (mDrawer != null) {
+			mDrawer.getController().closeDrawer();
+		}
 	}
 
 	/**

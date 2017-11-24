@@ -33,6 +33,8 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PROFILE = "ARG_PROFILE";
 
+	private static final int PICK_PROFILE_REQUEST = 1;
+
 	private TrackProfileInfoValue mProfile;
 	private TrackProfileIconValue mIcon;
 
@@ -68,7 +70,7 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 	}
 
 	public void handleOpenProfileListActivityClick(View v) {
-		if (getActivity() instanceof TrackRecordActivity) {
+		if (getActivity() instanceof TrackRecordActivity && mTextProfileName.isEnabled()) {
 			TrackRecordActivity a = (TrackRecordActivity) getActivity();
 			Intent i = new Intent(a, ProfileListActivity.class);
 			TrackProfileInfoValue.ValueList profiles = a.getProfileList();
@@ -83,7 +85,7 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
-			byte[] profileBytes = data.getByteArrayExtra(ARG_PROFILE);
+			byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.ARG_PROFILES);
 			try {
 				setParameters(new TrackProfileInfoValue(profileBytes), null);
 			} catch (IOException e) {
@@ -91,6 +93,10 @@ public class TrackRecordProfileSelectFragment extends Fragment {
 
 			}
 		}
+	}
+
+	void setEnabled(boolean enabled){
+		mTextProfileName.setEnabled(enabled);
 	}
 
 	private void refreshModel() {

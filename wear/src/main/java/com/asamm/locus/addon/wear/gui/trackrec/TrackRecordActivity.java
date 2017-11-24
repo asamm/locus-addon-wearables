@@ -46,8 +46,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private static final String TAG = TrackRecordActivity.class.getSimpleName();
 
-	private static final int PICK_PROFILE_REQUEST = 1;
-
 	private static final int FLIPPER_START_RECORDING_SCREEN_IDX = 0;
 	private static final int FLIPPER_RECORDING_RUNNING_SCREEN_IDX = 1;
 
@@ -184,33 +182,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 		});
 	}
 
-	private void updateTrackData(TrackRecordingValue data) {
-		// TODO cejnar
-	}
-
-	public void handleOpenProfileListActivityClick(View v) {
-			Intent i = new Intent(this, ProfileListActivity.class);
-			TrackProfileInfoValue.ValueList profiles = this.getProfileList();
-			Bundle b = new Bundle();
-			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
-			i.putExtras(b);
-			startActivityForResult(i, PICK_PROFILE_REQUEST);
-		}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
-			byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.ARG_PROFILES);
-			try {
-				getSelectProfileFragment().setParameters(new TrackProfileInfoValue(profileBytes), null);
-			} catch (IOException e) {
-				Logger.logE("TAG", "empty profile bytes", e);
-
-			}
-		}
-	}
-
 	@Override
 	protected void onStart() {
 		TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
@@ -314,6 +285,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private void setIdleScreenEnabled(boolean isEnabled) {
 		mImgStartRecording.setEnabled(isEnabled);
+		getSelectProfileFragment().setEnabled(isEnabled);
 	}
 
 	private void transitionToRecState() {
