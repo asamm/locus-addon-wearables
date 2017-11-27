@@ -30,8 +30,8 @@ public enum TrackRecStatTypeEnum {
 		this.mConsumer = consumer;
 	}
 
-	public String consumeAndFormat(Activity context, TrackStats stats) {
-		return mConsumer.consumeAndFormat(context, stats, DISPLAY_UNITS);
+	public String consumeAndFormat(TrackStats stats) {
+		return mConsumer.consumeAndFormat(stats, DISPLAY_UNITS);
 	}
 
 	public int getIconId() {

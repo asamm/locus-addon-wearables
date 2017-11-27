@@ -3,15 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ViewFlipper
-        android:id="@+id/trackRecordViewFlipper"
+    <com.asamm.locus.addon.wear.gui.custom.VerticalViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp">
-
-        <include layout="@layout/track_record_recording_screen_main" />
-    </ViewFlipper>
+        android:layout_height="match_parent"/>
 </FrameLayout>

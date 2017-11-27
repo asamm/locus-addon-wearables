@@ -13,11 +13,11 @@ import static locus.api.android.utils.UtilsFormat.formatDouble;
  */
 @FunctionalInterface
 public interface TrackStatConsumable {
-	String consumeAndFormat(Activity context, TrackStats stats, boolean displayUnits);
+	String consumeAndFormat(TrackStats stats, boolean displayUnits);
 
 	class TscFactory {
 		public static TrackStatConsumable createTotalLengthMoveConsumable() {
-			return (context, stats, displayUnits) -> {
+			return (stats, displayUnits) -> {
 				//((MainApplication)context.getApplication()).getCache().get
 				// TODO cejnar load units from app cache
 				int unitsFormat = 0;
@@ -29,10 +29,8 @@ public interface TrackStatConsumable {
 		}
 
 		public static TrackStatConsumable createTotalTimeConsumable() {
-			return (context, stats, displayUnits) -> {
-				return stats == null ? "" :
+			return ( stats, displayUnits) -> stats == null ? "" :
 						formatTime(false, stats.getTotalTime(), displayUnits);
-			};
 		}
 
 

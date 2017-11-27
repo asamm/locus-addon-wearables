@@ -7,7 +7,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
  * Asamm Software, s.r.o.
  */
 
-enum TrackRecActivityState {
+public enum TrackRecActivityState {
 	UNINITIALIZED,
 	IDLE_WAITING(TrackRecordingStateEnum.NOT_RECORDING),
 	IDLE,

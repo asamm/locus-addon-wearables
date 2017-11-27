@@ -1,11 +1,13 @@
+
 package com.asamm.locus.addon.wear.gui.trackrec;
 
 import android.app.FragmentManager;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
@@ -26,6 +28,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.TrackRecordPagerAdapter;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.VerticalViewPagerTransition;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,18 +55,14 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private static final int REFRESH_PERIOD_MS = 1000;
 
 	private TrackRecordingValue model;
+
 	private ViewFlipper mRecViewFlipper;
+
+	private ViewPager mPager;
+	private TrackRecordPagerAdapter pagerController;
 
 	// start recording screen fields
 	private ImageView mImgStartRecording;
-
-	// recording active screen fields
-	private ImageView mImgPauseRecording;
-	private ImageView mImgStopRecording;
-	private ImageView mImgAddWaypoint;
-	private FrameLayout fragmentPlaceholder[] = new FrameLayout[TrackRecordActivityConfiguration.MAX_CNT_FIELDS];
-	private TrackRecordActivityConfiguration config;
-	private Drawable pauseDrawable;
 
 	// model
 	private volatile TrackProfileInfoValue.ValueList profileList;
@@ -83,35 +83,27 @@ public class TrackRecordActivity extends LocusWearActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.track_record_activity);
-		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
 		mImgStartRecording = findViewById(R.id.img_track_rec_start);
-		mImgAddWaypoint = findViewById(R.id.image_view_track_rec_add_wpt);
-		mImgStopRecording = findViewById(R.id.image_view_track_rec_stop);
-		mImgPauseRecording = findViewById(R.id.image_view_track_rec_pause);
+
+
+		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
+		initViewPager();
 
 		setDisabledDrawables();
 		// Enables Always-on
 		setAmbientEnabled();
 	}
 
-	// TODO cejnar debug only - generate disabled drawables programatically
+	private void initViewPager(){
+		mPager = findViewById(R.id.pager);
+		pagerController = new TrackRecordPagerAdapter(this);
+		mPager.setPageTransformer(false, new VerticalViewPagerTransition());
+		mPager.setAdapter(pagerController);
+	}
 	private void setDisabledDrawables() {
 		Drawable d = DisableGuiHelper.getImageWithDisabled(this,
-				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_rec));
+				BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_96_track_recording_rec));
 		mImgStartRecording.setImageDrawable(d);
-
-		d = DisableGuiHelper.getImageWithDisabled(this,
-				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_stop));
-		mImgStopRecording.setImageDrawable(d);
-
-		d = DisableGuiHelper.getImageWithDisabled(this,
-				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_pause));
-		pauseDrawable = d;
-		mImgPauseRecording.setImageDrawable(d);
-
-		d = DisableGuiHelper.getImageWithDisabled(this,
-				BitmapFactory.decodeResource(getResources(), R.drawable.ic_96_track_recording_add_wpt));
-		mImgAddWaypoint.setImageDrawable(d);
 	}
 
 	@Override
@@ -179,6 +171,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 		runOnUiThread(() -> {
 			stateMachine.update(trv);
+			pagerController.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
 				refreshStatistics(trv);
 			}
@@ -186,12 +179,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void refreshStatistics(TrackRecordingValue trv) {
-		if (trv == null) return;
-		FragmentManager fm = getFragmentManager();
-		int[] ids = {R.id.track_main_top, R.id.track_main_bottom};
-		for (int id : ids) {
-			((TrackStatFragment) fm.findFragmentById(id)).consumeNewStatistics(trv);
-		}
+
 	}
 
 	private boolean isRecScreenVisible() {
@@ -216,15 +204,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 			transitionToIdlestate();
 		}
 		super.onStart();
-	}
-
-	private void loadAndInitStats() {
-		FragmentManager fm = getFragmentManager();
-		config = new TrackRecordActivityConfiguration(); // TODO cejnar Load from preferences on start
-		fm.beginTransaction()
-				.replace(R.id.track_main_top, TrackStatFragment.newInstance(config.getStatConfig()[0], false))
-				.replace(R.id.track_main_bottom, TrackStatFragment.newInstance(config.getStatConfig()[1],true))
-				.commit();
 	}
 
 	@Override
@@ -298,11 +277,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	}
 
-	private void setRecScreenEnabled(boolean isEnabled) {
-		mImgPauseRecording.setEnabled(isEnabled);
-		mImgStopRecording.setEnabled(isEnabled);
-		mImgAddWaypoint.setEnabled(isEnabled);
-	}
+
 
 	private void setIdleScreenEnabled(boolean isEnabled) {
 		mImgStartRecording.setEnabled(isEnabled);
@@ -310,9 +285,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void transitionToRecState() {
-		loadAndInitStats();
-		mImgPauseRecording.setImageDrawable(pauseDrawable);
-		setRecScreenEnabled(false);
+		pagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
 		Logger.logD(TAG, "setting rec screen");
 	}
@@ -325,8 +298,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private void transitionToPauseState() {
 		transitionToRecState();
-		// TODO cejnar set resume drawable
-		mImgPauseRecording.setImageDrawable(mImgStartRecording.getDrawable());
 	}
 
 	private void enableIdleScreen() {
@@ -335,7 +306,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void enableRecScreen() {
-		setRecScreenEnabled(true);
+		pagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
 		Logger.logD(TAG, "Enabling rec screen");
 	}
 

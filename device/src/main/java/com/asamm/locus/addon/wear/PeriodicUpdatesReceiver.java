@@ -30,21 +30,22 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 					public void onUpdate(LocusUtils.LocusVersion locusVersion, UpdateContainer update) {
 						// check instance
 						if (!DeviceCommService.isInstance()) {
-							Logger.logD(TAG, "onUpdate(), " +
+							Logger.logI(TAG, "onUpdate(), " +
 									"instance not exists");
 							disableReceiver(context);
 							return;
 						}
-
+						Logger.logI(TAG, "periodic update received");
 						// handle data
 						DeviceCommService.getInstance(context).onUpdate(update);
 					}
 
 					@Override
 					public void onIncorrectData() {
+						Logger.logI(TAG, "Periodic udpate - Incorrect data");
 						// check instance
 						if (!DeviceCommService.isInstance()) {
-							Logger.logD(TAG, "onIncorrectData(), " +
+							Logger.logI(TAG, "onIncorrectData(), " +
 									"instance not exists");
 							disableReceiver(context);
 							return;
@@ -65,6 +66,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 			ActionTools.enablePeriodicUpdatesReceiver(ctx,
 					LocusUtils.getActiveVersion(ctx),
 					PeriodicUpdatesReceiver.class);
+			Logger.logI(TAG, "periodic receiver enabled");
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "enableReceiver(" + ctx + ")", e);
 		}

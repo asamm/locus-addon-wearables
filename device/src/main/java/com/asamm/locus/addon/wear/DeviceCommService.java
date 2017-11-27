@@ -70,15 +70,13 @@ public class DeviceCommService extends LocusWearCommService {
 	 */
 	private DeviceCommService(Context ctx) {
 		super(ctx);
-
+		Logger.logI(TAG, "Device comm service started.");
 		try {
 			lv = LocusUtils.getActiveVersion(ctx);
 			mLastUpdate = ActionTools.getDataUpdateContainer(ctx, lv);
 		} catch (RequiredVersionMissingException e) {
 			// TODO cejnar maybe dont support older version of Locus API at all?
 		}
-		// enable receiver
-		PeriodicUpdatesReceiver.enableReceiver(ctx);
 	}
 
 	/**
@@ -92,6 +90,8 @@ public class DeviceCommService extends LocusWearCommService {
 			synchronized (TAG) {
 				if (mInstance == null) {
 					mInstance = new DeviceCommService(ctx);
+					// enable receiver
+					PeriodicUpdatesReceiver.enableReceiver(ctx);
 				}
 			}
 		}
@@ -109,6 +109,7 @@ public class DeviceCommService extends LocusWearCommService {
 			if (s != null) {
 				s.destroy();
 				// disable receiver
+				Logger.logI(TAG, "Destroying device comm instance");
 				PeriodicUpdatesReceiver.disableReceiver(ctx);
 				mInstance = null;
 			}
