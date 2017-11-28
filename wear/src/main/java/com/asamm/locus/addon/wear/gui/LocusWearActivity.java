@@ -28,17 +28,19 @@ import locus.api.utils.Logger;
 
 public abstract class LocusWearActivity extends WearableActivity {
 
+	private static final String TAG = "LocusWearActivity";
 	public WearActivityState mState = WearActivityState.ON_CREATE;
 	protected CountDownTimer mConnectionFailedTimer;
-	protected volatile boolean mInitialRequestSent = false;
-	protected volatile boolean mIsInitialRequestReceived = false;
 	protected WearableDrawerView mDrawer;
 	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
+	private static final int HANDSHAKE_TICK_MS = 400;
+	private volatile byte ticks = 0;
 
 	/**
 	 * only used in connection failed timer to ensure handshake request is sent only once per activity start
 	 */
-	private volatile boolean mIshandShakeRequestSent = false;
+	private volatile boolean mIsHandShakeReceived = false;
+	protected volatile boolean mIsInitialRequestReceived = false;
 
 	/**
 	 * Each activity should define initial command which is sent automatically onStart()
@@ -72,12 +74,15 @@ public abstract class LocusWearActivity extends WearableActivity {
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
 		Logger.logD(getClass().getSimpleName(), "Incoming data " + path);
 		if (mConnectionFailedTimer != null) {
-			if (path == DataPath.PUT_HAND_SHAKE || path == DataPath.PUT_ON_CONNECTED_EVENT) {
-				handleConnectionFailedTimerTick();
+			if (path == DataPath.PUT_ON_CONNECTED_EVENT) {
+				onConnectionFailedTimerTick();
+			} else if (path == DataPath.PUT_HAND_SHAKE) {
+				mIsHandShakeReceived = true;
+				onConnectionFailedTimerTick();
 			} else if (path == getInitialCommandResponseType()) {
 				mIsInitialRequestReceived = true;
+				onConnectionFailedTimerTick();
 				onGotInitialCommandResponse();
-				handleConnectionFailedTimerTick();
 			}
 		}
 	}
@@ -104,28 +109,38 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onPause();
 	}
 
-	protected boolean handleConnectionFailedTimerTick() {
-		boolean result = false;
+	protected boolean onConnectionFailedTimerTick() {
 		WearCommService wcs = WearCommService.getInstance();
 		if (!wcs.isConnected()) {
 			wcs.reconnectIfNeeded();
-		} else if (!getApplicationState().isHandShake()) {
-			if (!mIshandShakeRequestSent) {
-				mIshandShakeRequestSent = true;
+			return false;
+		}
+
+		// in approx. half of timeout resent requests one more time
+		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS) {
+			Logger.logD(TAG, "Attempting second handshake");
+			if (!mIsHandShakeReceived) {
 				wcs.sendCommand(DataPath.GET_HAND_SHAKE);
 			}
-		} else if (!mInitialRequestSent) {
-			mInitialRequestSent = true;
+			if (!mIsInitialRequestReceived) {
+				DataPayload p = getInitialCommandType();
+				if (p != null) {
+					wcs.sendDataItem(p.getPath(), p.getStorable());
+				}
+			}
+		}
+		// handle first tick - send hanshake and initial command request
+		if (ticks == 0) {
+			wcs.sendCommand(DataPath.GET_HAND_SHAKE);
 			DataPayload p = getInitialCommandType();
 			if (p != null) {
 				wcs.sendDataItem(p.getPath(), p.getStorable());
 			} else {
 				mIsInitialRequestReceived = true;
-				onGotInitialCommandResponse();
-				result = true;
 			}
 		}
-		result |= mIsInitialRequestReceived;
+
+		boolean result = mIsHandShakeReceived && mIsInitialRequestReceived;
 		if (result) {
 			cancelConnectionFailedTimer();
 			onHandShakeFinished();
@@ -146,13 +161,12 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * given time.
 	 */
 	public void onCommunicationFailed() {
-		((MainApplication)getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
+		((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
 	}
 
 	protected void cancelConnectionFailedTimer() {
 		if (mConnectionFailedTimer != null) {
 			mConnectionFailedTimer.cancel();
-			mIshandShakeRequestSent = false; // negotiating ended clearing state of handshake request
 			mConnectionFailedTimer = null;   // and canceling and nulling timer
 		}
 	}
@@ -177,16 +191,19 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onStart();
 		mDrawer = findViewById(R.id.navigation_drawer);
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
-		if (!handleConnectionFailedTimerTick()) {
-			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, 400) {
+		if (!onConnectionFailedTimerTick()) {
+			ticks = 0;
+			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
 				@Override
 				public void onTick(long l) {
-					handleConnectionFailedTimerTick();
+					ticks++;
+					onConnectionFailedTimerTick();
 				}
 
 				@Override
 				public void onFinish() {
 					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+					cancelConnectionFailedTimer();
 					onCommunicationFailed();
 					// TODO cejnar - connection failed, handle the situation.
 				}
@@ -232,7 +249,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	/**
 	 * Activities that use request for periodic data ie. Map or active track recording should
 	 * override this method and return true.
-	 *
+	 * <p>
 	 * Used when transitionig between activities to automatically disable any currently
 	 * receiving periodic data if no activity or activity withou periodic data use is shown.
 	 *

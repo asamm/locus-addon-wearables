@@ -1,38 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/boxInsetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/activity_header"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/fail_msg"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/text_size_app_bar"
-        android:gravity="center"
-        android:layout_marginBottom="@dimen/outer_frame_layout_padding"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_screen_header"
-        app:layout_constraintBottom_toTopOf="@id/fail_img_retry"
-        app:layout_constraintVertical_chainStyle="packed"
-        />
-    <ImageView
-        android:id="@+id/fail_img_retry"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="@dimen/outer_frame_layout_padding"
-        android:layout_marginBottom="@dimen/outer_frame_layout_padding"
-        android:scaleType="fitCenter"
-        android:background="@color/base_primary"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fail_msg"
-        app:layout_constraintVertical_chainStyle="packed"
-        android:onClick="onRetryClicked"/>
+        <include layout="@layout/activity_header" />
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/fail_msg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/outer_frame_layout_padding"
+            android:gravity="center"
+            android:textSize="@dimen/text_size_big"
+            app:layout_constraintBottom_toTopOf="@id/fail_img_retry"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_screen_header"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <ImageView
+            android:id="@+id/fail_img_retry"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="@dimen/outer_frame_layout_padding"
+            android:layout_marginTop="@dimen/outer_frame_layout_padding"
+            android:background="@color/base_primary"
+            android:onClick="onRetryClicked"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fail_msg"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

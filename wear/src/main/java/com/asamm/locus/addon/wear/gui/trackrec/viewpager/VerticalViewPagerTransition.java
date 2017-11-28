@@ -25,7 +25,6 @@ public class VerticalViewPagerTransition implements ViewPager.PageTransformer {
 //		view.setAlpha(alpha);
 		view.setTranslationX(view.getWidth() * -position);
 		float yPosition = position * view.getHeight();
-		Logger.logD("transition", "pos " + position + "   y " +yPosition);
 		view.setTranslationY(yPosition);
 	}
 }

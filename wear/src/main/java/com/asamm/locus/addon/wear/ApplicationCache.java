@@ -33,7 +33,7 @@ public class ApplicationCache {
 		return mHandShakeValue;
 	}
 
-	void setmHandShakeValue(HandShakeValue mHandShakeValue) {
+	void setHandShakeValue(HandShakeValue mHandShakeValue) {
 		this.mHandShakeValue = mHandShakeValue;
 	}
 

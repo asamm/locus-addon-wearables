@@ -7,7 +7,7 @@
 
     <!-- Error messages -->
     <string name="err_locus_version_not_suppoerted">Sorry, your version of Locus Map is no longer supported. Please update your Locus Map application.</string>
-    <string name="err_periodic_updates_disabled">Periodic updates need to be enabled for this add-on to work. Please enable periodic updates in Locus Map menu -> Settings -> Miscellaneous -> Enable periodic updates for add-ons.</string>
+    <string name="err_periodic_updates_disabled">Periodic updates required! Please enable periodic updates in Locus Map -> Settings -> Miscellaneous -> Enable periodic updates for add-ons.</string>
     <string name="err_connection_failed">Connection to the mobile phone has failed. Please check the connection and try again.</string>
 
     <!-- text on button to cancel current action -->

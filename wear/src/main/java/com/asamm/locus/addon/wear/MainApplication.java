@@ -9,6 +9,7 @@ import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
@@ -85,7 +86,6 @@ public class MainApplication extends Application implements Application.Activity
 		registerActivityLifecycleCallbacks(this);
 		setTerminationTimer();
 		mCache = new ApplicationCache(this);
-		mWatchDog = new WatchDog();
 		reconnectIfNeeded();
 	}
 
@@ -95,8 +95,14 @@ public class MainApplication extends Application implements Application.Activity
 	public void onDestroy() {
 		Logger.logE(TAG, "destroyInstance()");
 		// destroy instance of communication class
+
 		mWatchDog.destroy();
-		mWatchDog = null;
+		synchronized (this) {
+			if (mWatchDog != null) {
+				mWatchDog.destroy();
+			}
+			mWatchDog = null;
+		}
 		WearCommService.destroyInstance();
 	}
 
@@ -108,6 +114,13 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityStarted(Activity activity) {
+		if (mWatchDog == null) {
+			synchronized (this) {
+				if (mWatchDog == null) {
+					mWatchDog = new WatchDog();
+				}
+			}
+		}
 		reconnectIfNeeded();
 	}
 
@@ -169,7 +182,10 @@ public class MainApplication extends Application implements Application.Activity
 				TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
 				switch (p) {
 					case PUT_HAND_SHAKE:
-						mCache.setmHandShakeValue((HandShakeValue) value);
+						final HandShakeValue handShakeValue = (HandShakeValue) value;
+						if (checkHandShake(handShakeValue)) {
+							mCache.setHandShakeValue(handShakeValue);
+						}
 						break;
 					case PUT_MAP:
 						mCache.setLastMapData((MapContainer) value);
@@ -183,6 +199,23 @@ public class MainApplication extends Application implements Application.Activity
 			}
 		}
 		Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
+	}
+
+	private boolean checkHandShake(HandShakeValue handShakeValue) {
+		if (handShakeValue == null || handShakeValue.isEmpty()) {
+			WearCommService.getInstance().sendCommand(DataPath.GET_HAND_SHAKE);
+			return false;
+		}
+		if (handShakeValue.getmLocusVersion() < Const.LOCUS_MIN_VERSION_CODE.vcFree) {
+			doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION);
+			return false;
+		}
+
+		if (!handShakeValue.isPeriodicUpdates()) {
+			doApplicationFail(AppFailType.PERIODIC_UPDATES_DISABLED);
+			return false;
+		}
+		return true;
 	}
 
 	/**
