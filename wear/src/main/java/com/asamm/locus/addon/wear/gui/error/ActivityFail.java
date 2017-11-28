@@ -1,0 +1,37 @@
+package com.asamm.locus.addon.wear.gui.error;
+
+import android.os.Bundle;
+import android.support.wearable.activity.WearableActivity;
+import android.view.View;
+import android.widget.TextView;
+
+import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.R;
+
+/**
+ * Created by Milan Cejnar on 28.11.2017.
+ * Asamm Software, s.r.o.
+ */
+
+public class ActivityFail extends WearableActivity {
+
+	public static final String ARG_ERROR_TYPE = "ActivityFail.ARG_ERROR_TYPE";
+	private AppFailType mFailType;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_fail);
+		String type = getIntent().getExtras().getString(ARG_ERROR_TYPE);
+		mFailType = AppFailType.valueOf(type);
+
+		TextView tvMsg = findViewById(R.id.fail_msg);
+		tvMsg.setText(getText(mFailType.getErrorMsgId()));
+		TextView tvHeader = findViewById(R.id.text_view_screen_header);
+		tvHeader.setText(getText(R.string.title_activity_error));
+	}
+
+	public void onRetryClicked(View v) {
+		((MainApplication)getApplication()).retryLastTask();
+
+	}
+}

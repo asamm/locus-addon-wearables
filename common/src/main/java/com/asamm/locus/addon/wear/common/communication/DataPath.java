@@ -1,13 +1,11 @@
 package com.asamm.locus.addon.wear.common.communication;
 
-import com.asamm.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -22,8 +20,6 @@ import com.google.android.gms.wearable.DataItem;
 public enum DataPath {
 	GET_HAND_SHAKE(EmptyCommand.class),
 	PUT_HAND_SHAKE(HandShakeValue.class),
-	GET_BASIC_INFO(EmptyCommand.class),
-	PUT_BASIC_INFO(BasicAppInfoValue.class),
 	GET_TRACK_REC_PROFILES(EmptyCommand.class),
 	PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
 	PUT_APP_DESTROYED(EmptyCommand.class),

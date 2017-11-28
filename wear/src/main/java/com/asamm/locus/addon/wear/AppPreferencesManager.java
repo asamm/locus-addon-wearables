@@ -9,6 +9,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.common.utils.Pair;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
 /**
  * Helper class for mantaining shared preferences for this application
@@ -26,6 +28,8 @@ public class AppPreferencesManager {
 
 	public static final String PREF_DEVICE_ZOOM = "DEV_ZOOM";
 	public static final String PREF_WEAR_ZOOM = "WEAR ZOOM";
+
+	public static final String PREF_LAST_ACTIVITY_CLASS_NAME = "PREF_LAST_ACTIVITY_CLASS_NAME";
 
 	public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
 		if (trackRec == null || !trackRec.isInfoAvailable()) {
@@ -93,5 +97,16 @@ public class AppPreferencesManager {
 		Integer deviceZoom = prefs.getInt(PREF_DEVICE_ZOOM, Const.ZOOM_UNKONWN);
 		Integer wearZoom = prefs.getInt(PREF_WEAR_ZOOM, Const.ZOOM_UNKONWN);
 		return Pair.of(deviceZoom, wearZoom);
+	}
+
+	public static void persistLastActivity(Context ctx, Class<? extends LocusWearActivity> c) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+				.putString(PREF_LAST_ACTIVITY_CLASS_NAME, c.getSimpleName())
+				.apply();
+	}
+
+	public static String getLastActivity(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return prefs.getString(PREF_LAST_ACTIVITY_CLASS_NAME, TrackRecordActivity.class.getSimpleName());
 	}
 }

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
-import com.asamm.locus.addon.wear.common.communication.containers.BasicAppInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -153,10 +152,6 @@ public class DeviceCommService extends LocusWearCommService {
 			case GET_HAND_SHAKE:
 				HandShakeValue hndshk = loadHandShake(c);
 				sendDataItem(DataPath.PUT_HAND_SHAKE, hndshk);
-				BasicAppInfoValue appInfo = loadBasicInfo(c);
-				if (appInfo != null) {
-					sendDataItem(DataPath.PUT_BASIC_INFO, appInfo);
-				}
 				break;
 			case GET_TRACK_REC_PROFILES:
 				Pair<TrackProfileInfoValue.ValueList, TrackProfileIconValue.ValueList> profiles =
@@ -378,35 +373,6 @@ public class DeviceCommService extends LocusWearCommService {
 				new HandShakeValue(locusVersion.getVersionCode(),
 						locusInfo != null && locusInfo.isRunning(),
 						locusInfo != null && locusInfo.isPeriodicUpdatesEnabled());
-		return value;
-	}
-
-	/**
-	 * Load basic data from current Locus application.
-	 */
-	private BasicAppInfoValue loadBasicInfo(Context ctx) {
-		LocusUtils.LocusVersion locusVersion;
-		LocusInfo locusInfo = null;
-
-		try {
-			// read Locus info
-			locusVersion = LocusUtils.getActiveVersion(ctx, lv.getVersionCode());
-			// check if object exists
-			if (locusVersion != null) {
-				// handle info
-				locusInfo = ActionTools.getLocusInfo(ctx, locusVersion);
-			}
-		} catch (RequiredVersionMissingException e) {
-			Logger.logE(TAG, "loadHandShake", e);
-
-			// clear data
-			locusInfo = null;
-		}
-
-		// prepare container with data and send it
-		BasicAppInfoValue value = locusInfo == null ?
-				null :
-				new BasicAppInfoValue(locusInfo);
 		return value;
 	}
 

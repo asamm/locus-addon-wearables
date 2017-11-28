@@ -6,6 +6,7 @@ import android.support.wear.widget.drawer.WearableDrawerView;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
+import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.ApplicationCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
@@ -13,6 +14,7 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
 import locus.api.utils.Logger;
@@ -31,6 +33,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected volatile boolean mInitialRequestSent = false;
 	protected volatile boolean mIsInitialRequestReceived = false;
 	protected WearableDrawerView mDrawer;
+	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
 
 	/**
 	 * only used in connection failed timer to ensure handshake request is sent only once per activity start
@@ -142,8 +145,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * Called if the activity could not establish connection and receive required data in
 	 * given time.
 	 */
-	protected void onHandShakeFailed() {
-
+	public void onCommunicationFailed() {
+		((MainApplication)getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
 	}
 
 	protected void cancelConnectionFailedTimer() {
@@ -170,11 +173,12 @@ public abstract class LocusWearActivity extends WearableActivity {
 	@Override
 	protected void onStart() {
 		this.mState = WearActivityState.ON_START;
+		AppPreferencesManager.persistLastActivity(this, getClass());
 		super.onStart();
 		mDrawer = findViewById(R.id.navigation_drawer);
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (!handleConnectionFailedTimerTick()) {
-			mConnectionFailedTimer = new CountDownTimer(8000, 400) {
+			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, 400) {
 				@Override
 				public void onTick(long l) {
 					handleConnectionFailedTimerTick();
@@ -183,7 +187,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 				@Override
 				public void onFinish() {
 					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
-					onHandShakeFailed();
+					onCommunicationFailed();
 					// TODO cejnar - connection failed, handle the situation.
 				}
 			};

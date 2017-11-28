@@ -17,6 +17,10 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Perio
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.MapActivity;
+import com.asamm.locus.addon.wear.gui.error.ActivityFail;
+import com.asamm.locus.addon.wear.gui.error.AppFailType;
+import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.Timer;
@@ -109,6 +113,9 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityResumed(Activity activity) {
+		if (!(activity instanceof LocusWearActivity)) {
+			activity = null; // Error activity or other non standard activity - treat as null
+		}
 		// set current activity
 		LocusWearActivity oldAct = mCurrentActivity;
 		if (oldAct == null || oldAct == activity) {
@@ -253,5 +260,21 @@ public class MainApplication extends Application implements Application.Activity
 
 	public static void showToast(Context c, String msg) {
 		Toast.makeText(c, msg, Toast.LENGTH_SHORT).show();
+	}
+
+	public void retryLastTask() {
+		String activityName = AppPreferencesManager.getLastActivity(this);
+		Class<? extends LocusWearActivity> c = TrackRecordActivity.class;
+		if (MapActivity.class.getSimpleName().equals(activityName)) {
+			c = MapActivity.class;
+		}
+		startLocusWearActivity(c);
+	}
+
+	public void doApplicationFail(AppFailType reason) {
+		Intent i = new Intent(this, ActivityFail.class);
+		i.putExtra(ActivityFail.ARG_ERROR_TYPE, reason.name());
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		startActivity(i);
 	}
 }
