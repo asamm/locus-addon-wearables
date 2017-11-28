@@ -51,6 +51,7 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onCreate() {
+		AppPreferencesManager.debugClear(this);
 		super.onCreate();
 
 		// set logger

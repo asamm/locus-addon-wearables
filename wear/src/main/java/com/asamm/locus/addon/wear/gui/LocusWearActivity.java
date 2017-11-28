@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.gui;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.wear.widget.drawer.WearableDrawerView;
+import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
@@ -14,6 +14,7 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
@@ -31,7 +32,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private static final String TAG = "LocusWearActivity";
 	public WearActivityState mState = WearActivityState.ON_CREATE;
 	protected CountDownTimer mConnectionFailedTimer;
-	protected WearableDrawerView mDrawer;
+	protected MainNavigationDrawer mDrawer;
 	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 	private volatile byte ticks = 0;
@@ -101,6 +102,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onResume() {
 		this.mState = WearActivityState.ON_RESUME;
 		super.onResume();
+		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
+			AppPreferencesManager.persistFirstAppStart(this);
+			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800 );
+		}
 	}
 
 	@Override

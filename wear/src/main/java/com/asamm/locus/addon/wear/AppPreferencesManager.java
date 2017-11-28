@@ -30,6 +30,7 @@ public class AppPreferencesManager {
 	public static final String PREF_WEAR_ZOOM = "WEAR ZOOM";
 
 	public static final String PREF_LAST_ACTIVITY_CLASS_NAME = "PREF_LAST_ACTIVITY_CLASS_NAME";
+	private static final String PREF_FIRST_APP_START = "PREF_FIRST_APP_START";
 
 	public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
 		if (trackRec == null || !trackRec.isInfoAvailable()) {
@@ -108,5 +109,21 @@ public class AppPreferencesManager {
 	public static String getLastActivity(Context ctx) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		return prefs.getString(PREF_LAST_ACTIVITY_CLASS_NAME, TrackRecordActivity.class.getSimpleName());
+	}
+
+	public static void persistFirstAppStart(Context ctx) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+				.putBoolean(PREF_FIRST_APP_START, false)
+				.apply();
+	}
+
+	public static boolean isFirstAppStart(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return prefs.getBoolean(PREF_FIRST_APP_START, true);
+	}
+
+	// TODO cejnar debug only
+	public static void debugClear(Context ctx) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit().clear().commit();
 	}
 }
