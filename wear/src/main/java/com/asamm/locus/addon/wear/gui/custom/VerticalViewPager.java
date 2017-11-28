@@ -6,6 +6,8 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import locus.api.utils.Logger;
+
 public class VerticalViewPager extends ViewPager {
 
 	public VerticalViewPager(Context context) {
@@ -14,8 +16,6 @@ public class VerticalViewPager extends ViewPager {
 
 	public VerticalViewPager(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO cejnar custom page transformer
-		//setPageTransformer(false, new DefaultTransformer());
 	}
 
 	private MotionEvent swapTouchEvent(MotionEvent event) {
@@ -33,6 +33,7 @@ public class VerticalViewPager extends ViewPager {
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent event) {
 		boolean intercept = super.onInterceptTouchEvent(swapTouchEvent(event));
+		Logger.logD("", "intercept " + intercept);
 		//If not intercept, touch event should not be swapped.
 		swapTouchEvent(event);
 		return intercept;

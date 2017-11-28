@@ -1,9 +1,8 @@
 package com.asamm.locus.addon.wear.gui.custom;
 
-import android.app.Activity;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
 import locus.api.android.utils.UtilsFormat;
-import locus.api.objects.extra.TrackStats;
 
 import static locus.api.android.utils.UtilsFormat.formatDouble;
 
@@ -13,24 +12,56 @@ import static locus.api.android.utils.UtilsFormat.formatDouble;
  */
 @FunctionalInterface
 public interface TrackStatConsumable {
-	String consumeAndFormat(TrackStats stats, boolean displayUnits);
+	String consumeAndFormat(TrackRecordingValue rec, boolean withoutUnits);
 
 	class TscFactory {
+		private static boolean isInvalidInput(TrackRecordingValue rec) {
+			return rec == null || rec.getTrackRecStats() == null;
+		}
+
 		public static TrackStatConsumable createTotalLengthMoveConsumable() {
-			return (stats, displayUnits) -> {
-				//((MainApplication)context.getApplication()).getCache().get
-				// TODO cejnar load units from app cache
-				int unitsFormat = 0;
-				return stats == null ? "" :
-						UtilsFormat.formatDistance(unitsFormat,
-								stats.getTotalLengthMove(),
-								displayUnits);
-			};
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
+							rec.getTrackRecStats().getTotalLengthMove(),
+							UtilsFormat.UnitsPrecision.HIGH,
+							!withoutUnits);
+		}
+
+		public static TrackStatConsumable createAvgSpeedMoveConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
+							rec.getTrackRecStats().getSpeedAverage(true),
+							withoutUnits);
+		}
+
+		public static TrackStatConsumable createMaxSpeedMoveConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
+							rec.getTrackRecStats().getSpeedMax(),
+							withoutUnits);
+		}
+
+		public static TrackStatConsumable createMaxAltitudeConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+							rec.getTrackRecStats().getAltitudeMax(),
+							!withoutUnits);
+		}
+
+		public static TrackStatConsumable createMinAltitudeConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+							rec.getTrackRecStats().getAltitudeMin(),
+							!withoutUnits);
 		}
 
 		public static TrackStatConsumable createTotalTimeConsumable() {
-			return ( stats, displayUnits) -> stats == null ? "" :
-						formatTime(false, stats.getTotalTime(), displayUnits);
+			return (rec, withoutUnits) -> isInvalidInput(rec) ? "" :
+					formatTime(false, rec.getTrackRecStats().getTotalTime(), !withoutUnits);
+		}
+
+		public static TrackStatConsumable createBlankConsumable() {
+			return (stats, withoutUnits) -> "";
 		}
 
 

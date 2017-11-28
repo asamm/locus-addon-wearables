@@ -224,7 +224,7 @@ public class DeviceCommService extends LocusWearCommService {
 				task = new TimerTask() {
 					@Override
 					public void run() {
-						TrackRecordingValue trv = loadTrackRecordingValue();
+						TrackRecordingValue trv = loadTrackRecordingValue(ctx);
 						sendDataItem(DataPath.PUT_TRACK_REC, trv);
 					}
 				};
@@ -345,7 +345,7 @@ public class DeviceCommService extends LocusWearCommService {
 				Logger.logE(TAG, "Invalid version " + lv + ", cant change track recording state.", e);
 			}
 		}
-		TrackRecordingValue trv = loadTrackRecordingValue();
+		TrackRecordingValue trv = loadTrackRecordingValue(ctx);
 		sendDataItem(DataPath.PUT_TRACK_REC, trv);
 	}
 
@@ -457,14 +457,22 @@ public class DeviceCommService extends LocusWearCommService {
 		return result;
 	}
 
-	private TrackRecordingValue loadTrackRecordingValue() {
+	private TrackRecordingValue loadTrackRecordingValue(Context ctx) {
 		boolean infoAvailable = mLastUpdate != null;
 		boolean trackRec = infoAvailable && mLastUpdate.isTrackRecRecording();
 		boolean trackRecPause = infoAvailable && mLastUpdate.isTrackRecPaused();
 		String profileName = infoAvailable ? mLastUpdate.getTrackRecProfileName() : "";
 		TrackStats stats = infoAvailable ? mLastUpdate.getTrackRecStats() : null;
+
+		LocusInfo locusInfo = null;
+		try {
+			locusInfo = ActionTools.getLocusInfo(ctx, lv);
+		} catch (RequiredVersionMissingException e) {
+			Logger.logE(TAG, "Missing required version, current version " + lv, e);
+		}
+
 		TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
-				profileName, stats);
+				profileName, stats, locusInfo);
 		return trv;
 	}
 

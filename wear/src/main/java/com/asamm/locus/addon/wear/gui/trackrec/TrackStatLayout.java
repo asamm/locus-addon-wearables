@@ -66,7 +66,7 @@ public class TrackStatLayout extends ConstraintLayout {
 	}
 	
 	public void consumeNewStatistics(TrackRecordingValue trv) {
-		String newValue = mType.consumeAndFormat(trv.getTrackRecStats());
+		String newValue = mType.consumeAndFormat(trv);
 		mTextViewValue.setText(newValue);
 
 	}

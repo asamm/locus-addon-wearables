@@ -16,6 +16,10 @@ public class TrackRecordActivityConfiguration {
 		// TODO cejnar mocked static configuration
 		mStatConfig[0] = TrackRecStatTypeEnum.TOTAL_TIME;
 		mStatConfig[1] = TrackRecStatTypeEnum.TOTAL_LENGTH_MOVE;
+		mStatConfig[2] = TrackRecStatTypeEnum.SPEED_AVG;
+		mStatConfig[3] = TrackRecStatTypeEnum.SPEED_MAX;
+		mStatConfig[4] = TrackRecStatTypeEnum.ALTITUDE_MAX;
+		mStatConfig[5] = TrackRecStatTypeEnum.ALTITUDE_MIN;
 	}
 
 	public TrackRecStatTypeEnum getTypeForIdx(int statIdx) {

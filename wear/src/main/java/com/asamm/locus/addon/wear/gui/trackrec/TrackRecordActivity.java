@@ -86,6 +86,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 
 		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
+
 		initViewPager();
 
 		setDisabledDrawables();
@@ -219,7 +220,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		// initialize starting model from persistence
 		model = new TrackRecordingValue(true,
 				lastState != TrackRecordingStateEnum.NOT_RECORDING,
-				lastState == TrackRecordingStateEnum.PAUSED, profileInfo.getName(), null);
+				lastState == TrackRecordingStateEnum.PAUSED, profileInfo.getName(), null, null);
 		if (lastState != TrackRecordingStateEnum.NOT_RECORDING) {
 			transitionToRecState();
 		} else {

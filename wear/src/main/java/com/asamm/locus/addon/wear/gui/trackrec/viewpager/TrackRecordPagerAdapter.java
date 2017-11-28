@@ -62,7 +62,7 @@ public class TrackRecordPagerAdapter extends PagerAdapter implements TrackRecord
 
 	@Override
 	public int getCount() {
-		return screens.size();
+		return screens.size(); // TODO cejnar for count > 1 swipe to dismiss no longer works
 	}
 
 	@Override
