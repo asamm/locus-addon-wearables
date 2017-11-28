@@ -1,12 +1,11 @@
 
 package com.asamm.locus.addon.wear.gui.trackrec;
 
-import android.app.FragmentManager;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
@@ -59,7 +58,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private ViewFlipper mRecViewFlipper;
 
 	private ViewPager mPager;
-	private TrackRecordPagerAdapter pagerController;
+	private TrackRecordPagerAdapter mPagerController;
 
 	// start recording screen fields
 	private ImageView mImgStartRecording;
@@ -94,12 +93,35 @@ public class TrackRecordActivity extends LocusWearActivity {
 		setAmbientEnabled();
 	}
 
-	private void initViewPager(){
+	private void initViewPager() {
 		mPager = findViewById(R.id.pager);
-		pagerController = new TrackRecordPagerAdapter(this);
+		mPagerController = new TrackRecordPagerAdapter(mPager);
 		mPager.setPageTransformer(false, new VerticalViewPagerTransition());
-		mPager.setAdapter(pagerController);
+		mPager.setAdapter(mPagerController);
+		mPager.setCurrentItem(1);
+		mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				// skip fake page (first), go to last page
+				if (position == 0) {
+					mPager.setCurrentItem(mPagerController.getCount() - 2, false);
+				}
+				// skip fake page (last), go to first page
+				if (position == mPagerController.getCount() - 1) {
+					mPager.setCurrentItem(1, false);
+				}
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+			}
+		});
 	}
+
 	private void setDisabledDrawables() {
 		Drawable d = DisableGuiHelper.getImageWithDisabled(this,
 				BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_96_track_recording_rec));
@@ -171,7 +193,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 		runOnUiThread(() -> {
 			stateMachine.update(trv);
-			pagerController.onNewTrackRecordingData(this, trv);
+			mPagerController.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
 				refreshStatistics(trv);
 			}
@@ -277,17 +299,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	}
 
-
-
 	private void setIdleScreenEnabled(boolean isEnabled) {
 		mImgStartRecording.setEnabled(isEnabled);
 		getSelectProfileFragment().setEnabled(isEnabled);
-	}
-
-	private void transitionToRecState() {
-		pagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
-		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
-		Logger.logD(TAG, "setting rec screen");
 	}
 
 	private void transitionToIdlestate() {
@@ -296,18 +310,24 @@ public class TrackRecordActivity extends LocusWearActivity {
 		Logger.logD(TAG, "setting idle screen");
 	}
 
-	private void transitionToPauseState() {
-		transitionToRecState();
-	}
-
 	private void enableIdleScreen() {
 		setIdleScreenEnabled(true);
 		Logger.logD(TAG, "Enabling idle screen");
 	}
 
+	private void transitionToRecState() {
+		mPagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
+		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
+		Logger.logD(TAG, "setting rec screen");
+	}
+
 	private void enableRecScreen() {
-		pagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
+		mPagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
 		Logger.logD(TAG, "Enabling rec screen");
+	}
+
+	private void transitionToPauseState() {
+		transitionToRecState();
 	}
 
 	private void enablePausedScreen() {
@@ -374,10 +394,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 				public void transitionTo(TrackRecActivityState newState) {
 					Runnable action = mTransitionsFunctions.get(mCurrentState).get(newState);
+					mCurrentState = newState;
 					if (action != null) {
 						action.run();
 					}
-					mCurrentState = newState;
 				}
 
 				@Override
@@ -389,9 +409,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 					// State machine transition conditions
 					if (mCurrentState == UNINITIALIZED) {
 						transitionTo(newRecordingState == TrackRecordingStateEnum.NOT_RECORDING ?
-								IDLE_WAITING :
-								newRecordingState == TrackRecordingStateEnum.PAUSED ?
-										PAUSED_WAITING : REC_WAITING);
+								IDLE_WAITING : newRecordingState == TrackRecordingStateEnum.PAUSED ?
+								PAUSED_WAITING : REC_WAITING);
 						// immediately perform one more state machine step to skip current waiting state
 						if (mCurrentState != UNINITIALIZED) {
 							update(trv);

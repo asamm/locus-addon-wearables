@@ -17,13 +17,15 @@ import java.util.List;
 
 public class TrackRecordPagerAdapter extends PagerAdapter implements TrackRecordingUpdatable{
 
-	private static final int MAX_SCREENS = 3;
-	private Context mContext;
+	private static final int NUM_FAKE_SCREENS = 2;
+	private static final int MAX_SCREENS = 3 + NUM_FAKE_SCREENS;
 	private List<TrackRecordingUpdatable> screens = new ArrayList<>(MAX_SCREENS);
 
-	public TrackRecordPagerAdapter(Activity context) {
-		mContext = context;
-		screens.add(new MainScreenController(context));
+	public TrackRecordPagerAdapter(ViewGroup rootView) {
+		screens.add(new BlankScreenController(rootView)); // first fake screen for cyclic scrolling
+		screens.add(new MainScreenController(rootView));
+		screens.add(new StatsScreenController(rootView, 1));
+		screens.add(new BlankScreenController(rootView)); // last fake screen for cyclic scrolling
 	}
 
 	@Override

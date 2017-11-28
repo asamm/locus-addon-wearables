@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/track_main_screen_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
         android:id="@+id/track_main_top"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -12,18 +13,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/linear_layout_track_rec_buttons">
-    </FrameLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 
-    <FrameLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
         android:id="@+id/track_main_bottom"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linear_layout_track_rec_buttons"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:isIconTop="false">
 
-    </FrameLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 
     <LinearLayout
         android:id="@+id/linear_layout_track_rec_buttons"

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
@@ -19,7 +20,7 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
-public class TrackStatLayout extends LinearLayout {
+public class TrackStatLayout extends ConstraintLayout {
 
 	private static final String ARG_TYPE = "ARG_TYPE";
 	private static final String ARG_ICON_BOTTOM = "ARG_ICON_BOTTOM";
@@ -39,11 +40,7 @@ public class TrackStatLayout extends LinearLayout {
 	}
 
 	public TrackStatLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-		this(context, attrs, defStyleAttr, 0);
-	}
-
-	public TrackStatLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context, attrs, defStyleAttr, defStyleRes);
+		super(context, attrs, defStyleAttr);
 		this.mType = TrackRecStatTypeEnum.BLANK;
 		initView(context, attrs);
 	}

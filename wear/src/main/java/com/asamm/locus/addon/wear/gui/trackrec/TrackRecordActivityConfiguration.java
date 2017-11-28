@@ -18,6 +18,14 @@ public class TrackRecordActivityConfiguration {
 		mStatConfig[1] = TrackRecStatTypeEnum.TOTAL_LENGTH_MOVE;
 	}
 
+	public TrackRecStatTypeEnum getTypeForIdx(int statIdx) {
+		TrackRecStatTypeEnum result = TrackRecStatTypeEnum.BLANK;
+		if (statIdx < mStatConfig.length && mStatConfig[statIdx] != null) {
+			result = mStatConfig[statIdx];
+		}
+		return result;
+	}
+
 	public TrackRecStatTypeEnum[] getStatConfig() {
 		return mStatConfig;
 	}
