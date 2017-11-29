@@ -18,6 +18,7 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
@@ -52,6 +53,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private static final int FLIPPER_RECORDING_RUNNING_SCREEN_IDX = 1;
 
 	private static final int REFRESH_PERIOD_MS = 1000;
+
+	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
 
 	private TrackRecordingValue model;
 
@@ -144,6 +147,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 			case PUT_TRACK_REC:
 				TrackRecordingValue trv = (TrackRecordingValue) data;
 				onPutTrackRec(trv);
+				getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
 				Logger.logD(TAG, "Loaded track info ");
 				break;
 			case PUT_ADD_WAYPOINT:
@@ -314,8 +318,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 	@Override
 	protected void onHandShakeFinished() {
 		super.onHandShakeFinished();
-		WearCommService wcs = WearCommService.getInstance();
-		wcs.sendCommand(DataPath.GET_TRACK_REC_PROFILES);
+		getMainApplication().sendDataWithWatchDog(DataPath.GET_TRACK_REC_PROFILES, new EmptyCommand(),
+				DataPath.PUT_TRACK_REC_PROFILE_INFO , WATCHDOG_TIMEOUT);
 	}
 
 	@Override

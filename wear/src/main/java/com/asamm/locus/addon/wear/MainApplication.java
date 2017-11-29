@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -103,8 +104,6 @@ public class MainApplication extends Application implements Application.Activity
 	public void onDestroy() {
 		Logger.logE(TAG, "destroyInstance()");
 		// destroy instance of communication class
-
-		mWatchDog.destroy();
 		synchronized (this) {
 			if (mWatchDog != null) {
 				mWatchDog.destroy();
@@ -116,16 +115,22 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityCreated(Activity activity, Bundle bundle) {
+		if (!(activity instanceof LocusWearActivity)) {
+			return;
+		}
 		Logger.logD(TAG, "Activity created");
 		reconnectIfNeeded();
 	}
 
 	@Override
 	public void onActivityStarted(Activity activity) {
+		if (!(activity instanceof LocusWearActivity)) {
+			return;
+		}
 		if (mWatchDog == null) {
 			synchronized (this) {
 				if (mWatchDog == null) {
-					mWatchDog = new WatchDog();
+					mWatchDog = new WatchDog(this::doApplicationFail);
 				}
 			}
 		}
@@ -134,9 +139,6 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityResumed(Activity activity) {
-		if (!(activity instanceof LocusWearActivity)) {
-			activity = null; // Error activity or other non standard activity - treat as null
-		}
 		// set current activity
 		LocusWearActivity oldAct = mCurrentActivity;
 		if (oldAct == null || oldAct == activity) {
@@ -155,11 +157,16 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityPaused(Activity activity) {
-
+		if (!(activity instanceof LocusWearActivity)) {
+			return;
+		}
 	}
 
 	@Override
 	public void onActivityStopped(Activity activity) {
+		if (!(activity instanceof LocusWearActivity)) {
+			return;
+		}
 		// activity is not visible
 		if (mCurrentActivity == activity) {
 			setCurrentActivity(null);
@@ -223,6 +230,9 @@ public class MainApplication extends Application implements Application.Activity
 					default:
 						break;
 				}
+				if (mWatchDog != null) {
+					mWatchDog.onNewData(p);
+				}
 				currentActivity.consumeNewData(p, value);
 			} else {
 				Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
@@ -258,6 +268,16 @@ public class MainApplication extends Application implements Application.Activity
 	 * @param activity current activity
 	 */
 	private void setCurrentActivity(Activity activity) {
+		if (activity instanceof ActivityFail) {
+			if (mTimerTerminate != null) {
+				mTimerTerminate.cancel();
+				mTimerTerminate = null;
+			}
+			onDestroy();
+			mCurrentActivity = null;
+			return;
+		}
+
 		LocusWearActivity act = (LocusWearActivity) activity;
 		Logger.logD(TAG, "setCurrentActivity(" + act + ")");
 
@@ -273,7 +293,12 @@ public class MainApplication extends Application implements Application.Activity
 			Logger.logW(TAG, " - application terminated");
 			setTerminationTimer();
 		}
+		LocusWearActivity previous = mCurrentActivity;
 		mCurrentActivity = act;
+		if (mWatchDog != null) {
+			mWatchDog.onCurrentActivityChanged(previous == null ? null : previous.getClass(),
+					mCurrentActivity == null ? null : mCurrentActivity.getClass());
+		}
 	}
 
 	private void setTerminationTimer() {
@@ -344,4 +369,25 @@ public class MainApplication extends Application implements Application.Activity
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(i);
 	}
+
+	public void sendDataWithWatchDog(DataPath path, TimeStampStorable data,
+									 DataPath expectedResponse, long timeoutToFailMs) {
+		addWatchDog(path, data, expectedResponse, timeoutToFailMs);
+		WearCommService.getInstance().sendDataItem(path, data);
+	}
+
+	public void addWatchDog(DataPayload<? extends TimeStampStorable> request,
+							DataPath expectedResponse, long timeoutToFailMs) {
+		LocusWearActivity act = mCurrentActivity;
+		WatchDog wd = mWatchDog;
+		if (wd != null && act != null) {
+			wd.startWatching(act.getClass(), request, expectedResponse, timeoutToFailMs);
+		}
+	}
+
+	public void addWatchDog(DataPath path, TimeStampStorable data,
+							DataPath expectedResponse, long timeoutToFailMs) {
+		addWatchDog(new DataPayload(path, data), expectedResponse, timeoutToFailMs);
+	}
+
 }

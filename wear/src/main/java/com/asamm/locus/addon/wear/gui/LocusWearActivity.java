@@ -263,4 +263,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 	public boolean isUsePeriodicData() {
 		return false;
 	}
+
+	public MainApplication getMainApplication() {
+		return (MainApplication) getApplication();
+	}
 }
