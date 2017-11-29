@@ -130,7 +130,8 @@ public class MainApplication extends Application implements Application.Activity
 		if (mWatchDog == null) {
 			synchronized (this) {
 				if (mWatchDog == null) {
-					mWatchDog = new WatchDog(this::doApplicationFail);
+					// TODO cejnar debug only - uncomment for production
+					//mWatchDog = new WatchDog(this::doApplicationFail);
 				}
 			}
 		}
@@ -368,6 +369,12 @@ public class MainApplication extends Application implements Application.Activity
 		i.putExtra(ActivityFail.ARG_ERROR_TYPE, reason.name());
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(i);
+	}
+
+	public void sendDataWithWatchDog(DataPayload<? extends TimeStampStorable> request,
+									 DataPath expectedResponse, long timeoutToFailMs) {
+		addWatchDog(request, expectedResponse, timeoutToFailMs);
+		WearCommService.getInstance().sendDataItem(request.getPath(), request.getStorable());
 	}
 
 	public void sendDataWithWatchDog(DataPath path, TimeStampStorable data,

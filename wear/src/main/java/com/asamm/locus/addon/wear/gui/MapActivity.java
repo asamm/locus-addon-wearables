@@ -29,6 +29,8 @@ import locus.api.utils.Logger;
 
 public class MapActivity extends LocusWearActivity {
 
+	private static final String TAG = "MapActivity";
+
 	private static final int MAP_REFRESH_PERIOD_MS = 5000;
 	private static final int WATCHDOG_TIMEOUT_MS = MAP_REFRESH_PERIOD_MS * 3;
 	private static final int SCALE_ANIMATION_DURATION_MS = 200;
@@ -191,7 +193,11 @@ public class MapActivity extends LocusWearActivity {
 			case PUT_MAP:
 				mLastContainer = (MapContainer) data;
 				refreshLayout(mLastContainer);
-				getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+				if (mLastContainer.getLoadedMap() == null || mLastContainer.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
+					getMainApplication().sendDataWithWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+				} else {
+					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+				}
 				break;
 		}
 	}

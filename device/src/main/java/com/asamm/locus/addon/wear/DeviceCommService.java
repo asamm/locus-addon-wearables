@@ -201,20 +201,14 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
-		if (mPeriodicDataTimer != null) {
-			mPeriodicDataTimer.cancel();
-			mPeriodicDataTimer = null;
-		}
-		if ((command == null || command.isStopRequest())) {
-			return;
-		}
-
 		final byte activityId = command.getmPeriodicActivityId();
 		final int periodMs = command.getmPeriodMs();
 		final TimeStampStorable extra = command.getExtra();
 
 		final TimerTask task;
-		switch (activityId) {
+		switch (activityId)
+
+		{
 			case PeriodicCommand.IDX_PERIODIC_TRACK_RECORDING:
 				task = new TimerTask() {
 					@Override
@@ -236,11 +230,19 @@ public class DeviceCommService extends LocusWearCommService {
 				task = null;
 				break;
 		}
-		if (task == null) { // unknown activity id, don't start the timer
-			return;
+
+		synchronized (this) {
+			if (mPeriodicDataTimer != null) {
+				mPeriodicDataTimer.cancel();
+				mPeriodicDataTimer = null;
+			}
+
+			if ((command == null || command.isStopRequest()) || task == null) {
+				return;
+			}
+			mPeriodicDataTimer = new PeriodicDataTimer(activityId, periodMs);
+			mPeriodicDataTimer.schedule(task, 0, periodMs);
 		}
-		mPeriodicDataTimer = new PeriodicDataTimer(activityId, periodMs);
-		mPeriodicDataTimer.schedule(task, 0, periodMs);
 	}
 
 	private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
@@ -252,7 +254,11 @@ public class DeviceCommService extends LocusWearCommService {
 		int height = extra.getHeight();
 
 		if (zoom == Const.ZOOM_UNKONWN) {
-			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 1; // TODO cejnar default zoom?
+			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 15;
+		}
+		if (lon == 0 && lat == 0 && mLastUpdate != null) {
+			lat = mLastUpdate.getLocMyLocation().getLatitude();
+			lon = mLastUpdate.getLocMyLocation().getLongitude();
 		}
 
 		// request map
@@ -276,6 +282,9 @@ public class DeviceCommService extends LocusWearCommService {
 		}
 
 		MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo, zoom);
+		if (loadedMap != null && loadedMap.getNumOfNotYetLoadedTiles() != 0) {
+			Logger.logE(TAG, "NYET LOADED TILES " + loadedMap.getNumOfNotYetLoadedTiles());
+		}
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 
