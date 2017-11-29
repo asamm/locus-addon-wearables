@@ -31,6 +31,8 @@ public class ProfileListActivity extends LocusWearActivity {
 
 	private static final String TAG = "ProfileListActivity";
 	public static final String ARG_PROFILES = "ARG_PROFILES";
+	public static final String RESULT_PROFILES = "RESULT_PROFILES";
+
 
 	private WearableRecyclerView mRecyclerVeiw;
 	private WearableRecyclerView.Adapter adapter;
@@ -55,8 +57,6 @@ public class ProfileListActivity extends LocusWearActivity {
 		mRecyclerVeiw.setEdgeItemsCenteringEnabled(true);
 		mRecyclerVeiw.setLayoutManager(
 				new WearableLinearLayoutManager(this, new CustomScrollingLayoutCallback()));
-//		mRecyclerVeiw.setLayoutManager(
-//				new WearableLinearLayoutManager(this));
 
 		mRecyclerVeiw.setHasFixedSize(true);
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
@@ -141,7 +141,7 @@ public class ProfileListActivity extends LocusWearActivity {
 		private void onItemSelected(long modelId) {
 			TrackProfileModelHolder selectedHolder = model.get(modelId);
 			Intent resultIntent = new Intent();
-			resultIntent.putExtra(ARG_PROFILES, selectedHolder.mProfileInfo.getAsBytes());
+			resultIntent.putExtra(RESULT_PROFILES, selectedHolder.mProfileInfo.getAsBytes());
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		}

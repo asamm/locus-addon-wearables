@@ -1,11 +1,10 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_constraintHorizontal_chainStyle="spread_inside">
+    >
 
     <TextView
-        android:id="@+id/trackProfileSelectText"
+        android:id="@+id/track_profile_select_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -14,7 +13,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/text_size_big"
         android:background="@drawable/border_bottom"
-        app:layout_constraintStart_toEndOf="@id/trackProfileSelectIcon"
+        app:layout_constraintStart_toEndOf="@id/track_profile_select_icon"
         app:layout_constraintEnd_toStartOf="@id/imgTrackProfileSelectDotsIcon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -27,19 +26,19 @@
         android:layout_marginTop="2dp"
         android:scaleType="fitCenter"
         android:src="@drawable/edit_dots"
-        app:layout_constraintBottom_toBottomOf="@id/trackProfileSelectText"
+        app:layout_constraintBottom_toBottomOf="@id/track_profile_select_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/trackProfileSelectText"
-        app:layout_constraintTop_toTopOf="@id/trackProfileSelectText" />
+        app:layout_constraintStart_toEndOf="@+id/track_profile_select_text"
+        app:layout_constraintTop_toTopOf="@id/track_profile_select_text" />
 
     <ImageView
-        android:id="@+id/trackProfileSelectIcon"
+        android:id="@+id/track_profile_select_icon"
         android:layout_height="28dp"
         android:layout_width="28dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/trackProfileSelectText"
+        app:layout_constraintEnd_toStartOf="@+id/track_profile_select_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></ImageView>
 
-</android.support.constraint.ConstraintLayout>
+</merge>
