@@ -51,13 +51,10 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 		mImageProfileIcon = findViewById(R.id.track_profile_select_icon);
 	}
 
-	public void setParameters(TrackProfileInfoValue profile, TrackProfileIconValue icon) {
+	public void setParameters(TrackProfileInfoValue profile) {
 		mProfile = profile;
 		// empty icon, try icon cache for match
-		if (icon == null && profile != null) {
-			icon = AppStorageManager.getIcon(getContext(), profile.getId());
-		}
-		mIcon = icon;
+		mIcon = AppStorageManager.getIcon(getContext(), profile.getId());;
 		refreshModel();
 	}
 

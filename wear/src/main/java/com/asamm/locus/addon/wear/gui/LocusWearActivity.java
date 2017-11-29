@@ -7,7 +7,7 @@ import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
-import com.asamm.locus.addon.wear.ApplicationCache;
+import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -228,7 +228,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	}
 
-	protected ApplicationCache getApplicationState() {
+	protected ApplicationMemoryCache getApplicationState() {
 		return ((MainApplication) this.getApplication()).getCache();
 	}
 

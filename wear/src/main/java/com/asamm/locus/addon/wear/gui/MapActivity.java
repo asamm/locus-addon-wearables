@@ -1,6 +1,5 @@
 package com.asamm.locus.addon.wear.gui;
 
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -9,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
-import com.asamm.locus.addon.wear.ApplicationCache;
+import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.Const;
@@ -58,7 +57,7 @@ public class MapActivity extends LocusWearActivity {
 
 	@Override
 	protected DataPayload<PeriodicCommand> getInitialCommandType() {
-		ApplicationCache appState = ((MainApplication) getApplication()).getCache();
+		ApplicationMemoryCache appState = ((MainApplication) getApplication()).getCache();
 
 		final MapPeriodicParams params =
 				new MapPeriodicParams(0d, 0d, mRequestedZoom,
@@ -109,7 +108,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Initialize view before first data arrives
 	 */
 	private void initView() {
-		ApplicationCache cache = ((MainApplication) getApplication()).getCache();
+		ApplicationMemoryCache cache = ((MainApplication) getApplication()).getCache();
 		MapContainer savedContainer = cache.getLastMapData();
 		if (savedContainer != null && savedContainer.isMapPresent()) {
 			refreshMapView(savedContainer);

@@ -161,30 +161,14 @@ public class TrackRecordActivity extends LocusWearActivity {
 		TrackProfileInfoValue selectedProfile = mProfileSelect.getProfile();
 		boolean isProfileMissing = selectedProfile == null || !profiles.getStorables().contains(selectedProfile); // TODO cejnar test the second condition branch
 		if (isProfileMissing) {
-			mProfileSelect.setParameters(profiles.getStorables().get(0), null);
+			mProfileSelect.setParameters(profiles.getStorables().get(0));
 		}
-		doIconsInCacheCheck(profiles.getStorables());
 	}
 
 	private void onNewIconReceived(TrackProfileIconValue icon) {
-		AppStorageManager.persistIcon(this, icon);
-
 		TrackProfileInfoValue selectedProfile = mProfileSelect.getProfile();
 		if (selectedProfile != null && selectedProfile.getId() == icon.getId()) {
-			mProfileSelect.setParameters(selectedProfile, icon);
-		}
-
-		if (mProfileSelect.getProfileList() != null) {
-			doIconsInCacheCheck(mProfileSelect.getProfileList().getStorables());
-		}
-	}
-
-	private void doIconsInCacheCheck(List<TrackProfileInfoValue> profiles) {
-		for (TrackProfileInfoValue info : profiles) {
-			if (!AppStorageManager.isIconCached(this, info.getId())) {
-				WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
-				break;
-			}
+			mProfileSelect.setParameters(selectedProfile); // forces icon refresh from cache
 		}
 	}
 
@@ -194,11 +178,14 @@ public class TrackRecordActivity extends LocusWearActivity {
 		if (requestCode == TrackRecordProfileSelectLayout.PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
 			byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.RESULT_PROFILES);
 			try {
-				mProfileSelect.setParameters(new TrackProfileInfoValue(profileBytes), null);
+				mProfileSelect.setParameters(new TrackProfileInfoValue(profileBytes));
 			} catch (IOException e) {
 				Logger.logE("TAG", "empty profile bytes", e);
 
 			}
+		} else {
+			// refresh profile select even after canceled -> force refresh icon
+			mProfileSelect.setParameters(mProfileSelect.getProfile());
 		}
 	}
 
@@ -242,7 +229,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
 		TrackRecordingStateEnum lastState = AppPreferencesManager.getLastTrackRecProfileState(this);
 		if (profileInfo.getName() != null) {
-			mProfileSelect.setParameters(profileInfo, null);
+			mProfileSelect.setParameters(profileInfo);
 		}
 		// initialize starting model from persistence
 		model = new TrackRecordingValue(true,

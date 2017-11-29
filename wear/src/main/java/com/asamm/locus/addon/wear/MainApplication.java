@@ -15,6 +15,9 @@ import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
+import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
@@ -24,6 +27,7 @@ import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +43,7 @@ public class MainApplication extends Application implements Application.Activity
 
 	private volatile LocusWearActivity mCurrentActivity;
 
-	private volatile ApplicationCache mCache;
+	private volatile ApplicationMemoryCache mCache;
 
 	// timer for termination
 	private static Timer mTimerTerminate;
@@ -51,7 +55,10 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onCreate() {
+		// TODO cejnar debug only
 		AppPreferencesManager.debugClear(this);
+		AppStorageManager.trimCache(this);
+
 		super.onCreate();
 
 		// set logger
@@ -86,7 +93,7 @@ public class MainApplication extends Application implements Application.Activity
 		Logger.logE(TAG, "onCreate()");
 		registerActivityLifecycleCallbacks(this);
 		setTerminationTimer();
-		mCache = new ApplicationCache(this);
+		mCache = new ApplicationMemoryCache(this);
 		reconnectIfNeeded();
 	}
 
@@ -184,8 +191,8 @@ public class MainApplication extends Application implements Application.Activity
 				switch (p) {
 					case PUT_HAND_SHAKE:
 						final HandShakeValue handShakeValue = (HandShakeValue) value;
-						if (checkHandShake(handShakeValue)) {
-							mCache.setHandShakeValue(handShakeValue);
+						if (!validateHandShakeOrFail(handShakeValue)) {
+							return;
 						}
 						break;
 					case PUT_MAP:
@@ -193,6 +200,28 @@ public class MainApplication extends Application implements Application.Activity
 						break;
 					case PUT_TRACK_REC:
 						mCache.setLastTrackRecState(this, (TrackRecordingValue) value);
+						break;
+					case PUT_TRACK_REC_PROFILE_INFO: {
+						TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) value;
+						if (profiles != null) {
+							mCache.setProfiles(profiles.getStorables());
+						}
+					}
+					case PUT_PROFILE_ICON: {
+						if (value instanceof TrackProfileIconValue) {
+							AppStorageManager.persistIcon(this, (TrackProfileIconValue) value);
+						}
+						List<TrackProfileInfoValue> profiles = mCache.getProfiles();
+						for (TrackProfileInfoValue info : profiles) {
+							if (!AppStorageManager.isIconCached(this, info.getId())) {
+								WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
+								break;
+							}
+						}
+					}
+					break;
+					default:
+						break;
 				}
 				currentActivity.consumeNewData(p, value);
 			} else {
@@ -202,7 +231,11 @@ public class MainApplication extends Application implements Application.Activity
 		Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
 	}
 
-	private boolean checkHandShake(HandShakeValue handShakeValue) {
+	private LocusWearActivity getCurrentActivity() {
+		return mCurrentActivity;
+	}
+
+	private boolean validateHandShakeOrFail(HandShakeValue handShakeValue) {
 		if (handShakeValue == null || handShakeValue.isEmpty()) {
 			WearCommService.getInstance().sendCommand(DataPath.GET_HAND_SHAKE);
 			return false;
@@ -267,7 +300,7 @@ public class MainApplication extends Application implements Application.Activity
 		}
 	}
 
-	public ApplicationCache getCache() {
+	public ApplicationMemoryCache getCache() {
 		return mCache;
 	}
 
