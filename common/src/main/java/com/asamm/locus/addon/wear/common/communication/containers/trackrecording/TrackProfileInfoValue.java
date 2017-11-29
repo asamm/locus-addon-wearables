@@ -20,7 +20,7 @@ public class TrackProfileInfoValue extends TimeStampStorable {
 
 	private long mId;
 	private String mName;
-	private String mDesc;
+	private String mDesc; // Always empty in this version
 
 	/**
 	 * Base constructor mainly for a Storable class.
@@ -30,17 +30,17 @@ public class TrackProfileInfoValue extends TimeStampStorable {
 		super();
 	}
 
-	public TrackProfileInfoValue(long id, String name, String desc) {
+	public TrackProfileInfoValue(long id, String name) {
+		this();
 		mId = id;
 		mName = name;
-		mDesc = desc;
 	}
 
 	public TrackProfileInfoValue(ActionTools.TrackRecordProfileSimple simpleProfile) {
 		this();
 		mId = simpleProfile.getId();
 		mName = simpleProfile.getName();
-		mDesc = simpleProfile.getDesc();
+		//mDesc = simpleProfile.getDesc(); // not used in this version
 	}
 
 	/**
@@ -77,7 +77,6 @@ public class TrackProfileInfoValue extends TimeStampStorable {
 		super.readObject(version, dr);
 		mId = dr.readLong();
 		mName = dr.readString();
-		mDesc = dr.readString();
 	}
 
 	@Override
@@ -85,7 +84,6 @@ public class TrackProfileInfoValue extends TimeStampStorable {
 		super.writeObject(dw);
 		dw.writeLong(mId);
 		dw.writeString(mName);
-		dw.writeString(mDesc);
 	}
 
 	public long getId() {

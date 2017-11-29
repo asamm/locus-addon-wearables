@@ -2,13 +2,27 @@
 <resources>
     <!-- Name of application -->
     <string name="app_name">Locus Map</string>
+
+    <!-- _____________________ -->
+    <!-- Info (toast) messages -->
+    <!-- _____________________ -->
+
     <!-- Toast message after waypoint is added during track recording -->
     <string name="waypoint_added">Waypoint added</string>
 
+    <!-- ______________ -->
     <!-- Error messages -->
+    <!-- ______________ -->
+
     <string name="err_locus_version_not_suppoerted">Sorry, your version of Locus Map is no longer supported. Please update your Locus Map application.</string>
     <string name="err_periodic_updates_disabled">Periodic updates required! Please enable periodic updates in Locus Map -> Settings -> Miscellaneous -> Enable periodic updates for add-ons.</string>
     <string name="err_connection_failed">Connection to the mobile phone has failed. Please check the connection and try again.</string>
+
+    <!-- ______________ -->
+    <!--     UI Texts   -->
+    <!-- ______________ -->
+
+    <string name="loading_profiles">Loading profiles</string>
 
     <!-- text on button to cancel current action -->
     <string name="cancel">Cancel</string>
@@ -18,7 +32,7 @@
     <!--Activity titles-->
     <string name="title_activity_track_record">Track recording</string>
     <string name="title_activity_map">Map</string>
-    <string name="title_activity_profile_list">Select profile</string>
+    <string name="title_activity_profile_list">Profiles</string>
     <string name="title_activity_error">Error</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -55,6 +55,10 @@ public class ProfileListActivity extends LocusWearActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_profile_list);
+		TextView header = findViewById(R.id.text_view_screen_header);
+		if (header != null) {
+			header.setText(getText(R.string.title_activity_profile_list));
+		}
 		mRecyclerVeiw = findViewById(R.id.profile_list);
 		mRecyclerVeiw.setEdgeItemsCenteringEnabled(true);
 		mRecyclerVeiw.setLayoutManager(

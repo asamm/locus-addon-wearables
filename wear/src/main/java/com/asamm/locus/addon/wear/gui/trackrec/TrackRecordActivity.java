@@ -6,20 +6,19 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
-import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -28,14 +27,12 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.viewpager.TrackRecordPagerAdapter;
 import com.asamm.locus.addon.wear.gui.trackrec.viewpager.VerticalViewPagerTransition;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import locus.api.utils.Logger;
 
@@ -156,13 +153,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void onNewProfilesReceived(TrackProfileInfoValue.ValueList profiles) {
-		mProfileSelect.setProfileList(profiles);
-
 		TrackProfileInfoValue selectedProfile = mProfileSelect.getProfile();
 		boolean isProfileMissing = selectedProfile == null || !profiles.getStorables().contains(selectedProfile); // TODO cejnar test the second condition branch
 		if (isProfileMissing) {
 			mProfileSelect.setParameters(profiles.getStorables().get(0));
 		}
+		mProfileSelect.setProfileList(profiles);
+		mProfileSelect.setEnabled(true);
 	}
 
 	private void onNewIconReceived(TrackProfileIconValue icon) {
@@ -189,15 +186,28 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 	}
 
-
+	private Handler mDelayedProfileSelectClickHandler;
 	public void onOpenProfileListActivityClick(View v) {
-		if (mProfileSelect.isEnabled()) {
+		if (mDelayedStartClickHandler != null) { // pending start recording request
+			return;
+		}
+		if (mProfileSelect.hasProfileList()) {
 			Intent i = new Intent(this, ProfileListActivity.class);
 			TrackProfileInfoValue.ValueList profiles = mProfileSelect.getProfileList();
 			Bundle b = new Bundle();
 			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
 			i.putExtras(b);
 			startActivityForResult(i, TrackRecordProfileSelectLayout.PICK_PROFILE_REQUEST);
+		} else {
+			synchronized (this) {
+				if (mDelayedProfileSelectClickHandler == null && isIdleScreenAlive()) {
+					mDelayedProfileSelectClickHandler = new Handler();
+					mDelayedProfileSelectClickHandler.postDelayed(() -> {
+						mDelayedProfileSelectClickHandler = null;
+						onOpenProfileListActivityClick(v);
+					}, 333);
+				}
+			}
 		}
 	}
 
@@ -208,7 +218,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 			return;
 		}
 		runOnUiThread(() -> {
-			stateMachine.update(trv);
+			mStateMachine.update(trv);
 			mPagerController.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
 				refreshStatistics(trv);
@@ -230,6 +240,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 		TrackRecordingStateEnum lastState = AppPreferencesManager.getLastTrackRecProfileState(this);
 		if (profileInfo.getName() != null) {
 			mProfileSelect.setParameters(profileInfo);
+		} else {
+			mProfileSelect.setPlaceHolder(getText(R.string.loading_profiles));
 		}
 		// initialize starting model from persistence
 		model = new TrackRecordingValue(true,
@@ -250,23 +262,44 @@ public class TrackRecordActivity extends LocusWearActivity {
 		AppPreferencesManager.persistLastTrackRecProfile(this, mProfileSelect.getProfile());
 	}
 
-	public void handleStartClick(View v) {
-		sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
-		stateMachine.transitionTo(REC_WAITING);
+	private volatile Handler mDelayedStartClickHandler;
+	public void handleStartClick(final View v) {
+		if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
+			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
+			mStateMachine.transitionTo(REC_WAITING);
+		} else {
+			final TrackRecActivityState state = mStateMachine.getCurrentState();
+			synchronized (this) {
+				if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
+					mDelayedStartClickHandler = new Handler();
+					mDelayedStartClickHandler.postDelayed(() -> {
+						mDelayedStartClickHandler = null;
+						handleStartClick(v);
+					}, 333);
+				}
+			}
+		}
 	}
+
+	private boolean isIdleScreenAlive() {
+		final TrackRecActivityState state = mStateMachine.getCurrentState();
+		return ((MainApplication)getApplication()).getCurrentActivity() == this
+				&& (state == IDLE || state == IDLE_WAITING || state == UNINITIALIZED);
+	}
+
 
 	public void handleStopClick(View v) {
 		sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
-		stateMachine.transitionTo(IDLE_WAITING);
+		mStateMachine.transitionTo(IDLE_WAITING);
 	}
 
 	public void handlePauseClick(View v) {
-		if (stateMachine.getCurrentState() == REC) {
+		if (mStateMachine.getCurrentState() == REC) {
 			sendStateChangeRequest(TrackRecordingStateEnum.PAUSED);
-			stateMachine.transitionTo(PAUSED_WAITING);
-		} else if (stateMachine.getCurrentState() == PAUSED) {
+			mStateMachine.transitionTo(PAUSED_WAITING);
+		} else if (mStateMachine.getCurrentState() == PAUSED) {
 			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
-			stateMachine.transitionTo(REC_WAITING);
+			mStateMachine.transitionTo(REC_WAITING);
 		}
 	}
 
@@ -302,8 +335,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void setIdleScreenEnabled(boolean isEnabled) {
-		mImgStartRecording.setEnabled(isEnabled);
-		mProfileSelect.setEnabled(isEnabled);
+
 	}
 
 	private void transitionToIdlestate() {
@@ -318,13 +350,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void transitionToRecState() {
-		mPagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
+		mPagerController.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
 		Logger.logD(TAG, "setting rec screen");
 	}
 
 	private void enableRecScreen() {
-		mPagerController.onTrackActivityStateChange(this, stateMachine.getCurrentState());
+		mPagerController.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
 		Logger.logD(TAG, "Enabling rec screen");
 	}
 
@@ -345,7 +377,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		void transitionTo(STATE newState);
 	}
 
-	private StateMachine<TrackRecActivityState, TrackRecordingValue> stateMachine =
+	private StateMachine<TrackRecActivityState, TrackRecordingValue> mStateMachine =
 			new StateMachine<TrackRecActivityState, TrackRecordingValue>() {
 				private TrackRecActivityState mCurrentState = UNINITIALIZED;
 				private HashMap<TrackRecActivityState, HashMap<TrackRecActivityState, Runnable>> mTransitionsFunctions;

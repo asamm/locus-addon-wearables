@@ -24,7 +24,6 @@ public class AppPreferencesManager {
 
 	public static final String PREF_PROFILE_NAME = "PROFILE_NAME";
 	public static final String PREF_PROFILE_ID = "PROFILE_ID";
-	public static final String PREF_PROFILE_DESC = "PROFILE_DESC";
 
 	public static final String PREF_DEVICE_ZOOM = "DEV_ZOOM";
 	public static final String PREF_WEAR_ZOOM = "WEAR ZOOM";
@@ -48,16 +47,14 @@ public class AppPreferencesManager {
 		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
 				.putString(PREF_PROFILE_NAME, value.getName())
 				.putLong(PREF_PROFILE_ID, value.getId())
-				.putString(PREF_PROFILE_DESC, value.getDesc())
 				.apply();
 	}
 
 	public static TrackProfileInfoValue getLastTrackRecProfile(Context ctx) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		String name = prefs.getString(PREF_PROFILE_NAME, null);
-		String desc = prefs.getString(PREF_PROFILE_DESC, null);
 		long id = prefs.getLong(PREF_PROFILE_ID, -1);
-		return new TrackProfileInfoValue(id, name, desc);
+		return new TrackProfileInfoValue(id, name);
 	}
 
 	public static TrackRecordingStateEnum getLastTrackRecProfileState(Context ctx) {

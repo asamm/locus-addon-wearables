@@ -60,6 +60,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		enabled = enabled && hasProfileList();
 		super.setEnabled(enabled);
 		mTextProfileName.setEnabled(enabled);
 	}
@@ -94,5 +95,13 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 		mProfileSelectCallback = profileSelectCallback;
 		mTextProfileName.setOnClickListener(mProfileSelectCallback);
 		mImageProfileIcon.setOnClickListener(mProfileSelectCallback);
+	}
+
+	public boolean hasProfileList() {
+		return mProfileList != null;
+	}
+
+	public void setPlaceHolder(CharSequence s) {
+		mTextProfileName.setHint(s);
 	}
 }

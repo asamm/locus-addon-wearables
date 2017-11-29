@@ -231,7 +231,7 @@ public class MainApplication extends Application implements Application.Activity
 		Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
 	}
 
-	private LocusWearActivity getCurrentActivity() {
+	public LocusWearActivity getCurrentActivity() {
 		return mCurrentActivity;
 	}
 
