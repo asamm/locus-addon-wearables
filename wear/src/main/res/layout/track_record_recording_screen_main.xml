@@ -27,12 +27,22 @@
 
     </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 
+    <!--<ImageView-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="8dp"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:src="@drawable/nav_arrow_down_grey"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--/>-->
+
     <LinearLayout
         android:id="@+id/linear_layout_track_rec_buttons"
         android:layout_width="match_parent"
         android:layout_height="@dimen/track_rec_btn_size"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="@dimen/outer_frame_layout_padding"
+        android:layout_marginTop="@dimen/outer_frame_layout_padding"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@id/track_main_bottom"

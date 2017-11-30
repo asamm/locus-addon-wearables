@@ -1,20 +1,14 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
@@ -29,6 +23,7 @@ public class TrackStatLayout extends ConstraintLayout {
 	private boolean mIsIconBottom;
 	private TextView mTextViewValue;
 	private ImageView mImageViewIcon;
+	private TextView mTextViewDescription;
 	private boolean mIsIconTop;
 
 	public TrackStatLayout(Context context) {
@@ -54,14 +49,16 @@ public class TrackStatLayout extends ConstraintLayout {
 		View.inflate(ctx,
 				mIsIconTop ? R.layout.track_stat_layout_icon_top : R.layout.track_stat_layout_icon_bottom,
 				this);
-		mTextViewValue = findViewById(R.id.statText);
-		mImageViewIcon = findViewById(R.id.statIcon);
+		mTextViewValue = findViewById(R.id.stat_text);
+		mImageViewIcon = findViewById(R.id.stat_icon);
+		mTextViewDescription = findViewById(R.id.stat_description);
 		setType(mType);
 	}
 
 	public void setType(TrackRecStatTypeEnum statType) {
 		this.mType = statType;
 		mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
+		mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
 		mTextViewValue.setText("");
 	}
 	

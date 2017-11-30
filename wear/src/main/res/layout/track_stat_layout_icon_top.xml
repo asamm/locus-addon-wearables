@@ -2,19 +2,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/statIcon"
+        android:id="@+id/stat_icon"
         style="@style/statIcon"
-        app:layout_constraintBottom_toTopOf="@id/statText"
+        app:layout_constraintBottom_toTopOf="@id/stat_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
-        android:id="@+id/statText"
+        android:id="@+id/stat_text"
         style="@style/statText"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/stat_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/statIcon" />
+        app:layout_constraintTop_toBottomOf="@id/stat_icon"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/stat_description"
+        style="@style/statDescription"
+        app:layout_constraintTop_toBottomOf="@id/stat_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 </merge>

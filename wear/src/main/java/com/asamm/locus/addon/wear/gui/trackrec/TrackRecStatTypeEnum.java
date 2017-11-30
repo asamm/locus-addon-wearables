@@ -46,4 +46,8 @@ public enum TrackRecStatTypeEnum {
 	public int getIconId() {
 		return mIconId;
 	}
+
+	public int getNameStringId() {
+		return mNameStringId;
+	}
 }
