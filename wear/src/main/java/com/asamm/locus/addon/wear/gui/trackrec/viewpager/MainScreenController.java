@@ -50,7 +50,7 @@ public class MainScreenController implements TrackRecordingUpdatable{
 				setRecScreenEnabled(false);
 				break;
 			case PAUSED_WAITING:
-				mImgPauseRecording.setImageDrawable(((ImageView)context.findViewById(R.id.img_track_rec_start)).getDrawable());
+				mImgPauseRecording.setImageDrawable(context.getDrawable(R.drawable.ic_track_record_pause_pressed));
 				setRecScreenEnabled(false);
 				break;
 			case PAUSED:
@@ -74,9 +74,9 @@ public class MainScreenController implements TrackRecordingUpdatable{
 	}
 
 	private void loadAndInitStats(Context context, ViewGroup view) {
-		mConfig = new TrackRecordActivityConfiguration(); // TODO cejnar Load from preferences on
-		mStatsTop.setType(mConfig.getStatConfig()[0]);
-		mStatsBottom.setType(mConfig.getStatConfig()[1]);
+		mConfig = TrackRecordActivityConfiguration.loadConfiguration(context);
+		mStatsTop.setType(mConfig.getStatConfigAtPosition(0));
+		mStatsBottom.setType(mConfig.getStatConfigAtPosition(1));
 	}
 
 	@Override
@@ -87,16 +87,16 @@ public class MainScreenController implements TrackRecordingUpdatable{
 	// TODO cejnar debug only - generate disabled drawables programatically
 	private void setDisabledDrawables(Context ctx) {
 		Drawable d = DisableGuiHelper.getImageWithDisabled(ctx,
-				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_96_track_recording_stop));
+				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_stop));
 		mImgStopRecording.setImageDrawable(d);
 
 		d = DisableGuiHelper.getImageWithDisabled(ctx,
-				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_96_track_recording_pause));
+				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_pause_normal));
 		mPauseDrawable = d;
 		mImgPauseRecording.setImageDrawable(d);
 
 		d = DisableGuiHelper.getImageWithDisabled(ctx,
-				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_96_track_recording_add_wpt));
+				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_add_wpt));
 		mImgAddWaypoint.setImageDrawable(d);
 	}
 }

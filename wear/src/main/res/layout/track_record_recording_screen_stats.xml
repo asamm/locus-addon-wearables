@@ -15,6 +15,23 @@
 
     </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 
+    <View
+        style="@style/SeparatorHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <View
+        style="@style/SeparatorVertical"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
         android:id="@+id/track_stats_top_right"
         android:layout_width="0dp"
@@ -30,11 +47,11 @@
         android:id="@+id/track_stats_bottom_left"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:isIconTop="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/track_stats_bottom_right"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/track_stats_top_left"
-        app:isIconTop="false">
+        app:layout_constraintTop_toBottomOf="@id/track_stats_top_left">
 
     </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 
@@ -42,11 +59,11 @@
         android:id="@+id/track_stats_bottom_right"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:isIconTop="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/track_stats_bottom_left"
-        app:layout_constraintTop_toBottomOf="@id/track_stats_top_right"
-        app:isIconTop="false">
+        app:layout_constraintTop_toBottomOf="@id/track_stats_top_right">
 
     </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
 

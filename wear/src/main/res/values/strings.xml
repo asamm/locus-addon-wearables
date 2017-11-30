@@ -19,10 +19,22 @@
     <string name="err_connection_failed">Connection to the mobile phone has failed. Please check the connection and try again.</string>
 
     <!-- ______________ -->
+    <!--   Statistics   -->
+    <!-- ______________ -->
+
+    <string name="stat_elevation_up">Elevation (Downhill)</string>
+    <string name="stat_elevation_down">Elevation (Uphill)</string>
+    <string name="stat_speed">Speed</string>
+    <string name="stat_speed_avg_moving">Avg. moving speed</string>
+    <string name="stat_distance">Distance</string>
+    <string name="stat_track_time">Track time</string>
+    <string name="empty_string"></string>
+
+    <!-- ______________ -->
     <!--     UI Texts   -->
     <!-- ______________ -->
 
-    <string name="loading_profiles">Loading profiles</string>
+    <string name="loading_profiles">Loading</string>
 
     <!-- text on button to cancel current action -->
     <string name="cancel">Cancel</string>
@@ -34,7 +46,4 @@
     <string name="title_activity_map">Map</string>
     <string name="title_activity_profile_list">Profiles</string>
     <string name="title_activity_error">Error</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

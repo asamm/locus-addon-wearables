@@ -55,12 +55,12 @@ public class StatsScreenController implements TrackRecordingUpdatable{
 	}
 
 	private void loadAndInitStats(Context context, ViewGroup view) {
-		TrackRecordActivityConfiguration mConfig = new TrackRecordActivityConfiguration(); // TODO cejnar Load from preferences on
+		TrackRecordActivityConfiguration mConfig = TrackRecordActivityConfiguration.loadConfiguration(context);
 		int idxOffset = -2 + (mScreenIdx << 2);
-		mTopRight.setType(mConfig.getTypeForIdx(idxOffset));
-		mTopLeft.setType(mConfig.getTypeForIdx(idxOffset + 1));
-		mBottomRight.setType(mConfig.getTypeForIdx(idxOffset + 2));
-		mBottomLeft.setType(mConfig.getTypeForIdx(idxOffset + 3));
+		mTopRight.setType(mConfig.getStatConfigAtPosition(idxOffset));
+		mTopLeft.setType(mConfig.getStatConfigAtPosition(idxOffset + 1));
+		mBottomRight.setType(mConfig.getStatConfigAtPosition(idxOffset + 2));
+		mBottomLeft.setType(mConfig.getStatConfigAtPosition(idxOffset + 3));
 	}
 
 	@Override

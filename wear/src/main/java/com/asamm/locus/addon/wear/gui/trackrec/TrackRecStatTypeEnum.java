@@ -12,27 +12,29 @@ import locus.api.objects.extra.TrackStats;
  */
 
 public enum TrackRecStatTypeEnum {
-	TOTAL_LENGTH_MOVE(R.drawable.ic_symbol_time,
+	TOTAL_LENGTH_MOVE(R.string.stat_distance, R.drawable.ic_symbol_distance,
 			TrackStatConsumable.TscFactory.createTotalLengthMoveConsumable()),
-	TOTAL_TIME(R.drawable.ic_symbol_time,
+	TOTAL_TIME(R.string.stat_track_time, R.drawable.ic_symbol_track_time,
 			TrackStatConsumable.TscFactory.createTotalTimeConsumable()),
-	SPEED_AVG(R.drawable.ic_symbol_time,
+	SPEED_AVG_MOVE(R.string.stat_speed_avg_moving, R.drawable.ic_symbol_speed_avg_move,
 			TrackStatConsumable.TscFactory.createAvgSpeedMoveConsumable()),
-	SPEED_MAX(R.drawable.ic_symbol_time,
-			TrackStatConsumable.TscFactory.createMaxSpeedMoveConsumable()),
-	ALTITUDE_MAX(R.drawable.ic_symbol_time,
-			TrackStatConsumable.TscFactory.createMaxAltitudeConsumable()),
-	ALTITUDE_MIN(R.drawable.ic_symbol_time,
-			TrackStatConsumable.TscFactory.createMinAltitudeConsumable()),
-	BLANK(R.drawable.ic_symbol_time, // TODO cejnar blank symbol
+	SPEED(R.string.stat_speed, R.drawable.ic_symbol_speed,
+			TrackStatConsumable.TscFactory.createSpeedMoveConsumable()),
+	ELEVATION_UPHILL(R.string.stat_elevation_up,R.drawable.ic_symbol_elevation_up,
+		TrackStatConsumable.TscFactory.createElevationUpConsumable()),
+	ELEVATION_DOWNHILL(R.string.stat_elevation_down,R.drawable.ic_symbol_elevation_down,
+			TrackStatConsumable.TscFactory.createElevationDownConsumable()),
+	BLANK(R.string.empty_string, R.drawable.blank_1px,
 			TrackStatConsumable.TscFactory.createBlankConsumable());
 
 	private final int mIconId;
 	private final TrackStatConsumable mConsumer;
+	private final int mNameStringId;
 
 	private static final boolean DISPLAY_UNITS = true;
 
-	TrackRecStatTypeEnum(int iconId, TrackStatConsumable consumer) {
+	TrackRecStatTypeEnum(int nameStringId, int iconId, TrackStatConsumable consumer) {
+		this.mNameStringId = nameStringId;
 		this.mIconId = iconId;
 		this.mConsumer = consumer;
 	}

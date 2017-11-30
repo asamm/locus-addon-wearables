@@ -42,19 +42,19 @@
             android:id="@+id/image_view_track_rec_stop"
             style="@style/ButtonTrackRecord"
             android:onClick="handleStopClick"
-            android:src="@drawable/ic_96_track_recording_stop" />
+            android:src="@drawable/ic_track_record_stop" />
 
         <ImageButton
             android:id="@+id/image_view_track_rec_pause"
             style="@style/ButtonTrackRecord"
             android:onClick="handlePauseClick"
-            android:src="@drawable/ic_96_track_recording_pause" />
+            android:src="@drawable/ic_track_record_pause_normal" />
 
         <ImageButton
             android:id="@+id/image_view_track_rec_add_wpt"
             style="@style/ButtonTrackRecord"
             android:onClick="handleAddWaypointClick"
-            android:src="@drawable/ic_96_track_recording_add_wpt" />
+            android:src="@drawable/ic_track_record_add_wpt" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

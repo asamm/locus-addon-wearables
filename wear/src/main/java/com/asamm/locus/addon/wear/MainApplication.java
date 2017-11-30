@@ -130,8 +130,7 @@ public class MainApplication extends Application implements Application.Activity
 		if (mWatchDog == null) {
 			synchronized (this) {
 				if (mWatchDog == null) {
-					// TODO cejnar debug only - uncomment for production
-					//mWatchDog = new WatchDog(this::doApplicationFail);
+					mWatchDog = new WatchDog(this::doApplicationFail);
 				}
 			}
 		}

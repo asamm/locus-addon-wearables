@@ -29,6 +29,9 @@ public class TrackRecordingValue extends TimeStampStorable {
 	// complete track statistics
 	private TrackStats trackRecStats;
 
+	/** various other data relevant for track recording */
+	private ExtendedTrackInfo mExtendedTrackInfo;
+
 	private byte mUnitsPacked1;
 	private byte mUnitsPacked2;
 	private byte mUnitsPacked3;
@@ -42,7 +45,8 @@ public class TrackRecordingValue extends TimeStampStorable {
 	}
 
 	public TrackRecordingValue(boolean infoAvailable, boolean isTrackRecording, boolean isPaused,
-							   String trackRecProfileName, TrackStats trackStats, LocusInfo info) {
+							   String trackRecProfileName, TrackStats trackStats, LocusInfo info,
+							   ExtendedTrackInfo ext) {
 		super();
 		this.infoAvailable = infoAvailable;
 		this.trackRecRecording = isTrackRecording;
@@ -52,6 +56,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		if (info != null) {
 			fillUnitsFormatInfo(info);
 		}
+		this.mExtendedTrackInfo = ext != null ? ext : new ExtendedTrackInfo();
 	}
 	// TODO cejnar serialization & units packing unit test?
 	private void fillUnitsFormatInfo(LocusInfo info) {
@@ -101,6 +106,10 @@ public class TrackRecordingValue extends TimeStampStorable {
 		return mUnitsPacked3 >>> 3 & 0x3;
 	}
 
+	public float getSpeed() {
+		return mExtendedTrackInfo.mSpeed;
+	}
+
 	@Override
 	public void reset() {
 		super.reset();
@@ -111,6 +120,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		mUnitsPacked1 = 0;
 		mUnitsPacked2 = 0;
 		mUnitsPacked3 = 0;
+		mExtendedTrackInfo = new ExtendedTrackInfo();
 	}
 
 	@Override
@@ -126,19 +136,20 @@ public class TrackRecordingValue extends TimeStampStorable {
 			mUnitsPacked1 = unitsPacked[0];
 			mUnitsPacked2 = unitsPacked[1];
 			mUnitsPacked3 = unitsPacked[2];
+			try {
+				mExtendedTrackInfo = (ExtendedTrackInfo) dr.readStorable(ExtendedTrackInfo.class);
+			} catch (Exception e) {
+				Logger.logE(TAG, "Failed to read extended data", e);
+				mExtendedTrackInfo = new ExtendedTrackInfo();
+			}
 			boolean isStats = dr.readBoolean();
 			try {
-				trackRecStats = isStats ? readStorable(TrackStats.class, dr) : null;
+				trackRecStats = isStats ? ((TrackStats) dr.readStorable(TrackStats.class)) : null;
 			} catch (Exception e) {
 				Logger.logE(TAG, "Failed to read trackStats", e);
 				trackRecStats = null;
 			}
 		}
-	}
-
-	public static <E extends Storable> E readStorable(Class<E> claz, DataReaderBigEndian dr)
-			throws InstantiationException, IllegalAccessException, IOException {
-		return claz.cast(Storable.read(claz, dr));
 	}
 
 	@Override
@@ -151,6 +162,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 			dw.writeBoolean(trackRecPaused);
 			dw.writeString(trackRecProfileName);
 			dw.write(new byte[] {mUnitsPacked1, mUnitsPacked2, mUnitsPacked3});
+			dw.writeStorable(mExtendedTrackInfo);
 			dw.writeBoolean(trackRecStats != null);
 			if (trackRecStats != null) {
 				dw.writeStorable(trackRecStats);
@@ -187,5 +199,43 @@ public class TrackRecordingValue extends TimeStampStorable {
 		return trackRecPaused ? TrackRecordingStateEnum.PAUSED :
 				trackRecRecording ? TrackRecordingStateEnum.RECORDING :
 						TrackRecordingStateEnum.NOT_RECORDING;
+	}
+
+	public static class ExtendedTrackInfo extends Storable {
+		private static final float INVALID_SPEED = -1f;
+		private float mSpeed;
+
+		public ExtendedTrackInfo() {
+			super();
+		}
+
+		public ExtendedTrackInfo(byte[] data) throws IOException {
+			super(data);
+		}
+
+		public ExtendedTrackInfo(Float speed) {
+			this();
+			mSpeed = speed == null ? INVALID_SPEED : speed;
+		}
+
+		@Override
+		protected int getVersion() {
+			return 0;
+		}
+
+		@Override
+		public void reset() {
+			mSpeed = INVALID_SPEED;
+		}
+
+		@Override
+		protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+			mSpeed = dr.readFloat();
+		}
+
+		@Override
+		protected void writeObject(DataWriterBigEndian dw) throws IOException {
+			dw.writeFloat(mSpeed);
+		}
 	}
 }

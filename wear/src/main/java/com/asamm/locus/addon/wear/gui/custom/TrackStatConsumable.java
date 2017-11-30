@@ -34,10 +34,10 @@ public interface TrackStatConsumable {
 							withoutUnits);
 		}
 
-		public static TrackStatConsumable createMaxSpeedMoveConsumable() {
+		public static TrackStatConsumable createSpeedMoveConsumable() {
 			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
 					UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
-							rec.getTrackRecStats().getSpeedMax(),
+							rec.getSpeed(),
 							withoutUnits);
 		}
 
@@ -52,6 +52,20 @@ public interface TrackStatConsumable {
 			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
 					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
 							rec.getTrackRecStats().getAltitudeMin(),
+							!withoutUnits);
+		}
+
+		public static TrackStatConsumable createElevationUpConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+							rec.getTrackRecStats().getElePositiveHeight(),
+							!withoutUnits);
+		}
+
+		public static TrackStatConsumable createElevationDownConsumable() {
+			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
+					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+							rec.getTrackRecStats().getEleNegativeHeight(),
 							!withoutUnits);
 		}
 

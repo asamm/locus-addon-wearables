@@ -127,7 +127,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private void setDisabledDrawables() {
 		Drawable d = DisableGuiHelper.getImageWithDisabled(this,
-				BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_96_track_recording_rec));
+				BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_track_record_rec_192));
 		mImgStartRecording.setImageDrawable(d);
 	}
 
@@ -250,7 +250,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		// initialize starting model from persistence
 		model = new TrackRecordingValue(true,
 				lastState != TrackRecordingStateEnum.NOT_RECORDING,
-				lastState == TrackRecordingStateEnum.PAUSED, profileInfo.getName(), null, null);
+				lastState == TrackRecordingStateEnum.PAUSED, profileInfo.getName(), null, null, null);
 		if (lastState != TrackRecordingStateEnum.NOT_RECORDING) {
 			transitionToRecState();
 		} else {

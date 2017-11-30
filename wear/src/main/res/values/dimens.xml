@@ -24,5 +24,6 @@
     -->
     <dimen name="inner_frame_layout_padding">5dp</dimen>
     <dimen name="outer_frame_layout_padding">10dp</dimen>
+    <dimen name="margin_huge">20dp</dimen>
 
 </resources>

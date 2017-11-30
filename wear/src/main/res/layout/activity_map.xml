@@ -78,28 +78,26 @@
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/btn_zoom_in"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/green"
+            android:id="@+id/btn_zoom_out"
+            style="@style/zoomButton"
+            android:layout_marginRight="@dimen/outer_frame_layout_padding"
             android:onClick="onZoomClicked"
-            app:layout_constraintEnd_toStartOf="@id/btn_zoom_out"
+            android:src="@drawable/ic_zoom_out_32"
+            app:layout_constraintEnd_toStartOf="@id/btn_zoom_in"
             app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
-            android:id="@+id/btn_zoom_out"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/dark_red"
+            android:id="@+id/btn_zoom_in"
+            style="@style/zoomButton"
+            android:layout_marginLeft="@dimen/outer_frame_layout_padding"
             android:onClick="onZoomClicked"
+            android:src="@drawable/ic_zoom_in_32"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@id/btn_zoom_in" />
+            app:layout_constraintStart_toEndOf="@id/btn_zoom_out" />
     </android.support.constraint.ConstraintLayout>
 
 

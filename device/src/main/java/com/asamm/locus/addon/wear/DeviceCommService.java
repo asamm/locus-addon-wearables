@@ -88,9 +88,10 @@ public class DeviceCommService extends LocusWearCommService {
 		if (mInstance == null) {
 			synchronized (TAG) {
 				if (mInstance == null) {
-					mInstance = new DeviceCommService(ctx);
+					Logger.logD(TAG, "enabling periodic update receiver in getInstance()");
 					// enable receiver
 					PeriodicUpdatesReceiver.enableReceiver(ctx);
+					mInstance = new DeviceCommService(ctx);
 				}
 			}
 		}
@@ -254,11 +255,7 @@ public class DeviceCommService extends LocusWearCommService {
 		int height = extra.getHeight();
 
 		if (zoom == Const.ZOOM_UNKONWN) {
-			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 15;
-		}
-		if (lon == 0 && lat == 0 && mLastUpdate != null) {
-			lat = mLastUpdate.getLocMyLocation().getLatitude();
-			lon = mLastUpdate.getLocMyLocation().getLongitude();
+			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 0;
 		}
 
 		// request map
@@ -434,9 +431,12 @@ public class DeviceCommService extends LocusWearCommService {
 
 	private TrackRecordingValue loadTrackRecordingValue(Context ctx) {
 		boolean infoAvailable = mLastUpdate != null;
+		boolean myLocAvailable = infoAvailable && mLastUpdate.getLocMyLocation() != null;
 		boolean trackRec = infoAvailable && mLastUpdate.isTrackRecRecording();
 		boolean trackRecPause = infoAvailable && mLastUpdate.isTrackRecPaused();
 		String profileName = infoAvailable ? mLastUpdate.getTrackRecProfileName() : "";
+		Float speed = myLocAvailable ? mLastUpdate.getLocMyLocation().getSpeed() : null;
+
 		TrackStats stats = infoAvailable ? mLastUpdate.getTrackRecStats() : null;
 
 		LocusInfo locusInfo = null;
@@ -447,7 +447,7 @@ public class DeviceCommService extends LocusWearCommService {
 		}
 
 		TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
-				profileName, stats, locusInfo);
+				profileName, stats, locusInfo, new TrackRecordingValue.ExtendedTrackInfo(speed));
 		return trv;
 	}
 

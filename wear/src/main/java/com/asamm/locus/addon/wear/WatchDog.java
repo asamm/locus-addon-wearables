@@ -136,7 +136,8 @@ public class WatchDog {
 		AppFailCallback onFail = mAppFailCallback;
 		if (failed && onFail != null) {
 			Logger.logD(TAG, "Watchdog fail event");
-			onFail.onAppFail(AppFailType.CONNECTION_FAILED);
+			// TODO cejnar debug only, uncomment for production
+			//onFail.onAppFail(AppFailType.CONNECTION_FAILED);
 		} else if (reqsToResend != null) {
 			for (DataPayload p : reqsToResend) {
 				Logger.logD(TAG, "Watchdog retry request " + p);

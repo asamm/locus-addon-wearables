@@ -1,6 +1,8 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
-import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
+import android.content.Context;
+
+import java.util.Arrays;
 
 /**
  * Created by Milan Cejnar on 24.11.2017.
@@ -11,26 +13,25 @@ public class TrackRecordActivityConfiguration {
 	public static int MAX_CNT_FIELDS = 6;
 
 	private TrackRecStatTypeEnum[] mStatConfig = new TrackRecStatTypeEnum[MAX_CNT_FIELDS];
+	private static final TrackRecStatTypeEnum[] DEFAULT_CONFIG = new TrackRecStatTypeEnum[]{
+			TrackRecStatTypeEnum.TOTAL_TIME, TrackRecStatTypeEnum.TOTAL_LENGTH_MOVE,
+			TrackRecStatTypeEnum.SPEED, TrackRecStatTypeEnum.SPEED_AVG_MOVE,
+			TrackRecStatTypeEnum.ELEVATION_DOWNHILL, TrackRecStatTypeEnum.ELEVATION_UPHILL
+	};
 
-	public TrackRecordActivityConfiguration() {
-		// TODO cejnar mocked static configuration
-		mStatConfig[0] = TrackRecStatTypeEnum.TOTAL_TIME;
-		mStatConfig[1] = TrackRecStatTypeEnum.TOTAL_LENGTH_MOVE;
-		mStatConfig[2] = TrackRecStatTypeEnum.SPEED_AVG;
-		mStatConfig[3] = TrackRecStatTypeEnum.SPEED_MAX;
-		mStatConfig[4] = TrackRecStatTypeEnum.ALTITUDE_MAX;
-		mStatConfig[5] = TrackRecStatTypeEnum.ALTITUDE_MIN;
+	private TrackRecordActivityConfiguration() {
+		mStatConfig = Arrays.copyOf(DEFAULT_CONFIG, DEFAULT_CONFIG.length);
 	}
 
-	public TrackRecStatTypeEnum getTypeForIdx(int statIdx) {
-		TrackRecStatTypeEnum result = TrackRecStatTypeEnum.BLANK;
-		if (statIdx < mStatConfig.length && mStatConfig[statIdx] != null) {
-			result = mStatConfig[statIdx];
+	public TrackRecStatTypeEnum getStatConfigAtPosition(int idx) {
+		if (idx < 0 || idx >= mStatConfig.length) {
+			return TrackRecStatTypeEnum.BLANK;
+		} else {
+			return mStatConfig[idx];
 		}
-		return result;
 	}
 
-	public TrackRecStatTypeEnum[] getStatConfig() {
-		return mStatConfig;
+	public static TrackRecordActivityConfiguration loadConfiguration(Context ctx) {
+		return new TrackRecordActivityConfiguration();
 	}
 }

@@ -21,7 +21,6 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Empty
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.custom.CustomScrollingLayoutCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,8 +61,7 @@ public class ProfileListActivity extends LocusWearActivity {
 		mRecyclerVeiw = findViewById(R.id.profile_list);
 		mRecyclerVeiw.setEdgeItemsCenteringEnabled(true);
 		mRecyclerVeiw.setLayoutManager(
-				new WearableLinearLayoutManager(this, new CustomScrollingLayoutCallback()));
-
+				new WearableLinearLayoutManager(this));
 		mRecyclerVeiw.setHasFixedSize(true);
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
 		if (arr != null && arr.length > 0) {
@@ -170,7 +168,6 @@ public class ProfileListActivity extends LocusWearActivity {
 				}
 			};
 			holder.mTextViewName.setText(value.mProfileInfo.getName());
-			holder.mTextViewDesc.setText(value.mProfileInfo.getDesc());
 			if (value.mProfileIcon != null && value.mProfileIcon.getIcon() != null) {
 				holder.mIcon.setImageBitmap(UtilsBitmap.getBitmap(value.mProfileIcon.getIcon()));
 			}
@@ -190,13 +187,11 @@ public class ProfileListActivity extends LocusWearActivity {
 		class ViewHolder extends RecyclerView.ViewHolder {
 			// each data item is just a string in this case
 			public final TextView mTextViewName;
-			public final TextView mTextViewDesc;
 			public final ImageView mIcon;
 
 			public ViewHolder(View root) {
 				super(root);
 				mTextViewName = root.findViewById(R.id.profile_list_item_name);
-				mTextViewDesc = root.findViewById(R.id.profile_list_item_desc);
 				mIcon = root.findViewById(R.id.profile_list_item_image);
 			}
 		}

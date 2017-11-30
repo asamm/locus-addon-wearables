@@ -49,17 +49,17 @@ public class NavHelper {
 			case CONTINUE_STRAIGHT:
 				return R.drawable.ic_direction_straight;
 			case LEFT_SLIGHT:
-				return R.drawable.ic_direction_left1;
+				return R.drawable.ic_direction_left_1;
 			case LEFT:
-				return R.drawable.ic_direction_left2;
+				return R.drawable.ic_direction_left_2;
 			case LEFT_SHARP:
-				return R.drawable.ic_direction_left3;
+				return R.drawable.ic_direction_left_3;
 			case RIGHT_SLIGHT:
-				return R.drawable.ic_direction_right1;
+				return R.drawable.ic_direction_right_1;
 			case RIGHT:
-				return R.drawable.ic_direction_right2;
+				return R.drawable.ic_direction_right_2;
 			case RIGHT_SHARP:
-				return R.drawable.ic_direction_right3;
+				return R.drawable.ic_direction_right_3;
 			case STAY_LEFT:
 				return R.drawable.ic_direction_stay_left;
 			case STAY_RIGHT:
@@ -68,16 +68,17 @@ public class NavHelper {
 				return R.drawable.ic_direction_straight;
 			case U_TURN:
 			case U_TURN_LEFT:
+				return R.drawable.ic_direction_turnaround_left;
 			case U_TURN_RIGHT:
-				return R.drawable.ic_direction_turnaround;
+				return R.drawable.ic_direction_turnaround_right;
 			case EXIT_LEFT:
 				return R.drawable.ic_direction_exit_left;
 			case EXIT_RIGHT:
 				return R.drawable.ic_direction_exit_right;
 			case RAMP_ON_LEFT:
-				return R.drawable.ic_direction_left1;
+				return R.drawable.ic_direction_left_1;
 			case RAMP_ON_RIGHT:
-				return R.drawable.ic_direction_right1;
+				return R.drawable.ic_direction_right_1;
 			case RAMP_STRAIGHT:
 				return R.drawable.ic_direction_straight;
 			case MERGE_LEFT:
@@ -89,7 +90,7 @@ public class NavHelper {
 			case ARRIVE_DEST:
 			case ARRIVE_DEST_LEFT:
 			case ARRIVE_DEST_RIGHT:
-				return R.drawable.ic_direction_finnish;
+				return R.drawable.ic_direction_finish;
 			case ROUNDABOUT_EXIT_1:
 				return R.drawable.ic_direction_roundabout_1;
 			case ROUNDABOUT_EXIT_2:
@@ -107,7 +108,7 @@ public class NavHelper {
 			case ROUNDABOUT_EXIT_8:
 				return R.drawable.ic_direction_roundabout_8;
 			case PASS_PLACE:
-				return R.drawable.ic_direction_finnish;
+				return R.drawable.ic_direction_waypoint;
 			default:
 				return R.drawable.ic_direction_unknown;
 		}
