@@ -19,6 +19,7 @@
         app:layout_constraintTop_toBottomOf="@id/stat_description"
         app:layout_constraintVertical_chainStyle="packed" />
     <TextView
+        app:layout_constraintVertical_bias="0.1"
         android:id="@+id/stat_description"
         style="@style/statDescription"
         app:layout_constraintBottom_toTopOf="@id/stat_text"

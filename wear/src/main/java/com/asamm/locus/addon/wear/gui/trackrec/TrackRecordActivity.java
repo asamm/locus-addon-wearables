@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ViewFlipper;
@@ -28,10 +27,13 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.TrackRecordPagerAdapter;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.VerticalViewPagerTransition;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.MainScreenController;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.RecordingScrollLayout;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.StatsScreenController;
+import com.asamm.locus.addon.wear.gui.trackrec.viewpager.TrackRecordingControllerUpdatable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -74,8 +76,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 	 */
 	private ViewFlipper mRecViewFlipper;
 
-	private ViewPager mPager;
-	private TrackRecordPagerAdapter mPagerController;
+	/**
+	 * Snapping scroll view with active recording control and statistics
+	 */
+	private RecordingScrollLayout mRecordingScrollScreen;
 
 	// start recording screen fields
 	private ImageView mImgStartRecording;
@@ -106,40 +110,15 @@ public class TrackRecordActivity extends LocusWearActivity {
 		mProfileSelect = findViewById(R.id.track_rec_profile_select_layout);
 		mProfileSelect.setProfileSelectCallback(this::onOpenProfileListActivityClick);
 
-		initViewPager();
-
+		initRecordingScrollScreen();
 		setDisabledDrawables();
 		// Enables Always-on
 		setAmbientEnabled();
 	}
 
-	private void initViewPager() {
-		mPager = findViewById(R.id.pager);
-		mPagerController = new TrackRecordPagerAdapter(mPager);
-		mPager.setPageTransformer(false, new VerticalViewPagerTransition());
-		mPager.setAdapter(mPagerController);
-		mPager.setCurrentItem(1);
-		mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-			}
-
-			@Override
-			public void onPageSelected(int position) {
-				// skip fake page (first), go to last page
-				if (position == 0) {
-					mPager.setCurrentItem(mPagerController.getCount() - 2, false);
-				}
-				// skip fake page (last), go to first page
-				if (position == mPagerController.getCount() - 1) {
-					mPager.setCurrentItem(1, false);
-				}
-			}
-
-			@Override
-			public void onPageScrollStateChanged(int state) {
-			}
-		});
+	private void initRecordingScrollScreen() {
+		mRecordingScrollScreen = findViewById(R.id.recording_scroll_iew);
+		mRecordingScrollScreen.setFeatureItems(Arrays.asList(new MainScreenController(mRecordingScrollScreen), new StatsScreenController(mRecordingScrollScreen, 1)));
 	}
 
 	private void setDisabledDrawables() {
@@ -243,7 +222,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 		runOnUiThread(() -> {
 			mStateMachine.update(trv);
-			mPagerController.onNewTrackRecordingData(this, trv);
+			mRecordingScrollScreen.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
 				refreshStatistics(trv);
 			}
@@ -374,13 +353,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void transitionToRecState() {
-		mPagerController.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
+		mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
 		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
 		Logger.logD(TAG, "setting rec screen");
 	}
 
 	private void enableRecScreen() {
-		mPagerController.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
+		mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
 		Logger.logD(TAG, "Enabling rec screen");
 	}
 

@@ -33,6 +33,6 @@ public interface TrackRecordingControllerUpdatable {
 	/**
 	 * @return root view which is represented by this controller
 	 */
-	ViewGroup getRootView();
+	ViewGroup getControllersView();
 
 }

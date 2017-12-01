@@ -31,16 +31,16 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 	private TrackRecordActivityConfiguration mConfig;
 	private Drawable mPauseDrawable;
 
-	MainScreenController(ViewGroup ctx) {
-		LayoutInflater inflater = LayoutInflater.from(ctx.getContext());
-		mLayout = (ViewGroup) inflater.inflate(R.layout.track_record_recording_screen_main, ctx, false);
+	public MainScreenController(ViewGroup parentViewGroup) {
+		LayoutInflater inflater = LayoutInflater.from(parentViewGroup.getContext());
+		mLayout = (ViewGroup) inflater.inflate(R.layout.track_record_recording_screen_main, parentViewGroup, false);
 		mImgAddWaypoint = mLayout.findViewById(R.id.image_view_track_rec_add_wpt);
 		mImgStopRecording = mLayout.findViewById(R.id.image_view_track_rec_stop);
 		mImgPauseRecording = mLayout.findViewById(R.id.image_view_track_rec_pause);
 		mStatsTop = mLayout.findViewById(R.id.track_main_top);
 		mStatsBottom = mLayout.findViewById(R.id.track_main_bottom);
-		loadAndInitStats(ctx.getContext(), mLayout);
-		setDisabledDrawables(ctx.getContext());
+		loadAndInitStats(parentViewGroup.getContext(), mLayout);
+		setDisabledDrawables(parentViewGroup.getContext());
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 	}
 
 	@Override
-	public ViewGroup getRootView() {
+	public ViewGroup getControllersView() {
 		return mLayout;
 	}
 

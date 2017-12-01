@@ -23,7 +23,7 @@ public class StatsScreenController implements TrackRecordingControllerUpdatable 
 	private TrackStatLayout mTopLeft, mTopRight, mBottomLeft, mBottomRight;
 
 	private final int mScreenIdx;
-	StatsScreenController(ViewGroup ctx, int screenIdx) {
+	public StatsScreenController(ViewGroup ctx, int screenIdx) {
 		this.mScreenIdx = screenIdx;
 		LayoutInflater inflater = LayoutInflater.from(ctx.getContext());
 		mLayout = (ViewGroup) inflater.inflate(R.layout.track_record_recording_screen_stats, ctx, false);
@@ -58,7 +58,7 @@ public class StatsScreenController implements TrackRecordingControllerUpdatable 
 	}
 
 	@Override
-	public ViewGroup getRootView() {
+	public ViewGroup getControllersView() {
 		return mLayout;
 	}
 
