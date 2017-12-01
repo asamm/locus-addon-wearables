@@ -36,6 +36,7 @@ public class MainNavigationDrawer extends WearableDrawerView {
 	@Override
 	public void onDrawerStateChanged(int state) {
 		super.onDrawerStateChanged(state);
+		// manual hiding of peeking drawer, gets stuck otherwise
 		if (state == DrawerLayout.STATE_IDLE && isPeeking()) {
 			new Handler().postDelayed(() -> {
 				if (isPeeking()) getController().closeDrawer();

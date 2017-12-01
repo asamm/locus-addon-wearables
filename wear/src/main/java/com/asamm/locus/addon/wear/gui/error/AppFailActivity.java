@@ -9,14 +9,17 @@ import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 
 /**
+ * Activity for showing application failure error message with button to try to restart last activity
+ *
  * Created by Milan Cejnar on 28.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class ActivityFail extends WearableActivity {
+public class AppFailActivity extends WearableActivity {
 
-	public static final String ARG_ERROR_TYPE = "ActivityFail.ARG_ERROR_TYPE";
+	public static final String ARG_ERROR_TYPE = "AppFailActivity.ARG_ERROR_TYPE";
 	private AppFailType mFailType;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,7 +34,7 @@ public class ActivityFail extends WearableActivity {
 	}
 
 	public void onRetryClicked(View v) {
-		((MainApplication)getApplication()).retryLastTask();
+		((MainApplication) getApplication()).retryLastTask();
 
 	}
 }

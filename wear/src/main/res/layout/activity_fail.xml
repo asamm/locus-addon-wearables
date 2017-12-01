@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,12 +26,14 @@
 
         <ImageView
             android:id="@+id/fail_img_retry"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="@dimen/outer_frame_layout_padding"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="@dimen/inner_frame_layout_padding"
             android:layout_marginTop="@dimen/outer_frame_layout_padding"
+            android:padding="2dp"
             android:src="@drawable/ic_refresh"
-            android:background="@drawable/round_background"
+            android:background="@drawable/round_background_accent"
+            android:tint="@color/white"
             android:onClick="onRetryClicked"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"

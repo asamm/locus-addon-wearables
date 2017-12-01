@@ -13,6 +13,7 @@ import locus.api.utils.DataWriterBigEndian;
 import locus.api.utils.Logger;
 
 /**
+ * Container for transfer of map screen and navigation information
  * Created by Milan Cejnar on 14.11.2017.
  * Asamm Software, s.r.o.
  */
@@ -68,8 +69,8 @@ public class MapContainer extends TimeStampStorable {
 		mNavPointAction2Id = PointRteAction.UNDEFINED.getId();
 		mNavPoint1Dist = 0;
 		mUnitsFormatLength = 0;
-		mZoomDevice = Const.ZOOM_UNKONWN;
-		mZoomWear = Const.ZOOM_UNKONWN;
+		mZoomDevice = Const.ZOOM_UNKOWN;
+		mZoomWear = Const.ZOOM_UNKOWN;
 	}
 
 	@Override

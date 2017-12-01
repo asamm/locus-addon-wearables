@@ -13,6 +13,11 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.google.android.gms.wearable.DataItem;
 
 /**
+ * Specifies available Paths for data communications using DataAPI.
+ * Also includes other properties
+ * - mark as urgent message
+ * - support for Asset based communication instead of DataItem for bigger payloads
+ * <p>
  * Created by Milan Cejnar on 08.11.2017.
  * Asamm Software, s.r.o.
  */

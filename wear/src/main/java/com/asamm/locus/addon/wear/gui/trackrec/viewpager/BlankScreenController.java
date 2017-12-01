@@ -8,11 +8,12 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState;
 
 /**
+ * TODO cejnar
  * Created by Milan Cejnar on 27.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class BlankScreenController implements TrackRecordingUpdatable {
+public class BlankScreenController implements TrackRecordingControllerUpdatable {
 	private ViewGroup mLayout;
 
 	BlankScreenController(ViewGroup ctx) {

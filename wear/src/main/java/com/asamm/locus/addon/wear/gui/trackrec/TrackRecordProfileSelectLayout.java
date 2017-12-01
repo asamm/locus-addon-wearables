@@ -16,6 +16,9 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import locus.api.android.utils.UtilsBitmap;
 
 /**
+ * Component for displaying and selection of track recording profile
+ *
+ * Call to setProfileSelectCallback() required to supply implementation of selection handling
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
  */

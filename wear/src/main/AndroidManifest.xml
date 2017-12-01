@@ -48,7 +48,7 @@
             android:name=".gui.trackrec.ProfileListActivity"
             android:label="@string/title_activity_profile_list"></activity>
         <activity
-            android:name=".gui.error.ActivityFail"
+            android:name=".gui.error.AppFailActivity"
             android:label="@string/title_activity_error"></activity>
     </application>
 

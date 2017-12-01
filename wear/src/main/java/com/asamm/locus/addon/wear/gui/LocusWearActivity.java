@@ -21,7 +21,7 @@ import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import locus.api.utils.Logger;
 
 /**
- * Base class for wearable activities
+ * Base class for wearable activities containing basic comm handling and other common features
  * <p>
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
@@ -31,16 +31,26 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	private static final String TAG = "LocusWearActivity";
 	public WearActivityState mState = WearActivityState.ON_CREATE;
-	protected CountDownTimer mConnectionFailedTimer;
+
 	protected MainNavigationDrawer mDrawer;
 	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
 	private static final int HANDSHAKE_TICK_MS = 400;
-	private volatile byte ticks = 0;
 
 	/**
-	 * only used in connection failed timer to ensure handshake request is sent only once per activity start
+	 * number of ticks of mConnectionFailedTimer
+	 */
+	private volatile byte ticks = 0;
+	/**
+	 * activated on start for monitoring initial handshake exchange
+	 */
+	protected CountDownTimer mConnectionFailedTimer;
+	/**
+	 * only used on start in connection failed timer to monitor initial handshake request
 	 */
 	private volatile boolean mIsHandShakeReceived = false;
+	/**
+	 * only used on start in connection failed timer to monitor initial command request
+	 */
 	protected volatile boolean mIsInitialRequestReceived = false;
 
 	/**
@@ -73,7 +83,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * @param data
 	 */
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
-		Logger.logD(getClass().getSimpleName(), "Incoming data " + path);
 		if (mConnectionFailedTimer != null) {
 			if (path == DataPath.PUT_ON_CONNECTED_EVENT) {
 				onConnectionFailedTimerTick();
@@ -104,7 +113,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onResume();
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
 			AppPreferencesManager.persistFirstAppStart(this);
-			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800 );
+			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800);
 		}
 	}
 
@@ -114,6 +123,12 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onPause();
 	}
 
+	/**
+	 * Called by mConnectionFailedTimer tick,
+	 * checks state of initial handshaking initiated after on start.
+	 *
+	 * @return true if handshaking finished successfully
+	 */
 	protected boolean onConnectionFailedTimerTick() {
 		WearCommService wcs = WearCommService.getInstance();
 		if (!wcs.isConnected()) {
@@ -135,7 +150,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 			}
 		}
 		// handle first tick - send hanshake and initial command request
-		if (ticks == 0) {
+		if (ticks == 0 && isMakeHandshakeOnStart()) {
 			wcs.sendCommand(DataPath.GET_HAND_SHAKE);
 			DataPayload p = getInitialCommandType();
 			if (p != null) {
@@ -145,7 +160,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 			}
 		}
 
-		boolean result = mIsHandShakeReceived && mIsInitialRequestReceived;
+		boolean result = !isMakeHandshakeOnStart() ||
+				(mIsHandShakeReceived && mIsInitialRequestReceived);
 		if (result) {
 			cancelConnectionFailedTimer();
 			onHandShakeFinished();
@@ -210,7 +226,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
 					cancelConnectionFailedTimer();
 					onCommunicationFailed();
-					// TODO cejnar - connection failed, handle the situation.
 				}
 			};
 			mConnectionFailedTimer.start();
@@ -228,10 +243,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	}
 
-	protected ApplicationMemoryCache getApplicationState() {
-		return ((MainApplication) this.getApplication()).getCache();
-	}
-
+	/**
+	 * Handling of item click in main menu/navigation drawer
+	 * @param v
+	 */
 	public void handleNavigationDrawerItemClicked(View v) {
 		final Class<? extends WearableActivity> activityToStart;
 		switch (v.getId()) {
@@ -262,6 +277,16 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 */
 	public boolean isUsePeriodicData() {
 		return false;
+	}
+
+	/**
+	 * Overriding and returning false means that all handshaking and even initial command request
+	 * response are skipped!
+	 *
+	 * @return if should do initialization hanshake and init communication
+	 */
+	protected boolean isMakeHandshakeOnStart() {
+		return true;
 	}
 
 	public MainApplication getMainApplication() {

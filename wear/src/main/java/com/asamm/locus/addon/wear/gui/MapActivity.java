@@ -25,8 +25,13 @@ import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
 import locus.api.objects.enums.PointRteAction;
-import locus.api.utils.Logger;
 
+/**
+ * Activity with map preview
+ * <p>
+ * Created by Milan Cejnar
+ * Asamm Software, s.r.o.
+ */
 public class MapActivity extends LocusWearActivity {
 
 	private static final String TAG = "MapActivity";
@@ -56,14 +61,14 @@ public class MapActivity extends LocusWearActivity {
 	private volatile boolean mZoomLock;
 
 	private volatile int mDeviceZoom;
-	private volatile int mRequestedZoom = Const.ZOOM_UNKONWN;
+	private volatile int mRequestedZoom = Const.ZOOM_UNKOWN;
 
 	@Override
 	protected DataPayload<PeriodicCommand> getInitialCommandType() {
 		ApplicationMemoryCache appState = ((MainApplication) getApplication()).getCache();
 
 		final MapPeriodicParams params =
-				new MapPeriodicParams(0d, 0d, mRequestedZoom,
+				new MapPeriodicParams(mRequestedZoom,
 						appState.getScreenWidth(),
 						appState.getScreenHeight());
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
@@ -129,12 +134,12 @@ public class MapActivity extends LocusWearActivity {
 			refreshPanelNavigation(data);
 		});
 	}
+
 	private void refreshZoomModel(MapContainer data) {
 		// zoom on device changed right now or from last time app was opened - reset zoom to device zoom value
-		if (mDeviceZoom != data.getZoomDevice() && data.getZoomDevice() != Const.ZOOM_UNKONWN) {
+		if (mDeviceZoom != data.getZoomDevice() && data.getZoomDevice() != Const.ZOOM_UNKOWN) {
 			changeZoom(data.getZoomDevice());
 		}
-		Logger.logD("","ZOOM WEAR: "+data.getZoomWear());
 		mDeviceZoom = data.getZoomDevice();
 	}
 
@@ -203,10 +208,10 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	public void onZoomClicked(View v) {
-		if (mDeviceZoom == Const.ZOOM_UNKONWN || mZoomLock) {
+		if (mDeviceZoom == Const.ZOOM_UNKOWN || mZoomLock) {
 			return;
 		}
-		if (mRequestedZoom == Const.ZOOM_UNKONWN) {
+		if (mRequestedZoom == Const.ZOOM_UNKOWN) {
 			mRequestedZoom = mDeviceZoom;
 		}
 		final int zoomDiff;

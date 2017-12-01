@@ -20,7 +20,6 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.MessageEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -69,12 +68,12 @@ public class DeviceCommService extends LocusWearCommService {
 	 */
 	private DeviceCommService(Context ctx) {
 		super(ctx);
-		Logger.logI(TAG, "Device comm service started.");
+		Logger.logD(TAG, "Device comm service started.");
 		try {
 			lv = LocusUtils.getActiveVersion(ctx);
 			mLastUpdate = ActionTools.getDataUpdateContainer(ctx, lv);
 		} catch (RequiredVersionMissingException e) {
-			// TODO cejnar maybe dont support older version of Locus API at all?
+			mLastUpdate = null;
 		}
 	}
 
@@ -88,7 +87,6 @@ public class DeviceCommService extends LocusWearCommService {
 		if (mInstance == null) {
 			synchronized (TAG) {
 				if (mInstance == null) {
-					Logger.logD(TAG, "enabling periodic update receiver in getInstance()");
 					// enable receiver
 					PeriodicUpdatesReceiver.enableReceiver(ctx);
 					mInstance = new DeviceCommService(ctx);
@@ -109,7 +107,7 @@ public class DeviceCommService extends LocusWearCommService {
 			if (s != null) {
 				s.destroy();
 				// disable receiver
-				Logger.logI(TAG, "Destroying device comm instance");
+				Logger.logD(TAG, "Destroying device comm instance");
 				PeriodicUpdatesReceiver.disableReceiver(ctx);
 				mInstance = null;
 			}
@@ -139,10 +137,6 @@ public class DeviceCommService extends LocusWearCommService {
 	void onIncorrectData() {
 		Logger.logD(TAG, "onIncorrectData()");
 		mLastUpdate = null;
-	}
-
-	void onMessageReceived(Context c, MessageEvent messageEvent) {
-		// TODO cejnar messageApi
 	}
 
 	void onDataChanged(Context c, DataEvent newData) {
@@ -197,7 +191,8 @@ public class DeviceCommService extends LocusWearCommService {
 			}
 			break;
 			default:
-				Logger.logD(TAG, "Unhandled request " + path);
+				// ignore
+				break;
 		}
 	}
 
@@ -247,14 +242,11 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
-		// get parameters
-		double lon = extra.getLon();
-		double lat = extra.getLat();
 		int zoom = extra.getZoom();
 		int width = extra.getWidth();
 		int height = extra.getHeight();
 
-		if (zoom == Const.ZOOM_UNKONWN) {
+		if (zoom == Const.ZOOM_UNKOWN) {
 			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 0;
 		}
 
@@ -265,7 +257,7 @@ public class DeviceCommService extends LocusWearCommService {
 
 		try {
 			loadedMap = ActionTools.getMapPreview(ctx,
-					lv, new Location(lat, lon),
+					lv, new Location(0, 0),
 					zoom, width, height, true);
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadMapPreview(" + lv + ")");

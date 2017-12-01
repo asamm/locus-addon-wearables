@@ -75,19 +75,29 @@ public class LocusWearCommService implements
 
 	@Override
 	public void onConnectionSuspended(int i) {
-
+		// no handling required
 	}
 
 	@Override
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+		// no handling required
 	}
 
-
+	/**
+	 * Sends {@link EmptyCommand} to given {@path}
+	 *
+	 * @param path
+	 */
 	public void sendCommand(DataPath path) {
 		sendDataItem(path, new EmptyCommand());
 	}
 
+	/**
+	 * Sends given {@data} to given {@path}
+	 *
+	 * @param path
+	 * @param data
+	 */
 	public void sendDataItem(DataPath path, TimeStampStorable data) {
 		if (!mGoogleApiClient.isConnected()) {
 			mUnsentData.offer(new Pair<>(path, data));
@@ -97,6 +107,12 @@ public class LocusWearCommService implements
 		}
 	}
 
+	/**
+	 * Sends payload, should be only called from this class and its subclasses
+	 *
+	 * @param path
+	 * @param data
+	 */
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
 		PutDataRequest request = PutDataRequest.create(path.getPath());
@@ -126,6 +142,14 @@ public class LocusWearCommService implements
 		}
 	}
 
+	/**
+	 * Transforms DataItem object to custom data container which type depends on given path type
+	 *
+	 * @param p
+	 * @param item
+	 * @param <E>
+	 * @return
+	 */
 	public <E extends TimeStampStorable> E createStorableForPath(DataPath p, DataItem item) {
 		Class<? extends TimeStampStorable> clazz = p.getContainerClass();
 		if (clazz.getSimpleName().equals(EmptyCommand.class.getSimpleName())) {
@@ -137,7 +161,7 @@ public class LocusWearCommService implements
 			if (asset == null) {
 				return (E) clazz.getConstructor(byte[].class).newInstance(item.getData());
 			} else {
-				// blocking access
+				// blocking call - asset receive
 				InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
 						mGoogleApiClient, asset).await().getInputStream();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();

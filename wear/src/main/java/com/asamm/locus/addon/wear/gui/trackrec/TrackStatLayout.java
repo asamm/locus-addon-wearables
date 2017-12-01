@@ -14,17 +14,23 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 
+/**
+ * Componend for displaying various(specified by {@code mType} single-value statistics
+ * <p>
+ * Created by Milan Cejnar on 01.12.2017.
+ * Asamm Software, s.r.o.
+ */
 public class TrackStatLayout extends ConstraintLayout {
 
-	private static final String ARG_TYPE = "ARG_TYPE";
-	private static final String ARG_ICON_BOTTOM = "ARG_ICON_BOTTOM";
-
+	/**
+	 * Type of displayed statistics
+	 */
 	private TrackRecStatTypeEnum mType;
-	private boolean mIsIconBottom;
+	// formatted text of measured value/statistics
 	private TextView mTextViewValue;
+
 	private ImageView mImageViewIcon;
 	private TextView mTextViewDescription;
-	private boolean mIsIconTop;
 
 	public TrackStatLayout(Context context) {
 		this(context, null);
@@ -43,7 +49,7 @@ public class TrackStatLayout extends ConstraintLayout {
 	private void initView(Context ctx, AttributeSet attrs) {
 		// get parameters from attributes
 		final TypedArray ta = ctx.obtainStyledAttributes(attrs, R.styleable.TrackStatLayout);
-		mIsIconTop = ta.getBoolean(R.styleable.TrackStatLayout_isIconTop, true);
+		boolean mIsIconTop = ta.getBoolean(R.styleable.TrackStatLayout_isIconTop, true);
 		ta.recycle();
 
 		View.inflate(ctx,
@@ -61,7 +67,7 @@ public class TrackStatLayout extends ConstraintLayout {
 		mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
 		mTextViewValue.setText("");
 	}
-	
+
 	public void consumeNewStatistics(TrackRecordingValue trv) {
 		String newValue = mType.consumeAndFormat(trv);
 		mTextViewValue.setText(newValue);

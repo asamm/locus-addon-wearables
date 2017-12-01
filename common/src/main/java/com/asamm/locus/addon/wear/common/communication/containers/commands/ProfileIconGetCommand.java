@@ -8,11 +8,12 @@ import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
 
 /**
+ * Command to get icon for ginve track recording profile ID
  * Created by Milan Cejnar on 23.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class ProfileIconGetCommand extends TimeStampStorable{
+public class ProfileIconGetCommand extends TimeStampStorable {
 
 	private long mProfileId;
 

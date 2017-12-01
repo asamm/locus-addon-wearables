@@ -33,22 +33,6 @@ public class DeviceListenerService extends WearableListenerService {
 	private static Timer mTimerTerminate;
 
 	/**
-	 * Messages Consumer
-	 */
-	private final DataConsumer<MessageEvent> messageConsumer = new DataConsumer<MessageEvent>() {
-		@Override
-		public void consume(Context c, DeviceCommService rh, MessageEvent newData) {
-			rh.onMessageReceived(c, newData);
-		}
-
-		@Override
-		public DataPath getPath(MessageEvent newData) {
-			return null;
-			// TODO cejnar
-		}
-	};
-
-	/**
 	 * DataEvent consumer
 	 */
 	private final DataConsumer<DataEvent> dataEventConsumer = new DataConsumer<DataEvent>() {
@@ -63,19 +47,6 @@ public class DeviceListenerService extends WearableListenerService {
 			return DataPath.valueOf(d);
 		}
 	};
-
-	/**
-	 * Message receive callback
-	 *
-	 * @param messageEvent
-	 */
-	@Override
-	public void onMessageReceived(MessageEvent messageEvent) {
-		String path = messageEvent.getPath();
-		Logger.logD("DeviceListenerService", "onMessageReceived(" + messageEvent + "), " +
-				"path:" + path);
-		handleDataChange(messageConsumer, messageEvent);
-	}
 
 	/**
 	 * DataChanged callback

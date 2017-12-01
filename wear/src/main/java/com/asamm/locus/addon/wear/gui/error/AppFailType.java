@@ -3,6 +3,7 @@ package com.asamm.locus.addon.wear.gui.error;
 import com.asamm.locus.addon.wear.R;
 
 /**
+ * Specificaiton of different types of application failures with reference to err message.
  * Created by Milan Cejnar on 28.11.2017.
  * Asamm Software, s.r.o.
  */

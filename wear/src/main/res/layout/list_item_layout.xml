@@ -7,7 +7,7 @@
     android:orientation="horizontal"
     android:foregroundGravity="center"
     android:paddingLeft="16dp"
-    android:layout_marginBottom="@dimen/inner_frame_layout_padding"
+    android:layout_marginBottom="15dp"
     android:paddingRight="16dp">
 
     <ImageView

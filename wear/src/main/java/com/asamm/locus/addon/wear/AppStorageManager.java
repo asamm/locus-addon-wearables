@@ -13,6 +13,8 @@ import java.io.IOException;
 import locus.api.utils.Logger;
 
 /**
+ * Manager for handling of cache in device internal storage
+ *
  * Created by Milan Cejnar on 23.11.2017.
  * Asamm Software, s.r.o.
  */

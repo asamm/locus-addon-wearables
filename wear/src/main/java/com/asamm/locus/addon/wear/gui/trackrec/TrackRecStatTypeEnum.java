@@ -4,9 +4,10 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
 
-import locus.api.objects.extra.TrackStats;
-
 /**
+ * Types of available track recording statistics with supplied
+ * description text, description icon and formatting function
+ * <p>
  * Created by Milan Cejnar on 24.11.2017.
  * Asamm Software, s.r.o.
  */
@@ -20,10 +21,11 @@ public enum TrackRecStatTypeEnum {
 			TrackStatConsumable.TscFactory.createAvgSpeedMoveConsumable()),
 	SPEED(R.string.stat_speed, R.drawable.ic_symbol_speed,
 			TrackStatConsumable.TscFactory.createSpeedMoveConsumable()),
-	ELEVATION_UPHILL(R.string.stat_elevation_up,R.drawable.ic_symbol_elevation_up,
-		TrackStatConsumable.TscFactory.createElevationUpConsumable()),
-	ELEVATION_DOWNHILL(R.string.stat_elevation_down,R.drawable.ic_symbol_elevation_down,
+	ELEVATION_UPHILL(R.string.stat_elevation_up, R.drawable.ic_symbol_elevation_up,
+			TrackStatConsumable.TscFactory.createElevationUpConsumable()),
+	ELEVATION_DOWNHILL(R.string.stat_elevation_down, R.drawable.ic_symbol_elevation_down,
 			TrackStatConsumable.TscFactory.createElevationDownConsumable()),
+	// serves as a blank placeholder displaying nothing
 	BLANK(R.string.empty_string, R.drawable.blank_1px,
 			TrackStatConsumable.TscFactory.createBlankConsumable());
 

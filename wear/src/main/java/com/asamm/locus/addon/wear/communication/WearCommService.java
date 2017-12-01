@@ -8,13 +8,13 @@ import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.WatchDog;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
-import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 
 import locus.api.objects.Storable;
-import locus.api.utils.Logger;
 
 /**
+ * Singleton instance handling wear-device communication
+ * <p>
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
  */
@@ -50,11 +50,12 @@ public class WearCommService extends LocusWearCommService {
 		}
 		return mDeviceCommunicationService;
 	}
+
 	@Override
 	protected void destroy() {
-			super.destroy();
-			mApp = null;
-			mRefresher = null;
+		super.destroy();
+		mApp = null;
+		mRefresher = null;
 	}
 
 	public static void destroyInstance() {

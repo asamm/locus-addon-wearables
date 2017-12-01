@@ -5,10 +5,10 @@ import android.content.Context;
 import java.util.Arrays;
 
 /**
+ * Class for representation of Track recording activity statistics layout configuration
  * Created by Milan Cejnar on 24.11.2017.
  * Asamm Software, s.r.o.
  */
-
 public class TrackRecordActivityConfiguration {
 	public static int MAX_CNT_FIELDS = 6;
 

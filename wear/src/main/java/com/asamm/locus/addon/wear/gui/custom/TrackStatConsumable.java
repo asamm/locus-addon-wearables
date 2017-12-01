@@ -7,6 +7,10 @@ import locus.api.android.utils.UtilsFormat;
 import static locus.api.android.utils.UtilsFormat.formatDouble;
 
 /**
+ * Interface which takes in Recording value and units settings
+ * and depending on implementation returns formatted value of implementation
+ * specific statistics/measured value
+ * <p>
  * Created by Milan Cejnar on 24.11.2017.
  * Asamm Software, s.r.o.
  */

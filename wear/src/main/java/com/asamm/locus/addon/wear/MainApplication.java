@@ -23,7 +23,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.MapActivity;
-import com.asamm.locus.addon.wear.gui.error.ActivityFail;
+import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
@@ -39,7 +39,6 @@ import locus.api.utils.Logger;
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
  */
-
 public class MainApplication extends Application implements Application.ActivityLifecycleCallbacks {
 
 	private volatile LocusWearActivity mCurrentActivity;
@@ -57,8 +56,8 @@ public class MainApplication extends Application implements Application.Activity
 	@Override
 	public void onCreate() {
 		// TODO cejnar debug only
-		AppPreferencesManager.debugClear(this);
-		AppStorageManager.trimCache(this);
+//		AppPreferencesManager.debugClear(this);
+//		AppStorageManager.trimCache(this);
 
 		super.onCreate();
 
@@ -238,7 +237,6 @@ public class MainApplication extends Application implements Application.Activity
 				Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
 			}
 		}
-		Logger.logD(TAG, "Got new data change event: " + dataItem.getUri().getPath());
 	}
 
 	public LocusWearActivity getCurrentActivity() {
@@ -268,12 +266,15 @@ public class MainApplication extends Application implements Application.Activity
 	 * @param activity current activity
 	 */
 	private void setCurrentActivity(Activity activity) {
-		if (activity instanceof ActivityFail) {
+		if (activity instanceof AppFailActivity) {
 			if (mTimerTerminate != null) {
 				mTimerTerminate.cancel();
 				mTimerTerminate = null;
 			}
 			onDestroy();
+			if (mCurrentActivity != null) {
+				mCurrentActivity.finish();
+			}
 			mCurrentActivity = null;
 			return;
 		}
@@ -345,9 +346,13 @@ public class MainApplication extends Application implements Application.Activity
 				(mCurrentActivity != null && mCurrentActivity.getClass().getSimpleName().equals(activityToStart.getSimpleName()))) {
 			return;
 		}
+		LocusWearActivity current = mCurrentActivity;
 		Intent i = new Intent(this, activityToStart);
-		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		// TODO cejnar, bigger zoom icons, bigger margins start activity and profile list
 		startActivity(i);
+		if (current != null) {
+			current.finish();
+		}
 	}
 
 	public static void showToast(Context c, String msg) {
@@ -364,8 +369,8 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	public void doApplicationFail(AppFailType reason) {
-		Intent i = new Intent(this, ActivityFail.class);
-		i.putExtra(ActivityFail.ARG_ERROR_TYPE, reason.name());
+		Intent i = new Intent(this, AppFailActivity.class);
+		i.putExtra(AppFailActivity.ARG_ERROR_TYPE, reason.name());
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		startActivity(i);
 	}

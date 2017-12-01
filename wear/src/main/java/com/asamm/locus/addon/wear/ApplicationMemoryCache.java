@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Container class serves as a memory cache to keep some received data while the app is running.
- *
+ * <p>
  * Created by Milan Cejnar on 09.11.2017.
  * Asamm Software, s.r.o.
  */
@@ -40,7 +40,7 @@ public class ApplicationMemoryCache {
 	}
 
 	public void setLastTrackRecState(Context ctx, TrackRecordingValue value) {
-	AppPreferencesManager.persistLastRecState(ctx, value);
+		AppPreferencesManager.persistLastRecState(ctx, value);
 	}
 
 	public void setLastMapData(MapContainer mapContainer) {

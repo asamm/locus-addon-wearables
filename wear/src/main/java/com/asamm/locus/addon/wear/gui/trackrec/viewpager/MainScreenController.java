@@ -16,11 +16,12 @@ import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivityConfiguration;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout;
 
 /**
+ * Controller class for main/control screen of active track recording
  * Created by Milan Cejnar on 27.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class MainScreenController implements TrackRecordingUpdatable{
+public class MainScreenController implements TrackRecordingControllerUpdatable {
 	private ViewGroup mLayout;
 
 	// recording active screen fields
@@ -41,6 +42,7 @@ public class MainScreenController implements TrackRecordingUpdatable{
 		loadAndInitStats(ctx.getContext(), mLayout);
 		setDisabledDrawables(ctx.getContext());
 	}
+
 	@Override
 	public void onTrackActivityStateChange(Activity context, TrackRecActivityState newState) {
 		switch (newState) {

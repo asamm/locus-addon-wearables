@@ -9,6 +9,7 @@ import locus.api.utils.DataWriterBigEndian;
 import locus.api.utils.Logger;
 
 /**
+ * Command/request to start sending specifyied periodic data udpates
  * Created by Milan Cejnar on 08.11.2017.
  * Asamm Software, s.r.o.
  */

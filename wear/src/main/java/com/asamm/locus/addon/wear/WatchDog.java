@@ -6,8 +6,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 import com.asamm.locus.addon.wear.communication.AppFailCallback;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.error.AppFailType;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -74,6 +74,12 @@ public class WatchDog {
 		}
 	}
 
+	/**
+	 * Should be called after new activity is opened
+	 *
+	 * @param previous
+	 * @param current
+	 */
 	void onCurrentActivityChanged(Class<? extends LocusWearActivity> previous,
 								  Class<? extends LocusWearActivity> current) {
 		// transition in current activity - clear previous and new activity watchdogs
@@ -96,6 +102,9 @@ public class WatchDog {
 		}
 	}
 
+	/**
+	 * Handles tick of WD timer
+	 */
 	private void doTimerTick() {
 		// handle keep alive transmission first
 		long now = System.currentTimeMillis();
@@ -146,6 +155,11 @@ public class WatchDog {
 		}
 	}
 
+	/**
+	 * Should be called immediately after receiving new data from comms
+	 *
+	 * @param receivedPath
+	 */
 	void onNewData(DataPath receivedPath) {
 		synchronized (mWatchedActivities) {
 			if (mCurrentActivityClass == null) {
@@ -165,8 +179,17 @@ public class WatchDog {
 		}
 	}
 
-	public <TimeStampStorable> void startWatching(Class<? extends LocusWearActivity> clazz,
-												  DataPayload request, DataPath expected, long timeOutToFail) {
+	/**
+	 * Adds watch for specified Activity requests
+	 *
+	 * @param clazz               type of activity
+	 * @param request             exact payload which has been sent and should trigger expected data,
+	 *                            may be resend after some time by watch dog
+	 * @param expected	expected incoming (answer) data
+	 * @param timeOutToFail timeout in ms after which application fails if expected response is not received
+	 */
+	public void startWatching(Class<? extends LocusWearActivity> clazz,
+												  DataPayload<? extends TimeStampStorable> request, DataPath expected, long timeOutToFail) {
 		final Watched newWatched = new Watched(clazz, request, expected, timeOutToFail);
 		final String className = clazz.getSimpleName();
 		synchronized (mWatchedActivities) {
@@ -181,16 +204,19 @@ public class WatchDog {
 		}
 	}
 
+	/**
+	 * Container representing comm transmission that is being watched for given activity
+	 */
 	private static class Watched {
 		private final Class<? extends LocusWearActivity> mActivity;
-		private final DataPayload<TimeStampStorable> mRequest;
+		private final DataPayload<? extends TimeStampStorable> mRequest;
 		private final DataPath mExpected;
 		private final long mTimeoutToFail;
 		private long mCurrentTimeout;
 		private byte mRetryAttempts;
 
 		private Watched(Class<? extends LocusWearActivity> clazz,
-						DataPayload<TimeStampStorable> request, DataPath expected,
+						DataPayload<? extends TimeStampStorable> request, DataPath expected,
 						long timeoutToFail) {
 			this.mActivity = clazz;
 			this.mRequest = request;

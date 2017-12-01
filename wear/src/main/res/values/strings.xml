@@ -36,10 +36,10 @@
 
     <string name="loading_profiles">Loading</string>
 
-    <!-- text on button to cancel current action -->
-    <string name="cancel">Cancel</string>
-    <!--Warning title-->
-    <string name="warning">Warning</string>
+    <!--&lt;!&ndash; text on button to cancel current action &ndash;&gt;-->
+    <!--<string name="cancel">Cancel</string>-->
+    <!--&lt;!&ndash;Warning title&ndash;&gt;-->
+    <!--<string name="warning">Warning</string>-->
 
     <!--Activity titles-->
     <string name="title_activity_track_record">Track recording</string>

@@ -92,8 +92,8 @@ public class AppPreferencesManager {
 	 */
 	public static Pair<Integer, Integer> getZoomValues(Context ctx) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		Integer deviceZoom = prefs.getInt(PREF_DEVICE_ZOOM, Const.ZOOM_UNKONWN);
-		Integer wearZoom = prefs.getInt(PREF_WEAR_ZOOM, Const.ZOOM_UNKONWN);
+		Integer deviceZoom = prefs.getInt(PREF_DEVICE_ZOOM, Const.ZOOM_UNKOWN);
+		Integer wearZoom = prefs.getInt(PREF_WEAR_ZOOM, Const.ZOOM_UNKOWN);
 		return Pair.of(deviceZoom, wearZoom);
 	}
 

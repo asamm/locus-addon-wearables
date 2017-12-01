@@ -28,17 +28,26 @@ import java.util.ArrayList;
 import locus.api.android.utils.UtilsBitmap;
 import locus.api.utils.Logger;
 
+/**
+ * Activity containing single recycler view for choosing recording profile.
+ * Created by Milan Cejnar
+ * Asamm Software, s.r.o.
+ */
 public class ProfileListActivity extends LocusWearActivity {
 
 	private static final String TAG = "ProfileListActivity";
 	public static final String ARG_PROFILES = "ARG_PROFILES";
+	public static final String ARG_SELECTED_PROFILE = "ARG_SELECTED_PROFILE";
 	public static final String RESULT_PROFILES = "RESULT_PROFILES";
-
 
 	private WearableRecyclerView mRecyclerVeiw;
 	private ProfileListAdapter mAdapter;
 
-	private volatile TrackProfileInfoValue.ValueList mProfiles;
+	/** list of available recording profiles */
+
+	private TrackProfileInfoValue.ValueList mProfiles;
+	/** Name of currently selected profile from parent activity*/
+	private String selectedProfileName;
 
 	@Override
 	protected DataPayload<EmptyCommand> getInitialCommandType() {
@@ -63,6 +72,7 @@ public class ProfileListActivity extends LocusWearActivity {
 		mRecyclerVeiw.setLayoutManager(
 				new WearableLinearLayoutManager(this));
 		mRecyclerVeiw.setHasFixedSize(true);
+
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
 		if (arr != null && arr.length > 0) {
 			try {
@@ -93,6 +103,14 @@ public class ProfileListActivity extends LocusWearActivity {
 				});
 				break;
 		}
+	}
+
+	/**
+	 * @return false for this activity, no handshaking required
+	 */
+	@Override
+	protected boolean isMakeHandshakeOnStart() {
+		return false;
 	}
 
 	private class TrackProfileModelHolder {

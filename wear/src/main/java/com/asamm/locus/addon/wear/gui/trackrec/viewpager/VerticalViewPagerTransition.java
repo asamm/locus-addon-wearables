@@ -3,14 +3,10 @@ package com.asamm.locus.addon.wear.gui.trackrec.viewpager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import locus.api.utils.Logger;
-
 /**
  * Created by Milan Cejnar on 27.11.2017.
  * Asamm Software, s.r.o.
  */
-
-
 public class VerticalViewPagerTransition implements ViewPager.PageTransformer {
 	private static final float MIN_SCALE = 0.75f;
 

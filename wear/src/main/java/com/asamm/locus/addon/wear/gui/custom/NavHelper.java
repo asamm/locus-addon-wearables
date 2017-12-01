@@ -4,41 +4,10 @@ import com.asamm.locus.addon.wear.R;
 
 import locus.api.objects.enums.PointRteAction;
 
-import static locus.api.objects.enums.PointRteAction.ARRIVE_DEST;
-import static locus.api.objects.enums.PointRteAction.ARRIVE_DEST_LEFT;
-import static locus.api.objects.enums.PointRteAction.ARRIVE_DEST_RIGHT;
-import static locus.api.objects.enums.PointRteAction.CONTINUE_STRAIGHT;
-import static locus.api.objects.enums.PointRteAction.EXIT_LEFT;
-import static locus.api.objects.enums.PointRteAction.EXIT_RIGHT;
-import static locus.api.objects.enums.PointRteAction.LEFT;
-import static locus.api.objects.enums.PointRteAction.LEFT_SHARP;
-import static locus.api.objects.enums.PointRteAction.LEFT_SLIGHT;
-import static locus.api.objects.enums.PointRteAction.MERGE;
-import static locus.api.objects.enums.PointRteAction.MERGE_LEFT;
-import static locus.api.objects.enums.PointRteAction.MERGE_RIGHT;
-import static locus.api.objects.enums.PointRteAction.PASS_PLACE;
-import static locus.api.objects.enums.PointRteAction.RAMP_ON_LEFT;
-import static locus.api.objects.enums.PointRteAction.RAMP_ON_RIGHT;
-import static locus.api.objects.enums.PointRteAction.RAMP_STRAIGHT;
-import static locus.api.objects.enums.PointRteAction.RIGHT;
-import static locus.api.objects.enums.PointRteAction.RIGHT_SHARP;
-import static locus.api.objects.enums.PointRteAction.RIGHT_SLIGHT;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_1;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_2;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_3;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_4;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_5;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_6;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_7;
-import static locus.api.objects.enums.PointRteAction.ROUNDABOUT_EXIT_8;
-import static locus.api.objects.enums.PointRteAction.STAY_LEFT;
-import static locus.api.objects.enums.PointRteAction.STAY_RIGHT;
-import static locus.api.objects.enums.PointRteAction.STAY_STRAIGHT;
-import static locus.api.objects.enums.PointRteAction.U_TURN;
-import static locus.api.objects.enums.PointRteAction.U_TURN_LEFT;
-import static locus.api.objects.enums.PointRteAction.U_TURN_RIGHT;
-
 /**
+ * Helper for translating PointRteAction to id of drawable with graphical
+ * representation of the action
+ * <p>
  * Created by Milan Cejnar on 16.11.2017.
  * Asamm Software, s.r.o.
  */

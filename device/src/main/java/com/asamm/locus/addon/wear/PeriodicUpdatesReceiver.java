@@ -66,7 +66,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 			ActionTools.enablePeriodicUpdatesReceiver(ctx,
 					LocusUtils.getActiveVersion(ctx),
 					PeriodicUpdatesReceiver.class);
-			Logger.logI(TAG, "periodic receiver enabled");
+			Logger.logD(TAG, "periodic receiver enabled");
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "enableReceiver(" + ctx + ")", e);
 		}
@@ -82,6 +82,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 			ActionTools.disablePeriodicUpdatesReceiver(ctx,
 					LocusUtils.getActiveVersion(ctx),
 					PeriodicUpdatesReceiver.class);
+			Logger.logD(TAG, "periodic receiver disabled");
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "disableReceiver(" + ctx + ")", e);
 		}

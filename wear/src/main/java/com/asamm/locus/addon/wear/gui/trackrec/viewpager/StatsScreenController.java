@@ -2,27 +2,21 @@ package com.asamm.locus.addon.wear.gui.trackrec.viewpager;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
-import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivityConfiguration;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout;
-
-import java.util.Arrays;
 
 /**
  * Created by Milan Cejnar on 27.11.2017.
  * Asamm Software, s.r.o.
  */
 
-public class StatsScreenController implements TrackRecordingUpdatable{
+public class StatsScreenController implements TrackRecordingControllerUpdatable {
 	private ViewGroup mLayout;
 
 	// recording active screen fields

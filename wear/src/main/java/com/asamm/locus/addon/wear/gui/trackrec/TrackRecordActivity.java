@@ -45,6 +45,14 @@ import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.REC;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.REC_WAITING;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.UNINITIALIZED;
 
+/**
+ * States of Track recording activity depending on current track recording state.
+ * "Waiting" states are used when transitioning between track rec. state and waiting on comm.
+ * confirmation from the device
+ * <p>
+ * Created by Milan Cejnar on 22.11.2017.
+ * Asamm Software, s.r.o.
+ */
 public class TrackRecordActivity extends LocusWearActivity {
 
 	private static final String TAG = TrackRecordActivity.class.getSimpleName();
@@ -56,8 +64,14 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
 
+	/**
+	 * Last received track recording value
+	 */
 	private TrackRecordingValue model;
 
+	/**
+	 * View flipper for flipping between Start recording/Active recording screens
+	 */
 	private ViewFlipper mRecViewFlipper;
 
 	private ViewPager mPager;
@@ -66,6 +80,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 	// start recording screen fields
 	private ImageView mImgStartRecording;
 
+	/**
+	 * component for track recording profile display and selection
+	 */
 	private TrackRecordProfileSelectLayout mProfileSelect;
 
 	@Override
@@ -138,7 +155,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 			case PUT_TRACK_REC_PROFILE_INFO:
 				TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) data;
 				runOnUiThread(() -> onNewProfilesReceived(profiles));
-				Logger.logD(TAG, "Loaded rec profiles " + profiles.getSize());
 				break;
 			case PUT_PROFILE_ICON:
 				final TrackProfileIconValue icon = (TrackProfileIconValue) data;
@@ -148,7 +164,6 @@ public class TrackRecordActivity extends LocusWearActivity {
 				TrackRecordingValue trv = (TrackRecordingValue) data;
 				onPutTrackRec(trv);
 				getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
-				Logger.logD(TAG, "Loaded track info ");
 				break;
 			case PUT_ADD_WAYPOINT:
 				MainApplication.showToast(this, getResources().getString(R.string.waypoint_added));
@@ -158,7 +173,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private void onNewProfilesReceived(TrackProfileInfoValue.ValueList profiles) {
 		TrackProfileInfoValue selectedProfile = mProfileSelect.getProfile();
-		boolean isProfileMissing = selectedProfile == null || !profiles.getStorables().contains(selectedProfile); // TODO cejnar test the second condition branch
+		boolean isProfileMissing = selectedProfile == null ||
+				!profiles.getStorables().contains(selectedProfile);
 		if (isProfileMissing) {
 			mProfileSelect.setParameters(profiles.getStorables().get(0));
 		}
@@ -190,7 +206,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 		}
 	}
 
+	// handler for delayed open request for profile selection activity
 	private Handler mDelayedProfileSelectClickHandler;
+
 	public void onOpenProfileListActivityClick(View v) {
 		if (mDelayedStartClickHandler != null) { // pending start recording request
 			return;
@@ -202,7 +220,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
 			i.putExtras(b);
 			startActivityForResult(i, TrackRecordProfileSelectLayout.PICK_PROFILE_REQUEST);
-		} else {
+		} else { // postpone activity start until conditions met
 			synchronized (this) {
 				if (mDelayedProfileSelectClickHandler == null && isIdleScreenAlive()) {
 					mDelayedProfileSelectClickHandler = new Handler();
@@ -267,6 +285,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private volatile Handler mDelayedStartClickHandler;
+
 	public void handleStartClick(final View v) {
 		if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
 			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
@@ -287,7 +306,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private boolean isIdleScreenAlive() {
 		final TrackRecActivityState state = mStateMachine.getCurrentState();
-		return ((MainApplication)getApplication()).getCurrentActivity() == this
+		return ((MainApplication) getApplication()).getCurrentActivity() == this
 				&& (state == IDLE || state == IDLE_WAITING || state == UNINITIALIZED);
 	}
 
@@ -319,7 +338,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	protected void onHandShakeFinished() {
 		super.onHandShakeFinished();
 		getMainApplication().sendDataWithWatchDog(DataPath.GET_TRACK_REC_PROFILES, new EmptyCommand(),
-				DataPath.PUT_TRACK_REC_PROFILE_INFO , WATCHDOG_TIMEOUT);
+				DataPath.PUT_TRACK_REC_PROFILE_INFO, WATCHDOG_TIMEOUT);
 	}
 
 	@Override
@@ -372,7 +391,12 @@ public class TrackRecordActivity extends LocusWearActivity {
 		enableRecScreen();
 	}
 
-
+	/**
+	 * Interface for activity state machine
+	 *
+	 * @param <STATE>
+	 * @param <MODEL>
+	 */
 	private interface StateMachine<STATE extends Enum<STATE>, MODEL> {
 		STATE getCurrentState();
 
@@ -381,12 +405,20 @@ public class TrackRecordActivity extends LocusWearActivity {
 		void transitionTo(STATE newState);
 	}
 
+	/**
+	 * state machine implementation for this activity
+	 */
 	private StateMachine<TrackRecActivityState, TrackRecordingValue> mStateMachine =
 			new StateMachine<TrackRecActivityState, TrackRecordingValue>() {
 				private TrackRecActivityState mCurrentState = UNINITIALIZED;
+				/**
+				 * Map for handling routines triggered by state transition
+				 * Map: state_from -> target_state -> trigger
+				 */
 				private HashMap<TrackRecActivityState, HashMap<TrackRecActivityState, Runnable>> mTransitionsFunctions;
 
-				{
+				{ /* initializer block for specifying handling functions triggered by
+						state transition */
 					TrackRecActivityState[] values = TrackRecActivityState.values();
 					mTransitionsFunctions = new HashMap<>(values.length);
 					for (TrackRecActivityState s : values) {
@@ -430,6 +462,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 					return mCurrentState;
 				}
 
+				/**
+				 * Transitions state machine to new state and calls trigger if available
+				 * @param newState
+				 */
 				public void transitionTo(TrackRecActivityState newState) {
 					Runnable action = mTransitionsFunctions.get(mCurrentState).get(newState);
 					mCurrentState = newState;
@@ -438,6 +474,11 @@ public class TrackRecordActivity extends LocusWearActivity {
 					}
 				}
 
+				/**
+				 * Called on model update. Implements hard-coded transition logic
+				 *
+				 * @param trv new model value
+				 */
 				@Override
 				public void update(TrackRecordingValue trv) {
 					model = trv;
