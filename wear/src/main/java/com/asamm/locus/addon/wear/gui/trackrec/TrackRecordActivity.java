@@ -218,6 +218,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 			TrackProfileInfoValue.ValueList profiles = mProfileSelect.getProfileList();
 			Bundle b = new Bundle();
 			b.putByteArray(ProfileListActivity.ARG_PROFILES, profiles.getAsBytes());
+			b.putString(ProfileListActivity.ARG_SELECTED_PROFILE_NAME,
+					mProfileSelect.getProfile() == null ? "" : mProfileSelect.getProfile().getName());
 			i.putExtras(b);
 			startActivityForResult(i, TrackRecordProfileSelectLayout.PICK_PROFILE_REQUEST);
 		} else { // postpone activity start until conditions met
@@ -287,12 +289,11 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private volatile Handler mDelayedStartClickHandler;
 
 	public void handleStartClick(final View v) {
-		if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
-			sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
-			mStateMachine.transitionTo(REC_WAITING);
-		} else {
-			final TrackRecActivityState state = mStateMachine.getCurrentState();
-			synchronized (this) {
+		synchronized (this) {
+			if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
+				sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
+				mStateMachine.transitionTo(REC_WAITING);
+			} else {
 				if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
 					mDelayedStartClickHandler = new Handler();
 					mDelayedStartClickHandler.postDelayed(() -> {

@@ -2,8 +2,9 @@
 <resources>
 
     <color name="base_disabled">#80aaaaaa</color>
+    <color name="crimson">#DC143C</color>
 
-    <!-- COLORS -->
+
     <color name = "clr_background_dark">#051526</color>
     <color name = "clr_background_light">#092b4d</color>
     <color name = "clr_ui_dark">#0c3966</color>

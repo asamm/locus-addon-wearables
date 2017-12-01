@@ -34,6 +34,7 @@
 
         <activity
             android:name=".gui.trackrec.TrackRecordActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_track_record">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -43,12 +44,15 @@
         </activity>
         <activity
             android:name=".gui.MapActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_map"></activity>
         <activity
             android:name=".gui.trackrec.ProfileListActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_profile_list"></activity>
         <activity
             android:name=".gui.error.AppFailActivity"
+            android:launchMode="singleInstance"
             android:label="@string/title_activity_error"></activity>
     </application>
 

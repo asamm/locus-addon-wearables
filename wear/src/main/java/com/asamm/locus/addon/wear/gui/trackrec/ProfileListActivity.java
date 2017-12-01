@@ -2,6 +2,7 @@ package com.asamm.locus.addon.wear.gui.trackrec;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.WearableLinearLayoutManager;
@@ -37,17 +38,17 @@ public class ProfileListActivity extends LocusWearActivity {
 
 	private static final String TAG = "ProfileListActivity";
 	public static final String ARG_PROFILES = "ARG_PROFILES";
-	public static final String ARG_SELECTED_PROFILE = "ARG_SELECTED_PROFILE";
+	public static final String ARG_SELECTED_PROFILE_NAME = "ARG_SELECTED_PROFILE_NAME";
 	public static final String RESULT_PROFILES = "RESULT_PROFILES";
 
-	private WearableRecyclerView mRecyclerVeiw;
+	private WearableRecyclerView mRecyclerView;
 	private ProfileListAdapter mAdapter;
 
 	/** list of available recording profiles */
 
 	private TrackProfileInfoValue.ValueList mProfiles;
 	/** Name of currently selected profile from parent activity*/
-	private String selectedProfileName;
+	private String mSelectedProfileName;
 
 	@Override
 	protected DataPayload<EmptyCommand> getInitialCommandType() {
@@ -67,12 +68,13 @@ public class ProfileListActivity extends LocusWearActivity {
 		if (header != null) {
 			header.setText(getText(R.string.title_activity_profile_list));
 		}
-		mRecyclerVeiw = findViewById(R.id.profile_list);
-		mRecyclerVeiw.setEdgeItemsCenteringEnabled(true);
-		mRecyclerVeiw.setLayoutManager(
+		mRecyclerView = findViewById(R.id.profile_list);
+		mRecyclerView.setEdgeItemsCenteringEnabled(true);
+		mRecyclerView.setLayoutManager(
 				new WearableLinearLayoutManager(this));
-		mRecyclerVeiw.setHasFixedSize(true);
+		mRecyclerView.setHasFixedSize(true);
 
+		mSelectedProfileName = getIntent().getExtras().getString(ARG_SELECTED_PROFILE_NAME, "");
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
 		if (arr != null && arr.length > 0) {
 			try {
@@ -84,12 +86,11 @@ public class ProfileListActivity extends LocusWearActivity {
 		}
 
 		mAdapter = new ProfileListAdapter(mProfiles.getStorables().toArray(new TrackProfileInfoValue[0]));
-		mRecyclerVeiw.setAdapter(mAdapter);
+		mRecyclerView.setAdapter(mAdapter);
 
 		// Enables Always-on
 		setAmbientEnabled();
 	}
-
 
 	@Override
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
@@ -191,6 +192,11 @@ public class ProfileListActivity extends LocusWearActivity {
 			}
 			holder.mTextViewName.setOnClickListener(clickHandler);
 			holder.mIcon.setOnClickListener(clickHandler);
+
+			if (mSelectedProfileName.equals(value.mProfileInfo.getName())){
+				holder.mTextViewName.setTextColor(getColor(R.color.crimson));
+				holder.mTextViewName.setTypeface(null, Typeface.BOLD);
+			}
 		}
 
 		// Return the size of your dataset (invoked by the layout manager)
