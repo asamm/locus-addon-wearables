@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_stats_top_left"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
     <View
         style="@style/SeparatorHorizontal"
@@ -32,7 +32,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_stats_top_right"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -41,9 +41,9 @@
         app:layout_constraintStart_toEndOf="@id/track_stats_top_left"
         app:layout_constraintTop_toTopOf="parent">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_stats_bottom_left"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -53,9 +53,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/track_stats_top_left">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_stats_bottom_right"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -65,6 +65,6 @@
         app:layout_constraintStart_toEndOf="@id/track_stats_bottom_left"
         app:layout_constraintTop_toBottomOf="@id/track_stats_top_right">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -6,8 +6,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 import com.asamm.locus.addon.wear.communication.AppFailCallback;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.error.AppFailType;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,8 +145,7 @@ public class WatchDog {
 		AppFailCallback onFail = mAppFailCallback;
 		if (failed && onFail != null) {
 			Logger.logD(TAG, "Watchdog fail event");
-			// TODO cejnar debug only, uncomment for production
-			//onFail.onAppFail(AppFailType.CONNECTION_FAILED);
+			onFail.onAppFail(AppFailType.CONNECTION_FAILED);
 		} else if (reqsToResend != null) {
 			for (DataPayload p : reqsToResend) {
 				Logger.logD(TAG, "Watchdog retry request " + p);
@@ -160,7 +159,7 @@ public class WatchDog {
 	 *
 	 * @param receivedPath
 	 */
-	void onNewData(DataPath receivedPath) {
+	void onNewData(DataPath receivedPath, TimeStampStorable value) {
 		synchronized (mWatchedActivities) {
 			if (mCurrentActivityClass == null) {
 				return;
@@ -171,9 +170,12 @@ public class WatchDog {
 			}
 			Iterator<Watched> it = watched.iterator();
 			while (it.hasNext()) {
-				if (it.next().mExpected == receivedPath) {
-					it.remove();
-					return;
+				Watched w = it.next();
+				if (w.mExpected == receivedPath) {
+					if (w.mResponsePredicate == null || w.mResponsePredicate.test(value)) {
+						it.remove();
+						return;
+					}
 				}
 			}
 		}
@@ -182,15 +184,32 @@ public class WatchDog {
 	/**
 	 * Adds watch for specified Activity requests
 	 *
-	 * @param clazz               type of activity
-	 * @param request             exact payload which has been sent and should trigger expected data,
-	 *                            may be resend after some time by watch dog
-	 * @param expected	expected incoming (answer) data
+	 * @param clazz         type of activity
+	 * @param request       exact payload which has been sent and should trigger expected data,
+	 *                      may be resend after some time by watch dog
+	 * @param expected      expected incoming (answer) data
 	 * @param timeOutToFail timeout in ms after which application fails if expected response is not received
 	 */
 	public void startWatching(Class<? extends LocusWearActivity> clazz,
-												  DataPayload<? extends TimeStampStorable> request, DataPath expected, long timeOutToFail) {
-		final Watched newWatched = new Watched(clazz, request, expected, timeOutToFail);
+							  DataPayload<? extends TimeStampStorable> request, DataPath expected, long timeOutToFail) {
+		startWatchingWithCondition(clazz, request, expected, timeOutToFail, null);
+	}
+
+	/**
+	 * Adds watch for specified Activity requests. Expected response data must also satisfy given
+	 * predicate condition to be accepted.
+	 *
+	 * @param clazz             type of activity
+	 * @param request           exact payload which has been sent and should trigger expected data,
+	 *                          may be resend after some time by watch dog
+	 * @param expected          expected incoming (answer) data
+	 * @param timeOutToFail     timeout in ms after which application fails if expected response is not received
+	 * @param responsePredicate additional condition on expected data to be accepted
+	 */
+	public void startWatchingWithCondition(Class<? extends LocusWearActivity> clazz,
+										   DataPayload<? extends TimeStampStorable> request, DataPath expected,
+										   long timeOutToFail, WatchDogPredicate responsePredicate) {
+		final Watched newWatched = new Watched(clazz, request, expected, timeOutToFail, responsePredicate);
 		final String className = clazz.getSimpleName();
 		synchronized (mWatchedActivities) {
 			List<Watched> list = mWatchedActivities.get(className);
@@ -198,9 +217,25 @@ public class WatchDog {
 				list = new LinkedList<>();
 				mWatchedActivities.put(className, list);
 			}
-			if (!list.contains(newWatched)) {
-				list.add(newWatched);
+			Iterator<Watched> it = list.iterator();
+			// check if list already contains similar watchable
+			while (it.hasNext()) {
+				Watched w = it.next();
+				if (!w.equals(newWatched)) {
+					continue;
+				}
+				// If I got new watchable with predicate and old similar watcheble
+				// doesnt have predicate, then prefer new watch condition with predicate
+				// as it is more specific.
+				if (w.mResponsePredicate == null && newWatched.mResponsePredicate != null) {
+					it.remove();
+					break;
+				} else {
+					return; // this kind of response is already expected, return
+				}
 			}
+			list.add(newWatched);
+
 		}
 	}
 
@@ -214,16 +249,18 @@ public class WatchDog {
 		private final long mTimeoutToFail;
 		private long mCurrentTimeout;
 		private byte mRetryAttempts;
+		private WatchDogPredicate<TimeStampStorable> mResponsePredicate;
 
 		private Watched(Class<? extends LocusWearActivity> clazz,
-						DataPayload<? extends TimeStampStorable> request, DataPath expected,
-						long timeoutToFail) {
+						DataPayload<? extends TimeStampStorable> request, DataPath expectedResponse,
+						long timeoutToFail, WatchDogPredicate<TimeStampStorable> responsePredicate) {
 			this.mActivity = clazz;
 			this.mRequest = request;
-			this.mExpected = expected;
+			this.mExpected = expectedResponse;
 			this.mTimeoutToFail = timeoutToFail;
 			mCurrentTimeout = 0;
 			mRetryAttempts = 0;
+			this.mResponsePredicate = responsePredicate;
 		}
 
 		private void addTimeoutMs(long timeToAddMs) {

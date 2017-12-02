@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec.viewpager;
+package com.asamm.locus.addon.wear.gui.trackrec.recording;
 
 import android.app.Activity;
 import android.content.Context;

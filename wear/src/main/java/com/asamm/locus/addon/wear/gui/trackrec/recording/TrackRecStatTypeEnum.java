@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec;
+package com.asamm.locus.addon.wear.gui.trackrec.recording;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;

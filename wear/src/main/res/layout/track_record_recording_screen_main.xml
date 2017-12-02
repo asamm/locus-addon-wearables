@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_main_top"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -13,9 +13,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/linear_layout_track_rec_buttons">
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout
         android:id="@+id/track_main_bottom"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -25,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:isIconTop="false">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.TrackStatLayout>
+    </com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
     <!--<ImageView-->
         <!--android:layout_width="0dp"-->

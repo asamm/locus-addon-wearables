@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec;
+package com.asamm.locus.addon.wear.gui.trackrec.profiles;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -24,7 +24,7 @@ import locus.api.android.utils.UtilsBitmap;
  */
 public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
-	static final int PICK_PROFILE_REQUEST = 1;
+	public static final int PICK_PROFILE_REQUEST = 1;
 
 	private TrackProfileInfoValue mProfile;
 	private TrackProfileIconValue mIcon;

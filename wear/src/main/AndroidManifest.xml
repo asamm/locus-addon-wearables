@@ -47,7 +47,7 @@
             android:launchMode="singleInstance"
             android:label="@string/title_activity_map"></activity>
         <activity
-            android:name=".gui.trackrec.ProfileListActivity"
+            android:name=".gui.trackrec.profiles.ProfileListActivity"
             android:launchMode="singleInstance"
             android:label="@string/title_activity_profile_list"></activity>
         <activity

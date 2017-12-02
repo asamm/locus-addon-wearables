@@ -1,6 +1,8 @@
-package com.asamm.locus.addon.wear.gui.trackrec;
+package com.asamm.locus.addon.wear.gui.trackrec.configuration;
 
 import android.content.Context;
+
+import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecStatTypeEnum;
 
 import java.util.Arrays;
 

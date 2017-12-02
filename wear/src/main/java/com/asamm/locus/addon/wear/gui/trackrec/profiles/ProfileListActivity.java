@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec;
+package com.asamm.locus.addon.wear.gui.trackrec.profiles;
 
 import android.app.Activity;
 import android.content.Intent;

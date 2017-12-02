@@ -230,7 +230,7 @@ public class MainApplication extends Application implements Application.Activity
 						break;
 				}
 				if (mWatchDog != null) {
-					mWatchDog.onNewData(p);
+					mWatchDog.onNewData(p, value);
 				}
 				currentActivity.consumeNewData(p, value);
 			} else {
@@ -383,8 +383,20 @@ public class MainApplication extends Application implements Application.Activity
 
 	public void sendDataWithWatchDog(DataPath path, TimeStampStorable data,
 									 DataPath expectedResponse, long timeoutToFailMs) {
-		addWatchDog(path, data, expectedResponse, timeoutToFailMs);
+		addWatchDog(new DataPayload<>(path, data), expectedResponse, timeoutToFailMs);
 		WearCommService.getInstance().sendDataItem(path, data);
+	}
+
+	public void sendDataWithWatchDogConditionable(DataPayload<TimeStampStorable> request,
+												  DataPath expectedResponse, long timeoutToFailMs,
+												  WatchDogPredicate<? extends TimeStampStorable> responsePredicate) {
+		LocusWearActivity act = mCurrentActivity;
+		WatchDog wd = mWatchDog;
+		if (wd != null && act != null) {
+			wd.startWatchingWithCondition(act.getClass(), request,
+					expectedResponse, timeoutToFailMs, responsePredicate);
+		}
+		WearCommService.getInstance().sendDataItem(request.getPath(), request.getStorable());
 	}
 
 	public void addWatchDog(DataPayload<? extends TimeStampStorable> request,
@@ -396,9 +408,5 @@ public class MainApplication extends Application implements Application.Activity
 		}
 	}
 
-	public void addWatchDog(DataPath path, TimeStampStorable data,
-							DataPath expectedResponse, long timeoutToFailMs) {
-		addWatchDog(new DataPayload(path, data), expectedResponse, timeoutToFailMs);
-	}
 
 }

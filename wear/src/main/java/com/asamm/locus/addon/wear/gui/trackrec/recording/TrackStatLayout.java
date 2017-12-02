@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec;
+package com.asamm.locus.addon.wear.gui.trackrec.recording;
 
 
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecStatTypeEnum;
 
 /**
  * Componend for displaying various(specified by {@code mType} single-value statistics

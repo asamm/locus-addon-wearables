@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.asamm.locus.addon.wear.gui.trackrec.viewpager.RecordingScrollLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout
         android:id="@+id/recording_scroll_iew"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

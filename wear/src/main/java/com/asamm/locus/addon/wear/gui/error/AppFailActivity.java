@@ -35,6 +35,6 @@ public class AppFailActivity extends WearableActivity {
 
 	public void onRetryClicked(View v) {
 		((MainApplication) getApplication()).retryLastTask();
-
+		finish();
 	}
 }

@@ -27,13 +27,13 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.MainScreenController;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.RecordingScrollLayout;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.StatsScreenController;
-import com.asamm.locus.addon.wear.gui.trackrec.viewpager.TrackRecordingControllerUpdatable;
+import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
+import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.StatsScreenController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -326,15 +326,22 @@ public class TrackRecordActivity extends LocusWearActivity {
 		return true;
 	}
 
-	private void sendStateChangeRequest(TrackRecordingStateEnum newState) {
+	private void sendStateChangeRequest(final TrackRecordingStateEnum newState) {
 		WearCommService wcs = WearCommService.getInstance();
 		TrackProfileInfoValue v = getProfileInfo();
 		TrackRecordingStateChangeValue command =
 				new TrackRecordingStateChangeValue(newState, v != null ? v.getName() : null);
 		wcs.sendDataItem(DataPath.PUT_TRACK_REC_STATE_CHANGE, command);
 		DataPayload p = getInitialCommandType();
-		wcs.sendDataItem(p.getPath(), p.getStorable());
-
+		getMainApplication().sendDataWithWatchDogConditionable(p, DataPath.PUT_TRACK_REC, WATCHDOG_TIMEOUT,
+				(response) -> {
+					if (response instanceof TrackRecordingValue) {
+						TrackRecordingStateEnum state =
+								((TrackRecordingValue) response).getTrackRecordingState();
+						return state == newState;
+					}
+					return false;
+				});
 	}
 
 	private void setIdleScreenEnabled(boolean isEnabled) {

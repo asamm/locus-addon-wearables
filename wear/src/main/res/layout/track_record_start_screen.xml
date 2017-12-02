@@ -21,7 +21,7 @@
         app:layout_constraintVertical_bias="1.0"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <com.asamm.locus.addon.wear.gui.trackrec.TrackRecordProfileSelectLayout
+    <com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout
         android:id="@+id/track_rec_profile_select_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
