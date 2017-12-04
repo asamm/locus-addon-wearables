@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
@@ -84,6 +85,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 	// start recording screen fields
 	private ImageView mImgStartRecording;
 
+	private TextView mTvStartTrackRecordingHeader;
+
 	/**
 	 * component for track recording profile display and selection
 	 */
@@ -109,6 +112,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
 		mProfileSelect = findViewById(R.id.track_rec_profile_select_layout);
 		mProfileSelect.setProfileSelectCallback(this::onOpenProfileListActivityClick);
+
+		mTvStartTrackRecordingHeader = mRecViewFlipper.findViewById(R.id.text_view_screen_header);
+		mTvStartTrackRecordingHeader.setText(getText(R.string.title_activity_track_record));
 
 		initRecordingScrollScreen();
 		setDisabledDrawables();
