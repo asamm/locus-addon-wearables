@@ -215,9 +215,10 @@ public class MapActivity extends LocusWearActivity {
 			mRequestedZoom = mDeviceZoom;
 		}
 		final int zoomDiff;
-		if (v.getId() == R.id.btn_zoom_in) {
+		int viewId = v.getId();
+		if (viewId == R.id.btn_zoom_in || viewId == R.id.area_zoom_in) {
 			zoomDiff = 1;
-		} else if (v.getId() == R.id.btn_zoom_out) {
+		} else if (viewId == R.id.btn_zoom_out || viewId == R.id.area_zoom_out) {
 			zoomDiff = -1;
 		} else {
 			return;

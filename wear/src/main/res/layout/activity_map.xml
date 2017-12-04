@@ -17,18 +17,65 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:id="@+id/area_zoom_in"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:onClick="onZoomClicked"
+            android:layout_marginTop="15dp"
+            app:layout_constraintBottom_toTopOf="@id/x_map_guide_zoom_area_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/x_map_guide_vertical_center"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/area_zoom_out"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:onClick="onZoomClicked"
+            android:layout_marginTop="15dp"
+            app:layout_constraintBottom_toTopOf="@id/x_map_guide_zoom_area_bottom"
+            app:layout_constraintEnd_toStartOf="@id/x_map_guide_vertical_center"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btn_zoom_out"
+            style="@style/zoomButton"
+            android:layout_marginRight="@dimen/outer_frame_layout_padding"
+            android:onClick="onZoomClicked"
+            android:clickable="true"
+            android:src="@drawable/ic_zoom_out_32"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_zoom_in">
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/btn_zoom_in"
+            style="@style/zoomButton"
+            android:layout_marginLeft="@dimen/outer_frame_layout_padding"
+            android:onClick="onZoomClicked"
+            android:clickable="true"
+            android:src="@drawable/ic_zoom_in_32"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_zoom_out"/>
+
         <LinearLayout
             android:id="@+id/linear_layout_panel_navigation"
-            android:layout_width="64dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:background="@color/panel_map_side"
             android:gravity="right|center_vertical"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/x_map_guide_nav_width"
             app:layout_constraintStart_toStartOf="parent"
-
-            app:layout_constraintTop_toTopOf="parent">
+            android:clickable="true"
+            app:layout_constraintTop_toBottomOf="parent">
 
             <View
                 android:layout_width="match_parent"
@@ -40,16 +87,16 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:padding="4dp"
-                android:scaleType="centerInside" />
+                android:scaleType="fitEnd" />
 
             <View style="@style/SeparatorHorizontal" />
 
             <ImageView
                 android:id="@+id/image_view_main"
-                android:layout_width="64dp"
+                android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:padding="4dp"
-                android:scaleType="centerInside" />
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:id="@+id/text_view_dist_value"
@@ -77,29 +124,27 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/btn_zoom_out"
-            style="@style/zoomButton"
-            android:layout_marginRight="@dimen/outer_frame_layout_padding"
-            android:onClick="onZoomClicked"
-            android:src="@drawable/ic_zoom_out_32"
-            app:layout_constraintEnd_toStartOf="@id/btn_zoom_in"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        <android.support.constraint.Guideline
+            android:id="@+id/x_map_guide_nav_width"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.27" />
+        <android.support.constraint.Guideline
+            android:id="@+id/x_map_guide_vertical_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
 
-        <ImageView
-            android:id="@+id/btn_zoom_in"
-            style="@style/zoomButton"
-            android:layout_marginLeft="@dimen/outer_frame_layout_padding"
-            android:onClick="onZoomClicked"
-            android:src="@drawable/ic_zoom_in_32"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@id/btn_zoom_out" />
+        <android.support.constraint.Guideline
+            android:id="@+id/x_map_guide_zoom_area_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.25" />
+
     </android.support.constraint.ConstraintLayout>
-
 
     <include layout="@layout/include_navigation_drawer" />
 
