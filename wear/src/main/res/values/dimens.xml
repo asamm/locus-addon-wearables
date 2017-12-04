@@ -9,8 +9,8 @@
     <dimen name="text_size_base">16sp</dimen>
     <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_tiny">12sp</dimen>
+    <dimen name="text_size_minuscule">10sp</dimen>
 
-    <dimen name="track_rec_btn_size">64dp</dimen>
     <dimen name="track_rec_btn_radius">28dp</dimen>
     <!--
     Because the window insets on round devices are larger than 15dp, this padding only applies

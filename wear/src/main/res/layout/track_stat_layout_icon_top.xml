@@ -4,7 +4,7 @@
     <ImageView
         android:id="@+id/stat_icon"
         style="@style/statIcon"
-        app:layout_constraintBottom_toTopOf="@id/stat_text"
+        app:layout_constraintBottom_toTopOf="@id/stat_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -12,20 +12,18 @@
         app:layout_constraintVertical_bias="0.9"/>
 
     <TextView
-        android:id="@+id/stat_text"
+        android:id="@+id/stat_value"
         style="@style/statText"
-        app:layout_constraintBottom_toTopOf="@id/stat_description"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stat_icon"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        app:layout_constraintTop_toBottomOf="@id/stat_description"/>
 
     <TextView
         android:id="@+id/stat_description"
         style="@style/statDescription"
-        app:layout_constraintTop_toBottomOf="@id/stat_text"
+        app:layout_constraintTop_toBottomOf="@id/stat_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintBottom_toTopOf="@id/stat_value"/>
 </merge>

@@ -23,12 +23,16 @@
     <!-- *************************************************** -->
     <!-- STATISTICS -->
     <!-- *************************************************** -->
-
+    <style name="trackStatLayoutStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:padding">@dimen/inner_frame_layout_padding</item>
+    </style>
     <style name="statText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">23sp</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
@@ -37,14 +41,16 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">@dimen/text_size_tiny</item>
+        <item name="android:textSize">@dimen/text_size_minuscule</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:color">@color/grey</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
     </style>
 
     <style name="statIcon">
-        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:paddingBottom">1dp</item>
         <item name="android:layout_marginTop">5dp</item>
@@ -68,15 +74,25 @@
     <!-- *************************************************** -->
 
     <style name="SeparatorHorizontal">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/light_grey</item>
     </style>
 
     <style name="SeparatorVertical">
         <item name="android:layout_width">1dp</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">0dp</item>
         <item name="android:background">@color/light_grey</item>
+    </style>
+
+    <style name="SeparatorHorizontal.WithPadding">
+        <item name="android:layout_marginLeft">@dimen/outer_frame_layout_padding</item>
+        <item name="android:layout_marginRight">@dimen/outer_frame_layout_padding</item>
+    </style>
+
+    <style name="SeparatorVertical.WithPadding">
+        <item name="android:layout_marginBottom">@dimen/outer_frame_layout_padding</item>
+        <item name="android:layout_marginTop">@dimen/outer_frame_layout_padding</item>
     </style>
 
 
@@ -85,12 +101,11 @@
     <!-- *************************************************** -->
 
     <style name="ButtonTrackRecord">
-        <item name="android:layout_width">@dimen/track_rec_btn_size</item>
-        <item name="android:layout_height">@dimen/track_rec_btn_size</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">5dp</item>
     </style>
 
 

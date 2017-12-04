@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="TrackStatLayout">
-        <attr name="isIconTop"
+        <attr name="positionTop"
               format="boolean"/>
+        <attr name="positionLeft"
+            format="boolean"/>
     </declare-styleable>
 </resources>
