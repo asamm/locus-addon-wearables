@@ -37,6 +37,8 @@ public class LocusWearCommService implements
 		GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
 
+	protected final int MAX_DATA_ITEM_SIZE_B = 99 * 1024;
+
 	protected Context context;
 
 	// Google API client
@@ -113,13 +115,15 @@ public class LocusWearCommService implements
 	 * @param path
 	 * @param data
 	 */
-	protected void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
+	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
 		PutDataRequest request = PutDataRequest.create(path.getPath());
-		if (path.isAsset()) {
-			request.putAsset(DataPath.DEFAULT_ASSET_KEY, Asset.createFromBytes(data.getAsBytes()));
+		final byte[] dataToSend = data.getAsBytes();
+		// check data size whether to send as and asset or plain data item
+		if (dataToSend.length >= MAX_DATA_ITEM_SIZE_B) {
+			request.putAsset(DataPath.DEFAULT_ASSET_KEY, Asset.createFromBytes(dataToSend));
 		} else {
-			request.setData(data.getAsBytes());
+			request.setData(dataToSend);
 		}
 		if (path.isUrgent()) {
 			request.setUrgent();

@@ -8,6 +8,7 @@ import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.WatchDog;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
 
 import locus.api.objects.Storable;
@@ -90,7 +91,7 @@ public class WearCommService extends LocusWearCommService {
 	}
 
 	@Override
-	protected void sendDataItemWithoutConnectionCheck(DataPath path, Storable data) {
+	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		long currentTime = System.currentTimeMillis();
 		// if keep alive command but some other command was sent recently then ignore this
 		// command to save bandwith

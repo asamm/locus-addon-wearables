@@ -35,8 +35,8 @@ public enum DataPath {
 	GET_ADD_WAYPOINT(EmptyCommand.class),
 	PUT_ADD_WAYPOINT(EmptyCommand.class),
 	GET_PERIODIC_DATA(PeriodicCommand.class),
-	GET_KEEP_ALIVE(EmptyCommand.class, true, false),
-	PUT_MAP(MapContainer.class, true, true),
+	GET_KEEP_ALIVE(EmptyCommand.class),
+	PUT_MAP(MapContainer.class),
 	/**
 	 * Fake communication data path, used for signalling activity about ON_CONNECTED event inside
 	 * strictly the application. Should not be used over network.
@@ -52,7 +52,6 @@ public enum DataPath {
 	private String mKey;
 	private String mPath;
 	private boolean mUrgent;
-	private boolean mAsset;
 	private Class<? extends TimeStampStorable> mContainerClass;
 
 	/**
@@ -69,15 +68,10 @@ public enum DataPath {
 	}
 
 	DataPath(Class<? extends TimeStampStorable> container, boolean isUrgent) {
-		this(container, isUrgent, USE_ASSETS_DEFAULT);
-	}
-
-	DataPath(Class<? extends TimeStampStorable> container, boolean isUrgent, boolean isAsset) {
 		mKey = this.name().toLowerCase();
 		mPath = BASE_PATH + '/' + mKey;
 		this.mContainerClass = container;
 		this.mUrgent = isUrgent;
-		this.mAsset = isAsset;
 	}
 
 	public String getKey() {
@@ -99,10 +93,6 @@ public enum DataPath {
 
 	public boolean isUrgent() {
 		return mUrgent;
-	}
-
-	public boolean isAsset() {
-		return mAsset;
 	}
 
 	public Class<? extends TimeStampStorable> getContainerClass() {
