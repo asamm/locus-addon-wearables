@@ -3,25 +3,9 @@
 
     <color name="base_disabled">#80aaaaaa</color>
     <color name="crimson">#DC143C</color>
-
-
-    <color name = "clr_background_dark">#051526</color>
-    <color name = "clr_background_light">#092b4d</color>
-    <color name = "clr_ui_dark">#0c3966</color>
-    <color name = "clr_ui_light">#114f8c</color>
-    <color name = "clr_ui_active">#135ea6</color>
-    <color name = "clr_accent">#1e8fff</color>
+    <color name = "nav_drawer_dark_background">#104e8a</color>
 
     <color name="base_primary">#1976d2</color>
-
-    <color name="base_primaryDark">#0d47a1</color>
-    <color name="base_accent">#0d47a1</color>
-    <color name="base_controlNormal">#2196f3</color>
-    <color name="base_controlActivated">#1e88e5</color>
-    <color name="base_controlHighlight">#1976d2</color>
-    <color name="base_colorButtonNormal">#64b5f6</color>
-    <color name="base_switchThumbNormal">#616161</color>
-    <color name="base_settingsValues">#1976d2</color>
 
     <color name="panel_map_side">#ccffffff</color>
 </resources>

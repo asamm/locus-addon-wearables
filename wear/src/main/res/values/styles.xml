@@ -16,7 +16,7 @@
     <style name="navDrawerButton">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:padding">20dp</item>
+        <item name="android:padding">5dp</item>
         <item name="android:scaleType">fitCenter</item>
     </style>
 

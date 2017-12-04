@@ -23,27 +23,49 @@
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_map"
                 android:tint="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/navigation_drawer_item_track_rec"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
+                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_center"
+                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
+                app:layout_constraintEnd_toEndOf="@+id/x_nav_drawer_vertical_center"
+                app:layout_constraintStart_toEndOf="@id/x_nav_drawer_vertical_12_5"
+                />
             <ImageView
                 style="@style/navDrawerButton"
                 android:id="@+id/navigation_drawer_item_track_rec"
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_track_record"
                 android:tint="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_center"
+                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
+                app:layout_constraintEnd_toEndOf="@id/x_nav_drawer_vertical_87_5"
+                app:layout_constraintStart_toEndOf="@+id/x_nav_drawer_vertical_center" />
+
+            <View
+                style="@style/SeparatorHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="#3d8bd8ff"
+                app:layout_constraintEnd_toEndOf="@id/x_nav_drawer_vertical_87_5"
+                app:layout_constraintStart_toStartOf="@id/x_nav_drawer_vertical_12_5"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/navigation_drawer_item_map"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                style="@style/SeparatorVertical"
+                android:background="#3d8bd8ff"
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_87_5"
+                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5" />
+
 
             <ImageView
                 android:id="@+id/imageViewOpened"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_marginBottom="@dimen/outer_frame_layout_padding"
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:padding="8dp"
+                android:background="@color/nav_drawer_dark_background"
                 android:scaleType="fitCenter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -51,19 +73,59 @@
                 android:src="@drawable/nav_arrow_down_white"
                 android:rotation="180"
                 />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_vertical_12_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.15" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_vertical_87_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.85" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_12_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.15" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_87_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.85" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.5" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_vertical_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
         </android.support.constraint.ConstraintLayout>
 
         <LinearLayout
             android:id="@id/peek_view"
-            android:layout_width="wrap_content"
-            android:layout_height="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
+            android:background="@color/nav_drawer_dark_background"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/nav_arrow_down_white" />
 
