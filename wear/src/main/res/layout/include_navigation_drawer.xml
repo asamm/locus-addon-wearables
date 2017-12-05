@@ -61,7 +61,7 @@
 
 
             <ImageView
-                android:id="@+id/imageViewOpened"
+                android:id="@+id/imageViewDrawerOpened"
                 android:layout_width="0dp"
                 android:layout_height="25dp"
                 android:padding="8dp"

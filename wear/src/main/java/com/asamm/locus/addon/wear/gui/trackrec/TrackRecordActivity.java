@@ -4,10 +4,12 @@ package com.asamm.locus.addon.wear.gui.trackrec;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -67,6 +69,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
 
+	private ViewGroup rootLayout;
 	/**
 	 * Last received track recording value
 	 */
@@ -86,6 +89,8 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private ImageView mImgStartRecording;
 
 	private TextView mTvStartTrackRecordingHeader;
+
+	private TextView mTvLblAmbientMode;
 
 	/**
 	 * component for track recording profile display and selection
@@ -108,6 +113,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.track_record_activity);
+		rootLayout = findViewById(R.id.track_rec_activity_layout_root);
 		mImgStartRecording = findViewById(R.id.img_track_rec_start);
 		mRecViewFlipper = findViewById(R.id.trackRecordViewFlipper);
 		mProfileSelect = findViewById(R.id.track_rec_profile_select_layout);
@@ -115,6 +121,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 		mTvStartTrackRecordingHeader = mRecViewFlipper.findViewById(R.id.text_view_screen_header);
 		mTvStartTrackRecordingHeader.setText(getText(R.string.title_activity_track_record));
+		mTvLblAmbientMode = findViewById(R.id.tv_lbl_ambient_mode);
 
 		initRecordingScrollScreen();
 		setDisabledDrawables();
@@ -386,6 +393,29 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	private void enablePausedScreen() {
 		enableRecScreen();
+	}
+
+	@Override
+	public void onEnterAmbient(Bundle ambientDetails) {
+		super.onEnterAmbient(ambientDetails);
+		rootLayout.setBackgroundColor(Color.BLACK);
+		mTvStartTrackRecordingHeader.setBackgroundColor(Color.BLACK);
+		mProfileSelect.setVisibility(View.INVISIBLE);
+		mRecordingScrollScreen.setAmbient(true);
+		mImgStartRecording.setVisibility(View.INVISIBLE);
+		mTvLblAmbientMode.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void onExitAmbient() {
+		super.onExitAmbient();
+		rootLayout.setBackgroundColor(getColor(R.color.activity_background));
+		mTvStartTrackRecordingHeader.setBackgroundColor(getColor(R.color.base_primary));
+		mProfileSelect.setVisibility(View.VISIBLE);
+		mRecordingScrollScreen.setAmbient(false);
+		mImgStartRecording.setVisibility(View.VISIBLE);
+		mTvLblAmbientMode.setVisibility(View.GONE);
+
 	}
 
 	/**

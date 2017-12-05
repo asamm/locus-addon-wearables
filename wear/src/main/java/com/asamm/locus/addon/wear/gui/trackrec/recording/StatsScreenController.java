@@ -61,4 +61,11 @@ public class StatsScreenController implements TrackRecordingControllerUpdatable 
 		return mLayout;
 	}
 
+	@Override
+	public void setAmbient(boolean isAmbient) {
+		mBottomLeft.setAmbientMode(isAmbient);
+		mBottomRight.setAmbientMode(isAmbient);
+		mTopLeft.setAmbientMode(isAmbient);
+		mTopRight.setAmbientMode(isAmbient);
+	}
 }

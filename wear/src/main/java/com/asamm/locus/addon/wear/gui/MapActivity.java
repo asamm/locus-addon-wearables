@@ -1,7 +1,14 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -53,7 +60,18 @@ public class MapActivity extends LocusWearActivity {
 	// distance to next command (units)
 	private TextView mTvNavPanelDistUnits;
 
+	private ImageView mBtnZoomIn;
+	private ImageView mBtnZoomOut;
+	private ViewGroup mLayoutNavigation;
+
 	private volatile MapContainer mLastContainer;
+
+	// ambient mode variables
+	private ColorMatrix mInvertColorMatrix;
+	private Bitmap mMapAmbientBitmap;
+	private TextView mTvNavDistVal;
+	private TextView mTvNavDistUnits;
+
 
 	/**
 	 * simple mutex for temporary locking zooming function while animating
@@ -92,7 +110,11 @@ public class MapActivity extends LocusWearActivity {
 		mIvNavPanelMiddle = findViewById(R.id.image_view_main);
 		mTvNavPanelDistValue = findViewById(R.id.text_view_dist_value);
 		mTvNavPanelDistUnits = findViewById(R.id.text_view_dist_units);
-
+		mBtnZoomIn = findViewById(R.id.btn_zoom_in);
+		mBtnZoomOut = findViewById(R.id.btn_zoom_out);
+		mLayoutNavigation = findViewById(R.id.linear_layout_panel_navigation);
+		mTvNavDistUnits = findViewById(R.id.text_view_dist_units);
+		mTvNavDistVal = findViewById(R.id.text_view_dist_value);
 		// Enables Always-on
 		setAmbientEnabled();
 		initView();
@@ -149,7 +171,17 @@ public class MapActivity extends LocusWearActivity {
 	private void refreshMapView(MapContainer data) {
 		if (data != null && data.getLoadedMap() != null) {
 			mMapView.setBackground(null);
-			mMapView.setImageBitmap(data.getLoadedMap().getImage());
+			Bitmap map = data.getLoadedMap().getImage();
+			if (isAmbient()) {
+				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
+				Canvas c = new Canvas(bm);
+				Paint paintInvertImage = new Paint();
+				paintInvertImage.setColorFilter(new ColorMatrixColorFilter(getInvertColorMatrix()));
+				c.drawBitmap(map,0,0, paintInvertImage);
+				mMapView.setImageBitmap(bm);
+			} else {
+				mMapView.setImageBitmap(map);
+			}
 			if (data.getZoomWear() == mRequestedZoom) {
 				mMapView.animate().cancel();
 				mMapView.setScaleX(1f);
@@ -157,6 +189,15 @@ public class MapActivity extends LocusWearActivity {
 				mZoomLock = false;
 			}
 		}
+	}
+
+	private Bitmap getMapAmbientBitmap(int width, int height) {
+		if (mMapAmbientBitmap == null ||
+				mMapAmbientBitmap.getWidth() != width ||
+				mMapAmbientBitmap.getHeight() != height) {
+			mMapAmbientBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		}
+		return mMapAmbientBitmap;
 	}
 
 	/**
@@ -252,5 +293,39 @@ public class MapActivity extends LocusWearActivity {
 	@Override
 	public boolean isUsePeriodicData() {
 		return true;
+	}
+
+	public ColorMatrix getInvertColorMatrix() {
+		if (mInvertColorMatrix == null) {
+			float mx[] = {
+					-1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
+					0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
+					0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
+					0.0f,  0.0f,  0.0f, 1.0f, 0.0f};
+			mInvertColorMatrix = new ColorMatrix(mx);
+		}
+		return mInvertColorMatrix;
+	}
+
+	@Override
+	public void onEnterAmbient(Bundle ambientDetails) {
+		super.onEnterAmbient(ambientDetails);
+		mBtnZoomIn.setVisibility(View.GONE);
+		mBtnZoomOut.setVisibility(View.GONE);
+		mLayoutNavigation.setBackgroundColor(getColor(R.color.black));
+		mTvNavDistVal.setTextColor(Color.WHITE);
+		mTvNavDistUnits.setTextColor(Color.WHITE);
+		refreshMapView(mLastContainer);
+	}
+
+	@Override
+	public void onExitAmbient() {
+		super.onExitAmbient();
+		mBtnZoomIn.setVisibility(View.VISIBLE);
+		mBtnZoomOut.setVisibility(View.VISIBLE);
+		mLayoutNavigation.setBackgroundColor(getColor(R.color.panel_map_side));
+		mTvNavDistVal.setTextColor(getColor(R.color.color_text_grey));
+		mTvNavDistUnits.setTextColor(getColor(R.color.color_text_grey));
+		refreshMapView(mLastContainer);
 	}
 }

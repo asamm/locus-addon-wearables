@@ -35,6 +35,7 @@
     <!-- ______________ -->
 
     <string name="loading_profiles">Loading</string>
+    <string name="ambient_mode">Ambient mode</string>
 
     <!--&lt;!&ndash; text on button to cancel current action &ndash;&gt;-->
     <!--<string name="cancel">Cancel</string>-->

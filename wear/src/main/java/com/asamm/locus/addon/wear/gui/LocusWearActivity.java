@@ -1,13 +1,14 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
-import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -33,6 +34,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	public WearActivityState mState = WearActivityState.ON_CREATE;
 
 	protected MainNavigationDrawer mDrawer;
+	private ImageView mDrawerCloseArrowImg;
 	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
@@ -209,8 +211,11 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onStart() {
 		this.mState = WearActivityState.ON_START;
 		AppPreferencesManager.persistLastActivity(this, getClass());
+
 		super.onStart();
+
 		mDrawer = findViewById(R.id.navigation_drawer);
+		mDrawerCloseArrowImg = findViewById(R.id.imageViewDrawerOpened);
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (!onConnectionFailedTimerTick()) {
 			ticks = 0;
@@ -245,6 +250,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	/**
 	 * Handling of item click in main menu/navigation drawer
+	 *
 	 * @param v
 	 */
 	public void handleNavigationDrawerItemClicked(View v) {
@@ -291,5 +297,23 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	public MainApplication getMainApplication() {
 		return (MainApplication) getApplication();
+	}
+
+	@Override
+	public void onEnterAmbient(Bundle ambientDetails) {
+		super.onEnterAmbient(ambientDetails);
+		if (mDrawer != null) {
+			mDrawer.setBackgroundColor(Color.BLACK);
+			mDrawerCloseArrowImg.setBackgroundColor(Color.BLACK);
+		}
+	}
+
+	@Override
+	public void onExitAmbient() {
+		super.onExitAmbient();
+		if (mDrawer != null) {
+			mDrawer.setBackgroundColor(getColor(R.color.base_primary));
+			mDrawerCloseArrowImg.setBackgroundColor(getColor(R.color.nav_drawer_dark_background));
+		}
 	}
 }

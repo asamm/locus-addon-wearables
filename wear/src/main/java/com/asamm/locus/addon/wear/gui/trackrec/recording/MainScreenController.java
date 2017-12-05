@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -13,6 +14,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState;
 import com.asamm.locus.addon.wear.gui.trackrec.configuration.TrackRecordActivityConfiguration;
+
+import java.util.Arrays;
 
 /**
  * Controller class for main/control screen of active track recording
@@ -105,5 +108,14 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 		d = DisableGuiHelper.getImageWithDisabled(ctx,
 				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_add_wpt));
 		mImgAddWaypoint.setImageDrawable(d);
+	}
+
+	@Override
+	public void setAmbient(boolean isAmbient) {
+		mStatsTop.setAmbientMode(isAmbient);
+		mStatsBottom.setAmbientMode(isAmbient);
+		for (ImageView v : Arrays.asList(mImgPauseRecording, mImgStopRecording, mImgAddWaypoint)) {
+			v.setVisibility(isAmbient ? View.INVISIBLE : View.VISIBLE);
+		}
 	}
 }

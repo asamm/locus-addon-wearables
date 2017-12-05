@@ -105,7 +105,8 @@
                 android:layout_marginRight="4dp"
                 android:gravity="right|center_vertical"
                 android:textSize="@dimen/text_size_huge"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/color_text_grey"/>
 
             <TextView
                 android:id="@+id/text_view_dist_units"
@@ -115,7 +116,8 @@
                 android:layout_marginTop="-8dp"
                 android:gravity="right|center_vertical"
                 android:textSize="@dimen/text_size_tiny"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/color_text_grey"/>
 
             <View
                 android:layout_width="match_parent"

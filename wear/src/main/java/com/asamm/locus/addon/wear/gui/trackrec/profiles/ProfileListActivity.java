@@ -89,7 +89,7 @@ public class ProfileListActivity extends LocusWearActivity {
 		mRecyclerView.setAdapter(mAdapter);
 
 		// Enables Always-on
-		setAmbientEnabled();
+		//setAmbientEnabled();
 	}
 
 	@Override

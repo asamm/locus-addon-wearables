@@ -3,6 +3,7 @@ package com.asamm.locus.addon.wear.gui.trackrec.recording;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
@@ -81,7 +82,15 @@ public class TrackStatLayout extends ConstraintLayout {
 	public void consumeNewStatistics(TrackRecordingValue trv) {
 		String newValue = mType.consumeAndFormat(trv);
 		mTextViewValue.setText(newValue);
-
 	}
 
+	public void setAmbientMode(boolean enabled) {
+		mTextViewDescription.setTextColor(enabled ? Color.WHITE : Color.BLACK);
+		mTextViewValue.setTextColor(enabled ? Color.WHITE : Color.BLACK);
+		if (enabled) {
+			mImageViewIcon.setColorFilter(Color.argb(255, 255, 255, 255));
+		} else {
+			mImageViewIcon.clearColorFilter();
+		}
+	}
 }

@@ -35,4 +35,10 @@ public interface TrackRecordingControllerUpdatable {
 	 */
 	ViewGroup getControllersView();
 
+	/**
+	 * sets ambient mode
+	 *
+	 * @param isAmbient
+	 */
+	void setAmbient(boolean isAmbient);
 }

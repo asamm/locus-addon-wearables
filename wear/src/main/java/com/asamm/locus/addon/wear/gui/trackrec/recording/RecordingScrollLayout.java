@@ -106,6 +106,12 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 		return this;
 	}
 
+	public void setAmbient(boolean isAmbient) {
+		for (TrackRecordingControllerUpdatable screen : mScreens) {
+			screen.setAmbient(isAmbient);
+		}
+	}
+
 	private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {

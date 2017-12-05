@@ -75,7 +75,7 @@ public interface TrackStatConsumable {
 
 		public static TrackStatConsumable createTotalTimeConsumable() {
 			return (rec, withoutUnits) -> isInvalidInput(rec) ? "" :
-					formatTime(false, rec.getTrackRecStats().getTotalTime(), !withoutUnits);
+					formatTime(false, rec.getTrackRecStats().getTotalTime(), false);
 		}
 
 		public static TrackStatConsumable createBlankConsumable() {
