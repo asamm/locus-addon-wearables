@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion Integer.valueOf(PARAM_COMPILE_SDK_VERSION)
+    buildToolsVersion PARAM_BUILD_TOOLS_VERSION
 
     defaultConfig {
-        versionCode 3
-        versionName "0.3"
+        minSdkVersion Integer.valueOf(PARAM_MIN_SDK_VERSION)
+        targetSdkVersion Integer.valueOf(PARAM_TARGET_SDK_VERSION)
 
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode Integer.valueOf(PARAM_APP_VERSION)
+        versionName '0.' + PARAM_APP_VERSION
     }
 
     packagingOptions {
@@ -31,17 +31,16 @@ android {
     // signing of versions
     signingConfigs {
         debug {
-            // "~/.android/debug.keystore"
-            storeFile file(rootProject.ext.signDebugPath)
-            storePassword = rootProject.ext.signDebugPassword
-            keyAlias = rootProject.ext.signDebugKeyAlias
-            keyPassword = rootProject.ext.signDebugKeyPassword
+            storeFile file(SIGN_DEBUG_STORE_FILE)
+            storePassword = SIGN_DEBUG_STORE_PASSWORD
+            keyAlias = SIGN_DEBUG_KEY_ALIAS
+            keyPassword = SIGN_DEBUG_KEY_PASSWORD
         }
         release {
-            storeFile file(rootProject.ext.signReleasePath)
-            storePassword = rootProject.ext.signReleasePassword
-            keyAlias = rootProject.ext.signReleaseKeyAlias
-            keyPassword = rootProject.ext.signReleaseKeyPassword
+            storeFile file(SIGN_RELEASE_STORE_FILE)
+            storePassword = SIGN_RELEASE_STORE_PASSWORD
+            keyAlias = SIGN_RELEASE_KEY_ALIAS
+            keyPassword = SIGN_RELEASE_KEY_PASSWORD
         }
     }
 
@@ -50,11 +49,10 @@ android {
         debug {
             signingConfig signingConfigs.debug
         }
-      release {
+        release {
             signingConfig signingConfigs.release
         }
     }
-    buildToolsVersion '26.0.2'
 }
 
 dependencies {
@@ -62,7 +60,4 @@ dependencies {
 
     // attach wear container
     wearApp project(':wear')
-
-    // add google features
-    implementation lib.support_wearable
 }

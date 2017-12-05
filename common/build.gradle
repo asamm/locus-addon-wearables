@@ -1,20 +1,20 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion Integer.valueOf(PARAM_COMPILE_SDK_VERSION)
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion Integer.valueOf(PARAM_MIN_SDK_VERSION)
+        targetSdkVersion Integer.valueOf(PARAM_TARGET_SDK_VERSION)
 
+        versionCode Integer.valueOf(PARAM_APP_VERSION)
+        versionName '0.' + PARAM_APP_VERSION
     }
 }
 
 dependencies {
     // get locus API
-    api lib.locus_api_android
+    api 'com.asamm:locus-api-android:' + LIB_LOCUS_API_VERSION
     api 'com.google.android.gms:play-services-wearable:11.4.2'
 
 }

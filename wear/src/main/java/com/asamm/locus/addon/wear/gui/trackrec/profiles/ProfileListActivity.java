@@ -2,7 +2,6 @@ package com.asamm.locus.addon.wear.gui.trackrec.profiles;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.WearableLinearLayoutManager;
@@ -44,10 +43,14 @@ public class ProfileListActivity extends LocusWearActivity {
 	private WearableRecyclerView mRecyclerView;
 	private ProfileListAdapter mAdapter;
 
-	/** list of available recording profiles */
+	/**
+	 * list of available recording profiles
+	 */
 
 	private TrackProfileInfoValue.ValueList mProfiles;
-	/** Name of currently selected profile from parent activity*/
+	/**
+	 * Name of currently selected profile from parent activity
+	 */
 	private String mSelectedProfileName;
 
 	@Override
@@ -193,7 +196,7 @@ public class ProfileListActivity extends LocusWearActivity {
 			holder.mTextViewName.setOnClickListener(clickHandler);
 			holder.mIcon.setOnClickListener(clickHandler);
 
-			if (mSelectedProfileName.equals(value.mProfileInfo.getName())){
+			if (mSelectedProfileName.equals(value.mProfileInfo.getName())) {
 				holder.mTextViewName.setTextColor(getColor(R.color.crimson));
 			}
 		}

@@ -44,7 +44,6 @@
 
     <!--Activity titles-->
     <string name="title_activity_track_record">Track recording</string>
-    <string name="title_activity_map">Map</string>
     <string name="title_activity_profile_list">Profiles</string>
     <string name="title_activity_error">Error</string>
 </resources>
