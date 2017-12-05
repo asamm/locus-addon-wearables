@@ -197,6 +197,9 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
+		if (command == null) {
+			command = PeriodicCommand.createStopPeriodicUpdatesCommand();
+		}
 		final byte activityId = command.getmPeriodicActivityId();
 		final int periodMs = command.getmPeriodMs();
 		final TimeStampStorable extra = command.getExtra();
