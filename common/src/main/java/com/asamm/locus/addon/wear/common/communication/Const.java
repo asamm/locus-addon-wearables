@@ -8,7 +8,7 @@ import locus.api.android.utils.LocusUtils;
  * Asamm Software, s. r. o.
  */
 public interface Const {
-	int ZOOM_UNKOWN = Integer.MIN_VALUE;
+	byte ZOOM_UNKOWN = Byte.MIN_VALUE;
 	int ZOOM_MIN = 0;
 	int ZOOM_MAX = 22;
 

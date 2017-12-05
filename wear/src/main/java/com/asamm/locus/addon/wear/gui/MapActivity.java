@@ -211,10 +211,12 @@ public class MapActivity extends LocusWearActivity {
 		mLlNavPanel.setVisibility(View.VISIBLE);
 
 		// action for current point
-		setNavImageForAction(mIvNavPanelMiddle, data.getNavPointAction1Id());
+		setNavImageForAction(mIvNavPanelMiddle,
+				data.isNavValid() ? data.getNavPointAction1Id() : PointRteAction.UNDEFINED.getId());
 
 		// action for next point
-		setNavImageForAction(mIvNavPanelTop, data.getNavPointAction2Id());
+		setNavImageForAction(mIvNavPanelTop,
+				data.isNavValid() ? data.getNavPointAction2Id() : PointRteAction.UNDEFINED.getId());
 
 		// set time to target
 		mTvNavPanelDistValue.setText(UtilsFormat.formatDistance(

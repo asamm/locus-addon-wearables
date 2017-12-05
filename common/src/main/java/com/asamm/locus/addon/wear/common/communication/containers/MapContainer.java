@@ -22,17 +22,20 @@ public class MapContainer extends TimeStampStorable {
 
 	private static final String TAG = "MapContainer";
 
+	private static final int NAV_VALID_FLAG = 0x1;
+
 	// result from loaded image
 	private ActionTools.BitmapLoadResult mLoadedMap;
 
 	// information about type of active guidance
-	private int mGuideType;
+	private byte mGuideType;
 	private int mNavPointAction1Id;
 	private int mNavPointAction2Id;
 	private double mNavPoint1Dist;
-	private int mUnitsFormatLength;
-	private int mZoomDevice;
-	private int mZoomWear;
+	private byte mUnitsFormatLength;
+	private byte mZoomDevice;
+	private byte mZoomWear;
+	private byte mStatus;
 
 	public MapContainer() {
 		super();
@@ -46,16 +49,17 @@ public class MapContainer extends TimeStampStorable {
 		this();
 		mLoadedMap = loadedMap;
 		if (mLastUpdate != null) {
-			mZoomDevice = mLastUpdate.getMapZoomLevel();
-			mZoomWear = zoom;
-			mGuideType = mLastUpdate.getGuideType();
+			mZoomDevice = (byte) mLastUpdate.getMapZoomLevel();
+			mZoomWear = (byte) zoom;
+			mGuideType = (byte)mLastUpdate.getGuideType();
 			UpdateContainer.GuideTypeTrack guide = mLastUpdate.getGuideTypeTrack();
 			if (guide != null) {
+				mStatus |= guide.isValid() ? NAV_VALID_FLAG : 0;
 				mNavPointAction1Id = guide.getNavPoint1Action().getId();
 				mNavPointAction2Id = guide.getNavPoint2Action().getId();
 				mNavPoint1Dist = guide.getNavPoint1Dist();
 				if (li != null) {
-					mUnitsFormatLength = li.getUnitsFormatLength();
+					mUnitsFormatLength = (byte) li.getUnitsFormatLength();
 				}
 			}
 		}
@@ -71,18 +75,20 @@ public class MapContainer extends TimeStampStorable {
 		mUnitsFormatLength = 0;
 		mZoomDevice = Const.ZOOM_UNKOWN;
 		mZoomWear = Const.ZOOM_UNKOWN;
+		mStatus = 0;
 	}
 
 	@Override
 	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 		super.readObject(version, dr);
-		mGuideType = dr.readInt();
+		mGuideType = dr.readBytes(1)[0];
 		mNavPointAction1Id = dr.readInt();
 		mNavPointAction2Id = dr.readInt();
 		mNavPoint1Dist = dr.readDouble();
-		mUnitsFormatLength = dr.readInt();
-		mZoomDevice = dr.readInt();
-		mZoomWear = dr.readInt();
+		mUnitsFormatLength = dr.readBytes(1)[0];
+		mZoomDevice = dr.readBytes(1)[0];
+		mZoomWear = dr.readBytes(1)[0];
+		mStatus = dr.readBytes(1)[0];
 		boolean isMap = dr.readBoolean();
 		try {
 			mLoadedMap = isMap ? (ActionTools.BitmapLoadResult) dr.readStorable(ActionTools.BitmapLoadResult.class) : null;
@@ -95,13 +101,14 @@ public class MapContainer extends TimeStampStorable {
 	@Override
 	protected void writeObject(DataWriterBigEndian dw) throws IOException {
 		super.writeObject(dw);
-		dw.writeInt(mGuideType);
+		dw.write(mGuideType);
 		dw.writeInt(mNavPointAction1Id);
 		dw.writeInt(mNavPointAction2Id);
 		dw.writeDouble(mNavPoint1Dist);
-		dw.writeInt(mUnitsFormatLength);
-		dw.writeInt(mZoomDevice);
-		dw.writeInt(mZoomWear);
+		dw.write(mUnitsFormatLength);
+		dw.write(mZoomDevice);
+		dw.write(mZoomWear);
+		dw.write(mStatus);
 		boolean isMap = mLoadedMap != null;
 		dw.writeBoolean(isMap);
 		if (isMap) {
@@ -156,5 +163,9 @@ public class MapContainer extends TimeStampStorable {
 
 	public int getZoomWear() {
 		return mZoomWear;
+	}
+
+	public boolean isNavValid() {
+		return (mStatus & NAV_VALID_FLAG) != 0;
 	}
 }

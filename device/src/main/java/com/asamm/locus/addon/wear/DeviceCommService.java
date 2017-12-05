@@ -252,8 +252,6 @@ public class DeviceCommService extends LocusWearCommService {
 
 		// request map
 		ActionTools.BitmapLoadResult loadedMap = null;
-		// TODO cejnar debug only
-		// compressionTest(loadedMap);
 
 		try {
 			loadedMap = ActionTools.getMapPreview(ctx,
@@ -277,24 +275,21 @@ public class DeviceCommService extends LocusWearCommService {
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 
-	// TODO cejnar debug only
-	private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {
-		Bitmap b = loadedMap.getImage();
-		ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
-		b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
-		ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
-		b.compress(Bitmap.CompressFormat.JPEG, 80, baosJpeg);
-		ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
-		b.compress(Bitmap.CompressFormat.WEBP, 90, baosWebp);
-		Logger.logD(TAG, "Original: " + loadedMap.getImage().getByteCount());
-		Logger.logD(TAG, "PNG: " + baosPng.toByteArray().length);
-		Logger.logD(TAG, "JPEG: " + baosJpeg.toByteArray().length);
-		Logger.logD(TAG, "WEBP: " + baosWebp.toByteArray().length);
-		Logger.logD(TAG, "finished");
-		// TODO cejnar debug only, delete this method
-
-
-	}
+//	private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {
+//		// TODO cejnar debug only, delete this method
+//		Bitmap b = loadedMap.getImage();
+//		ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
+//		b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
+//		ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
+//		b.compress(Bitmap.CompressFormat.JPEG, 80, baosJpeg);
+//		ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
+//		b.compress(Bitmap.CompressFormat.WEBP, 90, baosWebp);
+//		Logger.logD(TAG, "Original: " + loadedMap.getImage().getByteCount());
+//		Logger.logD(TAG, "PNG: " + baosPng.toByteArray().length);
+//		Logger.logD(TAG, "JPEG: " + baosJpeg.toByteArray().length);
+//		Logger.logD(TAG, "WEBP: " + baosWebp.toByteArray().length);
+//		Logger.logD(TAG, "finished");
+//	}
 
 	public static boolean isInstance() {
 		return mInstance != null;
