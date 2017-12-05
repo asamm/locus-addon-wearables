@@ -119,7 +119,10 @@ public class AppPreferencesManager {
 		return prefs.getBoolean(PREF_FIRST_APP_START, true);
 	}
 
-	// TODO cejnar debug only
+	/**
+	 * Deletes all shared preferences
+	 * @param ctx
+	 */
 	public static void debugClear(Context ctx) {
 		PreferenceManager.getDefaultSharedPreferences(ctx).edit().clear().commit();
 	}

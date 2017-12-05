@@ -56,8 +56,11 @@ public class AppStorageManager {
 		return null;
 	}
 
-	// TODO cejnar debug only
-	public static void trimCache(Context context) {
+	/**
+	 * Deletes all the cache files, for debug only
+	 * @param context
+	 */
+	public static void debugTrimCache(Context context) {
 		try {
 			File dir = context.getCacheDir();
 			if (dir != null && dir.isDirectory()) {

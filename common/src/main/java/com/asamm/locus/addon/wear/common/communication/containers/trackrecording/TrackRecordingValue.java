@@ -58,7 +58,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		}
 		this.mExtendedTrackInfo = ext != null ? ext : new ExtendedTrackInfo();
 	}
-	// TODO cejnar serialization & units packing unit test?
+	// TODO cejnar test serialization & units packing
 	private void fillUnitsFormatInfo(LocusInfo info) {
 		mUnitsPacked1 = (byte) (info.getUnitsFormatTemperature()
 				| info.getUnitsFormatSlope() << 2

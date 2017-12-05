@@ -55,9 +55,6 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onCreate() {
-		// TODO cejnar debug only
-//		AppPreferencesManager.debugClear(this);
-//		AppStorageManager.trimCache(this);
 
 		super.onCreate();
 
@@ -348,7 +345,6 @@ public class MainApplication extends Application implements Application.Activity
 		}
 		LocusWearActivity current = mCurrentActivity;
 		Intent i = new Intent(this, activityToStart);
-		// TODO cejnar, bigger zoom icons, bigger margins start activity and profile list
 		startActivity(i);
 		if (current != null) {
 			current.finish();
