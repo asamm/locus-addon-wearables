@@ -77,6 +77,7 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">@color/light_grey</item>
+        <item name="android:layout_marginTop">1dp</item>
     </style>
 
     <style name="SeparatorVertical">

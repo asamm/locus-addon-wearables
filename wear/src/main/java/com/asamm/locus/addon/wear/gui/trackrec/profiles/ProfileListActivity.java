@@ -195,7 +195,6 @@ public class ProfileListActivity extends LocusWearActivity {
 
 			if (mSelectedProfileName.equals(value.mProfileInfo.getName())){
 				holder.mTextViewName.setTextColor(getColor(R.color.crimson));
-				holder.mTextViewName.setTypeface(null, Typeface.BOLD);
 			}
 		}
 

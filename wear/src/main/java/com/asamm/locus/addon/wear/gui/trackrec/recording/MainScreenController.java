@@ -29,6 +29,7 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 
 	private TrackRecordActivityConfiguration mConfig;
 	private Drawable mPauseDrawable;
+	private Drawable mResumeDrawable;
 
 	public MainScreenController(ViewGroup parentViewGroup) {
 		LayoutInflater inflater = LayoutInflater.from(parentViewGroup.getContext());
@@ -51,7 +52,7 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 				setRecScreenEnabled(false);
 				break;
 			case PAUSED_WAITING:
-				mImgPauseRecording.setImageDrawable(context.getDrawable(R.drawable.ic_track_record_pause_pressed));
+				mImgPauseRecording.setImageDrawable(mResumeDrawable);
 				setRecScreenEnabled(false);
 				break;
 			case PAUSED:
@@ -95,6 +96,11 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_pause_normal));
 		mPauseDrawable = d;
 		mImgPauseRecording.setImageDrawable(d);
+
+		d = DisableGuiHelper.getImageWithDisabled(ctx,
+				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_pause_pressed));
+		mResumeDrawable = d;
+
 
 		d = DisableGuiHelper.getImageWithDisabled(ctx,
 				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_add_wpt));

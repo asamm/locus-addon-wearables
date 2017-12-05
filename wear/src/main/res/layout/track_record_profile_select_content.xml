@@ -40,15 +40,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/track_profile_select_underline"
         app:layout_constraintEnd_toStartOf="@+id/track_profile_select_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></ImageView>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <View
         android:id="@+id/track_profile_select_underline"
         style="@style/SeparatorHorizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/img_track_profile_select_edit_icon"
+        app:layout_constraintStart_toStartOf="@id/track_profile_select_icon"
+        app:layout_constraintTop_toBottomOf="@+id/track_profile_select_icon" />
 
 
 </merge>

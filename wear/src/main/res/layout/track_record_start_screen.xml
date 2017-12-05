@@ -12,7 +12,7 @@
         android:id="@+id/img_track_rec_start"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/outer_frame_layout_padding"
+        android:layout_marginTop="10dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_track_record_rec_192"
         android:onClick="handleStartClick"

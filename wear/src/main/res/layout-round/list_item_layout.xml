@@ -6,9 +6,9 @@
     android:layout_height="32dp"
     android:orientation="horizontal"
     android:foregroundGravity="center"
-    android:paddingLeft="@dimen/inner_frame_layout_padding"
+    android:paddingLeft="16dp"
     android:layout_marginBottom="15dp"
-    android:paddingRight="@dimen/inner_frame_layout_padding">
+    android:paddingRight="16dp">
 
     <ImageView
         android:id="@+id/profile_list_item_image"

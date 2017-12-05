@@ -31,6 +31,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
 	private TextView mTextProfileName;
 	private ImageView mImageProfileIcon;
+	private ImageView mImageSelectArrow;
 	private volatile TrackProfileInfoValue.ValueList mProfileList;
 	private View.OnClickListener mProfileSelectCallback;
 
@@ -52,6 +53,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 		View.inflate(ctx, R.layout.track_record_profile_select_content, this);
 		mTextProfileName = findViewById(R.id.track_profile_select_text);
 		mImageProfileIcon = findViewById(R.id.track_profile_select_icon);
+		mImageSelectArrow = findViewById(R.id.img_track_profile_select_edit_icon);
 	}
 
 	public void setParameters(TrackProfileInfoValue profile) {
@@ -96,8 +98,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
 	public void setProfileSelectCallback(View.OnClickListener profileSelectCallback) {
 		mProfileSelectCallback = profileSelectCallback;
-		mTextProfileName.setOnClickListener(mProfileSelectCallback);
-		mImageProfileIcon.setOnClickListener(mProfileSelectCallback);
+		this.setOnClickListener(mProfileSelectCallback);
 	}
 
 	public boolean hasProfileList() {

@@ -3,7 +3,7 @@
 
     <dimen name="text_size_app_bar">20sp</dimen>
 
-    <dimen name="text_size_massive">26sp</dimen>
+    <dimen name="text_size_massive">24sp</dimen>
     <dimen name="text_size_huge">22sp</dimen>
     <dimen name="text_size_big">18sp</dimen>
     <dimen name="text_size_base">16sp</dimen>

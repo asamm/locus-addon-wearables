@@ -274,10 +274,14 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private volatile Handler mDelayedStartClickHandler;
 
 	public void handleStartClick(final View v) {
+		if (isIdleScreenAlive()) {
+			mImgStartRecording.setEnabled(false);
+		}
 		synchronized (this) {
 			if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
 				sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
 				mStateMachine.transitionTo(REC_WAITING);
+				mImgStartRecording.setEnabled(true);
 			} else {
 				if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
 					mDelayedStartClickHandler = new Handler();
