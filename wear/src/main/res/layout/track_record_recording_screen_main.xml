@@ -64,7 +64,7 @@
         android:padding="2dp"
         android:scaleType="fitCenter"
         android:src="@drawable/nav_arrow_down_white"
-        android:tint="@color/light_grey"
+        android:tint="@color/separator_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
