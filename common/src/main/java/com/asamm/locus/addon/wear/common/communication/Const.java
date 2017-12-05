@@ -12,7 +12,6 @@ public interface Const {
 	int ZOOM_MIN = 0;
 	int ZOOM_MAX = 22;
 
-	// TODO cejnar fill latest locus version before production
 	// minimal version code of Locus
 	LocusUtils.VersionCode LOCUS_MIN_VERSION_CODE = LocusUtils.VersionCode.UPDATE_13;
 }

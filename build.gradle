@@ -48,7 +48,7 @@ ext {
     signReleaseKeyPassword = 'android'
 
     lib = [
-            locus_api_android: 'com.asamm:locus-api-android:0.2.12',
+            locus_api_android: 'com.asamm:locus-api-android:0.2.13',
             support_wearable: 'com.google.android.support:wearable:2.1.0'
     ]
 }

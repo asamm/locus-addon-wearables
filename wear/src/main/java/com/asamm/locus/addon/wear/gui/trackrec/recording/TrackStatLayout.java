@@ -4,9 +4,11 @@ package com.asamm.locus.addon.wear.gui.trackrec.recording;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -15,6 +17,8 @@ import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.gui.custom.SpannableTextUtils;
+import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
 
 /**
  * Componend for displaying various(specified by {@code mType} single-value statistics
@@ -80,8 +84,10 @@ public class TrackStatLayout extends ConstraintLayout {
 	}
 
 	public void consumeNewStatistics(TrackRecordingValue trv) {
-		String newValue = mType.consumeAndFormat(trv);
-		mTextViewValue.setText(newValue);
+		TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
+		SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
+		SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);
+		mTextViewValue.setText(ssb);
 	}
 
 	public void setAmbientMode(boolean enabled) {

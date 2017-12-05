@@ -12,7 +12,7 @@ import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
  * Asamm Software, s.r.o.
  */
 
-public enum TrackRecStatTypeEnum {
+public enum TrackRecStatTypeEnum implements TrackStatConsumable {
 	TOTAL_LENGTH_MOVE(R.string.stat_distance, R.drawable.ic_symbol_distance,
 			TrackStatConsumable.TscFactory.createTotalLengthMoveConsumable()),
 	TOTAL_TIME(R.string.stat_track_time, R.drawable.ic_symbol_track_time,
@@ -33,16 +33,15 @@ public enum TrackRecStatTypeEnum {
 	private final TrackStatConsumable mConsumer;
 	private final int mNameStringId;
 
-	private static final boolean DISPLAY_UNITS = true;
-
 	TrackRecStatTypeEnum(int nameStringId, int iconId, TrackStatConsumable consumer) {
 		this.mNameStringId = nameStringId;
 		this.mIconId = iconId;
 		this.mConsumer = consumer;
 	}
 
-	public String consumeAndFormat(TrackRecordingValue rec) {
-		return mConsumer.consumeAndFormat(rec, !DISPLAY_UNITS);
+	@Override
+	public ValueUnitContainer consumeAndFormat(TrackRecordingValue rec) {
+		return mConsumer.consumeAndFormat(rec);
 	}
 
 	public int getIconId() {

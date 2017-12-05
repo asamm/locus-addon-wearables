@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear.gui.custom;
 
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
+import com.asamm.locus.addon.wear.common.utils.Pair;
 
 import locus.api.android.utils.UtilsFormat;
 
@@ -16,7 +17,27 @@ import static locus.api.android.utils.UtilsFormat.formatDouble;
  */
 @FunctionalInterface
 public interface TrackStatConsumable {
-	String consumeAndFormat(TrackRecordingValue rec, boolean withoutUnits);
+	ValueUnitContainer consumeAndFormat(TrackRecordingValue rec);
+
+	class ValueUnitContainer {
+		private final Pair<String, String> mValUnitPair;
+
+		ValueUnitContainer(String value, String units) {
+			mValUnitPair = Pair.of(value, units);
+		}
+
+		public String getValue() {
+			return mValUnitPair.first;
+		}
+
+		public String getUnits() {
+			return mValUnitPair.second;
+		}
+
+		public static ValueUnitContainer empty() {
+			return new ValueUnitContainer("", "");
+		}
+	}
 
 	class TscFactory {
 		private static boolean isInvalidInput(TrackRecordingValue rec) {
@@ -24,62 +45,61 @@ public interface TrackStatConsumable {
 		}
 
 		public static TrackStatConsumable createTotalLengthMoveConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
-							rec.getTrackRecStats().getTotalLengthMove(),
-							UtilsFormat.UnitsPrecision.HIGH,
-							!withoutUnits);
+			return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
+									rec.getTrackRecStats().getTotalLengthMove(),
+									true),
+							UtilsFormat.formatDistanceUnits(rec.getUnitsFormatLength(),
+									rec.getTrackRecStats().getTotalLengthMove()));
 		}
 
 		public static TrackStatConsumable createAvgSpeedMoveConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
-							rec.getTrackRecStats().getSpeedAverage(true),
-							withoutUnits);
+			return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
+									rec.getTrackRecStats().getSpeedAverage(true),
+									true),
+							UtilsFormat.formatSpeedUnits(rec.getUnitsFormatSpeed()));
 		}
 
 		public static TrackStatConsumable createSpeedMoveConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
-							rec.getSpeed(),
-							withoutUnits);
+			return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(),
+									rec.getSpeed(),
+									true),
+							UtilsFormat.formatSpeedUnits(rec.getUnitsFormatSpeed()));
 		}
 
-		public static TrackStatConsumable createMaxAltitudeConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
-							rec.getTrackRecStats().getAltitudeMax(),
-							!withoutUnits);
-		}
-
-		public static TrackStatConsumable createMinAltitudeConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
-							rec.getTrackRecStats().getAltitudeMin(),
-							!withoutUnits);
-		}
 
 		public static TrackStatConsumable createElevationUpConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
-							rec.getTrackRecStats().getElePositiveHeight(),
-							!withoutUnits);
+			return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+									rec.getTrackRecStats().getElePositiveHeight(),
+									false),
+							UtilsFormat.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
 		}
 
 		public static TrackStatConsumable createElevationDownConsumable() {
-			return (rec, withoutUnits) -> (isInvalidInput(rec)) ? "" :
-					UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
-							rec.getTrackRecStats().getEleNegativeHeight(),
-							!withoutUnits);
+			return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+									rec.getTrackRecStats().getEleNegativeHeight(),
+									false),
+							UtilsFormat.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
 		}
 
 		public static TrackStatConsumable createTotalTimeConsumable() {
-			return (rec, withoutUnits) -> isInvalidInput(rec) ? "" :
-					formatTime(false, rec.getTrackRecStats().getTotalTime(), false);
+			return (rec) -> isInvalidInput(rec) ? ValueUnitContainer.empty() :
+					new ValueUnitContainer(
+							formatTime(false, rec.getTrackRecStats().getTotalTime(), false),
+							"");
 		}
 
 		public static TrackStatConsumable createBlankConsumable() {
-			return (stats, withoutUnits) -> "";
+			return (stats) -> ValueUnitContainer.empty();
 		}
 
 
