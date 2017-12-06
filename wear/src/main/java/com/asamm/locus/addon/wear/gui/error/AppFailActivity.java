@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.gui.error;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
@@ -7,6 +8,7 @@ import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
 /**
  * Activity for showing application failure error message with button to try to restart last activity
@@ -34,7 +36,9 @@ public class AppFailActivity extends WearableActivity {
 	}
 
 	public void onRetryClicked(View v) {
-		((MainApplication) getApplication()).retryLastTask();
+		Class<? extends LocusWearActivity> c = ((MainApplication) getApplication()).getLastAppTask();
+		Intent i = new Intent(this, c);
+		startActivity(i);
 		finish();
 	}
 }

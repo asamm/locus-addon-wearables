@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -35,7 +36,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	protected MainNavigationDrawer mDrawer;
 	private ImageView mDrawerCloseArrowImg;
-	private static final int HANDSHAKE_TIMEOUT_MS = 6000;
+	private static final int HANDSHAKE_TIMEOUT_MS = 7000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
 	/**
@@ -266,10 +267,16 @@ public abstract class LocusWearActivity extends WearableActivity {
 				activityToStart = null;
 				break;
 		}
-		((MainApplication) getApplication()).startLocusWearActivity(activityToStart);
 		if (mDrawer != null) {
 			mDrawer.getController().closeDrawer();
 		}
+		if (activityToStart == null ||
+				this.getClass().getSimpleName().equals(activityToStart.getSimpleName())) {
+			return;
+		}
+		Intent i = new Intent(this, activityToStart);
+		startActivity(i);
+		finish();
 	}
 
 	/**

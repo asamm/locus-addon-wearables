@@ -338,30 +338,17 @@ public class MainApplication extends Application implements Application.Activity
 		reconnectIfNeeded();
 	}
 
-	public void startLocusWearActivity(Class<? extends WearableActivity> activityToStart) {
-		if (activityToStart == null ||
-				(mCurrentActivity != null && mCurrentActivity.getClass().getSimpleName().equals(activityToStart.getSimpleName()))) {
-			return;
-		}
-		LocusWearActivity current = mCurrentActivity;
-		Intent i = new Intent(this, activityToStart);
-		startActivity(i);
-		if (current != null) {
-			current.finish();
-		}
-	}
-
 	public static void showToast(Context c, String msg) {
 		Toast.makeText(c, msg, Toast.LENGTH_SHORT).show();
 	}
 
-	public void retryLastTask() {
+	public Class<? extends LocusWearActivity> getLastAppTask() {
 		String activityName = AppPreferencesManager.getLastActivity(this);
 		Class<? extends LocusWearActivity> c = TrackRecordActivity.class;
 		if (MapActivity.class.getSimpleName().equals(activityName)) {
 			c = MapActivity.class;
 		}
-		startLocusWearActivity(c);
+		return c;
 	}
 
 	public void doApplicationFail(AppFailType reason) {
