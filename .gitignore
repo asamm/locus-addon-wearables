@@ -42,3 +42,5 @@ captures/
 
 #idea files
 .idea/
+/install_device.bat
+/install_wear.bat
