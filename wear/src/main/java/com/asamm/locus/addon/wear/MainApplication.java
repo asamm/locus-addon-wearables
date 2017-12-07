@@ -27,6 +27,7 @@ import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
+import com.google.android.wearable.intent.RemoteIntent;
 
 import java.util.List;
 import java.util.Timer;
@@ -390,6 +391,4 @@ public class MainApplication extends Application implements Application.Activity
 			wd.startWatching(act.getClass(), request, expectedResponse, timeoutToFailMs);
 		}
 	}
-
-
 }

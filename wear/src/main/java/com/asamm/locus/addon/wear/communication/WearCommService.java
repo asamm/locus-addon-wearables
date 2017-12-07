@@ -10,8 +10,11 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.NodeApi;
+import com.google.android.gms.wearable.Wearable;
 
-import locus.api.objects.Storable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Singleton instance handling wear-device communication
@@ -105,5 +108,9 @@ public class WearCommService extends LocusWearCommService {
 			mLastSentDataTimestamp = currentTime;
 		}
 		super.sendDataItemWithoutConnectionCheck(path, data);
+	}
+
+	public void getConnectedNodes(ResultCallback<NodeApi.GetConnectedNodesResult> resultCallback) {
+		Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(resultCallback, 1000, TimeUnit.MILLISECONDS);
 	}
 }

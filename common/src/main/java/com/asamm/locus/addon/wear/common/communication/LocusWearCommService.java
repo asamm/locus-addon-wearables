@@ -42,7 +42,7 @@ public class LocusWearCommService implements
 	protected Context context;
 
 	// Google API client
-	private GoogleApiClient mGoogleApiClient;
+	protected GoogleApiClient mGoogleApiClient;
 
 	/**
 	 * List of unsent data consisting of pairs of <PATH, DATA>

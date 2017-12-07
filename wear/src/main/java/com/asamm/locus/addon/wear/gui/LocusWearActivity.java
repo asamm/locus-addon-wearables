@@ -19,6 +19,9 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
+import com.google.android.gms.wearable.Node;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import locus.api.utils.Logger;
 
@@ -36,13 +39,14 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	protected MainNavigationDrawer mDrawer;
 	private ImageView mDrawerCloseArrowImg;
-	private static final int HANDSHAKE_TIMEOUT_MS = 7000;
+	private static final int HANDSHAKE_TIMEOUT_MS = 8000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
 	/**
 	 * number of ticks of mConnectionFailedTimer
 	 */
 	private volatile byte ticks = 0;
+
 	/**
 	 * activated on start for monitoring initial handshake exchange
 	 */
@@ -55,6 +59,15 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * only used on start in connection failed timer to monitor initial command request
 	 */
 	protected volatile boolean mIsInitialRequestReceived = false;
+
+	private volatile AtomicBoolean mGetConnectedNodesSent = new AtomicBoolean(false);
+	private volatile AtomicBoolean mHandshakeSent = new AtomicBoolean(false);
+	private volatile AtomicBoolean mHandshakeRetrySent = new AtomicBoolean(false);
+
+	/**
+	 * flag specifying if mobile phone is connected
+	 */
+	private volatile boolean mIsNodeConnected = false;
 
 	/**
 	 * Each activity should define initial command which is sent automatically onStart()
@@ -137,10 +150,28 @@ public abstract class LocusWearActivity extends WearableActivity {
 		if (!wcs.isConnected()) {
 			wcs.reconnectIfNeeded();
 			return false;
+		} else if (!mGetConnectedNodesSent.getAndSet(true)){
+			wcs.getConnectedNodes((result) -> {
+				if (result != null && result.getNodes() != null) {
+					for (Node node : result.getNodes()) {
+						if (node.isNearby()) {
+							mIsNodeConnected = true;
+							break;
+						}
+					}
+				}
+				if (mIsNodeConnected) {
+					onConnectionFailedTimerTick();
+				} else {
+					cancelConnectionFailedTimer();
+					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_ERROR_NODE_NOT_CONNECTED);
+				}
+			});
 		}
 
 		// in approx. half of timeout resent requests one more time
-		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS) {
+		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
+				&& !mHandshakeRetrySent.getAndSet(true)) {
 			Logger.logD(TAG, "Attempting second handshake");
 			if (!mIsHandShakeReceived) {
 				wcs.sendCommand(DataPath.GET_HAND_SHAKE);
@@ -152,8 +183,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 				}
 			}
 		}
+
 		// handle first tick - send hanshake and initial command request
-		if (ticks == 0 && isMakeHandshakeOnStart()) {
+		if (!mHandshakeSent.getAndSet(true) && isMakeHandshakeOnStart()) {
 			wcs.sendCommand(DataPath.GET_HAND_SHAKE);
 			DataPayload p = getInitialCommandType();
 			if (p != null) {
@@ -178,14 +210,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 */
 	protected void onHandShakeFinished() {
 
-	}
-
-	/**
-	 * Called if the activity could not establish connection and receive required data in
-	 * given time.
-	 */
-	public void onCommunicationFailed() {
-		((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
 	}
 
 	protected void cancelConnectionFailedTimer() {
@@ -231,7 +255,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 				public void onFinish() {
 					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
 					cancelConnectionFailedTimer();
-					onCommunicationFailed();
+					/* Could not establish handshake connection */
+					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_ERROR_HANDSHAKE_FAILED);
 				}
 			};
 			mConnectionFailedTimer.start();
