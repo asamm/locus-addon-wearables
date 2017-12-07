@@ -11,12 +11,13 @@ import com.asamm.locus.addon.wear.R;
 public enum AppFailType {
 	UNSUPPORTED_LOCUS_VERSION(R.string.err_locus_version_not_suppoerted),
 	PERIODIC_UPDATES_DISABLED(R.string.err_periodic_updates_disabled),
-	/** General communication fail during normal operationg (after handshake) */
+	/** General communication fail during normal operation even though device should be connected */
 	CONNECTION_FAILED(R.string.err_connection_failed),
 	/** No node currently connected to this watch */
 	CONNECTION_ERROR_NODE_NOT_CONNECTED(R.string.err_connection_error_node_not_connected),
-	/** Initial communication failed */
-	CONNECTION_ERROR_HANDSHAKE_FAILED(R.string.err_connection_error_node_not_connected);
+	/** Application is not installed on the device */
+	CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE(R.string.err_connection_device_app_not_installed);
+
 
 	private final int mErrorMsgId;
 

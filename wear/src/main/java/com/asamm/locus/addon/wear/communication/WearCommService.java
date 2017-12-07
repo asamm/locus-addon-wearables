@@ -9,11 +9,18 @@ import com.asamm.locus.addon.wear.WatchDog;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
+import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.CapabilityApi;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * Asamm Software, s.r.o.
  */
 
-public class WearCommService extends LocusWearCommService {
+public class WearCommService extends LocusWearCommService implements CapabilityApi.CapabilityListener {
 	private static String TAG = WearCommService.class.getSimpleName();
 	private static WearCommService mDeviceCommunicationService;
 
@@ -31,9 +38,11 @@ public class WearCommService extends LocusWearCommService {
 
 	private volatile long mLastSentDataTimestamp = 0L;
 
-	private volatile long mRefresherId;
-
 	private MainApplication mApp;
+
+	private static final String CAPABILITY_PHONE_APP = "verify_remote_wear_for_locus_map_phone_app";
+
+	private TriStateLogicEnum mCapableClientDetected = TriStateLogicEnum.UNKNOWN;
 
 	private WearCommService(MainApplication c) {
 		super(c);
@@ -57,9 +66,15 @@ public class WearCommService extends LocusWearCommService {
 
 	@Override
 	protected void destroy() {
-		super.destroy();
+		if ((mGoogleApiClient != null) && mGoogleApiClient.isConnected()) {
+			Wearable.CapabilityApi.removeCapabilityListener(
+					mGoogleApiClient,
+					this,
+					CAPABILITY_PHONE_APP);
+		}
 		mApp = null;
 		mRefresher = null;
+		super.destroy();
 	}
 
 	public static void destroyInstance() {
@@ -71,6 +86,14 @@ public class WearCommService extends LocusWearCommService {
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
 		super.onConnected(bundle);
+		// Set up listeners for capability changes (install/uninstall of remote app).
+		Wearable.CapabilityApi.addCapabilityListener(
+				mGoogleApiClient,
+				this,
+				CAPABILITY_PHONE_APP);
+
+		checkIfPhoneHasApp();
+
 		final MainApplication app = this.mApp;
 		if (app != null) {
 			app.onConnected();
@@ -93,11 +116,35 @@ public class WearCommService extends LocusWearCommService {
 		}
 	}
 
+
+	public void getConnectedNodes(ResultCallback<NodeApi.GetConnectedNodesResult> resultCallback) {
+		Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(resultCallback, 1000, TimeUnit.MILLISECONDS);
+	}
+
+
+	@Override
+	public void onCapabilityChanged(CapabilityInfo capabilityInfo) {
+		Set<Node> capableNodes = capabilityInfo != null ? capabilityInfo.getNodes() : null;
+		mCapableClientDetected = capableNodes != null && capableNodes.size() > 0 ?
+				TriStateLogicEnum.TRUE : TriStateLogicEnum.FALSE;
+
+		if (mApp != null) {
+			mApp.onCapableClientConnected();
+		}
+	}
+
+	/**
+	 * @return UNKNOWN if not known yet, TRUE if cabable client present, FALSE if capable device not found
+	 */
+	public TriStateLogicEnum isAppInstalledOnDevice() {
+		return mCapableClientDetected;
+	}
+
 	@Override
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		long currentTime = System.currentTimeMillis();
 		// if keep alive command but some other command was sent recently then ignore this
-		// command to save bandwith
+		// command to save bandwidth
 		if (path == DataPath.GET_KEEP_ALIVE &&
 				currentTime - mLastSentDataTimestamp <= WatchDog.WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS) {
 			return;
@@ -110,7 +157,18 @@ public class WearCommService extends LocusWearCommService {
 		super.sendDataItemWithoutConnectionCheck(path, data);
 	}
 
-	public void getConnectedNodes(ResultCallback<NodeApi.GetConnectedNodesResult> resultCallback) {
-		Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(resultCallback, 1000, TimeUnit.MILLISECONDS);
+	private void checkIfPhoneHasApp() {
+		PendingResult<CapabilityApi.GetCapabilityResult> pendingResult =
+				Wearable.CapabilityApi.getCapability(
+						mGoogleApiClient,
+						CAPABILITY_PHONE_APP,
+						CapabilityApi.FILTER_ALL);
+
+		pendingResult.setResultCallback((getCapabilityResult) -> {
+			if (getCapabilityResult.getStatus().isSuccess()) {
+				onCapabilityChanged(getCapabilityResult.getCapability());
+			}
+		});
 	}
 }
+

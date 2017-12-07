@@ -15,6 +15,7 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
@@ -150,39 +151,48 @@ public abstract class LocusWearActivity extends WearableActivity {
 		if (!wcs.isConnected()) {
 			wcs.reconnectIfNeeded();
 			return false;
-		} else if (!mGetConnectedNodesSent.getAndSet(true)){
-			wcs.getConnectedNodes((result) -> {
-				if (result != null && result.getNodes() != null) {
-					for (Node node : result.getNodes()) {
-						if (node.isNearby()) {
-							mIsNodeConnected = true;
-							break;
+		} else if (!mIsNodeConnected) {
+			if (!mGetConnectedNodesSent.getAndSet(true)) {
+				wcs.getConnectedNodes((result) -> {
+					if (result != null && result.getNodes() != null) {
+						for (Node node : result.getNodes()) {
+							if (node.isNearby()) {
+								mIsNodeConnected = true;
+								break;
+							}
 						}
 					}
-				}
-				if (mIsNodeConnected) {
-					onConnectionFailedTimerTick();
-				} else {
-					cancelConnectionFailedTimer();
-					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_ERROR_NODE_NOT_CONNECTED);
-				}
-			});
+					if (mIsNodeConnected) {
+						onConnectionFailedTimerTick();
+					} else {
+						cancelConnectionFailedTimer();
+						((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_ERROR_NODE_NOT_CONNECTED);
+					}
+				});
+			}
+			return false;
+		} else if (wcs.isAppInstalledOnDevice() != TriStateLogicEnum.TRUE) {
+			// app is probably not installed on the device
+			if (wcs.isAppInstalledOnDevice() == TriStateLogicEnum.FALSE) {
+				getMainApplication().doApplicationFail(AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE);
+			}
+			return false;
 		}
 
-		// in approx. half of timeout resent requests one more time
-		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
-				&& !mHandshakeRetrySent.getAndSet(true)) {
-			Logger.logD(TAG, "Attempting second handshake");
-			if (!mIsHandShakeReceived) {
-				wcs.sendCommand(DataPath.GET_HAND_SHAKE);
-			}
-			if (!mIsInitialRequestReceived) {
-				DataPayload p = getInitialCommandType();
-				if (p != null) {
-					wcs.sendDataItem(p.getPath(), p.getStorable());
+			// in approx. half of timeout resent requests one more time
+			if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
+					&& !mHandshakeRetrySent.getAndSet(true)) {
+				Logger.logD(TAG, "Attempting second handshake");
+				if (!mIsHandShakeReceived) {
+					wcs.sendCommand(DataPath.GET_HAND_SHAKE);
+				}
+				if (!mIsInitialRequestReceived) {
+					DataPayload p = getInitialCommandType();
+					if (p != null) {
+						wcs.sendDataItem(p.getPath(), p.getStorable());
+					}
 				}
 			}
-		}
 
 		// handle first tick - send hanshake and initial command request
 		if (!mHandshakeSent.getAndSet(true) && isMakeHandshakeOnStart()) {
@@ -256,7 +266,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
 					cancelConnectionFailedTimer();
 					/* Could not establish handshake connection */
-					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_ERROR_HANDSHAKE_FAILED);
+					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
 				}
 			};
 			mConnectionFailedTimer.start();
@@ -300,8 +310,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 			return;
 		}
 		Intent i = new Intent(this, activityToStart);
+		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
-		finish();
 	}
 
 	/**

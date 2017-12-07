@@ -18,7 +18,8 @@
     <string name="err_periodic_updates_disabled">Periodic updates required! Please enable periodic updates in Locus Map -> Settings -> Miscellaneous -> Enable periodic updates for add-ons.</string>
     <string name="err_connection_failed">Connection to the mobile phone has failed. Please check the connection and try again.</string>
     <string name="err_connection_error_node_not_connected">Active connection to your mobile phone is required. Please connect the watch and the phone and try again.</string>
-    <string name="err_connection_handshake_failed">Could not connect to Wear for Locus Map on your phone. Please install the add-on or check your connection if it is already installed.</string>
+    <string name="err_connection_device_app_not_installed">Could not connect to Wear for Locus Map on your phone. Please install the add-on or check your connection if it is already installed.</string>
+    <string name="toast_err_device_not_supported">Installation request failed, please install manually.</string>
 
     <!-- ______________ -->
     <!--   Statistics   -->

@@ -14,4 +14,6 @@ public interface Const {
 
 	// minimal version code of Locus
 	LocusUtils.VersionCode LOCUS_MIN_VERSION_CODE = LocusUtils.VersionCode.UPDATE_13;
+
+	String ANDROID_MARKET_APP_URI = "market://details?id=com.asamm.locus.addon.wear";
 }

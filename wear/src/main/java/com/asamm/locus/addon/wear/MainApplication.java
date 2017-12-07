@@ -328,6 +328,13 @@ public class MainApplication extends Application implements Application.Activity
 		return mCache;
 	}
 
+	/**
+	 * active connected client, which has the app installed
+	 */
+	public void onCapableClientConnected() {
+		onConnected();
+	}
+
 	public void onConnected() {
 		LocusWearActivity act = mCurrentActivity;
 		if (act != null) {
