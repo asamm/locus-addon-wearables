@@ -131,6 +131,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
 			AppPreferencesManager.persistFirstAppStart(this);
 			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800);
+		} else if (mDrawer != null) {
+			new Handler().postDelayed(() -> mDrawer.getController().peekDrawer(), 800);
 		}
 	}
 

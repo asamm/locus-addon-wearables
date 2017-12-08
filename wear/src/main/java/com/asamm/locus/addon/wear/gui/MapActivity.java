@@ -46,6 +46,8 @@ public class MapActivity extends LocusWearActivity {
 	private static final int MAP_REFRESH_PERIOD_MS = 5000;
 	private static final int WATCHDOG_TIMEOUT_MS = MAP_REFRESH_PERIOD_MS * 3;
 	private static final int SCALE_ANIMATION_DURATION_MS = 200;
+
+	private static final boolean INVERT_MAP_IN_AMBIENT = false;
 	// reference to map view
 	private ImageView mMapView;
 
@@ -172,7 +174,7 @@ public class MapActivity extends LocusWearActivity {
 		if (data != null && data.getLoadedMap() != null) {
 			mMapView.setBackground(null);
 			Bitmap map = data.getLoadedMap().getImage();
-			if (isAmbient()) {
+			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
 				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
 				Canvas c = new Canvas(bm);
 				Paint paintInvertImage = new Paint();
