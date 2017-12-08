@@ -10,7 +10,9 @@
     <color name="base_primary">#1976d2</color>
     <color name="nav_drawer_dark_background">#104e8a</color>
     <color name="separator_color">#dddddd</color>
-
+    <color name="base_colorButtonNormal">@color/base_primary</color>
 
     <color name="panel_map_side">#ddffffff</color>
+
+
 </resources>

@@ -20,6 +20,7 @@
     <string name="err_connection_error_node_not_connected">Active connection to your mobile phone is required. Please connect the watch and the phone and try again.</string>
     <string name="err_connection_device_app_not_installed">Could not connect to Wear for Locus Map on your phone. Please install the add-on or check your connection if it is already installed.</string>
     <string name="toast_err_device_not_supported">Installation request failed, please install manually.</string>
+    <string name="continue_installation">See your phone now to continue installation ...</string>
 
     <!-- ______________ -->
     <!--   Statistics   -->
@@ -39,6 +40,7 @@
 
     <string name="loading_profiles">Loading</string>
     <string name="ambient_mode">Ambient mode</string>
+    <string name="install">Install</string>
 
     <!--&lt;!&ndash; text on button to cancel current action &ndash;&gt;-->
     <!--<string name="cancel">Cancel</string>-->

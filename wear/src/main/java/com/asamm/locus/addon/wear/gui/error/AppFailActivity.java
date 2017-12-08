@@ -9,6 +9,8 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.phone.PhoneDeviceType;
 import android.support.wearable.view.ConfirmationOverlay;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,11 @@ public class AppFailActivity extends WearableActivity {
 
 	public static final String ARG_ERROR_TYPE = "AppFailActivity.ARG_ERROR_TYPE";
 	private AppFailType mFailType;
+	private Button mInstallButton;
+	private ImageView mRetryButton;
+	private TextView mTvErrMsg;
+
+	private boolean mInstallReqResultReceived;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,55 +48,66 @@ public class AppFailActivity extends WearableActivity {
 		tvMsg.setText(getText(mFailType.getErrorMsgId()));
 		TextView tvHeader = findViewById(R.id.text_view_screen_header);
 		tvHeader.setText(getText(R.string.title_activity_error));
+		mInstallButton = findViewById(R.id.fail_install_button);
+		mRetryButton = findViewById(R.id.fail_img_retry);
+		mTvErrMsg = findViewById(R.id.fail_msg);
+
+		refresh();
 	}
 
-	public void onInstallCliecked(View v) {
+	public void onInstallClicked(View v) {
 		int phoneDeviceType = PhoneDeviceType.getPhoneDeviceType(getApplicationContext());
 		if (phoneDeviceType == PhoneDeviceType.DEVICE_TYPE_ANDROID) {
-			// Paired to Android phone, use Play Store URI.
-
 			// Create Remote Intent to open Play Store listing of app on remote device.
-			Intent intentAndroid =
-					new Intent(Intent.ACTION_VIEW)
-							.addCategory(Intent.CATEGORY_BROWSABLE)
-							.setData(Uri.parse(Const.ANDROID_MARKET_APP_URI));
+			Intent intentAndroid = new Intent(Intent.ACTION_VIEW)
+					.addCategory(Intent.CATEGORY_BROWSABLE)
+					.setData(Uri.parse(Const.ANDROID_MARKET_APP_URI));
 
-			RemoteIntent.startRemoteActivity(
-					getApplicationContext(),
-					intentAndroid,
+			RemoteIntent.startRemoteActivity(getApplicationContext(), intentAndroid,
 					new ResultReceiver(new Handler()) {
 						@Override
 						protected void onReceiveResult(int resultCode, Bundle resultData) {
-
+							mInstallReqResultReceived = true;
 							if (resultCode == RemoteIntent.RESULT_OK) {
 								new ConfirmationOverlay().showOn(AppFailActivity.this);
+								mTvErrMsg.setText(R.string.continue_installation);
 
 							} else if (resultCode == RemoteIntent.RESULT_FAILED) {
 								new ConfirmationOverlay()
 										.setType(ConfirmationOverlay.FAILURE_ANIMATION)
 										.showOn(AppFailActivity.this);
-
 							} else {
 								throw new IllegalStateException("Unexpected result " + resultCode);
 							}
+							refresh();
 						}
 					});
 
 		} else {
 			Toast.makeText(this, getText(R.string.toast_err_device_not_supported),
 					Toast.LENGTH_LONG).show();
+			// mark as successful to show retry button as install button will not work anyway
+			mInstallReqResultReceived = true;
+			refresh();
 		}
 
 	}
 
 	public void onRetryClicked(View v) {
-		if (mFailType == AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE) {
-			onInstallCliecked(v);
-			return;
-		}
 		Class<? extends LocusWearActivity> c = ((MainApplication) getApplication()).getLastAppTask();
 		Intent i = new Intent(this, c);
 		startActivity(i);
 		finish();
+	}
+
+	private boolean isNotInstalledError() {
+		return (mFailType == AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE);
+	}
+
+	private void refresh() {
+		if (isNotInstalledError()) {
+			mInstallButton.setVisibility(mInstallReqResultReceived ? View.GONE : View.VISIBLE);
+			mRetryButton.setVisibility(!mInstallReqResultReceived ? View.GONE : View.VISIBLE);
+		}
 	}
 }
