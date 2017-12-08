@@ -179,20 +179,20 @@ public abstract class LocusWearActivity extends WearableActivity {
 			return false;
 		}
 
-			// in approx. half of timeout resent requests one more time
-			if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
-					&& !mHandshakeRetrySent.getAndSet(true)) {
-				Logger.logD(TAG, "Attempting second handshake");
-				if (!mIsHandShakeReceived) {
-					wcs.sendCommand(DataPath.GET_HAND_SHAKE);
-				}
-				if (!mIsInitialRequestReceived) {
-					DataPayload p = getInitialCommandType();
-					if (p != null) {
-						wcs.sendDataItem(p.getPath(), p.getStorable());
-					}
+		// in approx. half of timeout resent requests one more time
+		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
+				&& !mHandshakeRetrySent.getAndSet(true)) {
+			Logger.logD(TAG, "Attempting second handshake");
+			if (!mIsHandShakeReceived) {
+				wcs.sendCommand(DataPath.GET_HAND_SHAKE);
+			}
+			if (!mIsInitialRequestReceived) {
+				DataPayload p = getInitialCommandType();
+				if (p != null) {
+					wcs.sendDataItem(p.getPath(), p.getStorable());
 				}
 			}
+		}
 
 		// handle first tick - send hanshake and initial command request
 		if (!mHandshakeSent.getAndSet(true) && isMakeHandshakeOnStart()) {
@@ -310,7 +310,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 			return;
 		}
 		Intent i = new Intent(this, activityToStart);
-		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
 	}
 

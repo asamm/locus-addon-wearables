@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.wearable.activity.WearableActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,7 +26,6 @@ import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
-import com.google.android.wearable.intent.RemoteIntent;
 
 import java.util.List;
 import java.util.Timer;
@@ -138,8 +136,7 @@ public class MainApplication extends Application implements Application.Activity
 	public void onActivityResumed(Activity activity) {
 		// set current activity
 		LocusWearActivity oldAct = mCurrentActivity;
-		if (oldAct == null || oldAct == activity) {
-			// just set current activity, for sure
+		if (oldAct == null) {
 			setCurrentActivity(activity);
 		} else {
 			// check state of old custom activity
@@ -276,7 +273,9 @@ public class MainApplication extends Application implements Application.Activity
 			mCurrentActivity = null;
 			return;
 		}
-
+		if (mCurrentActivity != null) {
+			mCurrentActivity.finish();
+		}
 		LocusWearActivity act = (LocusWearActivity) activity;
 		Logger.logD(TAG, "setCurrentActivity(" + act + ")");
 
