@@ -345,10 +345,6 @@ public class MainApplication extends Application implements Application.Activity
 		reconnectIfNeeded();
 	}
 
-	public static void showToast(Context c, String msg) {
-		Toast.makeText(c, msg, Toast.LENGTH_SHORT).show();
-	}
-
 	public Class<? extends LocusWearActivity> getLastAppTask() {
 		String activityName = AppPreferencesManager.getLastActivity(this);
 		Class<? extends LocusWearActivity> c = TrackRecordActivity.class;

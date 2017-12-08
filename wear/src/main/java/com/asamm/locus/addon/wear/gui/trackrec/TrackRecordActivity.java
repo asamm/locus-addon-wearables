@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
@@ -158,7 +159,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 				getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
 				break;
 			case PUT_ADD_WAYPOINT:
-				MainApplication.showToast(this, getResources().getString(R.string.waypoint_added));
+				runOnUiThread(() -> Toast.makeText(this,getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());
 				break;
 		}
 	}

@@ -68,27 +68,35 @@ public class AppFailActivity extends WearableActivity {
 						@Override
 						protected void onReceiveResult(int resultCode, Bundle resultData) {
 							mInstallReqResultReceived = true;
+							final boolean isResultOk;
 							if (resultCode == RemoteIntent.RESULT_OK) {
+								isResultOk = true;
 								new ConfirmationOverlay().showOn(AppFailActivity.this);
-								mTvErrMsg.setText(R.string.continue_installation);
-
 							} else if (resultCode == RemoteIntent.RESULT_FAILED) {
+								isResultOk = false;
 								new ConfirmationOverlay()
 										.setType(ConfirmationOverlay.FAILURE_ANIMATION)
 										.showOn(AppFailActivity.this);
 							} else {
 								throw new IllegalStateException("Unexpected result " + resultCode);
 							}
-							refresh();
+							runOnUiThread(() -> {
+								if (isResultOk) {
+									mTvErrMsg.setText(R.string.continue_installation);
+								}
+								refresh();
+							});
 						}
 					});
 
 		} else {
-			Toast.makeText(this, getText(R.string.toast_err_device_not_supported),
-					Toast.LENGTH_LONG).show();
-			// mark as successful to show retry button as install button will not work anyway
-			mInstallReqResultReceived = true;
-			refresh();
+			runOnUiThread(() -> {
+				Toast.makeText(this, getText(R.string.toast_err_device_not_supported),
+						Toast.LENGTH_LONG).show();
+				// mark as successful to show retry button as install button will not work anyway
+				mInstallReqResultReceived = true;
+				refresh();
+			});
 		}
 
 	}
