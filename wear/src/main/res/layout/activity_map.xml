@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.wear.widget.drawer.WearableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/rootActivityStyle">
+    style="@style/rootActivityStyle"
+    android:background="@drawable/map_tile">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,15 +15,17 @@
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <View
             android:id="@+id/area_zoom_in"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:onClick="onZoomClicked"
             android:layout_marginTop="15dp"
+            android:onClick="onZoomClicked"
             app:layout_constraintBottom_toTopOf="@id/x_map_guide_zoom_area_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/x_map_guide_vertical_center"
@@ -32,36 +35,34 @@
             android:id="@+id/area_zoom_out"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:onClick="onZoomClicked"
             android:layout_marginTop="15dp"
+            android:onClick="onZoomClicked"
             app:layout_constraintBottom_toTopOf="@id/x_map_guide_zoom_area_bottom"
             app:layout_constraintEnd_toStartOf="@id/x_map_guide_vertical_center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_zoom_out"
             style="@style/zoomButton"
-            android:layout_marginRight="@dimen/outer_frame_layout_padding"
             android:onClick="onZoomClicked"
-            android:clickable="true"
             android:src="@drawable/ic_zoom_out_32"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_zoom_in">
-        </ImageView>
+            app:borderWidth="0dp"
+            app:fabSize="mini"
+            app:layout_constraintEnd_toStartOf="@id/x_map_guide_vertical_center"
+            app:layout_constraintTop_toTopOf="@+id/x_map_guide_horizontal_zoom_top"
+            />
 
-        <ImageView
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_zoom_in"
             style="@style/zoomButton"
-            android:layout_marginLeft="@dimen/outer_frame_layout_padding"
             android:onClick="onZoomClicked"
-            android:clickable="true"
             android:src="@drawable/ic_zoom_in_32"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_zoom_out"/>
+            app:borderWidth="0dp"
+            app:fabSize="mini"
+            app:layout_constraintStart_toEndOf="@id/x_map_guide_vertical_center"
+            app:layout_constraintTop_toTopOf="@+id/x_map_guide_horizontal_zoom_top"
+            />
 
         <LinearLayout
             android:id="@+id/linear_layout_panel_navigation"
@@ -69,12 +70,12 @@
             android:layout_height="match_parent"
             android:layout_gravity="left"
             android:background="@color/panel_map_side"
+            android:clickable="true"
             android:gravity="right|center_vertical"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/x_map_guide_nav_width"
             app:layout_constraintStart_toStartOf="parent"
-            android:clickable="true"
             app:layout_constraintTop_toBottomOf="parent">
 
             <View
@@ -104,9 +105,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:gravity="right|center_vertical"
+                android:textColor="@color/color_text_grey"
                 android:textSize="@dimen/text_size_huge"
-                android:textStyle="bold"
-                android:textColor="@color/color_text_grey"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_view_dist_units"
@@ -115,9 +116,9 @@
                 android:layout_marginRight="4dp"
                 android:layout_marginTop="-8dp"
                 android:gravity="right|center_vertical"
+                android:textColor="@color/color_text_grey"
                 android:textSize="@dimen/text_size_tiny"
-                android:textStyle="bold"
-                android:textColor="@color/color_text_grey"/>
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="match_parent"
@@ -127,11 +128,19 @@
         </LinearLayout>
 
         <android.support.constraint.Guideline
+            android:id="@+id/x_map_guide_horizontal_zoom_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.00" />
+
+        <android.support.constraint.Guideline
             android:id="@+id/x_map_guide_nav_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.27" />
+
         <android.support.constraint.Guideline
             android:id="@+id/x_map_guide_vertical_center"
             android:layout_width="wrap_content"

@@ -62,11 +62,15 @@
     <!-- MAP ACTIVITY -->
     <!-- *************************************************** -->
     <style name="zoomButton">
-        <item name="android:layout_width">20dp</item>
-        <item name="android:layout_height">20dp</item>
-        <item name="android:background">@drawable/round_background</item>
-        <item name="android:padding">2dp</item>
-        <item name="android:layout_marginTop">@dimen/inner_frame_layout_padding</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:backgroundTint">@color/panel_map_side</item>
+        <item name="android:clickable">true</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:scaleX">0.73</item>
+        <item name="android:scaleY">0.73</item>
     </style>
 
     <!-- *************************************************** -->
@@ -132,7 +136,7 @@
     <!-- *************************************************** -->
     <!-- THEME -->
     <!-- *************************************************** -->
-    <style name="AppTheme.ThemeLocusWear" parent="android:style/Theme.DeviceDefault.Light">
+    <style name="AppTheme.ThemeLocusWear" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@color/black</item>
         <item name="android:colorPrimary">@color/base_primary</item>
         <item name="android:buttonStyle">@style/LocusWearBasicButton</item>

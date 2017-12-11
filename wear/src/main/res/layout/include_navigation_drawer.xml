@@ -62,7 +62,7 @@
             <ImageView
                 android:id="@+id/imageViewDrawerOpened"
                 android:layout_width="0dp"
-                android:layout_height="25dp"
+                android:layout_height="32dp"
                 android:padding="8dp"
                 android:background="@color/nav_drawer_dark_background"
                 android:scaleType="fitCenter"
@@ -70,7 +70,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:src="@drawable/nav_arrow_down_white"
-                android:rotation="180"
                 />
 
             <android.support.constraint.Guideline
@@ -86,36 +85,38 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.85" />
             <android.support.constraint.Guideline
-                android:id="@+id/x_nav_drawer_horizontal_12_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.15" />
-            <android.support.constraint.Guideline
-                android:id="@+id/x_nav_drawer_horizontal_87_5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.85" />
-            <android.support.constraint.Guideline
-                android:id="@+id/x_nav_drawer_horizontal_center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.5" />
-            <android.support.constraint.Guideline
                 android:id="@+id/x_nav_drawer_vertical_center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
 
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_12_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.125" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_87_5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.825" />
+            <android.support.constraint.Guideline
+                android:id="@+id/x_nav_drawer_horizontal_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.475" />
+
+
         </android.support.constraint.ConstraintLayout>
 
         <LinearLayout
             android:id="@id/peek_view"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="32dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:background="@color/nav_drawer_dark_background"
@@ -123,7 +124,7 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
+                android:layout_height="32dp"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/nav_arrow_down_white" />
