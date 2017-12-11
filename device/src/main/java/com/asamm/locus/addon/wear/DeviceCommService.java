@@ -250,7 +250,7 @@ public class DeviceCommService extends LocusWearCommService {
 		int height = extra.getHeight();
 
 		if (zoom == Const.ZOOM_UNKOWN) {
-			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : 0;
+			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : Const.ZOOM_DEFAULT;
 		}
 
 		// request map

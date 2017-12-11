@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.wear.widget.CircularProgressLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -59,7 +60,7 @@ import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.UNIN
  * Created by Milan Cejnar on 22.11.2017.
  * Asamm Software, s.r.o.
  */
-public class TrackRecordActivity extends LocusWearActivity {
+public class TrackRecordActivity extends LocusWearActivity implements CircularProgressLayout.OnTimerFinishedListener {
 
 	private static final String TAG = TrackRecordActivity.class.getSimpleName();
 
@@ -69,6 +70,10 @@ public class TrackRecordActivity extends LocusWearActivity {
 	private static final int REFRESH_PERIOD_MS = 1000;
 
 	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
+
+	private CircularProgressLayout mCircularProgress;
+	private ImageView mStopButton;
+
 
 	private ViewGroup rootLayout;
 	/**
@@ -131,8 +136,20 @@ public class TrackRecordActivity extends LocusWearActivity {
 	}
 
 	private void initRecordingScrollScreen() {
-		mRecordingScrollScreen = findViewById(R.id.recording_scroll_iew);
+		mRecordingScrollScreen = findViewById(R.id.recording_scroll_view);
 		mRecordingScrollScreen.setFeatureItems(Arrays.asList(new MainScreenController(mRecordingScrollScreen), new StatsScreenController(mRecordingScrollScreen, 1)));
+		mCircularProgress = mRecordingScrollScreen.findViewById(R.id.circular_progress);
+		mStopButton = mRecordingScrollScreen.findViewById(R.id.image_view_track_rec_stop);
+		mCircularProgress.setOnTimerFinishedListener(this);
+		mCircularProgress.setOnClickListener((v) -> {
+			mCircularProgress.stopTimer();
+			hideProgression(true);
+		});
+	}
+
+	private void hideProgression(boolean hidden) {
+		mCircularProgress.setVisibility(hidden ? View.INVISIBLE : View.VISIBLE);
+		mStopButton.setVisibility(!hidden ? View.INVISIBLE : View.VISIBLE);
 	}
 
 	private void setDisabledDrawables() {
@@ -159,7 +176,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 				getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
 				break;
 			case PUT_ADD_WAYPOINT:
-				runOnUiThread(() -> Toast.makeText(this,getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());
+				runOnUiThread(() -> Toast.makeText(this, getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());
 				break;
 		}
 	}
@@ -310,8 +327,9 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 
 	public void handleStopClick(View v) {
-		sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
-		mStateMachine.transitionTo(IDLE_WAITING);
+		hideProgression(false);
+		mCircularProgress.setTotalTime(2000);
+		mCircularProgress.startTimer();
 	}
 
 	public void handlePauseClick(View v) {
@@ -419,6 +437,13 @@ public class TrackRecordActivity extends LocusWearActivity {
 
 	}
 
+	@Override
+	public void onTimerFinished(CircularProgressLayout layout) {
+		hideProgression(true);
+		sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
+		mStateMachine.transitionTo(IDLE_WAITING);
+	}
+
 	/**
 	 * Interface for activity state machine
 	 *
@@ -431,6 +456,7 @@ public class TrackRecordActivity extends LocusWearActivity {
 		void update(MODEL model);
 
 		void transitionTo(STATE newState);
+
 	}
 
 	/**

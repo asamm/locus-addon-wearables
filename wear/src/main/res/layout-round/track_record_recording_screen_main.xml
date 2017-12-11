@@ -25,29 +25,53 @@
         app:positionLeft="true"
         app:positionTop="false"></com.asamm.locus.addon.wear.gui.trackrec.recording.TrackStatLayout>
 
+
     <ImageButton
-        android:id="@+id/image_view_track_rec_stop"
+        android:id="@+id/image_view_track_rec_pause"
         style="@style/ButtonTrackRecord"
         android:layout_marginTop="15dp"
-        android:onClick="handleStopClick"
-        android:src="@drawable/ic_track_record_stop"
-        app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_pause"
+        android:onClick="handlePauseClick"
+        android:src="@drawable/ic_track_record_pause_normal"
+        app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_stop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <ImageButton
-        android:id="@+id/image_view_track_rec_pause"
+        android:id="@+id/image_view_track_rec_stop"
         style="@style/ButtonTrackRecord"
         android:layout_marginLeft="30dp"
-        android:onClick="handlePauseClick"
+        android:onClick="handleStopClick"
         android:padding="0dp"
-        android:src="@drawable/ic_track_record_pause_normal"
+        android:src="@drawable/ic_track_record_stop"
         app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_add_wpt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_stop" />
+        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause" />
+
+    <android.support.wear.widget.CircularProgressLayout
+        android:id="@+id/circular_progress"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:backgroundColor="@color/crimson"
+        app:colorSchemeColors="@color/crimson"
+        app:strokeWidth="4dp"
+        android:padding="4dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause"
+        app:layout_constraintEnd_toEndOf="@id/image_view_track_rec_stop"
+        app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="5dp"
+        app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_add_wpt">
+        <ImageView
+            android:id="@+id/image_view"
+            android:src="@drawable/ic_cancel_white"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.wear.widget.CircularProgressLayout>
 
     <ImageButton
         android:id="@+id/image_view_track_rec_add_wpt"
@@ -58,7 +82,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause" />
+        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_stop" />
 
     <ImageView
         android:layout_width="0dp"

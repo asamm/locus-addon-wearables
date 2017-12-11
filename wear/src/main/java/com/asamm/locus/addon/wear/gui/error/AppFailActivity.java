@@ -71,7 +71,9 @@ public class AppFailActivity extends WearableActivity {
 							final boolean isResultOk;
 							if (resultCode == RemoteIntent.RESULT_OK) {
 								isResultOk = true;
-								new ConfirmationOverlay().showOn(AppFailActivity.this);
+								new ConfirmationOverlay()
+										.setType(ConfirmationOverlay.OPEN_ON_PHONE_ANIMATION)
+										.showOn(AppFailActivity.this);
 							} else if (resultCode == RemoteIntent.RESULT_FAILED) {
 								isResultOk = false;
 								new ConfirmationOverlay()
