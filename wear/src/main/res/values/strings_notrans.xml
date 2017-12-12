@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Name of the application -->
+    <string translatable="false" name="app_name">Locus Map</string>
+    <string translatable="false" name="empty_string"></string>
+</resources>
