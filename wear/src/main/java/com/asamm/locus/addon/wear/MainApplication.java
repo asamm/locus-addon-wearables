@@ -25,6 +25,7 @@ import com.asamm.locus.addon.wear.gui.MapActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
+import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.List;
@@ -266,17 +267,19 @@ public class MainApplication extends Application implements Application.Activity
 				mTimerTerminate.cancel();
 				mTimerTerminate = null;
 			}
-			onDestroy();
 			if (mCurrentActivity != null) {
 				mCurrentActivity.finish();
 			}
 			mCurrentActivity = null;
+			onDestroy();
 			return;
 		}
-		if (mCurrentActivity != null) {
+		LocusWearActivity act = (LocusWearActivity) activity;
+
+		if (mCurrentActivity != null &&
+				(act == null || !act.isChildLocusWearActivity())) {
 			mCurrentActivity.finish();
 		}
-		LocusWearActivity act = (LocusWearActivity) activity;
 		Logger.logD(TAG, "setCurrentActivity(" + act + ")");
 
 		// if new activity is registered, end timer

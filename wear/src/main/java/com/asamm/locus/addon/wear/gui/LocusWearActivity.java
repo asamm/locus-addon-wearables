@@ -359,4 +359,12 @@ public abstract class LocusWearActivity extends WearableActivity {
 			mDrawerCloseArrowImg.setBackgroundColor(getColor(R.color.nav_drawer_dark_background));
 		}
 	}
+
+	/**
+	 * @return whether this activity is allowed to run on top of other locus wear activity
+	 * (ie. doesn't call finish() on previous activity after this activity is resumed)
+	 */
+	public boolean isChildLocusWearActivity() {
+		return false;
+	}
 }

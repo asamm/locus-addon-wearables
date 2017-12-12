@@ -117,6 +117,11 @@ public class ProfileListActivity extends LocusWearActivity {
 		return false;
 	}
 
+	@Override
+	public boolean isChildLocusWearActivity() {
+		return true; // runs on top of TrackRecording activity, not independetly
+	}
+
 	private class TrackProfileModelHolder {
 		final long mId;
 		final TrackProfileInfoValue mProfileInfo;
