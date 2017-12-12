@@ -72,8 +72,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
 
 	private CircularProgressLayout mCircularProgress;
-	private ImageView mStopButton;
-
 
 	private ViewGroup rootLayout;
 	/**
@@ -90,6 +88,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	 * Snapping scroll view with active recording control and statistics
 	 */
 	private RecordingScrollLayout mRecordingScrollScreen;
+
+	private MainScreenController mTrackRecMainScreen;
 
 	// start recording screen fields
 	private ImageView mImgStartRecording;
@@ -137,19 +137,15 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	private void initRecordingScrollScreen() {
 		mRecordingScrollScreen = findViewById(R.id.recording_scroll_view);
-		mRecordingScrollScreen.setFeatureItems(Arrays.asList(new MainScreenController(mRecordingScrollScreen), new StatsScreenController(mRecordingScrollScreen, 1)));
+		mTrackRecMainScreen = new MainScreenController(mRecordingScrollScreen);
+		mRecordingScrollScreen.setFeatureItems(Arrays.asList(mTrackRecMainScreen, new StatsScreenController(mRecordingScrollScreen, 1)));
 		mCircularProgress = mRecordingScrollScreen.findViewById(R.id.circular_progress);
-		mStopButton = mRecordingScrollScreen.findViewById(R.id.image_view_track_rec_stop);
+		setProgression(false);
 		mCircularProgress.setOnTimerFinishedListener(this);
-		mCircularProgress.setOnClickListener((v) -> {
-			mCircularProgress.stopTimer();
-			hideProgression(true);
-		});
 	}
 
-	private void hideProgression(boolean hidden) {
-		mCircularProgress.setVisibility(hidden ? View.INVISIBLE : View.VISIBLE);
-		mStopButton.setVisibility(!hidden ? View.INVISIBLE : View.VISIBLE);
+	private void setProgression(boolean enableProgression) {
+		mTrackRecMainScreen.setProgressionVisible(enableProgression);
 	}
 
 	private void setDisabledDrawables() {
@@ -327,9 +323,14 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 
 	public void handleStopClick(View v) {
-		hideProgression(false);
-		mCircularProgress.setTotalTime(2000);
-		mCircularProgress.startTimer();
+		boolean isProgressionActive = Boolean.TRUE.equals(mTrackRecMainScreen.isProgressionVisible());
+		if (isProgressionActive) {
+			mCircularProgress.stopTimer();
+		} else {
+			mCircularProgress.setTotalTime(2000);
+			mCircularProgress.startTimer();
+		}
+		setProgression(!isProgressionActive);
 	}
 
 	public void handlePauseClick(View v) {
@@ -439,7 +440,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	@Override
 	public void onTimerFinished(CircularProgressLayout layout) {
-		hideProgression(true);
+		setProgression(false);
+		mCircularProgress.stopTimer();
 		sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
 		mStateMachine.transitionTo(IDLE_WAITING);
 	}

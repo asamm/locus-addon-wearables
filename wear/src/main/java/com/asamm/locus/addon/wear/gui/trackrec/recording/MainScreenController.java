@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.wear.widget.CircularProgressLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,12 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 	// recording active screen fields
 	private ImageView mImgPauseRecording, mImgStopRecording, mImgAddWaypoint;
 	private TrackStatLayout mStatsTop, mStatsBottom;
+	private CircularProgressLayout mCircularProgress;
 
 	private TrackRecordActivityConfiguration mConfig;
 	private Drawable mPauseDrawable;
 	private Drawable mResumeDrawable;
+	private Drawable mStopDrawable;
 
 	public MainScreenController(ViewGroup parentViewGroup) {
 		LayoutInflater inflater = LayoutInflater.from(parentViewGroup.getContext());
@@ -42,6 +45,7 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 		mImgPauseRecording = mLayout.findViewById(R.id.image_view_track_rec_pause);
 		mStatsTop = mLayout.findViewById(R.id.track_main_top);
 		mStatsBottom = mLayout.findViewById(R.id.track_main_bottom);
+		mCircularProgress = mLayout.findViewById(R.id.circular_progress);
 		loadAndInitStats(parentViewGroup.getContext(), mLayout);
 		setDisabledDrawables(parentViewGroup.getContext());
 	}
@@ -74,8 +78,9 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 
 	private void setRecScreenEnabled(boolean isEnabled) {
 		mImgPauseRecording.setEnabled(isEnabled);
-		mImgStopRecording.setEnabled(isEnabled);
 		mImgAddWaypoint.setEnabled(isEnabled);
+		mImgStopRecording.setEnabled(isEnabled);
+		mCircularProgress.setEnabled(isEnabled);
 	}
 
 	private void loadAndInitStats(Context context, ViewGroup view) {
@@ -94,6 +99,7 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 		Drawable d = DisableGuiHelper.getImageWithDisabled(ctx,
 				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_stop));
 		mImgStopRecording.setImageDrawable(d);
+		mStopDrawable = d;
 
 		d = DisableGuiHelper.getImageWithDisabled(ctx,
 				BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_pause_normal));
@@ -117,5 +123,20 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 		for (ImageView v : Arrays.asList(mImgPauseRecording, mImgStopRecording, mImgAddWaypoint)) {
 			v.setVisibility(isAmbient ? View.INVISIBLE : View.VISIBLE);
 		}
+	}
+
+
+	public void setProgressionVisible(boolean enableProgression) {
+		mImgStopRecording.setTag(Boolean.valueOf(enableProgression));
+		mImgStopRecording.setImageDrawable(enableProgression ?
+				getControllersView().getContext().getDrawable(R.drawable.ic_track_record_cancel)
+				: mStopDrawable);
+		setRecScreenEnabled(!enableProgression);
+		mImgStopRecording.setEnabled(true);
+		mCircularProgress.setEnabled(true);
+	}
+
+	public Boolean isProgressionVisible() {
+		return Boolean.TRUE.equals(mImgStopRecording.getTag());
 	}
 }
