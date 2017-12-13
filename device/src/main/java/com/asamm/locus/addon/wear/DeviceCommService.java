@@ -1,7 +1,6 @@
 package com.asamm.locus.addon.wear;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -21,7 +20,6 @@ import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -46,11 +44,16 @@ public class DeviceCommService extends LocusWearCommService {
 
 	private static volatile DeviceCommService mInstance;
 
+	private static final Long REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS = 5000L;
+
 	// tag for logger
 	private static final String TAG = DeviceCommService.class.getSimpleName();
 
+	private static volatile boolean mAboutToBeDestroyed = false;
 	// Last received update from Locus
 	private volatile UpdateContainer mLastUpdate;
+
+	private volatile long mLastPeriodicUpdateReceivedMilis = 0L;
 
 	// time for periodic data transmission to wear device
 	private PeriodicDataTimer mPeriodicDataTimer;
@@ -71,7 +74,7 @@ public class DeviceCommService extends LocusWearCommService {
 		Logger.logD(TAG, "Device comm service started.");
 		try {
 			lv = LocusUtils.getActiveVersion(ctx);
-			mLastUpdate = ActionTools.getDataUpdateContainer(ctx, lv);
+			onUpdate(ActionTools.getDataUpdateContainer(ctx, lv));
 		} catch (RequiredVersionMissingException e) {
 			mLastUpdate = null;
 		}
@@ -105,12 +108,19 @@ public class DeviceCommService extends LocusWearCommService {
 		synchronized (TAG) {
 			DeviceCommService s = mInstance;
 			if (s != null) {
+				mAboutToBeDestroyed = true;
 				s.destroy();
 				// disable receiver
 				Logger.logD(TAG, "Destroying device comm instance");
 				PeriodicUpdatesReceiver.disableReceiver(ctx);
 				mInstance = null;
 			}
+		}
+	}
+
+	private void enablePeriodicReceiver(Context ctx) {
+		synchronized (TAG) {
+			if (!mAboutToBeDestroyed) PeriodicUpdatesReceiver.enableReceiver(ctx);
 		}
 	}
 
@@ -129,6 +139,7 @@ public class DeviceCommService extends LocusWearCommService {
 	void onUpdate(UpdateContainer update) {
 		Logger.logD(TAG, "onUpdate(" + update + ")");
 		mLastUpdate = update;
+		mLastPeriodicUpdateReceivedMilis = System.currentTimeMillis();
 	}
 
 	/**
@@ -141,6 +152,17 @@ public class DeviceCommService extends LocusWearCommService {
 
 	void onDataChanged(Context c, DataEvent newData) {
 		Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
+		Long currentTime = System.currentTimeMillis();
+		if (currentTime - mLastPeriodicUpdateReceivedMilis > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
+			Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.");
+			try {
+				// update mLastUpdate manually and refresh mLastPeriodicUpdateReceivedMilis
+				onUpdate(ActionTools.getDataUpdateContainer(c, lv));
+				enablePeriodicReceiver(c);
+			} catch (RequiredVersionMissingException e) {
+				Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException");
+			}
+		}
 		DataItem item = newData.getDataItem();
 		DataPath path = DataPath.valueOf(item);
 		switch (path) {
@@ -272,9 +294,6 @@ public class DeviceCommService extends LocusWearCommService {
 		}
 
 		MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo, zoom);
-		if (loadedMap != null && loadedMap.getNumOfNotYetLoadedTiles() != 0) {
-			Logger.logE(TAG, "NYET LOADED TILES " + loadedMap.getNumOfNotYetLoadedTiles());
-		}
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 
@@ -315,7 +334,7 @@ public class DeviceCommService extends LocusWearCommService {
 		TrackRecordingStateEnum currentRecState = null;
 		if (mLastUpdate != null) {
 			currentRecState = mLastUpdate.isTrackRecPaused() ?
-					currentRecState = TrackRecordingStateEnum.PAUSED :
+					TrackRecordingStateEnum.PAUSED :
 					mLastUpdate.isTrackRecRecording() ? TrackRecordingStateEnum.RECORDING :
 							TrackRecordingStateEnum.NOT_RECORDING;
 		}
@@ -335,6 +354,11 @@ public class DeviceCommService extends LocusWearCommService {
 			} catch (RequiredVersionMissingException e) {
 				Logger.logE(TAG, "Invalid version " + lv + ", cant change track recording state.", e);
 			}
+		}
+		try {
+			onUpdate(ActionTools.getDataUpdateContainer(ctx, lv));
+		} catch (RequiredVersionMissingException e) {
+			Logger.logW(TAG, "getDataUpdateContainer() - RequiredVersionMissingException");
 		}
 		TrackRecordingValue trv = loadTrackRecordingValue(ctx);
 		sendDataItem(DataPath.PUT_TRACK_REC, trv);
