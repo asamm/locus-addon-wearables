@@ -2,6 +2,7 @@ package com.asamm.locus.addon.wear.gui.error;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -57,7 +58,8 @@ public class AppFailActivity extends WearableActivity {
 
 	public void onInstallClicked(View v) {
 		int phoneDeviceType = PhoneDeviceType.getPhoneDeviceType(getApplicationContext());
-		if (phoneDeviceType == PhoneDeviceType.DEVICE_TYPE_ANDROID) {
+		// Only target AW2.0+ since AW 1.x user should not see this at all and should reinstall manually
+		if (Build.VERSION.SDK_INT >= 25 && phoneDeviceType == PhoneDeviceType.DEVICE_TYPE_ANDROID) {
 			// Create Remote Intent to open Play Store listing of app on remote device.
 			Intent intentAndroid = new Intent(Intent.ACTION_VIEW)
 					.addCategory(Intent.CATEGORY_BROWSABLE)
