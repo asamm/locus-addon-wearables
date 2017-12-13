@@ -344,29 +344,24 @@ public class DeviceCommService extends LocusWearCommService {
 	 * Load basic data from current Locus application.
 	 */
 	private HandShakeValue loadHandShake(Context ctx) {
-		LocusUtils.LocusVersion locusVersion;
 		LocusInfo locusInfo = null;
 
 		try {
-			// read Locus info
-			locusVersion = LocusUtils.getActiveVersion(ctx, lv.getVersionCode());
-
 			// check if object exists
-			if (locusVersion != null) {
+			if (lv != null) {
 				// handle info
-				locusInfo = ActionTools.getLocusInfo(ctx, locusVersion);
+				locusInfo = ActionTools.getLocusInfo(ctx, lv);
 			}
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadHandShake", e);
 			// clear data
-			locusVersion = null;
 			locusInfo = null;
 		}
 
 		// prepare container with data and send it
-		HandShakeValue value = locusVersion == null ?
+		HandShakeValue value = lv == null ?
 				new HandShakeValue() :
-				new HandShakeValue(locusVersion.getVersionCode(),
+				new HandShakeValue(lv.getVersionCode(),
 						locusInfo != null && locusInfo.isRunning(),
 						locusInfo != null && locusInfo.isPeriodicUpdatesEnabled());
 		return value;
@@ -433,7 +428,7 @@ public class DeviceCommService extends LocusWearCommService {
 		try {
 			locusInfo = ActionTools.getLocusInfo(ctx, lv);
 		} catch (RequiredVersionMissingException e) {
-			Logger.logE(TAG, "Missing required version, current version " + lv, e);
+			Logger.logW(TAG, "Missing required version, current version " + lv);
 		}
 
 		TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,

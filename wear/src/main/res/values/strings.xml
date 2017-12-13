@@ -3,19 +3,19 @@
     <!-- Toast message shown after waypoint was added during track recording -->
     <string name="waypoint_added">Waypoint added</string>
     <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
-    <string name="err_locus_version_not_suppoerted">Sorry, your version of Locus Map is no longer supported. Please update your Locus Map application.</string>
+    <string name="err_locus_version_not_supported">Locus Map in your phone is outdated or missing. Please update or install it.</string>
     <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
-    <string name="err_periodic_updates_disabled">Periodic updates required. Please enable periodic updates in Locus Map -> Settings -> Miscellaneous -> Enable periodic updates for add-ons.</string>
+    <string name="err_periodic_updates_disabled">No connection with Locus. Please enable periodic updates in Locus Map -> Settings -> Miscellaneous.</string>
     <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
-    <string name="err_connection_failed">Connection to the mobile phone has failed. Please check the connection and try again.</string>
+    <string name="err_connection_failed">Connection lost. Please check bluetooth settings and try again.</string>
     <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
-    <string name="err_connection_error_node_not_connected">Active connection to your mobile phone is required. Please connect the watch and the phone and try again.</string>
+    <string name="err_connection_error_node_not_connected">Phone and watch not paired. Please pair them and try again.</string>
     <!-- Error shown when the phone is connected but Locus Map is probably not installed on it. -->
-    <string name="err_connection_device_app_not_installed">Could not connect to Wear for Locus Map on your phone. Please install the add-on or check your connection if it is already installed.</string>
+    <string name="err_connection_device_app_not_installed">Couldn\'t connect to Wear for Locus Map on your phone. Make sure it\'s installed.</string>
     <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
-    <string name="toast_err_device_not_supported">Installation request failed, please install manually.</string>
+    <string name="toast_err_device_not_supported">Request failed, install from your phone.</string>
     <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-    <string name="continue_installation">See your phone now to continue the installation ...</string>
+    <string name="continue_installation">Proceed installation on your phone...</string>
 
     <!-- UI Label elevation uphill -->
     <string name="stat_elevation_up">Elevation (Downhill)</string>

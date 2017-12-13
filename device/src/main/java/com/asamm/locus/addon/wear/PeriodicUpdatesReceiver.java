@@ -68,7 +68,7 @@ public class PeriodicUpdatesReceiver extends BroadcastReceiver {
 					PeriodicUpdatesReceiver.class);
 			Logger.logD(TAG, "periodic receiver enabled");
 		} catch (RequiredVersionMissingException e) {
-			Logger.logE(TAG, "enableReceiver(" + ctx + ")", e);
+			Logger.logW(TAG, "enableReceiver(" + ctx + "), missing required version!");
 		}
 	}
 

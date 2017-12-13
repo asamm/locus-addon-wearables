@@ -240,11 +240,12 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	private boolean validateHandShakeOrFail(HandShakeValue handShakeValue) {
-		if (handShakeValue == null || handShakeValue.isEmpty()) {
+		if (handShakeValue == null) {
 			WearCommService.getInstance().sendCommand(DataPath.GET_HAND_SHAKE);
 			return false;
 		}
-		if (handShakeValue.getmLocusVersion() < Const.LOCUS_MIN_VERSION_CODE.vcFree) {
+		if (handShakeValue.isEmpty() ||
+				handShakeValue.getmLocusVersion() < Const.LOCUS_MIN_VERSION_CODE.vcFree) {
 			doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION);
 			return false;
 		}

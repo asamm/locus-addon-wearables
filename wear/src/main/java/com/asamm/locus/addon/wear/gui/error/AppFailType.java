@@ -9,7 +9,7 @@ import com.asamm.locus.addon.wear.R;
  */
 
 public enum AppFailType {
-	UNSUPPORTED_LOCUS_VERSION(R.string.err_locus_version_not_suppoerted),
+	UNSUPPORTED_LOCUS_VERSION(R.string.err_locus_version_not_supported),
 	PERIODIC_UPDATES_DISABLED(R.string.err_periodic_updates_disabled),
 	/** General communication fail during normal operation even though device should be connected */
 	CONNECTION_FAILED(R.string.err_connection_failed),
