@@ -10,7 +10,7 @@
     <string name="err_connection_failed">Connection lost. Please check bluetooth settings and try again.</string>
     <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
     <string name="err_connection_error_node_not_connected">Phone and watch not paired. Please pair them and try again.</string>
-    <!-- Error shown when the phone is connected but Locus Map is probably not installed on it. -->
+    <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
     <string name="err_connection_device_app_not_installed">Couldn\'t connect to Wear for Locus Map on your phone. Make sure it\'s installed.</string>
     <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
     <string name="toast_err_device_not_supported">Request failed, install from your phone.</string>
