@@ -250,6 +250,9 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 		}
 		runOnUiThread(() -> {
 			mStateMachine.update(trv);
+			if (mStateMachine.getCurrentState() == IDLE && isRecScreenVisible()) {
+				enableIdleScreen();
+			}
 			mRecordingScrollScreen.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
 				refreshStatistics(trv);
@@ -394,6 +397,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	private void enableIdleScreen() {
 		setIdleScreenEnabled(true);
+		mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
 		Logger.logD(TAG, "Enabling idle screen");
 	}
 
@@ -405,6 +409,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	private void enableRecScreen() {
 		mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
+		mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
 		Logger.logD(TAG, "Enabling rec screen");
 	}
 

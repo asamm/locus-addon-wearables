@@ -131,24 +131,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 		AppPreferencesManager.persistLastActivity(this, getClass());
 
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
-		if (!onConnectionFailedTimerTick()) {
-			ticks = 0;
-			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
-				@Override
-				public void onTick(long l) {
-					ticks++;
-					onConnectionFailedTimerTick();
-				}
-
-				@Override
-				public void onFinish() {
-					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
-					cancelConnectionFailedTimer();
-					/* Could not establish handshake connection */
-					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
-				}
-			};
-			mConnectionFailedTimer.start();
+		if (mConnectionFailedTimer == null) {
+			startConnectionFailTimer();
 		}
 
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
@@ -247,10 +231,44 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	}
 
+	protected void startConnectionFailTimer() {
+		synchronized (this) {
+			if (mConnectionFailedTimer != null
+					|| mState == WearActivityState.ON_STOP
+					|| mState == WearActivityState.ON_DESTROY)
+				return;
+			ticks = 0;
+			mIsHandShakeReceived = false;
+			mIsInitialRequestReceived = false;
+			mGetConnectedNodesSent.set(false);
+			mHandshakeSent.set(false);
+			mHandshakeRetrySent.set(false);
+
+			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
+				@Override
+				public void onTick(long l) {
+					ticks++;
+					onConnectionFailedTimerTick();
+				}
+
+				@Override
+				public void onFinish() {
+					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+					cancelConnectionFailedTimer();
+					/* Could not establish handshake connection */
+					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
+				}
+			};
+			mConnectionFailedTimer.start();
+		}
+	}
+
 	protected void cancelConnectionFailedTimer() {
-		if (mConnectionFailedTimer != null) {
-			mConnectionFailedTimer.cancel();
-			mConnectionFailedTimer = null;   // and canceling and nulling timer
+		synchronized (this) {
+			if (mConnectionFailedTimer != null) {
+				mConnectionFailedTimer.cancel();
+				mConnectionFailedTimer = null;   // and canceling and nulling timer
+			}
 		}
 	}
 

@@ -226,11 +226,15 @@ public class MapActivity extends LocusWearActivity {
 		setNavImageForAction(mIvNavPanelTop,
 				data.isNavValid() ? data.getNavPointAction2Id() : PointRteAction.UNDEFINED.getId());
 
-		// set time to target
-		mTvNavPanelDistValue.setText(UtilsFormat.formatDistance(
-				data.getUnitsFormatLength(), data.getNavPoint1Dist(), true));
-		mTvNavPanelDistUnits.setText(UtilsFormat.formatDistanceUnits(
-				data.getUnitsFormatLength(), data.getNavPoint1Dist()));
+		if (data.isNavValid()) {
+			mTvNavPanelDistValue.setText(UtilsFormat.formatDistance(
+					data.getUnitsFormatLength(), data.getNavPoint1Dist(), true));
+			mTvNavPanelDistUnits.setText(UtilsFormat.formatDistanceUnits(
+					data.getUnitsFormatLength(), data.getNavPoint1Dist()));
+		} else {
+			mTvNavPanelDistValue.setText("");
+			mTvNavPanelDistUnits.setText("");
+		}
 	}
 
 	private void setNavImageForAction(ImageView view, int pointRteActionId) {
