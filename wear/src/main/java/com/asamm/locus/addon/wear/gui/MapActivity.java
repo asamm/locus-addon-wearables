@@ -32,6 +32,7 @@ import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
 import locus.api.objects.enums.PointRteAction;
+import locus.api.utils.Logger;
 
 /**
  * Activity with map preview
@@ -79,6 +80,7 @@ public class MapActivity extends LocusWearActivity {
 	 * simple mutex for temporary locking zooming function while animating
 	 */
 	private volatile boolean mZoomLock;
+	private volatile boolean mIsScaled = false;
 
 	private volatile int mDeviceZoom;
 	private volatile int mRequestedZoom = Const.ZOOM_UNKOWN;
@@ -172,24 +174,26 @@ public class MapActivity extends LocusWearActivity {
 	 */
 	private void refreshMapView(MapContainer data) {
 		if (data != null && data.getLoadedMap() != null) {
-			mMapView.setBackground(null);
 			Bitmap map = data.getLoadedMap().getImage();
 			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
 				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
 				Canvas c = new Canvas(bm);
 				Paint paintInvertImage = new Paint();
 				paintInvertImage.setColorFilter(new ColorMatrixColorFilter(getInvertColorMatrix()));
-				c.drawBitmap(map,0,0, paintInvertImage);
+				c.drawBitmap(map, 0, 0, paintInvertImage);
 				mMapView.setImageBitmap(bm);
 			} else {
 				mMapView.setImageBitmap(map);
 			}
-			if (data.getZoomWear() == mRequestedZoom) {
+			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
 				mMapView.animate().cancel();
 				mMapView.setScaleX(1f);
 				mMapView.setScaleY(1f);
 				mZoomLock = false;
+				mIsScaled = false;
 			}
+		} else {
+			Logger.logE(TAG, data == null ? "data is null" : "data.loadedMap is null");
 		}
 	}
 
@@ -271,6 +275,7 @@ public class MapActivity extends LocusWearActivity {
 		mZoomLock = true;
 		if (changeZoom(mRequestedZoom + zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
+			mIsScaled = true;
 			mMapView.animate()
 					.scaleX(scale)
 					.scaleY(scale)
@@ -302,10 +307,10 @@ public class MapActivity extends LocusWearActivity {
 	public ColorMatrix getInvertColorMatrix() {
 		if (mInvertColorMatrix == null) {
 			float mx[] = {
-					-1.0f,  0.0f,  0.0f, 1.0f, 1.0f,
-					0.0f, -1.0f,  0.0f, 1.0f, 1.0f,
-					0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
-					0.0f,  0.0f,  0.0f, 1.0f, 0.0f};
+					-1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+					0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+					0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
+					0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
 			mInvertColorMatrix = new ColorMatrix(mx);
 		}
 		return mInvertColorMatrix;
