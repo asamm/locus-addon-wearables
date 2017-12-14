@@ -270,18 +270,20 @@ public class DeviceCommService extends LocusWearCommService {
 		int zoom = extra.getZoom();
 		int width = extra.getWidth();
 		int height = extra.getHeight();
+		final UpdateContainer data = mLastUpdate;
 
 		if (zoom == Const.ZOOM_UNKOWN) {
-			zoom = mLastUpdate != null ? mLastUpdate.getMapZoomLevel() : Const.ZOOM_DEFAULT;
+			zoom = data != null ? data.getMapZoomLevel() : Const.ZOOM_DEFAULT;
 		}
 
 		// request map
 		ActionTools.BitmapLoadResult loadedMap = null;
 
 		try {
+			Location loc = data != null && data.getLocMyLocation() != null ?
+					data.getLocMyLocation() : new Location(0, 0);
 			loadedMap = ActionTools.getMapPreview(ctx,
-					lv, new Location(0, 0),
-					zoom, width, height, true);
+					lv, loc, zoom, width, height, true);
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadMapPreview(" + lv + ")");
 		}
@@ -293,7 +295,7 @@ public class DeviceCommService extends LocusWearCommService {
 			Logger.logE(TAG, "Missing required version, current version " + lv, e);
 		}
 
-		MapContainer m = new MapContainer(loadedMap, mLastUpdate, locusInfo, zoom);
+		MapContainer m = new MapContainer(loadedMap, data, locusInfo, zoom);
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 

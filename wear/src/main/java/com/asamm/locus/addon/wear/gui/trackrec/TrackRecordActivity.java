@@ -69,7 +69,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	private static final int REFRESH_PERIOD_MS = 1000;
 
-	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 6;
+	private static final int WATCHDOG_TIMEOUT = REFRESH_PERIOD_MS * 9;
 
 	private CircularProgressLayout mCircularProgress;
 
