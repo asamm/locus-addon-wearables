@@ -4,8 +4,6 @@
     <color name="base_disabled">#80aaaaaa</color>
     <color name="crimson">#DC143C</color>
 
-    <color name="color_text_grey">#808080</color>
-
     <color name="activity_background">#FFFFFF</color>
     <color name="base_primary">#1976d2</color>
     <color name="nav_drawer_dark_background">#104e8a</color>

@@ -34,8 +34,6 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private static String TAG = WearCommService.class.getSimpleName();
 	private static WearCommService mDeviceCommunicationService;
 
-	private volatile Thread mRefresher;
-
 	private volatile long mLastSentDataTimestamp = 0L;
 
 	private MainApplication mApp;
@@ -73,7 +71,6 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 					CAPABILITY_PHONE_APP);
 		}
 		mApp = null;
-		mRefresher = null;
 		super.destroy();
 	}
 

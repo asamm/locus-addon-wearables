@@ -202,6 +202,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 			byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.RESULT_PROFILES);
 			try {
 				mProfileSelect.setParameters(new TrackProfileInfoValue(profileBytes));
+				AppPreferencesManager.persistLastTrackRecProfile(this, mProfileSelect.getProfile());
 			} catch (IOException e) {
 				Logger.logE("TAG", "empty profile bytes", e);
 
@@ -265,7 +266,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	}
 
 	@Override
-	protected void onStart() {
+	protected void onResume() {
+		super.onResume();
 		TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
 		TrackRecordingStateEnum lastState = AppPreferencesManager.getLastTrackRecProfileState(this);
 		if (profileInfo.getName() != null) {
@@ -282,7 +284,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 		} else {
 			transitionToIdlestate();
 		}
-		super.onStart();
 	}
 
 	@Override

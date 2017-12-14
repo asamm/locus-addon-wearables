@@ -148,7 +148,7 @@ public class WatchDog {
 			onFail.onAppFail(AppFailType.CONNECTION_FAILED);
 		} else if (reqsToResend != null) {
 			for (DataPayload p : reqsToResend) {
-				Logger.logD(TAG, "Watchdog retry request " + p);
+				Logger.logD(TAG, "Watchdog retry request " + p.getPath());
 				WearCommService.getInstance().sendDataItem(p.getPath(), p.getStorable());
 			}
 		}

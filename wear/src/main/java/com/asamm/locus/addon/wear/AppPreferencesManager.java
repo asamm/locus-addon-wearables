@@ -47,7 +47,7 @@ public class AppPreferencesManager {
 		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
 				.putString(PREF_PROFILE_NAME, value.getName())
 				.putLong(PREF_PROFILE_ID, value.getId())
-				.apply();
+				.commit();
 	}
 
 	public static TrackProfileInfoValue getLastTrackRecProfile(Context ctx) {

@@ -65,6 +65,7 @@ public class MapActivity extends LocusWearActivity {
 
 	private ImageView mBtnZoomIn;
 	private ImageView mBtnZoomOut;
+	private ImageView mIvAmbient;// TODO cejnar change icon
 	private ViewGroup mLayoutNavigation;
 
 	private volatile MapContainer mLastContainer;
@@ -119,6 +120,7 @@ public class MapActivity extends LocusWearActivity {
 		mLayoutNavigation = findViewById(R.id.linear_layout_panel_navigation);
 		mTvNavDistUnits = findViewById(R.id.text_view_dist_units);
 		mTvNavDistVal = findViewById(R.id.text_view_dist_value);
+		mIvAmbient = findViewById(R.id.imageview_ambient);
 		// Enables Always-on
 		setAmbientEnabled();
 		initView();
@@ -321,7 +323,8 @@ public class MapActivity extends LocusWearActivity {
 		super.onEnterAmbient(ambientDetails);
 		mBtnZoomIn.setVisibility(View.GONE);
 		mBtnZoomOut.setVisibility(View.GONE);
-		mLayoutNavigation.setBackgroundColor(getColor(R.color.black));
+		mIvAmbient.setVisibility(View.VISIBLE);
+		mLayoutNavigation.setBackgroundColor(getColor(R.color.base_dark_primary));
 		mTvNavDistVal.setTextColor(Color.WHITE);
 		mTvNavDistUnits.setTextColor(Color.WHITE);
 		refreshMapView(mLastContainer);
@@ -332,9 +335,10 @@ public class MapActivity extends LocusWearActivity {
 		super.onExitAmbient();
 		mBtnZoomIn.setVisibility(View.VISIBLE);
 		mBtnZoomOut.setVisibility(View.VISIBLE);
+		mIvAmbient.setVisibility(View.GONE);
 		mLayoutNavigation.setBackgroundColor(getColor(R.color.panel_map_side));
-		mTvNavDistVal.setTextColor(getColor(R.color.color_text_grey));
-		mTvNavDistUnits.setTextColor(getColor(R.color.color_text_grey));
+		mTvNavDistVal.setTextColor(getColor(R.color.base_dark_primary));
+		mTvNavDistUnits.setTextColor(getColor(R.color.base_dark_primary));
 		refreshMapView(mLastContainer);
 	}
 }

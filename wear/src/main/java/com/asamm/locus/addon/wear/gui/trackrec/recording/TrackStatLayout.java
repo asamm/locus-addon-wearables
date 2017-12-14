@@ -91,10 +91,10 @@ public class TrackStatLayout extends ConstraintLayout {
 	}
 
 	public void setAmbientMode(boolean enabled) {
-		mTextViewDescription.setTextColor(enabled ? Color.WHITE : Color.BLACK);
-		mTextViewValue.setTextColor(enabled ? Color.WHITE : Color.BLACK);
+		mTextViewDescription.setTextColor(enabled ? Color.WHITE : getContext().getColor(R.color.base_dark_primary));
+		mTextViewValue.setTextColor(enabled ? Color.WHITE : getContext().getColor(R.color.base_dark_primary));
 		if (enabled) {
-			mImageViewIcon.setColorFilter(Color.argb(255, 255, 255, 255));
+			mImageViewIcon.setColorFilter(Color.WHITE);
 		} else {
 			mImageViewIcon.clearColorFilter();
 		}

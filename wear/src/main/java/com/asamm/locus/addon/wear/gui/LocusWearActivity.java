@@ -128,6 +128,29 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onResume() {
 		this.mState = WearActivityState.ON_RESUME;
 		super.onResume();
+		AppPreferencesManager.persistLastActivity(this, getClass());
+
+		// checks connection and state of initial command, if not ready, initiates countDownTimer
+		if (!onConnectionFailedTimerTick()) {
+			ticks = 0;
+			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
+				@Override
+				public void onTick(long l) {
+					ticks++;
+					onConnectionFailedTimerTick();
+				}
+
+				@Override
+				public void onFinish() {
+					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+					cancelConnectionFailedTimer();
+					/* Could not establish handshake connection */
+					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
+				}
+			};
+			mConnectionFailedTimer.start();
+		}
+
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
 			AppPreferencesManager.persistFirstAppStart(this);
 			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800);
@@ -247,32 +270,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 	@Override
 	protected void onStart() {
 		this.mState = WearActivityState.ON_START;
-		AppPreferencesManager.persistLastActivity(this, getClass());
-
 		super.onStart();
-
 		mDrawer = findViewById(R.id.navigation_drawer);
 		mDrawerCloseArrowImg = findViewById(R.id.imageViewDrawerOpened);
-		// checks connection and state of initial command, if not ready, initiates countDownTimer
-		if (!onConnectionFailedTimerTick()) {
-			ticks = 0;
-			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
-				@Override
-				public void onTick(long l) {
-					ticks++;
-					onConnectionFailedTimerTick();
-				}
-
-				@Override
-				public void onFinish() {
-					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
-					cancelConnectionFailedTimer();
-					/* Could not establish handshake connection */
-					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
-				}
-			};
-			mConnectionFailedTimer.start();
-		}
 	}
 
 	// current activity state

@@ -49,7 +49,7 @@ public class DeviceCommService extends LocusWearCommService {
 	// tag for logger
 	private static final String TAG = DeviceCommService.class.getSimpleName();
 
-	private static volatile boolean mAboutToBeDestroyed = false;
+	private volatile boolean mAboutToBeDestroyed = false;
 	// Last received update from Locus
 	private volatile UpdateContainer mLastUpdate;
 
@@ -59,6 +59,8 @@ public class DeviceCommService extends LocusWearCommService {
 	private PeriodicDataTimer mPeriodicDataTimer;
 
 	private TrackProfileIconValue.ValueList mProfileIcons;
+
+	private static final Location ZERO_LOCATION = new Location(0,0);
 	/**
 	 * is updated as side effect of some selected wear requests during handling
 	 */
@@ -106,10 +108,12 @@ public class DeviceCommService extends LocusWearCommService {
 	 */
 	static void destroyInstance(Context ctx) {
 		synchronized (TAG) {
-			DeviceCommService s = mInstance;
+			final DeviceCommService s = mInstance;
 			if (s != null) {
-				mAboutToBeDestroyed = true;
+				s.mAboutToBeDestroyed = true;
 				s.destroy();
+				// disable watch periodic data timer
+				s.destroyPeriodicDataTimer();
 				// disable receiver
 				Logger.logD(TAG, "Destroying device comm instance");
 				PeriodicUpdatesReceiver.disableReceiver(ctx);
@@ -122,13 +126,6 @@ public class DeviceCommService extends LocusWearCommService {
 		synchronized (TAG) {
 			if (!mAboutToBeDestroyed) PeriodicUpdatesReceiver.enableReceiver(ctx);
 		}
-	}
-
-	@Override
-	protected void destroy() {
-		super.destroy();
-		// fake periodic command stop request to cancel timer
-		handlePeriodicWearUpdate(null, PeriodicCommand.createStopPeriodicUpdatesCommand());
 	}
 
 	/**
@@ -218,6 +215,14 @@ public class DeviceCommService extends LocusWearCommService {
 		}
 	}
 
+	private void destroyPeriodicDataTimer() {
+		synchronized (TAG) {
+			if (mPeriodicDataTimer != null) {
+				mPeriodicDataTimer.cancel();
+				mPeriodicDataTimer = null;
+			}
+		}
+	}
 	private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
 		if (command == null) {
 			command = PeriodicCommand.createStopPeriodicUpdatesCommand();
@@ -234,6 +239,10 @@ public class DeviceCommService extends LocusWearCommService {
 				task = new TimerTask() {
 					@Override
 					public void run() {
+						if (DeviceCommService.this.mAboutToBeDestroyed) {
+							destroyPeriodicDataTimer();
+							return;
+						}
 						TrackRecordingValue trv = loadTrackRecordingValue(ctx);
 						sendDataItem(DataPath.PUT_TRACK_REC, trv);
 					}
@@ -243,6 +252,10 @@ public class DeviceCommService extends LocusWearCommService {
 				task = new TimerTask() {
 					@Override
 					public void run() {
+						if (DeviceCommService.this.mAboutToBeDestroyed) {
+							destroyPeriodicDataTimer();
+							return;
+						}
 						sendMapPeriodic(ctx, ((MapPeriodicParams) extra));
 					}
 				};
@@ -252,13 +265,11 @@ public class DeviceCommService extends LocusWearCommService {
 				break;
 		}
 
-		synchronized (this) {
-			if (mPeriodicDataTimer != null) {
-				mPeriodicDataTimer.cancel();
-				mPeriodicDataTimer = null;
-			}
+		synchronized (TAG) {
+			destroyPeriodicDataTimer();
 
-			if ((command == null || command.isStopRequest()) || task == null) {
+			if ((command == null || command.isStopRequest()) || task == null
+					|| mAboutToBeDestroyed) {
 				return;
 			}
 			mPeriodicDataTimer = new PeriodicDataTimer(activityId, periodMs);
@@ -280,8 +291,10 @@ public class DeviceCommService extends LocusWearCommService {
 		ActionTools.BitmapLoadResult loadedMap = null;
 
 		try {
-			Location loc = data != null && data.getLocMyLocation() != null ?
-					data.getLocMyLocation() : new Location(0, 0);
+			Location loc = data != null
+					&& data.isEnabledMyLocation()
+					&& data.getLocMyLocation() != null ?
+					data.getLocMyLocation() : ZERO_LOCATION;
 			loadedMap = ActionTools.getMapPreview(ctx,
 					lv, loc, zoom, width, height, true);
 		} catch (RequiredVersionMissingException e) {
