@@ -349,8 +349,8 @@ public class MainApplication extends Application implements Application.Activity
 		reconnectIfNeeded();
 	}
 
-	public Class<? extends LocusWearActivity> getLastAppTask() {
-		String activityName = AppPreferencesManager.getLastActivity(this);
+	public static Class<? extends LocusWearActivity> getLastAppTask(Context ctx) {
+		String activityName = AppPreferencesManager.getLastActivity(ctx);
 		Class<? extends LocusWearActivity> c = TrackRecordActivity.class;
 		if (MapActivity.class.getSimpleName().equals(activityName)) {
 			c = MapActivity.class;

@@ -106,7 +106,7 @@ public class AppFailActivity extends WearableActivity {
 	}
 
 	public void onRetryClicked(View v) {
-		Class<? extends LocusWearActivity> c = ((MainApplication) getApplication()).getLastAppTask();
+		Class<? extends LocusWearActivity> c = MainApplication.getLastAppTask(this);
 		Intent i = new Intent(this, c);
 		startActivity(i);
 		finish();

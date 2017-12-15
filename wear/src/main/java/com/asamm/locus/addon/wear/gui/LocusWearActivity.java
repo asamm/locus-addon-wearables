@@ -20,6 +20,7 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
+import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.Node;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -122,6 +123,15 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		this.mState = WearActivityState.ON_CREATE;
 		super.onCreate(savedInstanceState);
+		Class<? extends LocusWearActivity> c = MainApplication.getLastAppTask(this);
+		// dispatch to correct activity - if activities are different, then application was restored
+		// do not apply for ProfileListActivity which is not persisted when opened
+		if (!c.equals(getClass())
+				&& !getClass().equals(ProfileListActivity.class)) {
+			Intent i = new Intent(this, c);
+			startActivity(i);
+			finish();
+		}
 	}
 
 	@Override
@@ -310,7 +320,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * @param v
 	 */
 	public void handleNavigationDrawerItemClicked(View v) {
-		final Class<? extends WearableActivity> activityToStart;
+		final Class<? extends LocusWearActivity> activityToStart;
 		switch (v.getId()) {
 			case R.id.navigation_drawer_item_map:
 				activityToStart = MapActivity.class;
@@ -330,6 +340,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 			return;
 		}
 		Intent i = new Intent(this, activityToStart);
+		AppPreferencesManager.persistLastActivity(this, activityToStart);
 		startActivity(i);
 	}
 

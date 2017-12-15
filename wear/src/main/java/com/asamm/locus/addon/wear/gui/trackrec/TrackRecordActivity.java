@@ -249,9 +249,11 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 			return;
 		}
 		runOnUiThread(() -> {
-			mStateMachine.update(trv);
-			if (mStateMachine.getCurrentState() == IDLE && isRecScreenVisible()) {
-				enableIdleScreen();
+			synchronized (mStateMachine) {
+				mStateMachine.update(trv);
+				if (mStateMachine.getCurrentState() == IDLE && isRecScreenVisible()) {
+					enableIdleScreen();
+				}
 			}
 			mRecordingScrollScreen.onNewTrackRecordingData(this, trv);
 			if (isRecScreenVisible()) {
@@ -322,7 +324,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	private boolean isIdleScreenAlive() {
 		final TrackRecActivityState state = mStateMachine.getCurrentState();
 		return ((MainApplication) getApplication()).getCurrentActivity() == this
-				&& (state == IDLE || state == IDLE_WAITING || state == UNINITIALIZED);
+				&& (state == IDLE || state == IDLE_WAITING || state == UNINITIALIZED)
+				&& mState != WearActivityState.ON_STOP && mState != WearActivityState.ON_DESTROY;
 	}
 
 
