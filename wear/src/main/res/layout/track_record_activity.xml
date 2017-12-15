@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.wear.widget.drawer.WearableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.asamm.locus.addon.wear.gui.custom.CustomWearableDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/rootActivityStyle"
     android:layout_width="match_parent"
@@ -27,5 +27,5 @@
 
     <include layout="@layout/include_navigation_drawer" />
 
-</android.support.wear.widget.drawer.WearableDrawerLayout>
+</com.asamm.locus.addon.wear.gui.custom.CustomWearableDrawerLayout>
 

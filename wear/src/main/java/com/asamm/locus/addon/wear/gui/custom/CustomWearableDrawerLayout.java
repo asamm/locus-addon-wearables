@@ -1,0 +1,42 @@
+package com.asamm.locus.addon.wear.gui.custom;
+
+import android.content.Context;
+import android.support.wear.widget.drawer.WearableDrawerLayout;
+import android.util.AttributeSet;
+
+import java.lang.reflect.Field;
+
+/**
+ * Created by Milan Cejnar on 15.12.2017.
+ * Asamm Software, s.r.o.
+ */
+
+public class CustomWearableDrawerLayout extends WearableDrawerLayout {
+
+	public CustomWearableDrawerLayout(Context context) {
+		this(context, null);
+	}
+
+	public CustomWearableDrawerLayout(Context context, AttributeSet attrs) {
+		this(context, attrs, 0);
+	}
+
+	public CustomWearableDrawerLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+		this(context, attrs, defStyleAttr, 0);
+	}
+
+	public CustomWearableDrawerLayout(
+			Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+		super(context, attrs, defStyleAttr, defStyleRes);
+		// try to make top navigation drawer trigger area bigger
+		try {
+			Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
+			topDragger.setAccessible(true);
+			Object topDraggerInstance = topDragger.get(this);
+			Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
+			edgeSize.setAccessible(true);
+			int edgeSizePx = edgeSize.getInt(topDraggerInstance);
+			edgeSize.set(topDraggerInstance, (int) (edgeSizePx * 1.33f + 0.5f));
+		} catch (Exception e) {}
+	}
+}
