@@ -65,7 +65,7 @@ public class MapActivity extends LocusWearActivity {
 
 	private ImageView mBtnZoomIn;
 	private ImageView mBtnZoomOut;
-	private ImageView mIvAmbient;// TODO cejnar change icon
+	private ImageView mIvAmbient;
 	private ViewGroup mLayoutNavigation;
 
 	private volatile MapContainer mLastContainer;
