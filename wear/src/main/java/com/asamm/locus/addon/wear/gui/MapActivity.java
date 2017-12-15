@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -185,7 +186,7 @@ public class MapActivity extends LocusWearActivity {
 				c.drawBitmap(map, 0, 0, paintInvertImage);
 				mMapView.setImageBitmap(bm);
 			} else {
-				mMapView.setImageBitmap(map);
+				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
 			}
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
 				mMapView.animate().cancel();
