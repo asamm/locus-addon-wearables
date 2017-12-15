@@ -175,7 +175,7 @@ public class MapActivity extends LocusWearActivity {
 	 * Refreshes map image view
 	 */
 	private void refreshMapView(MapContainer data) {
-		if (data != null && data.getLoadedMap() != null) {
+		if (data != null && data.getLoadedMap() != null && data.getLoadedMap().getImage() != null) {
 			Bitmap map = data.getLoadedMap().getImage();
 			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
 				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
@@ -195,7 +195,8 @@ public class MapActivity extends LocusWearActivity {
 				mIsScaled = false;
 			}
 		} else {
-			Logger.logE(TAG, data == null ? "data is null" : "data.loadedMap is null");
+			Logger.logE(TAG, (data == null ? "data" : data.getLoadedMap() == null ?
+					 "data.loadedMap" : "data.loadedMap.image") + " is null.");
 		}
 	}
 
@@ -222,16 +223,18 @@ public class MapActivity extends LocusWearActivity {
 		setNavImageForAction(mIvNavPanelMiddle,
 				data.isNavValid() ? data.getNavPointAction1Id() : PointRteAction.UNDEFINED.getId());
 
-		// action for next point
-		setNavImageForAction(mIvNavPanelTop,
-				data.isNavValid() ? data.getNavPointAction2Id() : PointRteAction.UNDEFINED.getId());
-
 		if (data.isNavValid()) {
+			if (mIvNavPanelTop.getVisibility() != View.VISIBLE) {
+				mIvNavPanelTop.setVisibility(View.VISIBLE);
+			}
+			// action for next point
+			setNavImageForAction(mIvNavPanelTop, data.getNavPointAction2Id());
 			mTvNavPanelDistValue.setText(UtilsFormat.formatDistance(
 					data.getUnitsFormatLength(), data.getNavPoint1Dist(), true));
 			mTvNavPanelDistUnits.setText(UtilsFormat.formatDistanceUnits(
 					data.getUnitsFormatLength(), data.getNavPoint1Dist()));
 		} else {
+			mIvNavPanelTop.setVisibility(View.INVISIBLE);
 			mTvNavPanelDistValue.setText("");
 			mTvNavPanelDistUnits.setText("");
 		}
@@ -253,7 +256,8 @@ public class MapActivity extends LocusWearActivity {
 			case PUT_MAP:
 				mLastContainer = (MapContainer) data;
 				refreshLayout(mLastContainer);
-				if (mLastContainer.getLoadedMap() == null || mLastContainer.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
+				if (mLastContainer.getLoadedMap() == null || mLastContainer.getLoadedMap().getImage() == null
+						|| mLastContainer.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
 					getMainApplication().sendDataWithWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
