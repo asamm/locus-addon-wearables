@@ -88,7 +88,7 @@ public class MapActivity extends LocusWearActivity {
 	private volatile int mRequestedZoom = Const.ZOOM_UNKOWN;
 
 	@Override
-	protected DataPayload<PeriodicCommand> getInitialCommandType() {
+	protected DataPayload<TimeStampStorable> getInitialCommandType() {
 		ApplicationMemoryCache appState = ((MainApplication) getApplication()).getCache();
 
 		final MapPeriodicParams params =
@@ -197,7 +197,7 @@ public class MapActivity extends LocusWearActivity {
 			}
 		} else {
 			Logger.logE(TAG, (data == null ? "data" : data.getLoadedMap() == null ?
-					 "data.loadedMap" : "data.loadedMap.image") + " is null.");
+					"data.loadedMap" : "data.loadedMap.image") + " is null.");
 		}
 	}
 
@@ -249,22 +249,33 @@ public class MapActivity extends LocusWearActivity {
 			view.setTag(img);
 		}
 	}
-
 	@Override
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
 		super.consumeNewData(path, data);
 		switch (path) {
 			case PUT_MAP:
-				mLastContainer = (MapContainer) data;
-				refreshLayout(mLastContainer);
-				if (mLastContainer.getLoadedMap() == null || mLastContainer.getLoadedMap().getImage() == null
-						|| mLastContainer.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
-					getMainApplication().sendDataWithWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+				MapContainer tmp = (MapContainer) data;
+				if (tmp != null) {
+					mLastContainer = tmp;
+					refreshLayout(mLastContainer);
+				}
+				if (!testMapContainerAndImageNotNull(tmp)) {
+					getMainApplication()
+							.sendDataWithWatchDogConditionable(getInitialCommandType(),
+									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS,
+									(MapContainer cont) -> testMapContainerAndImageNotNull(cont));
+				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
+					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
+									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				}
 				break;
 		}
+	}
+
+	private static boolean testMapContainerAndImageNotNull(MapContainer m) {
+		return m != null && m.getLoadedMap() != null && m.getLoadedMap().getImage() != null;
 	}
 
 	public void onZoomClicked(View v) {
@@ -305,7 +316,7 @@ public class MapActivity extends LocusWearActivity {
 			return false;
 		}
 		mRequestedZoom = newZoom;
-		DataPayload<PeriodicCommand> refreshCmd = getInitialCommandType();
+		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
 		return true;
 	}
