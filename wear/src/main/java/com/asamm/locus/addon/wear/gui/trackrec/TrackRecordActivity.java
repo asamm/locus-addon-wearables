@@ -19,6 +19,7 @@ import android.widget.ViewFlipper;
 import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
+import com.asamm.locus.addon.wear.WatchDogPredicate;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -154,13 +155,25 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 		mImgStartRecording.setImageDrawable(d);
 	}
 
+	private static final WatchDogPredicate<TrackProfileInfoValue.ValueList> isProfileListNotEmpty =
+			(TrackProfileInfoValue.ValueList profs) ->
+					profs != null && profs.getStorables() != null && !profs.getStorables().isEmpty();
+
 	@Override
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
 		super.consumeNewData(path, data);
 		switch (path) {
 			case PUT_TRACK_REC_PROFILE_INFO:
 				TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) data;
-				runOnUiThread(() -> onNewProfilesReceived(profiles));
+				if (isProfileListNotEmpty.test(profiles)) {
+					runOnUiThread(() -> onNewProfilesReceived(profiles));
+				} else {
+					Logger.logE(TAG, "Received empty profile list.");
+					getMainApplication().sendDataWithWatchDogConditionable(
+							new DataPayload<>(DataPath.GET_TRACK_REC_PROFILES, new EmptyCommand()),
+							DataPath.PUT_TRACK_REC_PROFILE_INFO, WATCHDOG_TIMEOUT,
+							isProfileListNotEmpty);
+				}
 				break;
 			case PUT_PROFILE_ICON:
 				final TrackProfileIconValue icon = (TrackProfileIconValue) data;
@@ -245,7 +258,9 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	private void onPutTrackRec(final TrackRecordingValue trv) {
 		if (trv == null || !trv.isInfoAvailable()) {
 			DataPayload p = getInitialCommandType();
-			WearCommService.getInstance().sendDataItem(p.getPath(), p.getStorable());
+			getMainApplication().sendDataWithWatchDogConditionable(getInitialCommandType(),
+					getInitialCommandResponseType(),
+					WATCHDOG_TIMEOUT, (d) -> d != null);
 			return;
 		}
 		runOnUiThread(() -> {
