@@ -17,10 +17,10 @@
     <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <string name="continue_installation">Proceed installation on your phone...</string>
 
-    <!-- UI Label elevation uphill -->
-    <string name="stat_elevation_up">Elevation (Downhill)</string>
     <!-- UI Label elevation downhill -->
-    <string name="stat_elevation_down">Elevation (Uphill)</string>
+    <string name="stat_elevation_down">Elevation (Downhill)</string>
+    <!-- UI Label elevation uphill -->
+    <string name="stat_elevation_up">Elevation (Uphill)</string>
     <!-- UI Label speed (current) -->
     <string name="stat_speed">Speed</string>
     <!-- UI Label Average moving speed -->
