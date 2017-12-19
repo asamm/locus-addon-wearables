@@ -1,12 +1,14 @@
 package com.asamm.locus.addon.wear.gui.trackrec.profiles;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.R;
@@ -17,7 +19,7 @@ import locus.api.android.utils.UtilsBitmap;
 
 /**
  * Component for displaying and selection of track recording profile
- *
+ * <p>
  * Call to setProfileSelectCallback() required to supply implementation of selection handling
  * Created by Milan Cejnar on 07.11.2017.
  * Asamm Software, s.r.o.
@@ -29,9 +31,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 	private TrackProfileInfoValue mProfile;
 	private TrackProfileIconValue mIcon;
 
-	private TextView mTextProfileName;
-	private ImageView mImageProfileIcon;
-	private ImageView mImageSelectArrow;
+	private Button mbtnOpenProfile;
 	private volatile TrackProfileInfoValue.ValueList mProfileList;
 	private View.OnClickListener mProfileSelectCallback;
 
@@ -51,15 +51,13 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
 	private void initView(Context ctx, AttributeSet attrs) {
 		View.inflate(ctx, R.layout.track_record_profile_select_content, this);
-		mTextProfileName = findViewById(R.id.track_profile_select_text);
-		mImageProfileIcon = findViewById(R.id.track_profile_select_icon);
-		mImageSelectArrow = findViewById(R.id.img_track_profile_select_edit_icon);
+		mbtnOpenProfile = findViewById(R.id.btnOpenProfile);
 	}
 
 	public void setParameters(TrackProfileInfoValue profile) {
 		mProfile = profile;
 		// empty icon, try icon cache for match
-		mIcon = AppStorageManager.getIcon(getContext(), profile.getId());;
+		mIcon = AppStorageManager.getIcon(getContext(), profile.getId());
 		refreshModel();
 	}
 
@@ -67,16 +65,24 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 	public void setEnabled(boolean enabled) {
 		enabled = enabled && hasProfileList();
 		super.setEnabled(enabled);
-		mTextProfileName.setEnabled(enabled);
+		mbtnOpenProfile.setEnabled(enabled);
 	}
 
 	private void refreshModel() {
-		if (mTextProfileName == null) {
+		if (mbtnOpenProfile == null) {
 			return;
 		}
-		mTextProfileName.setText(mProfile == null ? "" : mProfile.getName());
+		mbtnOpenProfile.setText(mProfile == null ? "" : mProfile.getName());
 		if (mIcon != null) {
-			mImageProfileIcon.setImageBitmap(UtilsBitmap.getBitmap(mIcon.getIcon()));
+			Drawable icon = new BitmapDrawable(getResources(), UtilsBitmap.getBitmap(mIcon.getIcon()));
+			float density = getContext().getResources().getDisplayMetrics().density;
+			int dp28 = (int)(28 * density + 0.5f);
+			icon.setBounds(0,0,dp28, dp28);
+
+			Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.ic_arrow_basic_down);
+			int dp16 = (int)(16 * density + 0.5f);
+			arrow.setBounds(0,0,dp16, dp16);
+			mbtnOpenProfile.setCompoundDrawables( icon,null, arrow,null);
 		}
 	}
 
@@ -98,7 +104,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 
 	public void setProfileSelectCallback(View.OnClickListener profileSelectCallback) {
 		mProfileSelectCallback = profileSelectCallback;
-		this.setOnClickListener(mProfileSelectCallback);
+		mbtnOpenProfile.setOnClickListener(mProfileSelectCallback);
 	}
 
 	public boolean hasProfileList() {
@@ -106,6 +112,6 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 	}
 
 	public void setPlaceHolder(CharSequence s) {
-		mTextProfileName.setHint(s);
+		mbtnOpenProfile.setHint(s);
 	}
 }

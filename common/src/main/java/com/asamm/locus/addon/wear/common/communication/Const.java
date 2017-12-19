@@ -11,7 +11,7 @@ public interface Const {
 	byte ZOOM_UNKOWN = Byte.MIN_VALUE;
 	int ZOOM_MIN = 0;
 	int ZOOM_MAX = 22;
-	int ZOOM_DEFAULT = 12;
+	int ZOOM_DEFAULT = 15;
 
 	// minimal version code of Locus
 	LocusUtils.VersionCode LOCUS_MIN_VERSION_CODE = LocusUtils.VersionCode.UPDATE_13;

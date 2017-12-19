@@ -1,54 +1,40 @@
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/track_profile_select_text"
+    <Button
+        android:id="@+id/btnOpenProfile"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:drawableEnd="@drawable/ic_arrow_basic_down"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:textSize="21sp"
         android:ellipsize="end"
         android:maxLines="1"
         android:gravity="center"
-        app:layout_constraintStart_toEndOf="@id/track_profile_select_icon"
-        app:layout_constraintEnd_toStartOf="@id/img_track_profile_select_edit_icon"
+        android:textAllCaps="false"
+        android:textColor="@color/base_dark_primary"
         app:layout_constraintBottom_toBottomOf="@+id/track_profile_select_underline"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <ImageView
-        android:id="@+id/img_track_profile_select_edit_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_arrow_basic_up"
-        android:rotation="180"
-        android:layout_marginTop="2dp"
-        android:layout_marginRight="@dimen/inner_frame_layout_padding"
-        app:layout_constraintBottom_toBottomOf="@id/track_profile_select_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/track_profile_select_text"
-        app:layout_constraintTop_toTopOf="@id/track_profile_select_text" />
-
-    <ImageView
-        android:id="@+id/track_profile_select_icon"
-        android:layout_height="28dp"
-        android:layout_width="28dp"
-        android:scaleType="fitCenter"
-        android:layout_marginLeft="@dimen/inner_frame_layout_padding"
-        app:layout_constraintBottom_toBottomOf="@+id/track_profile_select_underline"
-        app:layout_constraintEnd_toStartOf="@+id/track_profile_select_text"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <View
         android:id="@+id/track_profile_select_underline"
         style="@style/SeparatorHorizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/img_track_profile_select_edit_icon"
-        app:layout_constraintStart_toStartOf="@id/track_profile_select_icon"
-        app:layout_constraintTop_toBottomOf="@+id/track_profile_select_icon" />
+        app:layout_constraintEnd_toEndOf="@id/btnOpenProfile"
+        app:layout_constraintStart_toStartOf="@id/btnOpenProfile"
+        app:layout_constraintTop_toBottomOf="@+id/btnOpenProfile"
+        app:layout_constraintVertical_chainStyle="packed"/>
 
 
 </merge>
