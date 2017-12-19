@@ -17,10 +17,10 @@
   <string name="toast_err_device_not_supported">Помилка запиту, встановити зі свого телефону.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Продовжуйте встановлення на вашому телефоні...</string>
-  <!-- UI Label elevation uphill -->
-  <string name="stat_elevation_up">Висота (спуск)</string>
   <!-- UI Label elevation downhill -->
-  <string name="stat_elevation_down">Висота (підйом)</string>
+  <string name="stat_elevation_down">Висота (спуск)</string>
+  <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Висота (підйом)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Швидкість</string>
   <!-- UI Label Average moving speed -->

@@ -12,15 +12,15 @@
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
   <string name="err_connection_error_node_not_connected">Telefon i zegarek nie są połączone. Proszę sparuj je i spróbuj ponownie.</string>
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
-  <string name="err_connection_device_app_not_installed">Nie można połączyć zegarka z Wear for Locus Map w telefonie. Upewnij się, że jest zainstalowany.</string>
+  <string name="err_connection_device_app_not_installed">Nie można połączyć zegarka z Wear z Locus Map w telefonie. Upewnij się, że jest zainstalowany.</string>
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <string name="toast_err_device_not_supported">Żądanie nie powiodło się, zainstaluj z telefonu.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Kontynuować instalację w telefonie...</string>
-  <!-- UI Label elevation uphill -->
-  <string name="stat_elevation_up">Przewyższenie (Na dół)</string>
   <!-- UI Label elevation downhill -->
-  <string name="stat_elevation_down">Przewyższenie (Do góry)</string>
+  <string name="stat_elevation_down">Przewyższenie (Z góry)</string>
+  <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Przewyższenie (Pod górę)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Prędkość</string>
   <!-- UI Label Average moving speed -->

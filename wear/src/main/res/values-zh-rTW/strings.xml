@@ -17,10 +17,8 @@
   <string name="toast_err_device_not_supported">請求失敗，從您的手機安裝</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">繼續安裝到您的手機...</string>
-  <!-- UI Label elevation uphill -->
-  <string name="stat_elevation_up">高度落差(下坡)</string>
   <!-- UI Label elevation downhill -->
-  <string name="stat_elevation_down">高度落差(上坡)</string>
+  <!-- UI Label elevation uphill -->
   <!-- UI Label speed (current) -->
   <string name="stat_speed">速度</string>
   <!-- UI Label Average moving speed -->

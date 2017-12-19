@@ -17,10 +17,10 @@
   <string name="toast_err_device_not_supported">Verbindungsaufbau zu Google Play fehlgeschlagen.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Installation wird durchgeführt...</string>
-  <!-- UI Label elevation uphill -->
-  <string name="stat_elevation_up">Höhenwerte (Downhill)</string>
   <!-- UI Label elevation downhill -->
-  <string name="stat_elevation_down">Höhenwerte (Uphill)</string>
+  <string name="stat_elevation_down">Höhenwerte (Downhill)</string>
+  <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Höhenwerte (Uphill)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Tempo</string>
   <!-- UI Label Average moving speed -->
@@ -32,6 +32,7 @@
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Wird geladen</string>
   <!-- Ambient mode (UI text) -->
+  <string name="ambient_mode">Sparmodus</string>
   <!-- Install button text -->
   <string name="install">Installieren</string>
   <!-- Screen header for track recording screen, should be reasonably short -->

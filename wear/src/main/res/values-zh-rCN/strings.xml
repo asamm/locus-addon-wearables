@@ -9,8 +9,8 @@
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-  <!-- UI Label elevation uphill -->
   <!-- UI Label elevation downhill -->
+  <!-- UI Label elevation uphill -->
   <!-- UI Label speed (current) -->
   <!-- UI Label Average moving speed -->
   <!-- UI Label distance -->
