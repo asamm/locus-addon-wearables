@@ -291,12 +291,8 @@ public class DeviceCommService extends LocusWearCommService {
 		ActionTools.BitmapLoadResult loadedMap = null;
 
 		try {
-			Location loc =
-					data != null && !data.isEnabledMyLocation() && data.getLocMyLocation() != null ?
-					data.getLocMyLocation() : ZERO_LOCATION;
-
 			loadedMap = ActionTools.getMapPreview(ctx,
-					lv, loc, zoom, width, height, true);
+					lv, ZERO_LOCATION, zoom, width, height, true);
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadMapPreview(" + lv + ")");
 		}
