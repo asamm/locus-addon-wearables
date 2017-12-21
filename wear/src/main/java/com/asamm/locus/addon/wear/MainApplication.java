@@ -277,8 +277,7 @@ public class MainApplication extends Application implements Application.Activity
 		}
 		LocusWearActivity act = (LocusWearActivity) activity;
 
-		if (mCurrentActivity != null &&
-				(act == null || !act.isChildLocusWearActivity())) {
+		if (mCurrentActivity != null && act != null && !act.isChildLocusWearActivity()) {
 			mCurrentActivity.finish();
 		}
 		Logger.logD(TAG, "setCurrentActivity(" + act + ")");
