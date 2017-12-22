@@ -8,8 +8,10 @@ android {
         minSdkVersion Integer.valueOf(PARAM_WEAR_MIN_SDK_VERSION)
         targetSdkVersion Integer.valueOf(PARAM_WEAR_TARGET_SDK_VERSION)
 
-        versionCode Integer.valueOf(PARAM_APP_VERSION + PARAM_RELEASE_VERSION + PARAM_WEAR_VERSION_SUFFIX)
-        versionName '0.' + PARAM_APP_VERSION + '.' + PARAM_RELEASE_VERSION
+        versionCode Integer.valueOf(PARAM_MAJOR_VERSION + PARAM_MINOR_VERSION + PARAM_PATCH_VERSION + PARAM_WEAR_VERSION_SUFFIX)
+        versionName Integer.valueOf(PARAM_MAJOR_VERSION) + '.' +
+                Integer.valueOf(PARAM_MINOR_VERSION) + '.' +
+                Integer.valueOf(PARAM_PATCH_VERSION)
     }
 
     packagingOptions {
