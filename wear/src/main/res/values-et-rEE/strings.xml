@@ -18,7 +18,9 @@
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Jätkake paigaldusega oma telefonis...</string>
   <!-- UI Label elevation downhill -->
+  <string name="stat_elevation_down">Kõrgus (allamäge)</string>
   <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Kõrgus (ülesmäge)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Kiirus</string>
   <!-- UI Label Average moving speed -->

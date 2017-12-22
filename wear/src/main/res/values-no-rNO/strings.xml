@@ -18,7 +18,9 @@
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Fortsett installasjonen på telefonen...</string>
   <!-- UI Label elevation downhill -->
+  <string name="stat_elevation_down">Høyde (nedover)</string>
   <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Høyde (oppover)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Fart</string>
   <!-- UI Label Average moving speed -->
