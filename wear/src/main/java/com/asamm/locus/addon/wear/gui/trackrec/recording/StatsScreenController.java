@@ -22,6 +22,7 @@ public class StatsScreenController implements TrackRecordingControllerUpdatable 
 	private TrackStatLayout mTopLeft, mTopRight, mBottomLeft, mBottomRight;
 
 	private final int mScreenIdx;
+
 	public StatsScreenController(ViewGroup ctx, int screenIdx) {
 		this.mScreenIdx = screenIdx;
 		LayoutInflater inflater = LayoutInflater.from(ctx.getContext());

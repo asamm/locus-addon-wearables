@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 
 	private static final float NAV_DRAWER_PULL_DOWN_AREA_SCALE = 1.2f;
+
 	public CustomWearableDrawerLayout(Context context) {
 		this(context, null);
 	}
@@ -38,6 +39,7 @@ public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 			edgeSize.setAccessible(true);
 			int edgeSizePx = edgeSize.getInt(topDraggerInstance);
 			edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 	}
 }

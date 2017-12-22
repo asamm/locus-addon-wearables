@@ -249,6 +249,7 @@ public class MapActivity extends LocusWearActivity {
 			view.setTag(img);
 		}
 	}
+
 	@Override
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
 		super.consumeNewData(path, data);
@@ -266,7 +267,7 @@ public class MapActivity extends LocusWearActivity {
 									(MapContainer cont) -> testMapContainerAndImageNotNull(cont));
 				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
 					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
-									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				}

@@ -10,6 +10,7 @@
         android:id="@+id/track_rec_activity_layout_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ViewFlipper
             android:id="@+id/trackRecordViewFlipper"
             android:layout_width="match_parent"

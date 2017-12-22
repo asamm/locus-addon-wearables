@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import locus.api.objects.Storable;
 import locus.api.utils.Logger;
 
 /**

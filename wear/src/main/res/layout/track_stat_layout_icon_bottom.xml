@@ -7,7 +7,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stat_description"/>
+        app:layout_constraintTop_toBottomOf="@id/stat_description" />
 
     <TextView
         android:id="@+id/stat_value"
@@ -18,11 +18,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
+
     <TextView
         android:id="@+id/stat_description"
         style="@style/statDescription"
         app:layout_constraintBottom_toTopOf="@id/stat_icon"
         app:layout_constraintTop_toBottomOf="@id/stat_value"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 </merge>

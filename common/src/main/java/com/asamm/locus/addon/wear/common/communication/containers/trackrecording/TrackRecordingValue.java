@@ -29,7 +29,9 @@ public class TrackRecordingValue extends TimeStampStorable {
 	// complete track statistics
 	private TrackStats trackRecStats;
 
-	/** various other data relevant for track recording */
+	/**
+	 * various other data relevant for track recording
+	 */
 	private ExtendedTrackInfo mExtendedTrackInfo;
 
 	private byte mUnitsPacked1;
@@ -58,6 +60,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		}
 		this.mExtendedTrackInfo = ext != null ? ext : new ExtendedTrackInfo();
 	}
+
 	// TODO cejnar test serialization & units packing
 	private void fillUnitsFormatInfo(LocusInfo info) {
 		mUnitsPacked1 = (byte) (info.getUnitsFormatTemperature()
@@ -161,7 +164,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		if (trackRecRecording) {
 			dw.writeBoolean(trackRecPaused);
 			dw.writeString(trackRecProfileName);
-			dw.write(new byte[] {mUnitsPacked1, mUnitsPacked2, mUnitsPacked3});
+			dw.write(new byte[]{mUnitsPacked1, mUnitsPacked2, mUnitsPacked3});
 			dw.writeStorable(mExtendedTrackInfo);
 			dw.writeBoolean(trackRecStats != null);
 			if (trackRecStats != null) {

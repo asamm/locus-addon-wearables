@@ -76,13 +76,13 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 		if (mIcon != null) {
 			Drawable icon = new BitmapDrawable(getResources(), UtilsBitmap.getBitmap(mIcon.getIcon()));
 			float density = getContext().getResources().getDisplayMetrics().density;
-			int dp28 = (int)(28 * density + 0.5f);
-			icon.setBounds(0,0,dp28, dp28);
+			int dp28 = (int) (28 * density + 0.5f);
+			icon.setBounds(0, 0, dp28, dp28);
 
 			Drawable arrow = ContextCompat.getDrawable(getContext(), R.drawable.ic_arrow_basic_down);
-			int dp16 = (int)(16 * density + 0.5f);
-			arrow.setBounds(0,0,dp16, dp16);
-			mbtnOpenProfile.setCompoundDrawables( icon,null, arrow,null);
+			int dp16 = (int) (16 * density + 0.5f);
+			arrow.setBounds(0, 0, dp16, dp16);
+			mbtnOpenProfile.setCompoundDrawables(icon, null, arrow, null);
 		}
 	}
 

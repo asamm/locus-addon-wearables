@@ -1,4 +1,3 @@
-
 package com.asamm.locus.addon.wear.gui.trackrec;
 
 import android.app.Activity;

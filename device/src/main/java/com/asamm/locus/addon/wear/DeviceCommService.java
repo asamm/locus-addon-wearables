@@ -60,7 +60,7 @@ public class DeviceCommService extends LocusWearCommService {
 
 	private TrackProfileIconValue.ValueList mProfileIcons;
 
-	private static final Location ZERO_LOCATION = new Location(0,0);
+	private static final Location ZERO_LOCATION = new Location(0, 0);
 	/**
 	 * is updated as side effect of some selected wear requests during handling
 	 */
@@ -223,6 +223,7 @@ public class DeviceCommService extends LocusWearCommService {
 			}
 		}
 	}
+
 	private void handlePeriodicWearUpdate(final Context ctx, PeriodicCommand command) {
 		if (command == null) {
 			command = PeriodicCommand.createStopPeriodicUpdatesCommand();

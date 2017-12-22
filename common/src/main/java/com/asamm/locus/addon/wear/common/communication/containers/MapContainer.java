@@ -51,7 +51,7 @@ public class MapContainer extends TimeStampStorable {
 		if (mLastUpdate != null) {
 			mZoomDevice = (byte) mLastUpdate.getMapZoomLevel();
 			mZoomWear = (byte) zoom;
-			mGuideType = (byte)mLastUpdate.getGuideType();
+			mGuideType = (byte) mLastUpdate.getGuideType();
 			UpdateContainer.GuideTypeTrack guide = mLastUpdate.getGuideTypeTrack();
 			if (guide != null) {
 				mStatus |= guide.isValid() ? NAV_VALID_FLAG : 0;

@@ -49,7 +49,8 @@
         app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_add_wpt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause" >
+        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause">
+
         <ImageView
             android:id="@+id/image_view_track_rec_stop"
             android:src="@drawable/ic_track_record_stop"

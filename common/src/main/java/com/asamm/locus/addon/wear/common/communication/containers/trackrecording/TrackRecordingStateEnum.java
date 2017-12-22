@@ -6,5 +6,5 @@ package com.asamm.locus.addon.wear.common.communication.containers.trackrecordin
  */
 
 public enum TrackRecordingStateEnum {
-    RECORDING, PAUSED, NOT_RECORDING;
+	RECORDING, PAUSED, NOT_RECORDING;
 }
