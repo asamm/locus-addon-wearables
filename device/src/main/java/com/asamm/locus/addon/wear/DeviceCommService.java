@@ -25,7 +25,10 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import locus.api.android.ActionMapTools;
 import locus.api.android.ActionTools;
+import locus.api.android.MapPreviewParams;
+import locus.api.android.MapPreviewResult;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.android.utils.LocusUtils;
@@ -280,8 +283,6 @@ public class DeviceCommService extends LocusWearCommService {
 
 	private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
 		int zoom = extra.getZoom();
-		int width = extra.getWidth();
-		int height = extra.getHeight();
 		final UpdateContainer data = mLastUpdate;
 
 		if (zoom == Const.ZOOM_UNKOWN) {
@@ -289,11 +290,22 @@ public class DeviceCommService extends LocusWearCommService {
 		}
 
 		// request map
-		ActionTools.BitmapLoadResult loadedMap = null;
-
+		MapPreviewResult mapPreview = null;
 		try {
-			loadedMap = ActionTools.getMapPreview(ctx,
-					lv, ZERO_LOCATION, zoom, width, height, true);
+			if (lv.getVersionCode() >= LocusUtils.VersionCode.UPDATE_14.vcFree) {
+				mapPreview = ActionMapTools.Companion.getMapPreview(ctx, lv,
+						createMapPreviewParams(extra.hasLocation() ? extra.getLocCenter() : ZERO_LOCATION,
+								zoom, extra.getWidth(), extra.getHeight(),
+								extra.hasLocation() ? extra.getOffsetX() : 0, // only use offset if last location center is available
+								extra.hasLocation() ? extra.getOffsetY() : 0,
+								extra.getDensityDpi()));
+			} else {
+				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
+						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
+				if (loadedMap != null) {
+					mapPreview = new MapPreviewResult(loadedMap.getImageB(), loadedMap.getNumOfNotYetLoadedTiles());
+				}
+			}
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "loadMapPreview(" + lv + ")");
 		}
@@ -305,8 +317,21 @@ public class DeviceCommService extends LocusWearCommService {
 			Logger.logE(TAG, "Missing required version, current version " + lv, e);
 		}
 
-		MapContainer m = new MapContainer(loadedMap, data, locusInfo, zoom);
+		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom);
 		sendDataItem(DataPath.PUT_MAP, m);
+	}
+
+	private MapPreviewParams createMapPreviewParams(Location location, int zoom, int width, int height,
+													int offsetX, int offsetY, int dpi) {
+		MapPreviewParams mpp = new MapPreviewParams();
+		mpp.setZoom(zoom);
+		mpp.setLocCenter(ZERO_LOCATION);
+		mpp.setWidthPx(width);
+		mpp.setHeightPx(height);
+		mpp.setOffsetX(offsetX);
+		mpp.setOffsetY(offsetY);
+		mpp.setDensityDpi(dpi);
+		return mpp;
 	}
 
 //	private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {

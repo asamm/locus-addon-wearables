@@ -4,7 +4,7 @@ import com.asamm.locus.addon.wear.common.communication.Const;
 
 import java.io.IOException;
 
-import locus.api.android.ActionTools;
+import locus.api.android.MapPreviewResult;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.objects.enums.PointRteAction;
@@ -25,7 +25,7 @@ public class MapContainer extends TimeStampStorable {
 	private static final int NAV_VALID_FLAG = 0x1;
 
 	// result from loaded image
-	private ActionTools.BitmapLoadResult mLoadedMap;
+	private MapPreviewResult mLoadedMap;
 
 	// information about type of active guidance
 	private byte mGuideType;
@@ -45,7 +45,7 @@ public class MapContainer extends TimeStampStorable {
 		super(byteArray);
 	}
 
-	public MapContainer(ActionTools.BitmapLoadResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li, int zoom) {
+	public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li, int zoom) {
 		this();
 		mLoadedMap = loadedMap;
 		if (mLastUpdate != null) {
@@ -91,7 +91,7 @@ public class MapContainer extends TimeStampStorable {
 		mStatus = dr.readBytes(1)[0];
 		boolean isMap = dr.readBoolean();
 		try {
-			mLoadedMap = isMap ? (ActionTools.BitmapLoadResult) dr.readStorable(ActionTools.BitmapLoadResult.class) : null;
+			mLoadedMap = isMap ? dr.readStorable(MapPreviewResult.class) : null;
 		} catch (Exception e) {
 			mLoadedMap = null;
 			Logger.logE(TAG, "Could not read map image.", e);
@@ -149,7 +149,7 @@ public class MapContainer extends TimeStampStorable {
 		return mUnitsFormatLength;
 	}
 
-	public ActionTools.BitmapLoadResult getLoadedMap() {
+	public MapPreviewResult getLoadedMap() {
 		return mLoadedMap;
 	}
 
@@ -158,7 +158,7 @@ public class MapContainer extends TimeStampStorable {
 	}
 
 	public boolean isMapPresent() {
-		return mLoadedMap != null && mLoadedMap.getImage() != null;
+		return mLoadedMap != null && mLoadedMap.isValid();
 	}
 
 	public int getZoomWear() {

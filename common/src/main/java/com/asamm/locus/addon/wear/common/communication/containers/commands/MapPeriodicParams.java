@@ -15,9 +15,16 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class MapPeriodicParams extends TimeStampStorable implements PeriodicCommand.PeriodicExtra {
+	// version 0
 	private int mZoom;
 	private int mWidth;
 	private int mHeight;
+
+	// version 1
+	private boolean mAutoRotate;
+	private int mOffsetX;
+	private int mOffsetY;
+	private int mDensityDpi;
 
 	public MapPeriodicParams() {
 		super();
@@ -27,15 +34,20 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		super(arr);
 	}
 
-	public MapPeriodicParams(int mZoom, int mWidth, int mHeight) {
+	public MapPeriodicParams(int mZoom, int mWidth, int mHeight,
+							 int offsetX, int offsetY, int densityDpi, boolean isAutoRotate) {
 		this.mZoom = mZoom;
 		this.mWidth = mWidth;
 		this.mHeight = mHeight;
+		this.mAutoRotate = isAutoRotate;
+		this.mOffsetX = offsetX;
+		this.mOffsetY = offsetY;
+		this.mDensityDpi = densityDpi;
 	}
 
 	@Override
 	protected int getVersion() {
-		return 0;
+		return 1;
 	}
 
 	@Override
@@ -44,6 +56,12 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		mZoom = 0;
 		mWidth = 0;
 		mHeight = 0;
+		// version 1
+		mOffsetX = 0;
+		mOffsetY = 0;
+		mDensityDpi = 0;
+		mAutoRotate = false;
+
 	}
 
 	@Override
@@ -52,6 +70,13 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		mZoom = dr.readInt();
 		mWidth = dr.readInt();
 		mHeight = dr.readInt();
+
+		if (version >= 1) {
+			mOffsetX = dr.readInt();
+			mOffsetY = dr.readInt();
+			mDensityDpi = dr.readInt();
+			mAutoRotate = dr.readBoolean();
+		}
 	}
 
 	@Override
@@ -60,6 +85,12 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		dw.writeInt(mZoom);
 		dw.writeInt(mWidth);
 		dw.writeInt(mHeight);
+
+		// version 1
+		dw.writeInt(mOffsetX);
+		dw.writeInt(mOffsetY);
+		dw.writeInt(mDensityDpi);
+		dw.writeBoolean(mAutoRotate);
 	}
 
 	public int getZoom() {
@@ -72,5 +103,21 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 
 	public int getHeight() {
 		return mHeight;
+	}
+
+	public boolean isAutoRotate() {
+		return mAutoRotate;
+	}
+
+	public int getOffsetX() {
+		return mOffsetX;
+	}
+
+	public int getOffsetY() {
+		return mOffsetY;
+	}
+
+	public int getDensityDpi() {
+		return mDensityDpi;
 	}
 }

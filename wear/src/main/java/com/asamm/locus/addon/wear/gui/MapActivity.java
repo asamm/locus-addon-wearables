@@ -8,6 +8,9 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -77,6 +80,7 @@ public class MapActivity extends LocusWearActivity {
 	private TextView mTvNavDistVal;
 	private TextView mTvNavDistUnits;
 
+	private GestureDetector mDetector;
 
 	/**
 	 * simple mutex for temporary locking zooming function while animating
@@ -86,6 +90,10 @@ public class MapActivity extends LocusWearActivity {
 
 	private volatile int mDeviceZoom;
 	private volatile int mRequestedZoom = Const.ZOOM_UNKOWN;
+	private volatile int mOffsetX = 0;
+	private volatile int mOffsetY = 0;
+	private volatile boolean mAutoRotate = false;
+	private int densityDpi = 0;
 
 	@Override
 	protected DataPayload<TimeStampStorable> getInitialCommandType() {
@@ -94,7 +102,9 @@ public class MapActivity extends LocusWearActivity {
 		final MapPeriodicParams params =
 				new MapPeriodicParams(mRequestedZoom,
 						appState.getScreenWidth(),
-						appState.getScreenHeight());
+						appState.getScreenHeight(),
+						mOffsetX, mOffsetY, densityDpi, mAutoRotate);
+
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
 				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_MAP,
 						MAP_REFRESH_PERIOD_MS, params));
@@ -122,9 +132,43 @@ public class MapActivity extends LocusWearActivity {
 		mTvNavDistUnits = findViewById(R.id.text_view_dist_units);
 		mTvNavDistVal = findViewById(R.id.text_view_dist_value);
 		mIvAmbient = findViewById(R.id.imageview_ambient);
+
+		densityDpi = getResources().getDisplayMetrics().densityDpi;
+
+		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+				Log.d(TAG, "new offset x: " + distanceX + "  y: " + distanceY);
+				return true;
+			}
+			@Override
+			public boolean onDown(MotionEvent event) {
+				Log.d(TAG,"onDown: " + event.toString());
+				return true;
+			}
+
+			@Override
+			public boolean onFling(MotionEvent event1, MotionEvent event2,
+								   float velocityX, float velocityY) {
+				Log.d(TAG, "onFling: " + event1.toString() + event2.toString());
+				return true;
+			}
+		});
+//		mMapView.setOnTouchListener(new View.OnTouchListener() {
+//			@Override
+//			public boolean onTouch(View view, MotionEvent motionEvent) {
+//				return mDetector.onTouchEvent(motionEvent);
+//			}
+//		});
 		// Enables Always-on
 		setAmbientEnabled();
 		initView();
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		mDetector.onTouchEvent(ev);
+		return true;
 	}
 
 	@Override
@@ -167,7 +211,7 @@ public class MapActivity extends LocusWearActivity {
 	private void refreshZoomModel(MapContainer data) {
 		// zoom on device changed right now or from last time app was opened - reset zoom to device zoom value
 		if (mDeviceZoom != data.getZoomDevice() && data.getZoomDevice() != Const.ZOOM_UNKOWN) {
-			changeZoom(data.getZoomDevice());
+			changeZoom(mRequestedZoom, data.getZoomDevice() - mRequestedZoom);
 		}
 		mDeviceZoom = data.getZoomDevice();
 	}
@@ -176,8 +220,8 @@ public class MapActivity extends LocusWearActivity {
 	 * Refreshes map image view
 	 */
 	private void refreshMapView(MapContainer data) {
-		if (data != null && data.getLoadedMap() != null && data.getLoadedMap().getImage() != null) {
-			Bitmap map = data.getLoadedMap().getImage();
+		if (testMapContainerAndImageNotNull(data)) {
+			Bitmap map = data.getLoadedMap().getAsImage();
 			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
 				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
 				Canvas c = new Canvas(bm);
@@ -276,7 +320,7 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	private static boolean testMapContainerAndImageNotNull(MapContainer m) {
-		return m != null && m.getLoadedMap() != null && m.getLoadedMap().getImage() != null;
+		return m != null && m.getLoadedMap() != null && m.getLoadedMap().isValid();
 	}
 
 	public void onZoomClicked(View v) {
@@ -296,7 +340,7 @@ public class MapActivity extends LocusWearActivity {
 			return;
 		}
 		mZoomLock = true;
-		if (changeZoom(mRequestedZoom + zoomDiff)) {
+		if (changeZoom(mRequestedZoom, zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
 			mIsScaled = true;
 			mMapView.animate()
@@ -311,10 +355,19 @@ public class MapActivity extends LocusWearActivity {
 		}
 	}
 
-	private boolean changeZoom(int newZoom) {
+	private boolean changeZoom(int currentZoom, int zoomDiff) {
+		int newZoom = currentZoom + zoomDiff;
 		newZoom = Math.min(Math.max(newZoom, Const.ZOOM_MIN), Const.ZOOM_MAX);
 		if (newZoom == mRequestedZoom) {
 			return false;
+		}
+		// correct offset before zooming
+		if (zoomDiff < 0) {
+			mOffsetX >>= -zoomDiff;
+			mOffsetY >>= -zoomDiff;
+		} else if (zoomDiff > 0) {
+			mOffsetX <<= zoomDiff;
+			mOffsetY <<= zoomDiff;
 		}
 		mRequestedZoom = newZoom;
 		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
