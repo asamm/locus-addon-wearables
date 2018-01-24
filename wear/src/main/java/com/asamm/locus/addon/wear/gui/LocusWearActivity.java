@@ -6,6 +6,10 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
+import android.support.wearable.input.RotaryEncoder;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,6 +21,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.custom.HwButtonAction;
+import com.asamm.locus.addon.wear.gui.custom.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
@@ -72,6 +78,11 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private volatile boolean mIsNodeConnected = false;
 
 	/**
+	 * Delegate for handling HW keys actions
+	 */
+	private LocusWearActivityHwKeyDelegate hwKeyDelegate;
+
+	/**
 	 * Each activity should define initial command which is sent automatically onStart()
 	 *
 	 * @return DataPath or null if activity want to just check connection on start and
@@ -91,7 +102,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * got response and that comm is ready
 	 */
 	protected void onGotInitialCommandResponse() {
-
 	}
 
 	/**
@@ -113,6 +123,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 				onGotInitialCommandResponse();
 			}
 		}
+	}
+
+	public void registerHwButtonListener(HwButtonActionDescEnum button, HwButtonAction action) {
+		hwKeyDelegate.registerHwButtonListener(button, action);
 	}
 
 	public WearActivityState getState() {
@@ -151,6 +165,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		} else if (mDrawer != null) {
 			new Handler().postDelayed(() -> mDrawer.getController().peekDrawer(), 800);
 		}
+		hwKeyDelegate.registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
 	}
 
 	@Override
@@ -395,5 +410,20 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 */
 	public boolean isChildLocusWearActivity() {
 		return false;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return hwKeyDelegate.onKeyDown(keyCode, event) ? true : super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+		return hwKeyDelegate.onKeyLongPress(keyCode, event) ? true : super.onKeyLongPress(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		return hwKeyDelegate.onKeyUp(keyCode, event) ? true : super.onKeyUp(keyCode, event);
 	}
 }
