@@ -64,6 +64,7 @@ public class DeviceCommService extends LocusWearCommService {
 	private TrackProfileIconValue.ValueList mProfileIcons;
 
 	private static final Location ZERO_LOCATION = new Location(0, 0);
+
 	/**
 	 * is updated as side effect of some selected wear requests during handling
 	 */
@@ -284,6 +285,8 @@ public class DeviceCommService extends LocusWearCommService {
 	private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
 		int zoom = extra.getZoom();
 		final UpdateContainer data = mLastUpdate;
+		final int offsetX = extra.getOffsetX();
+		final int offsetY = extra.getOffsetY();
 
 		if (zoom == Const.ZOOM_UNKOWN) {
 			zoom = data != null ? data.getMapZoomLevel() : Const.ZOOM_DEFAULT;
@@ -291,15 +294,20 @@ public class DeviceCommService extends LocusWearCommService {
 
 		// request map
 		MapPreviewResult mapPreview = null;
+		Location offsetCenter = ZERO_LOCATION;
+		final boolean isZeroOffset = offsetX == 0 && offsetY == 0;
 		try {
 			if (lv.getVersionCode() >= LocusUtils.VersionCode.UPDATE_14.vcFree) {
+				// if zero offset, ignore location from watch, use last available known location instead to render map
+				if (offsetX != 0 || offsetY != 0) {
+					offsetCenter = new Location(extra.getLastLatitude(), extra.getLastLongitude());
+				}
 				mapPreview = ActionMapTools.Companion.getMapPreview(ctx, lv,
-						createMapPreviewParams(extra.hasLocation() ? extra.getLocCenter() : ZERO_LOCATION,
+						createMapPreviewParams(offsetCenter,
 								zoom, extra.getWidth(), extra.getHeight(),
-								extra.hasLocation() ? extra.getOffsetX() : 0, // only use offset if last location center is available
-								extra.hasLocation() ? extra.getOffsetY() : 0,
+								offsetX, offsetY,
 								extra.getDensityDpi()));
-			} else {
+			} else { // first release version, no panning applied to the map
 				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
 						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
 				if (loadedMap != null) {
@@ -316,8 +324,17 @@ public class DeviceCommService extends LocusWearCommService {
 		} catch (RequiredVersionMissingException e) {
 			Logger.logE(TAG, "Missing required version, current version " + lv, e);
 		}
+		final Location locToSend;
+		// if there is no offset applied, then return last know location
+		if (isZeroOffset) {
+			Location tmp = data.getLocMyLocation();
+			locToSend = tmp == null ? ZERO_LOCATION : tmp;
+		} else {
+			// if offset (panning) is currently applied, then just return last used offset center from the watch
+			locToSend = offsetCenter;
+		}
 
-		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom);
+		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend);
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 

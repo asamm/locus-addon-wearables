@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.common.communication.containers.commands;
 
+import android.location.Location;
+
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import java.io.IOException;
@@ -25,6 +27,9 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 	private int mOffsetX;
 	private int mOffsetY;
 	private int mDensityDpi;
+	// nonzero when offset is used
+	private double mLastLatitude;
+	private double mLastLongitude;
 
 	public MapPeriodicParams() {
 		super();
@@ -35,7 +40,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 	}
 
 	public MapPeriodicParams(int mZoom, int mWidth, int mHeight,
-							 int offsetX, int offsetY, int densityDpi, boolean isAutoRotate) {
+							 int offsetX, int offsetY, int densityDpi, boolean isAutoRotate,
+							 double lastOffsetLatitude, double lastOffsetLongitude) {
 		this.mZoom = mZoom;
 		this.mWidth = mWidth;
 		this.mHeight = mHeight;
@@ -43,6 +49,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		this.mOffsetX = offsetX;
 		this.mOffsetY = offsetY;
 		this.mDensityDpi = densityDpi;
+		this.mLastLatitude = lastOffsetLatitude;
+		this.mLastLongitude = lastOffsetLongitude;
 	}
 
 	@Override
@@ -61,6 +69,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		mOffsetY = 0;
 		mDensityDpi = 0;
 		mAutoRotate = false;
+		mLastLongitude = 0;
+		mLastLatitude = 0;
 
 	}
 
@@ -76,6 +86,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 			mOffsetY = dr.readInt();
 			mDensityDpi = dr.readInt();
 			mAutoRotate = dr.readBoolean();
+			mLastLatitude = dr.readDouble();
+			mLastLongitude = dr.readDouble();
 		}
 	}
 
@@ -91,6 +103,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		dw.writeInt(mOffsetY);
 		dw.writeInt(mDensityDpi);
 		dw.writeBoolean(mAutoRotate);
+		dw.writeDouble(mLastLatitude);
+		dw.writeDouble(mLastLongitude);
 	}
 
 	public int getZoom() {
@@ -119,5 +133,21 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 
 	public int getDensityDpi() {
 		return mDensityDpi;
+	}
+
+	public double getLastLatitude() {
+		return mLastLatitude;
+	}
+
+	public void setLastLatitude(double lastLatitude) {
+		mLastLatitude = lastLatitude;
+	}
+
+	public double getLastLongitude() {
+		return mLastLongitude;
+	}
+
+	public void setLastLongitude(double lastLongitude) {
+		mLastLongitude = lastLongitude;
 	}
 }

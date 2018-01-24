@@ -8,6 +8,7 @@ import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -36,6 +37,7 @@ import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
 import locus.api.objects.enums.PointRteAction;
+import locus.api.objects.extra.Location;
 import locus.api.utils.Logger;
 
 /**
@@ -94,6 +96,22 @@ public class MapActivity extends LocusWearActivity {
 	private volatile int mOffsetY = 0;
 	private volatile boolean mAutoRotate = false;
 	private int densityDpi = 0;
+	private int scrWidthPixels = 0;
+	/**
+	 * Last rendered location and offset
+	 */
+	private volatile Location mLastMapLocation = new Location(0, 0);
+	private volatile int mLastRenderedOffsetX = 0;
+	private volatile int mLastRenderedOffsetY = 0;
+
+	// map panning handler to postpone new map request if map is currently scrolling
+	private final Handler mPanHandler = new Handler();
+	private final Runnable mPanRunnable = () -> {
+		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
+		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
+	};
+	private static final int PAN_DELAY = 300;
+
 
 	@Override
 	protected DataPayload<TimeStampStorable> getInitialCommandType() {
@@ -103,7 +121,8 @@ public class MapActivity extends LocusWearActivity {
 				new MapPeriodicParams(mRequestedZoom,
 						appState.getScreenWidth(),
 						appState.getScreenHeight(),
-						mOffsetX, mOffsetY, densityDpi, mAutoRotate);
+						mOffsetX, mOffsetY, densityDpi, mAutoRotate,
+						mLastMapLocation.latitude, mLastMapLocation.longitude);
 
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
 				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_MAP,
@@ -119,7 +138,6 @@ public class MapActivity extends LocusWearActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
-
 		mMapView = findViewById(R.id.image_view_map);
 		mLlNavPanel = findViewById(R.id.linear_layout_panel_navigation);
 		mIvNavPanelTop = findViewById(R.id.image_view_next);
@@ -134,17 +152,29 @@ public class MapActivity extends LocusWearActivity {
 		mIvAmbient = findViewById(R.id.imageview_ambient);
 
 		densityDpi = getResources().getDisplayMetrics().densityDpi;
+		scrWidthPixels = getResources().getDisplayMetrics().widthPixels;
 
 		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+			private boolean isScrolling = false;
+
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-				Log.d(TAG, "new offset x: " + distanceX + "  y: " + distanceY);
-				return true;
+				if (isScrolling) {
+					mOffsetX -= distanceX;
+					mOffsetY -= distanceY;
+					refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+					mPanHandler.removeCallbacksAndMessages(null);
+					mPanHandler.postDelayed(mPanRunnable, PAN_DELAY);
+				}
+				return isScrolling;
 			}
+
 			@Override
 			public boolean onDown(MotionEvent event) {
-				Log.d(TAG,"onDown: " + event.toString());
-				return true;
+				int action = event.getAction() & MotionEvent.ACTION_MASK;
+				isScrolling = action == MotionEvent.ACTION_DOWN && event.getX() > scrWidthPixels / 5;
+				Log.d(TAG, "onDown is scrolling: " + isScrolling);
+				return isScrolling;
 			}
 
 			@Override
@@ -154,21 +184,18 @@ public class MapActivity extends LocusWearActivity {
 				return true;
 			}
 		});
-//		mMapView.setOnTouchListener(new View.OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View view, MotionEvent motionEvent) {
-//				return mDetector.onTouchEvent(motionEvent);
-//			}
-//		});
+
 		// Enables Always-on
 		setAmbientEnabled();
 		initView();
 	}
 
+	private void centerMap() {
+
+	}
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		mDetector.onTouchEvent(ev);
-		return true;
+		return mDetector.onTouchEvent(ev) ? true : super.dispatchTouchEvent(ev);
 	}
 
 	@Override
@@ -222,6 +249,10 @@ public class MapActivity extends LocusWearActivity {
 	private void refreshMapView(MapContainer data) {
 		if (testMapContainerAndImageNotNull(data)) {
 			Bitmap map = data.getLoadedMap().getAsImage();
+			mLastMapLocation = data.getLastLocation();
+			mLastRenderedOffsetX = data.getOffsetX();
+			mLastRenderedOffsetY = data.getOffsetY();
+
 			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
 				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
 				Canvas c = new Canvas(bm);
@@ -231,6 +262,7 @@ public class MapActivity extends LocusWearActivity {
 				mMapView.setImageBitmap(bm);
 			} else {
 				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
+				refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
 			}
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
 				mMapView.animate().cancel();
@@ -252,6 +284,11 @@ public class MapActivity extends LocusWearActivity {
 			mMapAmbientBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		}
 		return mMapAmbientBitmap;
+	}
+
+	private void refreshMapOffset(int offsetX, int offsetY, int renderOffsetX, int renderOffsetY) {
+		mMapView.setTranslationX(offsetX - renderOffsetX);
+		mMapView.setTranslationY(offsetY - renderOffsetY);
 	}
 
 	/**

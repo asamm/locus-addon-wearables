@@ -8,6 +8,7 @@ import locus.api.android.MapPreviewResult;
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.LocusInfo;
 import locus.api.objects.enums.PointRteAction;
+import locus.api.objects.extra.Location;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
 import locus.api.utils.Logger;
@@ -27,6 +28,7 @@ public class MapContainer extends TimeStampStorable {
 	// result from loaded image
 	private MapPreviewResult mLoadedMap;
 
+	private static final Location ZERO_LOCATION = new Location(0, 0);
 	// information about type of active guidance
 	private byte mGuideType;
 	private int mNavPointAction1Id;
@@ -37,6 +39,12 @@ public class MapContainer extends TimeStampStorable {
 	private byte mZoomWear;
 	private byte mStatus;
 
+	//v1
+	// last applied offset in pixels used for rendering the included map
+	private int mOffsetX;
+	private int mOffsetY;
+	private Location mLastLocation;
+
 	public MapContainer() {
 		super();
 	}
@@ -45,9 +53,13 @@ public class MapContainer extends TimeStampStorable {
 		super(byteArray);
 	}
 
-	public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li, int zoom) {
+	public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li,
+						int zoom, int offsetX, int offsetY, Location lastLocation) {
 		this();
 		mLoadedMap = loadedMap;
+		this.mOffsetX = offsetX;
+		this.mOffsetY = offsetY;
+		mLastLocation = lastLocation == null ? ZERO_LOCATION : lastLocation;
 		if (mLastUpdate != null) {
 			mZoomDevice = (byte) mLastUpdate.getMapZoomLevel();
 			mZoomWear = (byte) zoom;
@@ -76,6 +88,9 @@ public class MapContainer extends TimeStampStorable {
 		mZoomDevice = Const.ZOOM_UNKOWN;
 		mZoomWear = Const.ZOOM_UNKOWN;
 		mStatus = 0;
+		mOffsetY = 0;
+		mOffsetX = 0;
+		mLastLocation = ZERO_LOCATION;
 	}
 
 	@Override
@@ -96,6 +111,15 @@ public class MapContainer extends TimeStampStorable {
 			mLoadedMap = null;
 			Logger.logE(TAG, "Could not read map image.", e);
 		}
+		if (version >= 1) {
+			mOffsetX = dr.readInt();
+			mOffsetY = dr.readInt();
+			try {
+				mLastLocation = dr.readStorable(Location.class);
+			} catch (Exception e) {
+				mLastLocation = ZERO_LOCATION;
+			}
+		}
 	}
 
 	@Override
@@ -114,11 +138,16 @@ public class MapContainer extends TimeStampStorable {
 		if (isMap) {
 			dw.writeStorable(mLoadedMap);
 		}
+
+		// v1
+		dw.writeInt(mOffsetX);
+		dw.writeInt(mOffsetY);
+		dw.writeStorable(mLastLocation);
 	}
 
 	@Override
 	protected int getVersion() {
-		return 0;
+		return 1;
 	}
 
 	public int getmGuideType() {
@@ -167,5 +196,17 @@ public class MapContainer extends TimeStampStorable {
 
 	public boolean isNavValid() {
 		return (mStatus & NAV_VALID_FLAG) != 0;
+	}
+
+	public int getOffsetX() {
+		return mOffsetX;
+	}
+
+	public int getOffsetY() {
+		return mOffsetY;
+	}
+
+	public Location getLastLocation() {
+		return mLastLocation;
 	}
 }
