@@ -14,7 +14,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +32,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Perio
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
+import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
@@ -96,7 +96,8 @@ public class MapActivity extends LocusWearActivity {
 	private volatile int mOffsetY = 0;
 	private volatile boolean mAutoRotate = false;
 	private int densityDpi = 0;
-	private int scrWidthPixels = 0;
+	private int scrWidthPx = 0;
+	private int scrHeightPx = 0;
 	/**
 	 * Last rendered location and offset
 	 */
@@ -107,11 +108,28 @@ public class MapActivity extends LocusWearActivity {
 	// map panning handler to postpone new map request if map is currently scrolling
 	private final Handler mPanHandler = new Handler();
 	private final Runnable mPanRunnable = () -> {
-		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
-		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
+//		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
+//		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
 	};
 	private static final int PAN_DELAY = 300;
 
+	// fling handling
+	private WearMapActionMoveFling.OffsetUpdatable flingUpdatable = (x, y, isLast) -> {
+		mOffsetX += x;
+		mOffsetY += y;
+		refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+		if (isLast) {
+			cancelFling();
+			isPanningOrFlinging = false;
+			mPanHandler.removeCallbacksAndMessages(null);
+			mPanHandler.postDelayed(mPanRunnable, 0);
+		}
+	};
+	private WearMapActionMoveFling mFlingAnimator = new WearMapActionMoveFling(0, 0, flingUpdatable);
+
+	private boolean isPanningOrFlinging = false;
+
+	// ********** METHODS ********** //
 
 	@Override
 	protected DataPayload<TimeStampStorable> getInitialCommandType() {
@@ -152,7 +170,8 @@ public class MapActivity extends LocusWearActivity {
 		mIvAmbient = findViewById(R.id.imageview_ambient);
 
 		densityDpi = getResources().getDisplayMetrics().densityDpi;
-		scrWidthPixels = getResources().getDisplayMetrics().widthPixels;
+		scrWidthPx = getResources().getDisplayMetrics().widthPixels;
+		scrHeightPx = getResources().getDisplayMetrics().heightPixels;
 
 		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
 			private boolean isScrolling = false;
@@ -160,8 +179,8 @@ public class MapActivity extends LocusWearActivity {
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 				if (isScrolling) {
-					mOffsetX -= distanceX;
-					mOffsetY -= distanceY;
+					mOffsetX += distanceX;
+					mOffsetY += distanceY;
 					refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
 					mPanHandler.removeCallbacksAndMessages(null);
 					mPanHandler.postDelayed(mPanRunnable, PAN_DELAY);
@@ -171,8 +190,12 @@ public class MapActivity extends LocusWearActivity {
 
 			@Override
 			public boolean onDown(MotionEvent event) {
+				cancelFling();
 				int action = event.getAction() & MotionEvent.ACTION_MASK;
-				isScrolling = action == MotionEvent.ACTION_DOWN && event.getX() > scrWidthPixels / 5;
+				isScrolling = action == MotionEvent.ACTION_DOWN &&
+						event.getX() > scrWidthPx / 5 &&
+						event.getY() > scrHeightPx / 5;
+				isPanningOrFlinging = isScrolling;
 				Log.d(TAG, "onDown is scrolling: " + isScrolling);
 				return isScrolling;
 			}
@@ -180,7 +203,12 @@ public class MapActivity extends LocusWearActivity {
 			@Override
 			public boolean onFling(MotionEvent event1, MotionEvent event2,
 								   float velocityX, float velocityY) {
-				Log.d(TAG, "onFling: " + event1.toString() + event2.toString());
+				if (isScrolling) {
+					cancelFling();
+					isPanningOrFlinging = true;
+					mFlingAnimator = new WearMapActionMoveFling(velocityX, velocityY, flingUpdatable);
+					mFlingAnimator.start(mMapView);
+				}
 				return true;
 			}
 		});
@@ -191,10 +219,21 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	private void centerMap() {
-
+		mPanHandler.removeCallbacksAndMessages(null);
+		mOffsetX = 0;
+		mOffsetY = 0;
+		mPanHandler.postDelayed(mPanRunnable, 0);
 	}
+
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
+		int action = ev.getAction() & MotionEvent.ACTION_MASK;
+		boolean isUp = action == MotionEvent.ACTION_UP;
+		if (isUp) {
+			isPanningOrFlinging = false;
+			mPanHandler.removeCallbacksAndMessages(null);
+			mPanHandler.postDelayed(mPanRunnable, 0);
+		}
 		return mDetector.onTouchEvent(ev) ? true : super.dispatchTouchEvent(ev);
 	}
 
@@ -261,8 +300,10 @@ public class MapActivity extends LocusWearActivity {
 				c.drawBitmap(map, 0, 0, paintInvertImage);
 				mMapView.setImageBitmap(bm);
 			} else {
-				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
+				Logger.logW(TAG, "updating map 1");
 				refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+				Logger.logW(TAG, "updating map 2");
+				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
 			}
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
 				mMapView.animate().cancel();
@@ -287,8 +328,12 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	private void refreshMapOffset(int offsetX, int offsetY, int renderOffsetX, int renderOffsetY) {
-		mMapView.setTranslationX(offsetX - renderOffsetX);
-		mMapView.setTranslationY(offsetY - renderOffsetY);
+		runOnUiThread(() -> {
+			cancelFling();
+			Logger.logW(TAG, "Refreshing with new traslation X: "+ (-offsetX + renderOffsetX));
+			mMapView.setTranslationX(-offsetX + renderOffsetX);
+			mMapView.setTranslationY(-offsetY + renderOffsetY);
+		});
 	}
 
 	/**
@@ -376,17 +421,19 @@ public class MapActivity extends LocusWearActivity {
 		} else {
 			return;
 		}
-		mZoomLock = true;
+//		mZoomLock = true;
 		if (changeZoom(mRequestedZoom, zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
 			mIsScaled = true;
-			mMapView.animate()
-					.scaleX(scale)
-					.scaleY(scale)
-					.setDuration(SCALE_ANIMATION_DURATION_MS)
-					.setInterpolator(new DecelerateInterpolator())
-					.withEndAction(() -> mZoomLock = false)
-					.start();
+			mMapView.setScaleX(scale);
+			mMapView.setScaleY(scale);
+//			mMapView.animate()
+//					.scaleX(scale)
+//					.scaleY(scale)
+//					.setDuration(SCALE_ANIMATION_DURATION_MS)
+//					.setInterpolator(new DecelerateInterpolator())
+//					.withEndAction(() -> mZoomLock = false)
+//					.start();
 		} else {
 			mZoomLock = false;
 		}
@@ -398,7 +445,9 @@ public class MapActivity extends LocusWearActivity {
 		if (newZoom == mRequestedZoom) {
 			return false;
 		}
+		Logger.logW(TAG, "New zoom from " + currentZoom + " to " + newZoom);
 		// correct offset before zooming
+		Logger.logW(TAG, "Old offset x: " + mOffsetX + " y: " + mOffsetY);
 		if (zoomDiff < 0) {
 			mOffsetX >>= -zoomDiff;
 			mOffsetY >>= -zoomDiff;
@@ -406,6 +455,7 @@ public class MapActivity extends LocusWearActivity {
 			mOffsetX <<= zoomDiff;
 			mOffsetY <<= zoomDiff;
 		}
+		Logger.logW(TAG, "New offset x: " + mOffsetX + " y: " + mOffsetY);
 		mRequestedZoom = newZoom;
 		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
@@ -451,5 +501,10 @@ public class MapActivity extends LocusWearActivity {
 		mTvNavDistVal.setTextColor(getColor(R.color.base_dark_primary));
 		mTvNavDistUnits.setTextColor(getColor(R.color.base_dark_primary));
 		refreshMapView(mLastContainer);
+	}
+
+	private void cancelFling() {
+		mFlingAnimator.cancel();
+		isPanningOrFlinging = false;
 	}
 }
