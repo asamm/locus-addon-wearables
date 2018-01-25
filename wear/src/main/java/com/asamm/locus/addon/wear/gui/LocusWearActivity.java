@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.wearable.activity.WearableActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -72,6 +73,11 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private volatile boolean mIsNodeConnected = false;
 
 	/**
+	 * Delegate for handling HW keys actions
+	 */
+	private LocusWearActivityHwKeyDelegate hwKeyDelegate;
+
+	/**
 	 * Each activity should define initial command which is sent automatically onStart()
 	 *
 	 * @return DataPath or null if activity want to just check connection on start and
@@ -91,7 +97,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * got response and that comm is ready
 	 */
 	protected void onGotInitialCommandResponse() {
-
 	}
 
 	/**
@@ -113,6 +118,13 @@ public abstract class LocusWearActivity extends WearableActivity {
 				onGotInitialCommandResponse();
 			}
 		}
+	}
+
+	protected LocusWearActivityHwKeyDelegate getHwKeyDelegate() {
+		if (hwKeyDelegate == null) {
+			hwKeyDelegate = LocusWearActivityHwKeyDelegate.Factory.createDelegate(this);
+		}
+		return hwKeyDelegate;
 	}
 
 	public WearActivityState getState() {
@@ -139,7 +151,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 		this.mState = WearActivityState.ON_RESUME;
 		super.onResume();
 		AppPreferencesManager.persistLastActivity(this, getClass());
-
+		//getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
+		registerHwKeyActions(getHwKeyDelegate());
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (mConnectionFailedTimer == null) {
 			startConnectionFailTimer();
@@ -396,4 +409,21 @@ public abstract class LocusWearActivity extends WearableActivity {
 	public boolean isChildLocusWearActivity() {
 		return false;
 	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return getHwKeyDelegate().onKeyDown(keyCode, event) ? true : super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+		return getHwKeyDelegate().onKeyLongPress(keyCode, event) ? true : super.onKeyLongPress(keyCode, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		return getHwKeyDelegate().onKeyUp(keyCode, event) ? true : super.onKeyUp(keyCode, event);
+	}
+
+	public abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
 }

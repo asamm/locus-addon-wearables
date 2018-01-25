@@ -31,6 +31,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
@@ -467,6 +468,11 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 		mCircularProgress.stopTimer();
 		sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
 		mStateMachine.transitionTo(IDLE_WAITING);
+	}
+
+	@Override
+	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
+
 	}
 
 	/**

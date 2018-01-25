@@ -31,6 +31,8 @@ public class AppPreferencesManager {
 	public static final String PREF_LAST_ACTIVITY_CLASS_NAME = "PREF_LAST_ACTIVITY_CLASS_NAME";
 	private static final String PREF_FIRST_APP_START = "PREF_FIRST_APP_START";
 
+	private static final String PREF_USE_HW_BUTTONS = "PREF_USE_HW_BUTTONS";
+
 	public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
 		if (trackRec == null || !trackRec.isInfoAvailable()) {
 			return;
@@ -125,5 +127,16 @@ public class AppPreferencesManager {
 	 */
 	public static void debugClear(Context ctx) {
 		PreferenceManager.getDefaultSharedPreferences(ctx).edit().clear().commit();
+	}
+
+	public static boolean isUseHwButtons(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return prefs.getBoolean(PREF_USE_HW_BUTTONS, true);
+	}
+
+	public static void persistUseHwButons(Context ctx, boolean useHwButons) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+				.putBoolean(PREF_USE_HW_BUTTONS, useHwButons)
+				.apply();
 	}
 }
