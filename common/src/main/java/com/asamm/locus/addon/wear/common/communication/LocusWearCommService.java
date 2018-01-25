@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -116,6 +118,12 @@ public class LocusWearCommService implements
 	 */
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
+		if (path == DataPath.GET_PERIODIC_DATA) { // TODO cejnar debug
+		if (data instanceof PeriodicCommand) {
+			MapPeriodicParams p = (MapPeriodicParams) ((PeriodicCommand)data).getExtra();
+			Logger.logW("SENDING", "zoom: " + p.getZoom() + " x: " + p.getOffsetX() + " y: " + p.getOffsetY());
+		}
+		}
 		PutDataRequest request = PutDataRequest.create(path.getPath());
 		final byte[] dataToSend = data.getAsBytes();
 		// check data size whether to send as and asset or plain data item

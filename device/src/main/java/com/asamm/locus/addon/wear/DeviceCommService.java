@@ -302,11 +302,25 @@ public class DeviceCommService extends LocusWearCommService {
 				if (offsetX != 0 || offsetY != 0) {
 					offsetCenter = new Location(extra.getLastLatitude(), extra.getLastLongitude());
 				}
-				mapPreview = ActionMapTools.Companion.getMapPreview(ctx, lv,
+				int rotationDeg = !extra.isAutoRotate() || data == null
+						|| data.getLocMyLocation() == null || !data.getLocMyLocation().hasBearing() ?
+						0 : (int) (data.getLocMyLocation().getBearing() + 0.5f);
+
+				mapPreview = ActionMapTools.getMapPreview(ctx, lv,
 						createMapPreviewParams(offsetCenter,
 								zoom, extra.getWidth(), extra.getHeight(),
 								offsetX, offsetY,
-								extra.getDensityDpi()));
+								extra.getDensityDpi(), rotationDeg, extra.getDiagonal()));
+//				try { // TODO cejnar debug
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				mapPreview = ActionMapTools.getMapPreview(ctx, lv,
+//						createMapPreviewParams(offsetCenter,
+//								zoom, extra.getWidth(), extra.getHeight(),
+//								offsetX, offsetY,
+//								extra.getDensityDpi(), rotationDeg, extra.getDiagonal()));
 			} else { // first release version, no panning applied to the map
 				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
 						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
@@ -339,7 +353,8 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private MapPreviewParams createMapPreviewParams(Location location, int zoom, int width, int height,
-													int offsetX, int offsetY, int dpi) {
+													int offsetX, int offsetY, int dpi, int rotation,
+													int diagonal) {
 		MapPreviewParams mpp = new MapPreviewParams();
 		mpp.setZoom(zoom);
 		mpp.setLocCenter(ZERO_LOCATION);
@@ -348,6 +363,8 @@ public class DeviceCommService extends LocusWearCommService {
 		mpp.setOffsetX(offsetX);
 		mpp.setOffsetY(offsetY);
 		mpp.setDensityDpi(dpi);
+		mpp.setRotation(rotation);
+		mpp.setRadius(diagonal);
 		return mpp;
 	}
 

@@ -1,7 +1,5 @@
 package com.asamm.locus.addon.wear.common.communication.containers.commands;
 
-import android.location.Location;
-
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
 import java.io.IOException;
@@ -17,16 +15,22 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class MapPeriodicParams extends TimeStampStorable implements PeriodicCommand.PeriodicExtra {
+	private static final byte FLG_AUTOROTATE = 0x1;
 	// version 0
 	private int mZoom;
 	private int mWidth;
 	private int mHeight;
 
 	// version 1
-	private boolean mAutoRotate;
+	/**
+	 * Flags:
+	 * 0x1 - AutoRotate
+	 */
+	private byte bFlags;
+	private short mDiagonal;
 	private int mOffsetX;
 	private int mOffsetY;
-	private int mDensityDpi;
+	private short mDensityDpi;
 	// nonzero when offset is used
 	private double mLastLatitude;
 	private double mLastLongitude;
@@ -40,15 +44,17 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 	}
 
 	public MapPeriodicParams(int mZoom, int mWidth, int mHeight,
-							 int offsetX, int offsetY, int densityDpi, boolean isAutoRotate,
+							 int offsetX, int offsetY, int densityDpi,
+							 boolean isAutoRotate, int diagonal,
 							 double lastOffsetLatitude, double lastOffsetLongitude) {
 		this.mZoom = mZoom;
 		this.mWidth = mWidth;
 		this.mHeight = mHeight;
-		this.mAutoRotate = isAutoRotate;
+		this.bFlags = isAutoRotate ? FLG_AUTOROTATE : 0;
 		this.mOffsetX = offsetX;
 		this.mOffsetY = offsetY;
-		this.mDensityDpi = densityDpi;
+		this.mDensityDpi = (short) densityDpi;
+		this.mDiagonal = (short) diagonal;
 		this.mLastLatitude = lastOffsetLatitude;
 		this.mLastLongitude = lastOffsetLongitude;
 	}
@@ -67,8 +73,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		// version 1
 		mOffsetX = 0;
 		mOffsetY = 0;
-		mDensityDpi = 0;
-		mAutoRotate = false;
+		mDiagonal = 0;
+		bFlags = 0;
 		mLastLongitude = 0;
 		mLastLatitude = 0;
 
@@ -84,8 +90,9 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		if (version >= 1) {
 			mOffsetX = dr.readInt();
 			mOffsetY = dr.readInt();
-			mDensityDpi = dr.readInt();
-			mAutoRotate = dr.readBoolean();
+			mDensityDpi = dr.readShort();
+			mDiagonal = dr.readShort();
+			bFlags = dr.readBytes(1)[0];
 			mLastLatitude = dr.readDouble();
 			mLastLongitude = dr.readDouble();
 		}
@@ -101,8 +108,9 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		// version 1
 		dw.writeInt(mOffsetX);
 		dw.writeInt(mOffsetY);
-		dw.writeInt(mDensityDpi);
-		dw.writeBoolean(mAutoRotate);
+		dw.writeShort(mDensityDpi);
+		dw.writeShort(mDiagonal);
+		dw.write(bFlags);
 		dw.writeDouble(mLastLatitude);
 		dw.writeDouble(mLastLongitude);
 	}
@@ -120,7 +128,11 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 	}
 
 	public boolean isAutoRotate() {
-		return mAutoRotate;
+		return (bFlags & FLG_AUTOROTATE) != 0;
+	}
+
+	public int getDiagonal() {
+		return mDiagonal;
 	}
 
 	public int getOffsetX() {
@@ -139,15 +151,8 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		return mLastLatitude;
 	}
 
-	public void setLastLatitude(double lastLatitude) {
-		mLastLatitude = lastLatitude;
-	}
-
 	public double getLastLongitude() {
 		return mLastLongitude;
 	}
 
-	public void setLastLongitude(double lastLongitude) {
-		mLastLongitude = lastLongitude;
-	}
 }

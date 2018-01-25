@@ -95,9 +95,10 @@ public class MapActivity extends LocusWearActivity {
 	private volatile int mOffsetX = 0;
 	private volatile int mOffsetY = 0;
 	private volatile boolean mAutoRotate = false;
-	private int densityDpi = 0;
-	private int scrWidthPx = 0;
-	private int scrHeightPx = 0;
+	private int mDensityDpi = 0;
+	private int mScrWidthPx = 0;
+	private int mScrHeightPx = 0;
+	private int mDiagonal = 0;
 	/**
 	 * Last rendered location and offset
 	 */
@@ -139,7 +140,7 @@ public class MapActivity extends LocusWearActivity {
 				new MapPeriodicParams(mRequestedZoom,
 						appState.getScreenWidth(),
 						appState.getScreenHeight(),
-						mOffsetX, mOffsetY, densityDpi, mAutoRotate,
+						mOffsetX, mOffsetY, mDensityDpi, mAutoRotate, mDiagonal,
 						mLastMapLocation.latitude, mLastMapLocation.longitude);
 
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
@@ -169,9 +170,15 @@ public class MapActivity extends LocusWearActivity {
 		mTvNavDistVal = findViewById(R.id.text_view_dist_value);
 		mIvAmbient = findViewById(R.id.imageview_ambient);
 
-		densityDpi = getResources().getDisplayMetrics().densityDpi;
-		scrWidthPx = getResources().getDisplayMetrics().widthPixels;
-		scrHeightPx = getResources().getDisplayMetrics().heightPixels;
+		mDensityDpi = getResources().getDisplayMetrics().densityDpi;
+		mScrWidthPx = getResources().getDisplayMetrics().widthPixels;
+		mScrHeightPx = getResources().getDisplayMetrics().heightPixels;
+		boolean isRound = getResources().getConfiguration().isScreenRound();
+		if (isRound) {
+			mDiagonal = (Math.max(mScrHeightPx, mScrWidthPx) + 1) / 2;
+		} else {
+			mDiagonal = (int) (Math.sqrt(mScrHeightPx * mScrHeightPx + mScrWidthPx * mScrWidthPx) + 1) / 2;
+		}
 
 		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
 			private boolean isScrolling = false;
@@ -193,8 +200,8 @@ public class MapActivity extends LocusWearActivity {
 				cancelFling();
 				int action = event.getAction() & MotionEvent.ACTION_MASK;
 				isScrolling = action == MotionEvent.ACTION_DOWN &&
-						event.getX() > scrWidthPx / 5 &&
-						event.getY() > scrHeightPx / 5;
+						event.getX() > mScrWidthPx / 5 &&
+						event.getY() > mScrHeightPx / 5;
 				isPanningOrFlinging = isScrolling;
 				Log.d(TAG, "onDown is scrolling: " + isScrolling);
 				return isScrolling;
@@ -306,9 +313,10 @@ public class MapActivity extends LocusWearActivity {
 				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
 			}
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
-				mMapView.animate().cancel();
-				mMapView.setScaleX(1f);
-				mMapView.setScaleY(1f);
+// TODO cejnar debug
+				//				mMapView.animate().cancel();
+//				mMapView.setScaleX(1f);
+//				mMapView.setScaleY(1f);
 				mZoomLock = false;
 				mIsScaled = false;
 			}
@@ -330,7 +338,7 @@ public class MapActivity extends LocusWearActivity {
 	private void refreshMapOffset(int offsetX, int offsetY, int renderOffsetX, int renderOffsetY) {
 		runOnUiThread(() -> {
 			cancelFling();
-			Logger.logW(TAG, "Refreshing with new traslation X: "+ (-offsetX + renderOffsetX));
+			Logger.logW(TAG, "Refreshing with new traslation X: " + (-offsetX + renderOffsetX));
 			mMapView.setTranslationX(-offsetX + renderOffsetX);
 			mMapView.setTranslationY(-offsetY + renderOffsetY);
 		});
@@ -392,8 +400,9 @@ public class MapActivity extends LocusWearActivity {
 									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS,
 									(MapContainer cont) -> testMapContainerAndImageNotNull(cont));
 				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
-					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
-							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+					//TODO cejnar debug
+//					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
+//							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				}
@@ -425,8 +434,9 @@ public class MapActivity extends LocusWearActivity {
 		if (changeZoom(mRequestedZoom, zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
 			mIsScaled = true;
-			mMapView.setScaleX(scale);
-			mMapView.setScaleY(scale);
+			// TODO cejnar debug
+//			mMapView.setScaleX(scale);
+//			mMapView.setScaleY(scale);
 //			mMapView.animate()
 //					.scaleX(scale)
 //					.scaleY(scale)
