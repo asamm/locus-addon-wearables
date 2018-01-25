@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.custom;
+package com.asamm.locus.addon.wear.gui.custom.hwcontrols;
 
 import android.view.InputEvent;
 

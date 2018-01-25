@@ -33,6 +33,9 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Perio
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
@@ -193,6 +196,7 @@ public class MapActivity extends LocusWearActivity {
 	private void centerMap() {
 
 	}
+
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
 		return mDetector.onTouchEvent(ev) ? true : super.dispatchTouchEvent(ev);
@@ -361,12 +365,6 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	public void onZoomClicked(View v) {
-		if (mDeviceZoom == Const.ZOOM_UNKOWN || mZoomLock) {
-			return;
-		}
-		if (mRequestedZoom == Const.ZOOM_UNKOWN) {
-			mRequestedZoom = mDeviceZoom;
-		}
 		final int zoomDiff;
 		int viewId = v.getId();
 		if (viewId == R.id.btn_zoom_in || viewId == R.id.area_zoom_in) {
@@ -376,6 +374,17 @@ public class MapActivity extends LocusWearActivity {
 		} else {
 			return;
 		}
+		doZoomClicked(zoomDiff);
+	}
+
+	public void doZoomClicked(int zoomDiff) {
+		if (mDeviceZoom == Const.ZOOM_UNKOWN || mZoomLock) {
+			return;
+		}
+		if (mRequestedZoom == Const.ZOOM_UNKOWN) {
+			mRequestedZoom = mDeviceZoom;
+		}
+
 		mZoomLock = true;
 		if (changeZoom(mRequestedZoom, zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
@@ -451,5 +460,32 @@ public class MapActivity extends LocusWearActivity {
 		mTvNavDistVal.setTextColor(getColor(R.color.base_dark_primary));
 		mTvNavDistUnits.setTextColor(getColor(R.color.base_dark_primary));
 		refreshMapView(mLastContainer);
+	}
+
+	private void doCenterButtonClicked() {
+		Logger.logD(TAG, "CENTER BTN clicked");
+	}
+
+	@Override
+	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
+		HwButtonActionDescEnum upPrimaryBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP);
+		HwButtonActionDescEnum downBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN);
+		HwButtonActionDescEnum secondaryActionBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
+
+		HwButtonAction centerAction = (b, e, a) -> doCenterButtonClicked();
+		HwButtonAction zoomInAction = (b, e, a) -> doZoomClicked(1);
+		HwButtonAction zoomOutAction = (b, e, a) -> doZoomClicked(-1);
+		// only single button available
+		if (downBtn == null) {
+			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
+		} else {
+			delegate.registerHwButtonListener(upPrimaryBtn, zoomInAction);
+			delegate.registerHwButtonListener(downBtn, zoomOutAction);
+			delegate.registerHwButtonListener(secondaryActionBtn, centerAction);
+		}
+
 	}
 }

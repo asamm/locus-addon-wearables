@@ -21,6 +21,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Empty
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,6 +121,11 @@ public class ProfileListActivity extends LocusWearActivity {
 	@Override
 	public boolean isChildLocusWearActivity() {
 		return true; // runs on top of TrackRecording activity, not independetly
+	}
+
+	@Override
+	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
+
 	}
 
 	private class TrackProfileModelHolder {
