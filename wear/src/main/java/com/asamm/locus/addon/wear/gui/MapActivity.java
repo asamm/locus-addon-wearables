@@ -14,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,7 +32,6 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPe
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.communication.WearCommService;
-import com.asamm.locus.addon.wear.gui.custom.CustomWearableDrawerLayout;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
@@ -112,21 +112,26 @@ public class MapActivity extends LocusWearActivity {
 	// map panning handler to postpone new map request if map is currently scrolling
 	private final Handler mPanHandler = new Handler();
 	private final Runnable mPanRunnable = () -> {
-//		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
-//		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
+		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
+		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
 	};
 	private static final int PAN_DELAY = 300;
 
+	private volatile boolean mIsFlinging = false;
+
 	// fling handling
 	private WearMapActionMoveFling.OffsetUpdatable flingUpdatable = (x, y, isLast) -> {
-		mOffsetX += x;
-		mOffsetY += y;
-		refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
-		if (isLast) {
-			cancelFling();
-			mPanHandler.removeCallbacksAndMessages(null);
-			mPanHandler.postDelayed(mPanRunnable, 0);
-		}
+		runOnUiThread(() -> {
+			mOffsetX += x;
+			mOffsetY += y;
+			mMapView.setTranslationX(-mOffsetX + mLastRenderedOffsetX);
+			mMapView.setTranslationY(-mOffsetY + mLastRenderedOffsetY);
+			if (isLast) {
+				cancelFling();
+				mPanHandler.removeCallbacksAndMessages(null);
+				mPanHandler.postDelayed(mPanRunnable, 0);
+			}
+		});
 	};
 	private WearMapActionMoveFling mFlingAnimator = new WearMapActionMoveFling(0, 0, flingUpdatable);
 
@@ -205,6 +210,7 @@ public class MapActivity extends LocusWearActivity {
 			public boolean onFling(MotionEvent event1, MotionEvent event2,
 								   float velocityX, float velocityY) {
 				cancelFling();
+				mIsFlinging = true;
 				mFlingAnimator = new WearMapActionMoveFling(velocityX, velocityY, flingUpdatable);
 				mFlingAnimator.start(mMapView);
 				return true;
@@ -233,8 +239,12 @@ public class MapActivity extends LocusWearActivity {
 				(mDrawer != null && mDrawer.isOpened())) {
 			// finish possible panning
 			if (!mScrollLock) {
-				mPanHandler.removeCallbacksAndMessages(null);
-				mPanHandler.postDelayed(mPanRunnable, 0);
+				mDetector.onTouchEvent(ev);
+				if (!mIsFlinging) {
+					// this is the end of simple panning, request new map immediately
+					mPanHandler.removeCallbacksAndMessages(null);
+					mPanHandler.postDelayed(mPanRunnable, 0);
+				}
 			}
 			mScrollLock = true;
 			Logger.logW(TAG, "dispatch touch event - KEY UP DETECTED");
@@ -316,10 +326,9 @@ public class MapActivity extends LocusWearActivity {
 				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
 			}
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
-// TODO cejnar debug
-				//				mMapView.animate().cancel();
-//				mMapView.setScaleX(1f);
-//				mMapView.setScaleY(1f);
+				mMapView.animate().cancel();
+				mMapView.setScaleX(1f);
+				mMapView.setScaleY(1f);
 				mZoomLock = false;
 				mIsScaled = false;
 			}
@@ -340,7 +349,6 @@ public class MapActivity extends LocusWearActivity {
 
 	private void refreshMapOffset(int offsetX, int offsetY, int renderOffsetX, int renderOffsetY) {
 		runOnUiThread(() -> {
-			cancelFling();
 			Logger.logW(TAG, "Refreshing with new traslation X: " + (-offsetX + renderOffsetX));
 			mMapView.setTranslationX(-offsetX + renderOffsetX);
 			mMapView.setTranslationY(-offsetY + renderOffsetY);
@@ -402,10 +410,9 @@ public class MapActivity extends LocusWearActivity {
 							.sendDataWithWatchDogConditionable(getInitialCommandType(),
 									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS,
 									(MapContainer cont) -> testMapContainerAndImageNotNull(cont));
-				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0) {
-					//TODO cejnar debug
-//					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
-//							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0 && !mIsFlinging) {
+					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
+							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				}
@@ -442,16 +449,13 @@ public class MapActivity extends LocusWearActivity {
 		if (changeZoom(mRequestedZoom, zoomDiff)) {
 			float scale = zoomDiff < 0 ? 0.5f : 2f;
 			mIsScaled = true;
-			// TODO cejnar debug
-//			mMapView.setScaleX(scale);
-//			mMapView.setScaleY(scale);
-//			mMapView.animate()
-//					.scaleX(scale)
-//					.scaleY(scale)
-//					.setDuration(SCALE_ANIMATION_DURATION_MS)
-//					.setInterpolator(new DecelerateInterpolator())
-//					.withEndAction(() -> mZoomLock = false)
-//					.start();
+			mMapView.animate()
+					.scaleX(scale)
+					.scaleY(scale)
+					.setDuration(SCALE_ANIMATION_DURATION_MS)
+					.setInterpolator(new DecelerateInterpolator())
+					.withEndAction(() -> mZoomLock = false)
+					.start();
 		} else {
 			mZoomLock = false;
 		}
@@ -523,6 +527,7 @@ public class MapActivity extends LocusWearActivity {
 
 	private void cancelFling() {
 		mFlingAnimator.cancel();
+		mIsFlinging = false;
 	}
 
 	private void doCenterButtonClicked() {

@@ -53,8 +53,8 @@ public class WearMapActionMoveFling {
 			try {
 				boolean lastMove = false;
 				while (mThread == Thread.currentThread() && !lastMove) {
-					float newDx = lastDX * 80.0f / 100.0f;
-					float newDy = lastDY * 80.0f / 100.0f;
+					float newDx = lastDX * 63.0f / 100.0f;
+					float newDy = lastDY * 63.0f / 100.0f;
 					lastMove = !(Math.abs(lastDX) > 1 || Math.abs(lastDY) > 1);
 					mOffsetUpdatable.updateOffset((int)(lastDX + 0.5f), (int)(lastDY + 0.5f), lastMove);
 					lastDX = newDx;

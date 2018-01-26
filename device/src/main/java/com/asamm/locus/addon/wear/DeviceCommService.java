@@ -311,16 +311,6 @@ public class DeviceCommService extends LocusWearCommService {
 								zoom, extra.getWidth(), extra.getHeight(),
 								offsetX, offsetY,
 								extra.getDensityDpi(), rotationDeg, extra.getDiagonal()));
-//				try { // TODO cejnar debug
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//				mapPreview = ActionMapTools.getMapPreview(ctx, lv,
-//						createMapPreviewParams(offsetCenter,
-//								zoom, extra.getWidth(), extra.getHeight(),
-//								offsetX, offsetY,
-//								extra.getDensityDpi(), rotationDeg, extra.getDiagonal()));
 			} else { // first release version, no panning applied to the map
 				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
 						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
