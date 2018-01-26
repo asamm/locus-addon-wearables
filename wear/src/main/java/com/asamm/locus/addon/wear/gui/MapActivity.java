@@ -31,6 +31,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPe
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.gui.custom.CustomWearableDrawerLayout;
 import com.asamm.locus.addon.wear.gui.custom.NavHelper;
 import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
@@ -99,9 +100,8 @@ public class MapActivity extends LocusWearActivity {
 	private volatile int mOffsetY = 0;
 	private volatile boolean mAutoRotate = false;
 	private int mDensityDpi = 0;
-	private int mScrWidthPx = 0;
-	private int mScrHeightPx = 0;
 	private int mDiagonal = 0;
+	private ApplicationMemoryCache appCache;
 	/**
 	 * Last rendered location and offset
 	 */
@@ -124,25 +124,23 @@ public class MapActivity extends LocusWearActivity {
 		refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
 		if (isLast) {
 			cancelFling();
-			isPanningOrFlinging = false;
 			mPanHandler.removeCallbacksAndMessages(null);
 			mPanHandler.postDelayed(mPanRunnable, 0);
 		}
 	};
 	private WearMapActionMoveFling mFlingAnimator = new WearMapActionMoveFling(0, 0, flingUpdatable);
 
-	private boolean isPanningOrFlinging = false;
+	// variable used to signal !scrolling
+	private boolean mScrollLock = true;
 
 	// ********** METHODS ********** //
 
 	@Override
 	protected DataPayload<TimeStampStorable> getInitialCommandType() {
-		ApplicationMemoryCache appState = ((MainApplication) getApplication()).getCache();
-
 		final MapPeriodicParams params =
 				new MapPeriodicParams(mRequestedZoom,
-						appState.getScreenWidth(),
-						appState.getScreenHeight(),
+						appCache.getScreenWidth(),
+						appCache.getScreenHeight(),
 						mOffsetX, mOffsetY, mDensityDpi, mAutoRotate, mDiagonal,
 						mLastMapLocation.latitude, mLastMapLocation.longitude);
 
@@ -159,6 +157,7 @@ public class MapActivity extends LocusWearActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		appCache = ((MainApplication) getApplication()).getCache();
 		setContentView(R.layout.activity_map);
 		mMapView = findViewById(R.id.image_view_map);
 		mLlNavPanel = findViewById(R.id.linear_layout_panel_navigation);
@@ -174,51 +173,40 @@ public class MapActivity extends LocusWearActivity {
 		mIvAmbient = findViewById(R.id.imageview_ambient);
 
 		mDensityDpi = getResources().getDisplayMetrics().densityDpi;
-		mScrWidthPx = getResources().getDisplayMetrics().widthPixels;
-		mScrHeightPx = getResources().getDisplayMetrics().heightPixels;
+
+		int w = appCache.getScreenHeight();
+		int h = appCache.getScreenHeight();
 		boolean isRound = getResources().getConfiguration().isScreenRound();
 		if (isRound) {
-			mDiagonal = (Math.max(mScrHeightPx, mScrWidthPx) + 1) / 2;
+			mDiagonal = (Math.max(w, h) + 1) / 2;
 		} else {
-			mDiagonal = (int) (Math.sqrt(mScrHeightPx * mScrHeightPx + mScrWidthPx * mScrWidthPx) + 1) / 2;
+			mDiagonal = (int) (Math.sqrt(h * h + w * w) + 1) / 2;
 		}
 
 		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-			private boolean isScrolling = false;
-
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-				if (isScrolling) {
-					mOffsetX += distanceX;
-					mOffsetY += distanceY;
-					refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
-					mPanHandler.removeCallbacksAndMessages(null);
-					mPanHandler.postDelayed(mPanRunnable, PAN_DELAY);
-				}
-				return isScrolling;
+				mOffsetX += distanceX;
+				mOffsetY += distanceY;
+				refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+				mPanHandler.removeCallbacksAndMessages(null);
+				mPanHandler.postDelayed(mPanRunnable, PAN_DELAY);
+				return true;
 			}
 
 			@Override
 			public boolean onDown(MotionEvent event) {
 				cancelFling();
-				int action = event.getAction() & MotionEvent.ACTION_MASK;
-				isScrolling = action == MotionEvent.ACTION_DOWN &&
-						event.getX() > mScrWidthPx / 5 &&
-						event.getY() > mScrHeightPx / 5;
-				isPanningOrFlinging = isScrolling;
-				Log.d(TAG, "onDown is scrolling: " + isScrolling);
-				return isScrolling;
+				Log.d(TAG, "onDown is scrolling: " + mScrollLock);
+				return true;
 			}
 
 			@Override
 			public boolean onFling(MotionEvent event1, MotionEvent event2,
 								   float velocityX, float velocityY) {
-				if (isScrolling) {
-					cancelFling();
-					isPanningOrFlinging = true;
-					mFlingAnimator = new WearMapActionMoveFling(velocityX, velocityY, flingUpdatable);
-					mFlingAnimator.start(mMapView);
-				}
+				cancelFling();
+				mFlingAnimator = new WearMapActionMoveFling(velocityX, velocityY, flingUpdatable);
+				mFlingAnimator.start(mMapView);
 				return true;
 			}
 		});
@@ -238,14 +226,25 @@ public class MapActivity extends LocusWearActivity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
+		int w = appCache.getScreenHeight();
+		int h = appCache.getScreenHeight();
 		int action = ev.getAction() & MotionEvent.ACTION_MASK;
-		boolean isUp = action == MotionEvent.ACTION_UP;
-		if (isUp) {
-			isPanningOrFlinging = false;
-			mPanHandler.removeCallbacksAndMessages(null);
-			mPanHandler.postDelayed(mPanRunnable, 0);
+		if (action == MotionEvent.ACTION_UP ||
+				(mDrawer != null && mDrawer.isOpened())) {
+			// finish possible panning
+			if (!mScrollLock) {
+				mPanHandler.removeCallbacksAndMessages(null);
+				mPanHandler.postDelayed(mPanRunnable, 0);
+			}
+			mScrollLock = true;
+			Logger.logW(TAG, "dispatch touch event - KEY UP DETECTED");
+		} else if (action == MotionEvent.ACTION_DOWN &&
+				ev.getX() > w / 5 &&
+				ev.getY() > h / 5) {
+			mScrollLock = false;
+			Logger.logW(TAG, "dispatch touch event - KEY DOWN DETECTED");
 		}
-		return mDetector.onTouchEvent(ev) ? true : super.dispatchTouchEvent(ev);
+		return mScrollLock ? super.dispatchTouchEvent(ev) : mDetector.onTouchEvent(ev);
 	}
 
 	@Override
@@ -524,7 +523,6 @@ public class MapActivity extends LocusWearActivity {
 
 	private void cancelFling() {
 		mFlingAnimator.cancel();
-		isPanningOrFlinging = false;
 	}
 
 	private void doCenterButtonClicked() {
