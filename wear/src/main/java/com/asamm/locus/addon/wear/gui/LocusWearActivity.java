@@ -151,7 +151,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		this.mState = WearActivityState.ON_RESUME;
 		super.onResume();
 		AppPreferencesManager.persistLastActivity(this, getClass());
-		//getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
+		hwKeyDelegate = null;
 		registerHwKeyActions(getHwKeyDelegate());
 		// checks connection and state of initial command, if not ready, initiates countDownTimer
 		if (mConnectionFailedTimer == null) {
@@ -426,4 +426,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	}
 
 	public abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
+	protected void enableCustomRotatryActions() {
+		getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
+	}
 }

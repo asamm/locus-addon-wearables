@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.support.wearable.input.RotaryEncoder;
@@ -27,6 +28,8 @@ import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDes
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_2_PRESS;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_3_LONG_PRESS;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_3_PRESS;
+import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.ROTARY_DOWN;
+import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.ROTARY_UP;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY;
@@ -69,7 +72,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	 * Delegate facotry. If Hw button support is disabled, returns dummy delegate with no sideeffects
 	 */
 	class Factory {
-		static LocusWearActivityHwKeyDelegate createDelegate(Context ctx) {
+		static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
 			if (AppPreferencesManager.isUseHwButtons(ctx)) {
 				return new LocusWearActivityHwKeyDelegateImpl(ctx);
 			} else {
@@ -115,6 +118,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	}
 
 	class LocusWearActivityHwKeyDelegateImpl implements LocusWearActivityHwKeyDelegate {
+		private Activity context;
 		private HashMap<HwButtonActionDescEnum, HwButtonAction> mHwButtonActions =
 				new HashMap<>(HwButtonActionDescEnum.values().length);
 		private List<Integer> hwKeyCodes = Arrays.asList(new Integer[]{
@@ -127,7 +131,12 @@ public interface LocusWearActivityHwKeyDelegate {
 		private HashMap<HwButtonAutoDetectActionEnum, HwButtonActionDescEnum> autoDetectActionMapping =
 				new HashMap<>(HwButtonAutoDetectActionEnum.values().length);
 
-		private LocusWearActivityHwKeyDelegateImpl(Context ctx) {
+		private Double rotaryAccumulator = 0.0;
+		private final int screenHeight;
+
+		private LocusWearActivityHwKeyDelegateImpl(LocusWearActivity ctx) {
+			this.context = ctx;
+			screenHeight = ctx.getMainApplication().getCache().getScreenHeight();
 			doAutoDetectHwActions(ctx);
 		}
 
@@ -146,7 +155,7 @@ public interface LocusWearActivityHwKeyDelegate {
 			if (idx >= 0) {
 				HwButtonAction action = mHwButtonActions.get(longPressMapping[idx]);
 				Logger.logD("LocusWearActivityHwKeyDelegate", "long press " + longPressMapping[idx]);
-				if (action != null) action.doButtonAction(longPressMapping[idx], event, 0);
+				if (action != null) action.doButtonAction();
 				return action != null;
 			}
 			return false;
@@ -158,7 +167,7 @@ public interface LocusWearActivityHwKeyDelegate {
 			if (idx >= 0 && (event.getFlags() & KeyEvent.FLAG_CANCELED_LONG_PRESS) == 0) {
 				HwButtonAction action = mHwButtonActions.get(shortPressMapping[idx]);
 				Logger.logD("LocusWearActivityHwKeyDelegate", "short press " + shortPressMapping[idx]);
-				if (action != null) action.doButtonAction(shortPressMapping[idx], event, 0);
+				if (action != null) action.doButtonAction();
 				return action != null;
 			}
 			return false;
@@ -176,14 +185,16 @@ public interface LocusWearActivityHwKeyDelegate {
 
 			rootView.setOnGenericMotionListener((View v, MotionEvent ev) -> {
 				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
-					// Don't forget the negation here
-//				float delta = -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(
-//						LocusWearActivity.this);
-//
-//				// Swap these axes if you want to do horizontal scrolling instead
-//				scrollBy(0, Math.round(delta));
-					// TODO cejnar step rotary input
-					Logger.logD("LocusWearActivityHwKeyDelegate", "ROTARY RAW " + (-RotaryEncoder.getRotaryAxisValue(ev)));
+					rotaryAccumulator += -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(context);
+					float triggerLimit = screenHeight / 3.0f;
+					if (Math.abs(rotaryAccumulator) > triggerLimit) {
+						HwButtonActionDescEnum actionDesc =
+								rotaryAccumulator < 0 ? ROTARY_UP : ROTARY_DOWN;
+						HwButtonAction action = mHwButtonActions.get(actionDesc);
+						rotaryAccumulator %= triggerLimit;
+						if (action != null) action.doButtonAction();
+					}
+					Logger.logD("LocusWearActivityHwKeyDelegate", "ROTARY RAW " + (-rotaryAccumulator));
 					return true;
 				}
 
@@ -238,7 +249,7 @@ public interface LocusWearActivityHwKeyDelegate {
 				up = stem2;
 				down = stem3;
 				third = stem1;
-			} else if (checkYSymmetry(stem1, stem3, metrics.y)){
+			} else if (checkYSymmetry(stem1, stem3, metrics.y)) {
 				up = stem1;
 				down = stem3;
 				third = stem2;

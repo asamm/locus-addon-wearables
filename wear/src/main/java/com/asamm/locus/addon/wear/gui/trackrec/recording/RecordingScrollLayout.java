@@ -33,6 +33,9 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 
 	private List<TrackRecordingControllerUpdatable> mScreens = null;
 	private GestureDetectorCompat mGestureDetector;
+	/**
+	 * Holds "index" of currently viewed screen/controller
+	 */
 	private int mActiveFeature = 0;
 
 	public RecordingScrollLayout(Context context, AttributeSet attrs, int defStyle) {
@@ -77,14 +80,44 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 				return true;
 			} else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
 				int featureHeight = v.getMeasuredHeight();
-				mActiveFeature = ((getScrollY() + (featureHeight / 2)) / featureHeight);
-				int scrollTo = mActiveFeature * featureHeight;
-				smoothScrollTo(0, scrollTo);
+				int pageIdx = ((getScrollY() + (featureHeight / 2)) / featureHeight);
+				scrollToPage(pageIdx, true);
 				return true;
 			} else {
 				return false;
 			}
 		});
+	}
+
+	public void scrollToNextPage() {
+		int pIdx = mActiveFeature;
+		boolean overflow = pIdx == mScreens.size() - 1;
+		if (overflow) {
+			scrollToPage(0, false);
+		} else {
+			scrollToPage(pIdx + 1, true);
+		}
+	}
+
+	public void scrollToPreviousPage() {
+		int pIdx = mActiveFeature;
+		boolean overflow = pIdx == 0;
+		if (overflow) {
+			scrollToPage(mScreens.size() - 1, false);
+		} else {
+			scrollToPage(pIdx - 1, true);
+		}
+	}
+
+	private void scrollToPage(int featuredPagedIdx, boolean smoothScroll) {
+		int h = this.getMeasuredHeight();
+		mActiveFeature = featuredPagedIdx;
+		int scrollTo = mActiveFeature * h;
+		if (smoothScroll) {
+			smoothScrollTo(0, scrollTo);
+		} else {
+			scrollTo(0, scrollTo);
+		}
 	}
 
 	@Override
@@ -118,16 +151,16 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 			try {
 				//right to left
 				if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-					int featureHeight = getMeasuredHeight();
-					mActiveFeature = (mActiveFeature < (mScreens.size() - 1)) ? mActiveFeature + 1 : mScreens.size() - 1;
-					smoothScrollTo(0, mActiveFeature * featureHeight);
+					int pIdx = mActiveFeature;
+					pIdx = (pIdx < (mScreens.size() - 1)) ? pIdx + 1 : mScreens.size() - 1;
+					scrollToPage(pIdx, true);
 					return true;
 				}
 				//left to right
 				else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-					int featureHeight = getMeasuredHeight();
-					mActiveFeature = (mActiveFeature > 0) ? mActiveFeature - 1 : 0;
-					smoothScrollTo(0, mActiveFeature * featureHeight);
+					int pIdx = mActiveFeature;
+					pIdx = (pIdx > 0) ? pIdx - 1 : 0;
+					scrollToPage(pIdx, true);
 					return true;
 				}
 			} catch (Exception e) {

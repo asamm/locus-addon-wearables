@@ -121,7 +121,7 @@ public class LocusWearCommService implements
 		if (path == DataPath.GET_PERIODIC_DATA) { // TODO cejnar debug
 		if (data instanceof PeriodicCommand) {
 			MapPeriodicParams p = (MapPeriodicParams) ((PeriodicCommand)data).getExtra();
-			Logger.logW("SENDING", "zoom: " + p.getZoom() + " x: " + p.getOffsetX() + " y: " + p.getOffsetY());
+//			Logger.logW("SENDING", "zoom: " + p.getZoom() + " x: " + p.getOffsetX() + " y: " + p.getOffsetY());
 		}
 		}
 		PutDataRequest request = PutDataRequest.create(path.getPath());

@@ -33,6 +33,7 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
@@ -472,7 +473,9 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	@Override
 	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
-
+		delegate.registerDefaultRotaryMotionListener(mRecordingScrollScreen);
+		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_DOWN, () -> mRecordingScrollScreen.scrollToNextPage());
+		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_UP, () -> mRecordingScrollScreen.scrollToPreviousPage());
 	}
 
 	/**

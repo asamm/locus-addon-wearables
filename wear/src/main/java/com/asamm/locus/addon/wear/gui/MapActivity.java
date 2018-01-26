@@ -531,6 +531,7 @@ public class MapActivity extends LocusWearActivity {
 
 	@Override
 	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
+		enableCustomRotatryActions();
 		HwButtonActionDescEnum upPrimaryBtn =
 				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP);
 		HwButtonActionDescEnum downBtn =
@@ -538,9 +539,12 @@ public class MapActivity extends LocusWearActivity {
 		HwButtonActionDescEnum secondaryActionBtn =
 				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
 
-		HwButtonAction centerAction = (b, e, a) -> doCenterButtonClicked();
-		HwButtonAction zoomInAction = (b, e, a) -> doZoomClicked(1);
-		HwButtonAction zoomOutAction = (b, e, a) -> doZoomClicked(-1);
+		HwButtonAction centerAction = () -> doCenterButtonClicked();
+		HwButtonAction zoomInAction = () -> doZoomClicked(1);
+		HwButtonAction zoomOutAction = () -> doZoomClicked(-1);
+
+		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_UP, zoomOutAction);
+		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_DOWN, zoomInAction);
 		// only single button available
 		if (downBtn == null) {
 			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
