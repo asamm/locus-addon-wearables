@@ -27,4 +27,5 @@
     <dimen name="outer_frame_layout_padding">10dp</dimen>
     <dimen name="margin_huge">20dp</dimen>
 
+    <item name="map_fab_scale" format="float" type="dimen">0.8</item>
 </resources>

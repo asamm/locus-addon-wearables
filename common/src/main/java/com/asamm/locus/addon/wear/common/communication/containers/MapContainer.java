@@ -44,6 +44,7 @@ public class MapContainer extends TimeStampStorable {
 	private int mOffsetX;
 	private int mOffsetY;
 	private Location mLastLocation;
+	private short mBearing;
 
 	public MapContainer() {
 		super();
@@ -54,12 +55,13 @@ public class MapContainer extends TimeStampStorable {
 	}
 
 	public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li,
-						int zoom, int offsetX, int offsetY, Location lastLocation) {
+						int zoom, int offsetX, int offsetY, Location lastLocation, short bearing) {
 		this();
 		mLoadedMap = loadedMap;
 		this.mOffsetX = offsetX;
 		this.mOffsetY = offsetY;
 		mLastLocation = lastLocation == null ? ZERO_LOCATION : lastLocation;
+		mBearing = bearing;
 		if (mLastUpdate != null) {
 			mZoomDevice = (byte) mLastUpdate.getMapZoomLevel();
 			mZoomWear = (byte) zoom;
@@ -90,6 +92,7 @@ public class MapContainer extends TimeStampStorable {
 		mStatus = 0;
 		mOffsetY = 0;
 		mOffsetX = 0;
+		mBearing = 0;
 		mLastLocation = ZERO_LOCATION;
 	}
 
@@ -114,6 +117,7 @@ public class MapContainer extends TimeStampStorable {
 		if (version >= 1) {
 			mOffsetX = dr.readInt();
 			mOffsetY = dr.readInt();
+			mBearing = dr.readShort();
 			try {
 				mLastLocation = dr.readStorable(Location.class);
 			} catch (Exception e) {
@@ -142,6 +146,7 @@ public class MapContainer extends TimeStampStorable {
 		// v1
 		dw.writeInt(mOffsetX);
 		dw.writeInt(mOffsetY);
+		dw.writeShort(mBearing);
 		dw.writeStorable(mLastLocation);
 	}
 
@@ -208,5 +213,9 @@ public class MapContainer extends TimeStampStorable {
 
 	public Location getLastLocation() {
 		return mLastLocation;
+	}
+
+	public short getBearing() {
+		return mBearing;
 	}
 }

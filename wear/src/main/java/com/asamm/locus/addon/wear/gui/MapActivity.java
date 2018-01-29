@@ -1,15 +1,16 @@
 package com.asamm.locus.addon.wear.gui;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -58,7 +59,6 @@ public class MapActivity extends LocusWearActivity {
 	private static final int WATCHDOG_TIMEOUT_MS = MAP_REFRESH_PERIOD_MS * 3;
 	private static final int SCALE_ANIMATION_DURATION_MS = 200;
 
-	private static final boolean INVERT_MAP_IN_AMBIENT = false;
 	// reference to map view
 	private ImageView mMapView;
 
@@ -75,6 +75,7 @@ public class MapActivity extends LocusWearActivity {
 
 	private ImageView mBtnZoomIn;
 	private ImageView mBtnZoomOut;
+	private FloatingActionButton mFabRotAndPan;
 	private ImageView mIvAmbient;
 	private ViewGroup mLayoutNavigation;
 
@@ -96,9 +97,6 @@ public class MapActivity extends LocusWearActivity {
 
 	private volatile int mDeviceZoom;
 	private volatile int mRequestedZoom = Const.ZOOM_UNKOWN;
-	private volatile int mOffsetX = 0;
-	private volatile int mOffsetY = 0;
-	private volatile boolean mAutoRotate = false;
 	private int mDensityDpi = 0;
 	private int mDiagonal = 0;
 	private ApplicationMemoryCache appCache;
@@ -116,17 +114,18 @@ public class MapActivity extends LocusWearActivity {
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
 	};
 	private static final int PAN_DELAY = 300;
-
-	private volatile boolean mIsFlinging = false;
+	private float mDefaultFabScale;
+	private volatile MapActivityState mStatus = new MapActivityState();
 
 	// fling handling
 	private WearMapActionMoveFling.OffsetUpdatable flingUpdatable = (x, y, isLast) -> {
 		runOnUiThread(() -> {
-			mOffsetX += x;
-			mOffsetY += y;
-			mMapView.setTranslationX(-mOffsetX + mLastRenderedOffsetX);
-			mMapView.setTranslationY(-mOffsetY + mLastRenderedOffsetY);
+			mStatus.addOffset(x, y);
+			onOffsetChanged();
+			mMapView.setTranslationX(-mStatus.mMapOffsetX + mLastRenderedOffsetX);
+			mMapView.setTranslationY(-mStatus.mMapOffsetY + mLastRenderedOffsetY);
 			if (isLast) {
+				Logger.logD(TAG, "fling cancel");
 				cancelFling();
 				mPanHandler.removeCallbacksAndMessages(null);
 				mPanHandler.postDelayed(mPanRunnable, 0);
@@ -138,6 +137,10 @@ public class MapActivity extends LocusWearActivity {
 	// variable used to signal !scrolling
 	private boolean mScrollLock = true;
 
+	// handler for button hiding
+	private final Handler mHandlerBtnHide = new Handler();
+	private static final int BUTTON_HIDE_TIME_MS = 3000;
+
 	// ********** METHODS ********** //
 
 	@Override
@@ -146,7 +149,8 @@ public class MapActivity extends LocusWearActivity {
 				new MapPeriodicParams(mRequestedZoom,
 						appCache.getScreenWidth(),
 						appCache.getScreenHeight(),
-						mOffsetX, mOffsetY, mDensityDpi, mAutoRotate, mDiagonal,
+						mStatus.mMapOffsetX, mStatus.mMapOffsetY, mDensityDpi, mStatus.isAutoRotateEnabled(),
+						mStatus.getLastBearing(), mDiagonal,
 						mLastMapLocation.latitude, mLastMapLocation.longitude);
 
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
@@ -176,7 +180,11 @@ public class MapActivity extends LocusWearActivity {
 		mTvNavDistUnits = findViewById(R.id.text_view_dist_units);
 		mTvNavDistVal = findViewById(R.id.text_view_dist_value);
 		mIvAmbient = findViewById(R.id.imageview_ambient);
+		mFabRotAndPan = findViewById(R.id.fab_rot_and_pan);
 
+		TypedValue typedFabScale = new TypedValue();
+		getResources().getValue(R.dimen.map_fab_scale, typedFabScale, true);
+		mDefaultFabScale = typedFabScale.getFloat();
 		mDensityDpi = getResources().getDisplayMetrics().densityDpi;
 
 		int w = appCache.getScreenHeight();
@@ -191,9 +199,10 @@ public class MapActivity extends LocusWearActivity {
 		mDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
 			@Override
 			public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-				mOffsetX += distanceX;
-				mOffsetY += distanceY;
-				refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+				mStatus.mIsPanning = true;
+				mStatus.addOffset((int) (distanceX + 0.5f), (int) (distanceY + 0.5f));
+				onOffsetChanged();
+				refreshMapOffset(mStatus.mMapOffsetX, mStatus.mMapOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
 				mPanHandler.removeCallbacksAndMessages(null);
 				mPanHandler.postDelayed(mPanRunnable, PAN_DELAY);
 				return true;
@@ -210,7 +219,7 @@ public class MapActivity extends LocusWearActivity {
 			public boolean onFling(MotionEvent event1, MotionEvent event2,
 								   float velocityX, float velocityY) {
 				cancelFling();
-				mIsFlinging = true;
+				mStatus.mIsFlinging = true;
 				mFlingAnimator = new WearMapActionMoveFling(velocityX, velocityY, flingUpdatable);
 				mFlingAnimator.start(mMapView);
 				return true;
@@ -224,8 +233,8 @@ public class MapActivity extends LocusWearActivity {
 
 	private void centerMap() {
 		mPanHandler.removeCallbacksAndMessages(null);
-		mOffsetX = 0;
-		mOffsetY = 0;
+		mStatus.setZeroOffset();
+		onOffsetChanged();
 		mPanHandler.postDelayed(mPanRunnable, 0);
 	}
 
@@ -240,21 +249,28 @@ public class MapActivity extends LocusWearActivity {
 			// finish possible panning
 			if (!mScrollLock) {
 				mDetector.onTouchEvent(ev);
-				if (!mIsFlinging) {
+				if (!mStatus.mIsFlinging && mStatus.mIsPanning) {
 					// this is the end of simple panning, request new map immediately
 					mPanHandler.removeCallbacksAndMessages(null);
 					mPanHandler.postDelayed(mPanRunnable, 0);
 				}
 			}
+			doShowButtons();
+			mStatus.mIsPanning = false;
 			mScrollLock = true;
-			Logger.logW(TAG, "dispatch touch event - KEY UP DETECTED");
 		} else if (action == MotionEvent.ACTION_DOWN &&
 				ev.getX() > w / 5 &&
 				ev.getY() > h / 5) {
 			mScrollLock = false;
-			Logger.logW(TAG, "dispatch touch event - KEY DOWN DETECTED");
+			super.dispatchTouchEvent(ev);
 		}
 		return mScrollLock ? super.dispatchTouchEvent(ev) : mDetector.onTouchEvent(ev);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		doShowButtons();
 	}
 
 	@Override
@@ -311,20 +327,11 @@ public class MapActivity extends LocusWearActivity {
 			mLastMapLocation = data.getLastLocation();
 			mLastRenderedOffsetX = data.getOffsetX();
 			mLastRenderedOffsetY = data.getOffsetY();
+			mStatus.setLastBearing(data.getBearing());
 
-			if (INVERT_MAP_IN_AMBIENT && isAmbient()) {
-				Bitmap bm = getMapAmbientBitmap(map.getWidth(), map.getHeight());
-				Canvas c = new Canvas(bm);
-				Paint paintInvertImage = new Paint();
-				paintInvertImage.setColorFilter(new ColorMatrixColorFilter(getInvertColorMatrix()));
-				c.drawBitmap(map, 0, 0, paintInvertImage);
-				mMapView.setImageBitmap(bm);
-			} else {
-				Logger.logW(TAG, "updating map 1");
-				refreshMapOffset(mOffsetX, mOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
-				Logger.logW(TAG, "updating map 2");
-				mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
-			}
+			refreshMapOffset(mStatus.mMapOffsetX, mStatus.mMapOffsetY, mLastRenderedOffsetX, mLastRenderedOffsetY);
+			mMapView.setImageDrawable(new BitmapDrawable(getResources(), map));
+
 			if (data.getZoomWear() == mRequestedZoom && mIsScaled) {
 				mMapView.animate().cancel();
 				mMapView.setScaleX(1f);
@@ -410,7 +417,7 @@ public class MapActivity extends LocusWearActivity {
 							.sendDataWithWatchDogConditionable(getInitialCommandType(),
 									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS,
 									(MapContainer cont) -> testMapContainerAndImageNotNull(cont));
-				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0 && !mIsFlinging) {
+				} else if (tmp.getLoadedMap().getNumOfNotYetLoadedTiles() > 0 && !mStatus.mIsFlinging) {
 					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
 							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
@@ -425,6 +432,9 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	public void onZoomClicked(View v) {
+		if (!mStatus.mButtonsVisible) {
+			return;
+		}
 		final int zoomDiff;
 		int viewId = v.getId();
 		if (viewId == R.id.btn_zoom_in || viewId == R.id.area_zoom_in) {
@@ -467,17 +477,14 @@ public class MapActivity extends LocusWearActivity {
 		if (newZoom == mRequestedZoom) {
 			return false;
 		}
-		Logger.logW(TAG, "New zoom from " + currentZoom + " to " + newZoom);
 		// correct offset before zooming
-		Logger.logW(TAG, "Old offset x: " + mOffsetX + " y: " + mOffsetY);
 		if (zoomDiff < 0) {
-			mOffsetX >>= -zoomDiff;
-			mOffsetY >>= -zoomDiff;
+			mStatus.divideOffset(1 << zoomDiff);
 		} else if (zoomDiff > 0) {
-			mOffsetX <<= zoomDiff;
-			mOffsetY <<= zoomDiff;
+			mStatus.multiplyOffset(1 << zoomDiff);
 		}
-		Logger.logW(TAG, "New offset x: " + mOffsetX + " y: " + mOffsetY);
+		onOffsetChanged();
+		Logger.logW(TAG, "New offset x: " + mStatus.mMapOffsetX + " y: " + mStatus.mMapOffsetY);
 		mRequestedZoom = newZoom;
 		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
@@ -489,35 +496,56 @@ public class MapActivity extends LocusWearActivity {
 		return true;
 	}
 
-	public ColorMatrix getInvertColorMatrix() {
-		if (mInvertColorMatrix == null) {
-			float mx[] = {
-					-1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-					0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-					0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-					0.0f, 0.0f, 0.0f, 1.0f, 0.0f};
-			mInvertColorMatrix = new ColorMatrix(mx);
+	private void doHideButtons() {
+		mHandlerBtnHide.removeCallbacksAndMessages(null);
+		animateButton(mBtnZoomIn, false);
+		animateButton(mBtnZoomOut, false);
+		animateButton(mFabRotAndPan, false);
+		mStatus.mButtonsVisible = false;
+	}
+
+	private void doShowButtons() {
+		if (mStatus.mIsAmbient) {
+			return;
 		}
-		return mInvertColorMatrix;
+		animateButton(mBtnZoomIn, true);
+		animateButton(mBtnZoomOut, true);
+		animateButton(mFabRotAndPan, true);
+		// give a little time to animate the buttons for a bit before enabling buttons function
+		new Handler().postDelayed(() -> mStatus.mButtonsVisible = true, SCALE_ANIMATION_DURATION_MS / 2);
+		mHandlerBtnHide.removeCallbacksAndMessages(null);
+		mHandlerBtnHide.postDelayed(this::doHideButtons, BUTTON_HIDE_TIME_MS);
+	}
+
+	private void animateButton(View v, boolean visible) {
+		v.animate().cancel();
+		v.animate()
+				.scaleX(visible ? mDefaultFabScale : 0)
+				.scaleY(visible ? mDefaultFabScale : 0)
+				.setDuration(SCALE_ANIMATION_DURATION_MS)
+				.setInterpolator(new DecelerateInterpolator())
+				.withStartAction(() -> v.setVisibility(View.VISIBLE))
+				.withEndAction(() -> v.setVisibility(visible ? View.VISIBLE : View.GONE))
+				.start();
 	}
 
 	@Override
 	public void onEnterAmbient(Bundle ambientDetails) {
 		super.onEnterAmbient(ambientDetails);
-		mBtnZoomIn.setVisibility(View.GONE);
-		mBtnZoomOut.setVisibility(View.GONE);
+		doHideButtons();
 		mIvAmbient.setVisibility(View.VISIBLE);
 		mLayoutNavigation.setBackgroundColor(getColor(R.color.base_dark_primary));
 		mTvNavDistVal.setTextColor(Color.WHITE);
 		mTvNavDistUnits.setTextColor(Color.WHITE);
 		refreshMapView(mLastContainer);
+		mStatus.mIsAmbient = true;
 	}
 
 	@Override
 	public void onExitAmbient() {
 		super.onExitAmbient();
-		mBtnZoomIn.setVisibility(View.VISIBLE);
-		mBtnZoomOut.setVisibility(View.VISIBLE);
+		mStatus.mIsAmbient = false;
+		doShowButtons();
 		mIvAmbient.setVisibility(View.GONE);
 		mLayoutNavigation.setBackgroundColor(getColor(R.color.panel_map_side));
 		mTvNavDistVal.setTextColor(getColor(R.color.base_dark_primary));
@@ -527,11 +555,47 @@ public class MapActivity extends LocusWearActivity {
 
 	private void cancelFling() {
 		mFlingAnimator.cancel();
-		mIsFlinging = false;
+		mStatus.mIsFlinging = false;
 	}
 
-	private void doCenterButtonClicked() {
+	public void onCenterRotateButtonClicked(View v) {
+		if (!mStatus.mButtonsVisible) {
+			return;
+		}
+		if (!mStatus.isMapCentered()) {
+			cancelFling();
+			mStatus.mIsPanning = false;
+			mMapView.animate().cancel();
+			mMapView.animate()
+					.translationXBy(mStatus.mMapOffsetX)
+					.translationYBy(mStatus.mMapOffsetY)
+					.setDuration(SCALE_ANIMATION_DURATION_MS)
+					.setInterpolator(new DecelerateInterpolator());
+			mStatus.setZeroOffset();
+		} else if (mStatus.isAutoRotateEnabled()) {
+			mStatus.setAutoRotate(false);
+		} else {
+			mStatus.setAutoRotate(true);
+		}
+		onOffsetChanged();
+		mPanHandler.post(mPanRunnable);
 		Logger.logD(TAG, "CENTER BTN clicked");
+	}
+
+	private void onOffsetChanged() {
+		if (mStatus.isMapCentered()) {
+			setRotPanBtnToRotation();
+		} else {
+			mFabRotAndPan.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.panel_map_side)));
+			mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_my_location));
+		}
+	}
+
+	private void setRotPanBtnToRotation() {
+		mFabRotAndPan.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.base_primary)));
+		mFabRotAndPan.setBackgroundColor(ContextCompat.getColor(this, R.color.base_primary));
+		mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_rotate_screen));
+
 	}
 
 	@Override
@@ -544,7 +608,7 @@ public class MapActivity extends LocusWearActivity {
 		HwButtonActionDescEnum secondaryActionBtn =
 				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
 
-		HwButtonAction centerAction = () -> doCenterButtonClicked();
+		HwButtonAction centerAction = () -> onCenterRotateButtonClicked(null);
 		HwButtonAction zoomInAction = () -> doZoomClicked(1);
 		HwButtonAction zoomOutAction = () -> doZoomClicked(-1);
 
@@ -559,5 +623,69 @@ public class MapActivity extends LocusWearActivity {
 			delegate.registerHwButtonListener(secondaryActionBtn, centerAction);
 		}
 
+	}
+
+	private static class MapActivityState {
+		private volatile boolean mIsAmbient = false;
+		private volatile boolean mButtonsVisible = true;
+		private volatile boolean mAutoRotate = false;
+		private volatile boolean mIsFlinging = false;
+		private volatile boolean mIsPanning = false;
+		private volatile int mMapOffsetX = 0;
+		private volatile int mMapOffsetY = 0;
+
+		private volatile short mLastBearing = 0;
+
+		private boolean isAutoRotateEnabled() {
+			return mAutoRotate;
+		}
+
+		private boolean isMapCentered() {
+			return mMapOffsetX == 0 && mMapOffsetY == 0;
+		}
+
+		/**
+		 * @return if map has no offset then returns APPLY_DEVICE_BEARING to let device
+		 * set last known bearing automatically. If there is offset, return last "locked bearing"
+		 */
+		public short getLastBearing() {
+			return isMapCentered() ? MapPeriodicParams.APPLY_DEVICE_BEARING : mLastBearing;
+		}
+
+		/**
+		 * sets new bearing if there is no map offset. If there is offset, the bearing is "locked"
+		 * and calling this setter is ignored
+		 *
+		 * @param lastBearing
+		 */
+		public void setLastBearing(short lastBearing) {
+			if (isMapCentered()) {
+				mLastBearing = lastBearing;
+			}
+		}
+
+		public void setAutoRotate(boolean autoRotate) {
+			this.mAutoRotate = autoRotate;
+		}
+
+		private void addOffset(int x, int y) {
+			mMapOffsetX += x;
+			mMapOffsetY += y;
+		}
+
+		private void setZeroOffset() {
+			mMapOffsetY = 0;
+			mMapOffsetX = 0;
+		}
+
+		private void multiplyOffset(int multiplier) {
+			mMapOffsetX *= multiplier;
+			mMapOffsetY *= multiplier;
+		}
+
+		private void divideOffset(int divisor) {
+			mMapOffsetX /= divisor;
+			mMapOffsetY /= divisor;
+		}
 	}
 }

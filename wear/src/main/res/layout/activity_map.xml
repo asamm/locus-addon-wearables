@@ -61,6 +61,17 @@
             app:fabSize="mini"
             app:layout_constraintStart_toEndOf="@id/x_map_guide_vertical_center"
             app:layout_constraintTop_toTopOf="@+id/x_map_guide_horizontal_zoom_top" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_rot_and_pan"
+            style="@style/zoomButton"
+            android:onClick="onCenterRotateButtonClicked"
+            android:src="@drawable/ic_rotate_screen"
+            app:borderWidth="0dp"
+            app:fabSize="mini"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
         <ImageView
             android:id="@+id/imageview_ambient"
@@ -161,7 +172,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.25" />
+            app:layout_constraintGuide_percent="0.20" />
+        <android.support.constraint.Guideline
+            android:id="@+id/x_map_guide_clickable_area_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.20" />
 
     </android.support.constraint.ConstraintLayout>
 

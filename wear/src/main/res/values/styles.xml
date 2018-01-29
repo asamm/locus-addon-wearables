@@ -69,8 +69,8 @@
         <item name="android:clickable">true</item>
         <item name="android:elevation">4dp</item>
         <item name="android:scaleType">fitCenter</item>
-        <item name="android:scaleX">0.73</item>
-        <item name="android:scaleY">0.73</item>
+        <item name="android:scaleX">@dimen/map_fab_scale</item>
+        <item name="android:scaleY">@dimen/map_fab_scale</item>
     </style>
 
     <!-- *************************************************** -->

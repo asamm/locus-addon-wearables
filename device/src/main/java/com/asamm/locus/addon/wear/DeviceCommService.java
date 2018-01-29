@@ -295,6 +295,7 @@ public class DeviceCommService extends LocusWearCommService {
 		// request map
 		MapPreviewResult mapPreview = null;
 		Location offsetCenter = ZERO_LOCATION;
+		int rotationDeg = 0;
 		final boolean isZeroOffset = offsetX == 0 && offsetY == 0;
 		try {
 			if (lv.getVersionCode() >= LocusUtils.VersionCode.UPDATE_14.vcFree) {
@@ -302,15 +303,28 @@ public class DeviceCommService extends LocusWearCommService {
 				if (offsetX != 0 || offsetY != 0) {
 					offsetCenter = new Location(extra.getLastLatitude(), extra.getLastLongitude());
 				}
-				int rotationDeg = !extra.isAutoRotate() || data == null
-						|| data.getLocMyLocation() == null || !data.getLocMyLocation().hasBearing() ?
-						0 : (int) (data.getLocMyLocation().getBearing() + 0.5f);
+
+				if (extra.isAutoRotate() && extra.getBearing() != MapPeriodicParams.APPLY_DEVICE_BEARING) {
+					rotationDeg = extra.getBearing();
+				} else if (data != null) {
+					rotationDeg = (int) (data.getOrientHeading() + 0.5f);
+				}
+				int mapRotation = (360 - rotationDeg) % 360;
+
+				int correctedOffsetX = offsetX;
+				int correctedOffsetY = offsetY;
+				if ((offsetX != 0 || offsetY != 0) && extra.isAutoRotate() && mapRotation != 0) {
+					float sin = (float) Math.sin(rotationDeg / 180f * Math.PI);
+					float cos = (float) Math.cos(rotationDeg / 180f * Math.PI);
+					correctedOffsetX = (int)(cos * offsetX - sin * offsetY + 0.5f);
+					correctedOffsetY = (int)(sin * offsetX + cos * offsetY + 0.5f);
+				}
 
 				mapPreview = ActionMapTools.getMapPreview(ctx, lv,
 						createMapPreviewParams(offsetCenter,
 								zoom, extra.getWidth(), extra.getHeight(),
-								offsetX, offsetY,
-								extra.getDensityDpi(), rotationDeg, extra.getDiagonal()));
+								correctedOffsetX, correctedOffsetY,
+								extra.getDensityDpi(), extra.isAutoRotate() ? mapRotation : 0, extra.getDiagonal()));
 			} else { // first release version, no panning applied to the map
 				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
 						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
@@ -338,7 +352,7 @@ public class DeviceCommService extends LocusWearCommService {
 			locToSend = offsetCenter;
 		}
 
-		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend);
+		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend, (short) rotationDeg);
 		sendDataItem(DataPath.PUT_MAP, m);
 	}
 

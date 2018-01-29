@@ -15,6 +15,10 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class MapPeriodicParams extends TimeStampStorable implements PeriodicCommand.PeriodicExtra {
+	/**
+	 * code for mBearing property which indicates that device is free to use its last known bearing
+	 */
+	public static final short APPLY_DEVICE_BEARING = Short.MIN_VALUE;
 	private static final byte FLG_AUTOROTATE = 0x1;
 	// version 0
 	private int mZoom;
@@ -27,6 +31,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 	 * 0x1 - AutoRotate
 	 */
 	private byte bFlags;
+	private short mBearing;
 	private short mDiagonal;
 	private int mOffsetX;
 	private int mOffsetY;
@@ -45,7 +50,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 
 	public MapPeriodicParams(int mZoom, int mWidth, int mHeight,
 							 int offsetX, int offsetY, int densityDpi,
-							 boolean isAutoRotate, int diagonal,
+							 boolean isAutoRotate, short bearing, int diagonal,
 							 double lastOffsetLatitude, double lastOffsetLongitude) {
 		this.mZoom = mZoom;
 		this.mWidth = mWidth;
@@ -57,6 +62,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		this.mDiagonal = (short) diagonal;
 		this.mLastLatitude = lastOffsetLatitude;
 		this.mLastLongitude = lastOffsetLongitude;
+		this.mBearing = bearing;
 	}
 
 	@Override
@@ -95,6 +101,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 			bFlags = dr.readBytes(1)[0];
 			mLastLatitude = dr.readDouble();
 			mLastLongitude = dr.readDouble();
+			mBearing = dr.readShort();
 		}
 	}
 
@@ -113,6 +120,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		dw.write(bFlags);
 		dw.writeDouble(mLastLatitude);
 		dw.writeDouble(mLastLongitude);
+		dw.writeShort(mBearing);
 	}
 
 	public int getZoom() {
@@ -155,4 +163,7 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
 		return mLastLongitude;
 	}
 
+	public short getBearing() {
+		return mBearing;
+	}
 }
