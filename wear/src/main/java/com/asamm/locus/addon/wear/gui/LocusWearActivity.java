@@ -9,6 +9,7 @@ import android.support.wearable.activity.WearableActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.MainApplication;
@@ -24,6 +25,8 @@ import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.Node;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import locus.api.utils.Logger;
@@ -42,6 +45,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	protected MainNavigationDrawer mDrawer;
 	private ImageView mDrawerCloseArrowImg;
+	private TextView mTvNavDrawerTime;
+	private Handler mNavDrawerTimeHandler;
+	private DateFormat mDateFormat;
 	private static final int HANDSHAKE_TIMEOUT_MS = 8000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
@@ -150,6 +156,16 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onResume() {
 		this.mState = WearActivityState.ON_RESUME;
 		super.onResume();
+		if (mTvNavDrawerTime != null) {
+			mNavDrawerTimeHandler = new Handler();
+			mNavDrawerTimeHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					mTvNavDrawerTime.setText(mDateFormat.format(new Date()));
+					mNavDrawerTimeHandler.postDelayed(this, 999);
+				}
+			});
+		}
 		AppPreferencesManager.persistLastActivity(this, getClass());
 		hwKeyDelegate = null;
 		registerHwKeyActions(getHwKeyDelegate());
@@ -170,6 +186,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 	protected void onPause() {
 		this.mState = WearActivityState.ON_PAUSE;
 		super.onPause();
+		if (mNavDrawerTimeHandler != null) {
+			mNavDrawerTimeHandler.removeCallbacksAndMessages(null);
+		}
 	}
 
 	/**
@@ -314,6 +333,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onStart();
 		mDrawer = findViewById(R.id.navigation_drawer);
 		mDrawerCloseArrowImg = findViewById(R.id.imageViewDrawerOpened);
+		mTvNavDrawerTime = findViewById(R.id.navDrawerTvTime);
+		mDateFormat = android.text.format.DateFormat.getTimeFormat(getApplicationContext());
 	}
 
 	// current activity state

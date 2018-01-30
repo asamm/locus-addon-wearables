@@ -361,7 +361,7 @@ public class DeviceCommService extends LocusWearCommService {
 													int diagonal) {
 		MapPreviewParams mpp = new MapPreviewParams();
 		mpp.setZoom(zoom);
-		mpp.setLocCenter(ZERO_LOCATION);
+		mpp.setLocCenter(location);
 		mpp.setWidthPx(width);
 		mpp.setHeightPx(height);
 		mpp.setOffsetX(offsetX);

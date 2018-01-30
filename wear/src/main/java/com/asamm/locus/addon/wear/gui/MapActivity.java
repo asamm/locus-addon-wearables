@@ -1,6 +1,5 @@
 package com.asamm.locus.addon.wear.gui;
 
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorMatrix;
@@ -187,7 +186,7 @@ public class MapActivity extends LocusWearActivity {
 		mDefaultFabScale = typedFabScale.getFloat();
 		mDensityDpi = getResources().getDisplayMetrics().densityDpi;
 
-		int w = appCache.getScreenHeight();
+		int w = appCache.getScreenWidth();
 		int h = appCache.getScreenHeight();
 		boolean isRound = getResources().getConfiguration().isScreenRound();
 		if (isRound) {
@@ -259,7 +258,7 @@ public class MapActivity extends LocusWearActivity {
 			mStatus.mIsPanning = false;
 			mScrollLock = true;
 		} else if (action == MotionEvent.ACTION_DOWN &&
-				ev.getX() > w / 5 &&
+				ev.getX() > w / 6 &&
 				ev.getY() > h / 5) {
 			mScrollLock = false;
 			super.dispatchTouchEvent(ev);
@@ -586,16 +585,21 @@ public class MapActivity extends LocusWearActivity {
 		if (mStatus.isMapCentered()) {
 			setRotPanBtnToRotation();
 		} else {
-			mFabRotAndPan.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.panel_map_side)));
-			mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_my_location));
+			mFabRotAndPan.clearColorFilter();
+			if (mFabRotAndPan.getTag() == null || !mFabRotAndPan.getTag().equals(R.drawable.ic_my_location)) {
+				mFabRotAndPan.setTag(R.drawable.ic_my_location);
+				mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_my_location));
+			}
 		}
 	}
 
 	private void setRotPanBtnToRotation() {
-		mFabRotAndPan.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.base_primary)));
-		mFabRotAndPan.setBackgroundColor(ContextCompat.getColor(this, R.color.base_primary));
-		mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_rotate_screen));
-
+		mFabRotAndPan.setColorFilter(ContextCompat.getColor(this, R.color.base_primary));
+		int resId = mStatus.isAutoRotateEnabled() ? R.drawable.ic_rotate_screen : R.drawable.ic_my_location;
+		if (mFabRotAndPan.getTag() == null || !mFabRotAndPan.getTag().equals(resId)) {
+			mFabRotAndPan.setTag(resId);
+			mFabRotAndPan.setImageDrawable(ContextCompat.getDrawable(this, resId));
+		}
 	}
 
 	@Override

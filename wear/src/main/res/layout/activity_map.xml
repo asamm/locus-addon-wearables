@@ -72,6 +72,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+        <View
+            android:id="@+id/area_right_click_area"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="0dp"
+            android:onClick="onCenterRotateButtonClicked"
+            app:layout_constraintBottom_toBottomOf="@id/fab_rot_and_pan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/fab_rot_and_pan"
+            app:layout_constraintTop_toTopOf="@id/fab_rot_and_pan" />
 
         <ImageView
             android:id="@+id/imageview_ambient"
@@ -172,12 +182,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.20" />
-        <android.support.constraint.Guideline
-            android:id="@+id/x_map_guide_clickable_area_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
             app:layout_constraintGuide_percent="0.20" />
 
     </android.support.constraint.ConstraintLayout>
