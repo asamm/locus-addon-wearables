@@ -32,6 +32,7 @@
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Загрузка</string>
   <!-- Ambient mode (UI text) -->
+  <string name="ambient_mode">Режим Ambient</string>
   <!-- Install button text -->
   <string name="install">Установить</string>
   <!-- Screen header for track recording screen, should be reasonably short -->

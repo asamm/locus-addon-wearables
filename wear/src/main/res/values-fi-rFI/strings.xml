@@ -10,15 +10,27 @@
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <!-- UI Label elevation downhill -->
+  <string name="stat_elevation_down">Korkeus (laskettelu)</string>
   <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Korkeus (nousu)</string>
   <!-- UI Label speed (current) -->
+  <string name="stat_speed">Nopeus</string>
   <!-- UI Label Average moving speed -->
+  <string name="stat_speed_avg_moving">Keskinopeus liikkeessä</string>
   <!-- UI Label distance -->
+  <string name="stat_distance">Etäisyys</string>
   <!-- UI Label track recording time total -->
+  <string name="stat_track_time">Reitin kesto</string>
   <!-- Loading (placeholder text) -->
+  <string name="loading_profiles">Ladataan</string>
   <!-- Ambient mode (UI text) -->
+  <string name="ambient_mode">Ympäristön tila</string>
   <!-- Install button text -->
+  <string name="install">Asenna</string>
   <!-- Screen header for track recording screen, should be reasonably short -->
+  <string name="title_activity_track_record">Reitin tallennus</string>
   <!-- Screen header for profile list screen, should be short -->
+  <string name="title_activity_profile_list">Profiilit</string>
   <!-- Error (label/header)-->
+  <string name="title_activity_error">Virhe</string>
 </resources>

@@ -3,22 +3,37 @@
 <resources>
   <!-- Toast message shown after waypoint was added during track recording -->
   <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
+  <string name="err_locus_version_not_supported">Το Locus Map στο τηλέφωνό σας είναι ξεπερασμένο ή λείπει. Παρακαλώ κάντε του ενημέρωση ή εγκατάσταση.</string>
   <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
+  <string name="err_periodic_updates_disabled">Καμία σύνδεση με το Locus. Παρακαλώ ενεργοποιήσετε περιοδικές ενημερώσεις στο Locus Map -&gt; Ρυθμίσεις -&gt; Διάφορα.</string>
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
+  <string name="err_connection_failed">Η σύνδεση χάθηκε. Παρακαλώ ελέγξτε τις ρυθμίσεις του bluetooth και προσπαθήστε ξανά.</string>
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
+  <string name="err_connection_error_node_not_connected">Το τηλέφωνο και το ρολόι δεν συγχρονίζονται. Παρακαλούμε συγχρονίστε τα και προσπαθήστε ξανά.</string>
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+  <string name="toast_err_device_not_supported">Η αίτηση απέτυχε, εγκατάσταση από το τηλέφωνό σας.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
+  <string name="continue_installation">Συνεχίστε την εγκατάσταση στο τηλέφωνό σας...</string>
   <!-- UI Label elevation downhill -->
   <!-- UI Label elevation uphill -->
   <!-- UI Label speed (current) -->
+  <string name="stat_speed">Ταχύτητα</string>
   <!-- UI Label Average moving speed -->
+  <string name="stat_speed_avg_moving">Μέση ταχύτητα κίνησης</string>
   <!-- UI Label distance -->
+  <string name="stat_distance">Απόσταση</string>
   <!-- UI Label track recording time total -->
+  <string name="stat_track_time">Χρόνος ίχνους</string>
   <!-- Loading (placeholder text) -->
+  <string name="loading_profiles">Φόρτωση</string>
   <!-- Ambient mode (UI text) -->
   <!-- Install button text -->
+  <string name="install">Εγκατάσταση</string>
   <!-- Screen header for track recording screen, should be reasonably short -->
+  <string name="title_activity_track_record">Καταγραφή ίχνους</string>
   <!-- Screen header for profile list screen, should be short -->
+  <string name="title_activity_profile_list">Προφίλ</string>
   <!-- Error (label/header)-->
+  <string name="title_activity_error">Σφάλμα</string>
 </resources>

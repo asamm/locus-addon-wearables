@@ -4,24 +4,39 @@
   <!-- Toast message shown after waypoint was added during track recording -->
   <string name="waypoint_added">Waypoint ajouté</string>
   <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
+  <string name="err_locus_version_not_supported">Locus Map dans votre téléphone n\'est pas à jour ou pas installé. Veuillez le mettre à jour ou l\'installer.</string>
   <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
+  <string name="err_periodic_updates_disabled">Aucune connexion avec Locus. Veuillez activer les mises à jour périodiques dans Locus Map -&gt; Paramètres -&gt; Divers.</string>
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
+  <string name="err_connection_failed">Connexion perdue. Veuillez vérifier les paramètres bluetooth, puis réessayez.</string>
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
+  <string name="err_connection_error_node_not_connected">Téléphone et montre non jumelés. Veuillez les jumeler et réessayez.</string>
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
+  <string name="err_connection_device_app_not_installed">Impossible de se connecter à Wear for Locus Map sur votre téléphone. Vérifiez qu\'il est installé.</string>
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+  <string name="toast_err_device_not_supported">La requête a échouée, installez à partir de votre téléphone.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
+  <string name="continue_installation">Procéder à l’installation sur votre téléphone...</string>
   <!-- UI Label elevation downhill -->
+  <string name="stat_elevation_down">Altitude (descente)</string>
   <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Altitude (montée)</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Vitesse</string>
   <!-- UI Label Average moving speed -->
+  <string name="stat_speed_avg_moving">Vitesse moy. en mouvement</string>
   <!-- UI Label distance -->
   <string name="stat_distance">Distance</string>
   <!-- UI Label track recording time total -->
+  <string name="stat_track_time">Durée du parcours</string>
   <!-- Loading (placeholder text) -->
+  <string name="loading_profiles">Chargement</string>
   <!-- Ambient mode (UI text) -->
+  <string name="ambient_mode">Mode ambiant</string>
   <!-- Install button text -->
+  <string name="install">Installer</string>
   <!-- Screen header for track recording screen, should be reasonably short -->
+  <string name="title_activity_track_record">Enregistrer un parcours</string>
   <!-- Screen header for profile list screen, should be short -->
   <string name="title_activity_profile_list">Profils</string>
   <!-- Error (label/header)-->
