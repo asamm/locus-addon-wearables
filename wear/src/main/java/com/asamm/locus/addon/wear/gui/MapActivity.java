@@ -478,7 +478,7 @@ public class MapActivity extends LocusWearActivity {
 		}
 		// correct offset before zooming
 		if (zoomDiff < 0) {
-			mStatus.divideOffset(1 << zoomDiff);
+			mStatus.divideOffset(1 << -zoomDiff);
 		} else if (zoomDiff > 0) {
 			mStatus.multiplyOffset(1 << zoomDiff);
 		}

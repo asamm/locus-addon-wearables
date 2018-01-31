@@ -307,7 +307,11 @@ public class DeviceCommService extends LocusWearCommService {
 				if (extra.isAutoRotate() && extra.getBearing() != MapPeriodicParams.APPLY_DEVICE_BEARING) {
 					rotationDeg = extra.getBearing();
 				} else if (data != null) {
-					rotationDeg = (int) (data.getOrientHeading() + 0.5f);
+					if (Math.abs(data.getOrientHeading()) < 0.001f) {
+						rotationDeg = (int) (data.getOrientCourse() + 0.5f);
+					} else {
+						rotationDeg = (int) (data.getOrientHeading() + 0.5f);
+					}
 				}
 				int mapRotation = (360 - rotationDeg) % 360;
 
