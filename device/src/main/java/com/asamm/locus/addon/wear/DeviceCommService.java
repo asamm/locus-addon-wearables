@@ -291,6 +291,10 @@ public class DeviceCommService extends LocusWearCommService {
 	}
 
 	private void sendMapPeriodic(Context ctx, MapPeriodicParams extra) {
+		if (lv == null) { // just ignore the request, application should recognize that Locus is missing.
+			return;
+		}
+		
 		int zoom = extra.getZoom();
 		final UpdateContainer data = mLastUpdate;
 		final int offsetX = extra.getOffsetX();
