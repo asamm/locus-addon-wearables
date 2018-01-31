@@ -27,7 +27,7 @@ public class DeviceListenerService extends WearableListenerService {
 	 * Timeout in seconds after which communication services are killed
 	 * and locus periodic update disabled
 	 */
-	private static final int INACTVITY_TIMEOUT_SECONDS = 15;
+	private static final int INACTVITY_TIMEOUT_SECONDS = 12;
 	// timer for termination
 	private static Timer mTimerTerminate;
 
@@ -77,36 +77,31 @@ public class DeviceListenerService extends WearableListenerService {
 			return; // Unknown path, ignore received data
 		}
 
+		switch (p) {
+			// for following paths, refresh terminationTimer
+			case GET_KEEP_ALIVE:
+			case GET_HAND_SHAKE:
+			case GET_TRACK_REC_PROFILES:
+			case GET_PERIODIC_DATA:
+			case GET_PROFILE_ICON:
+				cancelTerminationTimer();
+				// start "destroyer"
+				mTimerTerminate = new Timer();
+				mTimerTerminate.schedule(new TimerTask() {
 
-		// handle termination request if present, otherwise delegate data handling to DeviceCommService
-		if (p == DataPath.PUT_APP_DESTROYED) {
-			cancelTerminationTimer();
-			DeviceCommService.destroyInstance(this);
-		} else {
-			switch (p) {
-				// for following paths, refresh terminationTimer
-				case GET_KEEP_ALIVE:
-				case GET_HAND_SHAKE:
-				case GET_TRACK_REC_PROFILES:
-				case GET_PERIODIC_DATA:
-				case GET_PROFILE_ICON:
-					cancelTerminationTimer();
-					// start "destroyer"
-					mTimerTerminate = new Timer();
-					mTimerTerminate.schedule(new TimerTask() {
+					@Override
+					public void run() {
+						DeviceCommService.destroyInstance(DeviceListenerService.this);
+						mTimerTerminate = null;
+					}
+				}, TimeUnit.SECONDS.toMillis(INACTVITY_TIMEOUT_SECONDS));
+				DeviceCommService.getInstance(this).doUpdateReceiveTimestamp();
+				// then for all paths try to consume data content
+			default:
+				dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
 
-						@Override
-						public void run() {
-							DeviceCommService.destroyInstance(DeviceListenerService.this);
-							mTimerTerminate = null;
-						}
-					}, TimeUnit.SECONDS.toMillis(INACTVITY_TIMEOUT_SECONDS));
-					// then for all paths try to consume data content
-				default:
-					dataConsumer.consume(this, DeviceCommService.getInstance(this), newData);
-
-			}
 		}
+
 	}
 
 	private void cancelTerminationTimer() {

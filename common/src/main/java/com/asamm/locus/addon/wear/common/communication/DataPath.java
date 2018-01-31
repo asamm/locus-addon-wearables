@@ -27,7 +27,6 @@ public enum DataPath {
 	PUT_HAND_SHAKE(HandShakeValue.class),
 	GET_TRACK_REC_PROFILES(EmptyCommand.class),
 	PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
-	PUT_APP_DESTROYED(EmptyCommand.class),
 	PUT_TRACK_REC(TrackRecordingValue.class),
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
 	GET_PROFILE_ICON(ProfileIconGetCommand.class),

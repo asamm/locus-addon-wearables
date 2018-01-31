@@ -66,6 +66,10 @@ public class DeviceCommService extends LocusWearCommService {
 	private static final Location ZERO_LOCATION = new Location(0, 0);
 
 	/**
+	 * Marks last time that data was received from the watch
+	 */
+	private volatile long mLastReceivedTime = System.currentTimeMillis();
+	/**
 	 * is updated as side effect of some selected wear requests during handling
 	 */
 	private volatile LocusUtils.LocusVersion lv;
@@ -138,9 +142,13 @@ public class DeviceCommService extends LocusWearCommService {
 	 * @param update update container
 	 */
 	void onUpdate(UpdateContainer update) {
-		Logger.logD(TAG, "onUpdate(" + update + ")");
-		mLastUpdate = update;
-		mLastPeriodicUpdateReceivedMilis = System.currentTimeMillis();
+		if (System.currentTimeMillis() - mLastReceivedTime > 15_000) {
+			destroyInstance(context);
+		} else {
+			Logger.logD(TAG, "onUpdate(" + update + ")");
+			mLastUpdate = update;
+			mLastPeriodicUpdateReceivedMilis = System.currentTimeMillis();
+		}
 	}
 
 	/**
@@ -320,8 +328,8 @@ public class DeviceCommService extends LocusWearCommService {
 				if ((offsetX != 0 || offsetY != 0) && extra.isAutoRotate() && mapRotation != 0) {
 					float sin = (float) Math.sin(rotationDeg / 180f * Math.PI);
 					float cos = (float) Math.cos(rotationDeg / 180f * Math.PI);
-					correctedOffsetX = (int)(cos * offsetX - sin * offsetY + 0.5f);
-					correctedOffsetY = (int)(sin * offsetX + cos * offsetY + 0.5f);
+					correctedOffsetX = (int) (cos * offsetX - sin * offsetY + 0.5f);
+					correctedOffsetY = (int) (sin * offsetX + cos * offsetY + 0.5f);
 				}
 
 				mapPreview = ActionMapTools.getMapPreview(ctx, lv,
@@ -537,6 +545,10 @@ public class DeviceCommService extends LocusWearCommService {
 		TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
 				profileName, stats, locusInfo, new TrackRecordingValue.ExtendedTrackInfo(speed));
 		return trv;
+	}
+
+	public void doUpdateReceiveTimestamp() {
+		mLastReceivedTime = System.currentTimeMillis();
 	}
 
 	private static class PeriodicDataTimer extends Timer {

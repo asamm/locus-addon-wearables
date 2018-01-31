@@ -48,7 +48,12 @@ public class AppFailActivity extends WearableActivity {
 		TextView tvMsg = findViewById(R.id.fail_msg);
 		tvMsg.setText(getText(mFailType.getErrorMsgId()));
 		TextView tvHeader = findViewById(R.id.text_view_screen_header);
-		tvHeader.setText(getText(R.string.title_activity_error));
+		if (mFailType == AppFailType.CONNECTION_FAILED
+				|| mFailType == AppFailType.CONNECTION_ERROR_NODE_NOT_CONNECTED) {
+			tvHeader.setText(getText(R.string.title_activity_error));
+		} else {
+			tvHeader.setText(getText(R.string.app_name));
+		}
 		mInstallButton = findViewById(R.id.fail_install_button);
 		mRetryButton = findViewById(R.id.fail_img_retry);
 		mTvErrMsg = findViewById(R.id.fail_msg);
