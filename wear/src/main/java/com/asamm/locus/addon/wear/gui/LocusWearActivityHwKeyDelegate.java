@@ -1,17 +1,14 @@
 package com.asamm.locus.addon.wear.gui;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Point;
 import android.support.wearable.input.RotaryEncoder;
 import android.support.wearable.input.WearableButtons;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.asamm.locus.addon.wear.AppPreferencesManager;
+import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
@@ -69,6 +66,11 @@ public interface LocusWearActivityHwKeyDelegate {
 	void registerDefaultRotaryMotionListener(View rootView);
 
 	/**
+	 * @return number of available multifunction buttons ranging from 0 to 3
+	 */
+	int getNumMultifunctionButtons();
+
+	/**
 	 * Delegate facotry. If Hw button support is disabled, returns dummy delegate with no sideeffects
 	 */
 	class Factory {
@@ -112,13 +114,18 @@ public interface LocusWearActivityHwKeyDelegate {
 					public boolean useHwButtons() {
 						return false;
 					}
+
+					@Override
+					public int getNumMultifunctionButtons() {
+						return 0;
+					}
 				};
 			}
 		}
 	}
 
 	class LocusWearActivityHwKeyDelegateImpl implements LocusWearActivityHwKeyDelegate {
-		private Activity context;
+		private Activity mContext;
 		private HashMap<HwButtonActionDescEnum, HwButtonAction> mHwButtonActions =
 				new HashMap<>(HwButtonActionDescEnum.values().length);
 		private List<Integer> hwKeyCodes = Arrays.asList(new Integer[]{
@@ -131,12 +138,13 @@ public interface LocusWearActivityHwKeyDelegate {
 		private HashMap<HwButtonAutoDetectActionEnum, HwButtonActionDescEnum> autoDetectActionMapping =
 				new HashMap<>(HwButtonAutoDetectActionEnum.values().length);
 
-		private Double rotaryAccumulator = 0.0;
-		private final int screenHeight;
+		private int mNumMultifunctionButtons = 0;
+		private Double mRotaryAccumulator = 0.0;
+		private final int mScreenHeight;
 
 		private LocusWearActivityHwKeyDelegateImpl(LocusWearActivity ctx) {
-			this.context = ctx;
-			screenHeight = ctx.getMainApplication().getCache().getScreenHeight();
+			this.mContext = ctx;
+			mScreenHeight = ctx.getMainApplication().getCache().getScreenHeight();
 			doAutoDetectHwActions(ctx);
 		}
 
@@ -185,16 +193,16 @@ public interface LocusWearActivityHwKeyDelegate {
 
 			rootView.setOnGenericMotionListener((View v, MotionEvent ev) -> {
 				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
-					rotaryAccumulator += -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(context);
-					float triggerLimit = screenHeight / 3.0f;
-					if (Math.abs(rotaryAccumulator) > triggerLimit) {
+					mRotaryAccumulator += -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(mContext);
+					float triggerLimit = mScreenHeight / 3.0f;
+					if (Math.abs(mRotaryAccumulator) > triggerLimit) {
 						HwButtonActionDescEnum actionDesc =
-								rotaryAccumulator < 0 ? ROTARY_UP : ROTARY_DOWN;
+								mRotaryAccumulator < 0 ? ROTARY_UP : ROTARY_DOWN;
 						HwButtonAction action = mHwButtonActions.get(actionDesc);
-						rotaryAccumulator %= triggerLimit;
+						mRotaryAccumulator %= triggerLimit;
 						if (action != null) action.doButtonAction();
 					}
-					Logger.logD("LocusWearActivityHwKeyDelegate", "ROTARY RAW " + (-rotaryAccumulator));
+					Logger.logD("LocusWearActivityHwKeyDelegate", "ROTARY RAW " + (-mRotaryAccumulator));
 					return true;
 				}
 
@@ -215,41 +223,45 @@ public interface LocusWearActivityHwKeyDelegate {
 		/**
 		 * Perform autodetection of default actions to HW button actions
 		 */
-		private void doAutoDetectHwActions(Context ctx) {
-			// fill default mapping
-			int btnCount = WearableButtons.getButtonCount(ctx);
-			if (btnCount == 0)
-				return;
-
+		private void doAutoDetectHwActions(LocusWearActivity ctx) {
 			WearableButtons.ButtonInfo stem1 = WearableButtons.getButtonInfo(ctx, KeyEvent.KEYCODE_STEM_1);
-			if (btnCount == 1) {
+			WearableButtons.ButtonInfo stem2 = WearableButtons.getButtonInfo(ctx, KeyEvent.KEYCODE_STEM_2);
+			WearableButtons.ButtonInfo stem3 = WearableButtons.getButtonInfo(ctx, KeyEvent.KEYCODE_STEM_3);
+			// no multifunction buttons available
+			mNumMultifunctionButtons = 0;
+			if (stem1 == null) {
+				return;
+			}
+			// only single button available
+			if (stem2 == null) {
+				mNumMultifunctionButtons = 1;
 				autoDetectActionMapping.put(BTN_ACTION_PRIMARY_OR_UP, BTN_1_PRESS);
 				autoDetectActionMapping.put(BTN_ACTION_SECONDARY, BTN_1_LONG_PRESS);
 				autoDetectActionMapping.put(BTN_ACTION_DOWN, null);
 				return;
 			}
-			WearableButtons.ButtonInfo stem2 = WearableButtons.getButtonInfo(ctx, KeyEvent.KEYCODE_STEM_2);
-			if (btnCount == 2) {
+			// two buttons available
+			if (stem3 == null) {
+				mNumMultifunctionButtons = 2;
 				autoDetectActionMapping.put(BTN_ACTION_PRIMARY_OR_UP, BTN_1_PRESS);
 				autoDetectActionMapping.put(BTN_ACTION_SECONDARY, BTN_1_LONG_PRESS);
 				autoDetectActionMapping.put(BTN_ACTION_DOWN, BTN_2_PRESS);
 				return;
 			}
-			WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-			Display display = wm.getDefaultDisplay();
-			Point metrics = new Point();
-			display.getSize(metrics);
+			mNumMultifunctionButtons = 3;
+			ApplicationMemoryCache appMem = ctx.getMainApplication().getCache();
+			int w = appMem.getScreenWidth();
+			int h = appMem.getScreenHeight();
 
-			WearableButtons.ButtonInfo stem3 = WearableButtons.getButtonInfo(ctx, KeyEvent.KEYCODE_STEM_3);
 			WearableButtons.ButtonInfo up;
 			WearableButtons.ButtonInfo down;
 			WearableButtons.ButtonInfo third;
 
-			if (checkYSymmetry(stem2, stem3, metrics.y)) {
+			if (checkYSymmetry(stem2, stem3, h)) {
 				up = stem2;
 				down = stem3;
 				third = stem1;
-			} else if (checkYSymmetry(stem1, stem3, metrics.y)) {
+			} else if (checkYSymmetry(stem1, stem3, h)) {
 				up = stem1;
 				down = stem3;
 				third = stem2;
@@ -264,9 +276,9 @@ public interface LocusWearActivityHwKeyDelegate {
 				down = tmp;
 			}
 
-			autoDetectActionMapping.put(BTN_ACTION_PRIMARY_OR_UP, HwButtonActionDescEnum.findByProperties(up.hashCode(), false));
-			autoDetectActionMapping.put(BTN_ACTION_DOWN, HwButtonActionDescEnum.findByProperties(down.hashCode(), false));
-			autoDetectActionMapping.put(BTN_ACTION_SECONDARY, HwButtonActionDescEnum.findByProperties(third.hashCode(), false));
+			autoDetectActionMapping.put(BTN_ACTION_PRIMARY_OR_UP, HwButtonActionDescEnum.findByProperties(up.getKeycode(), false));
+			autoDetectActionMapping.put(BTN_ACTION_DOWN, HwButtonActionDescEnum.findByProperties(down.getKeycode(), false));
+			autoDetectActionMapping.put(BTN_ACTION_SECONDARY, HwButtonActionDescEnum.findByProperties(third.getKeycode(), false));
 		}
 
 		private boolean checkYSymmetry(WearableButtons.ButtonInfo b1, WearableButtons.ButtonInfo b2, int screenHeight) {
@@ -276,6 +288,11 @@ public interface LocusWearActivityHwKeyDelegate {
 				return false;
 			int center = screenHeight / 2; //+-1px error
 			return Math.abs(Math.abs(b1.getY() - center) - Math.abs(b2.getY() - center)) <= tolerancePx;
+		}
+
+		@Override
+		public int getNumMultifunctionButtons() {
+			return mNumMultifunctionButtons;
 		}
 	}
 }

@@ -289,9 +289,9 @@ public class MainApplication extends Application implements Application.Activity
 		}
 		// register activity
 		if (mCurrentActivity == null && act != null) {
-			Logger.logW(TAG, " - application restored");
+			Logger.logD(TAG, " - application restored");
 		} else if (mCurrentActivity != null && act == null) {
-			Logger.logW(TAG, " - application terminated");
+			Logger.logD(TAG, " - application terminated");
 			setTerminationTimer();
 		}
 		LocusWearActivity previous = mCurrentActivity;

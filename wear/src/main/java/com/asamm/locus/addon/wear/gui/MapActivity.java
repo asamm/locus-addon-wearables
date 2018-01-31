@@ -355,7 +355,6 @@ public class MapActivity extends LocusWearActivity {
 
 	private void refreshMapOffset(int offsetX, int offsetY, int renderOffsetX, int renderOffsetY) {
 		runOnUiThread(() -> {
-			Logger.logW(TAG, "Refreshing with new traslation X: " + (-offsetX + renderOffsetX));
 			mMapView.setTranslationX(-offsetX + renderOffsetX);
 			mMapView.setTranslationY(-offsetY + renderOffsetY);
 		});
@@ -483,7 +482,6 @@ public class MapActivity extends LocusWearActivity {
 			mStatus.multiplyOffset(1 << zoomDiff);
 		}
 		onOffsetChanged();
-		Logger.logW(TAG, "New offset x: " + mStatus.mMapOffsetX + " y: " + mStatus.mMapOffsetY);
 		mRequestedZoom = newZoom;
 		DataPayload<TimeStampStorable> refreshCmd = getInitialCommandType();
 		WearCommService.getInstance().sendDataItem(refreshCmd.getPath(), refreshCmd.getStorable());
@@ -561,6 +559,10 @@ public class MapActivity extends LocusWearActivity {
 		if (!mStatus.mButtonsVisible) {
 			return;
 		}
+		doCenterRotateButtonClick();
+	}
+
+	private void doCenterRotateButtonClick() {
 		if (!mStatus.isMapCentered()) {
 			cancelFling();
 			mStatus.mIsPanning = false;
@@ -578,7 +580,6 @@ public class MapActivity extends LocusWearActivity {
 		}
 		onOffsetChanged();
 		mPanHandler.post(mPanRunnable);
-		Logger.logD(TAG, "CENTER BTN clicked");
 	}
 
 	private void onOffsetChanged() {
@@ -612,14 +613,17 @@ public class MapActivity extends LocusWearActivity {
 		HwButtonActionDescEnum secondaryActionBtn =
 				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
 
-		HwButtonAction centerAction = () -> onCenterRotateButtonClicked(null);
+		HwButtonAction centerAction = () -> {
+			doShowButtons();
+			doCenterRotateButtonClick();
+		};
 		HwButtonAction zoomInAction = () -> doZoomClicked(1);
 		HwButtonAction zoomOutAction = () -> doZoomClicked(-1);
 
 		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_UP, zoomOutAction);
 		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_DOWN, zoomInAction);
 		// only single button available
-		if (downBtn == null) {
+		if (delegate.getNumMultifunctionButtons() < 2) {
 			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
 		} else {
 			delegate.registerHwButtonListener(upPrimaryBtn, zoomInAction);

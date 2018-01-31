@@ -33,7 +33,9 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
@@ -345,8 +347,11 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	}
 
 
+	public boolean isStoppingProgressionActive() {
+		return Boolean.TRUE.equals(mTrackRecMainScreen.isProgressionVisible());
+	}
 	public void handleStopClick(View v) {
-		boolean isProgressionActive = Boolean.TRUE.equals(mTrackRecMainScreen.isProgressionVisible());
+		boolean isProgressionActive = isStoppingProgressionActive();
 		if (isProgressionActive) {
 			mCircularProgress.stopTimer();
 		} else {
@@ -476,6 +481,44 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 		delegate.registerDefaultRotaryMotionListener(mRecordingScrollScreen);
 		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_DOWN, () -> mRecordingScrollScreen.scrollToNextPage());
 		delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_UP, () -> mRecordingScrollScreen.scrollToPreviousPage());
+
+		HwButtonActionDescEnum upPrimaryBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP);
+		HwButtonActionDescEnum downBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN);
+		HwButtonActionDescEnum secondaryActionBtn =
+				delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
+
+		delegate.registerHwButtonListener(upPrimaryBtn, () -> {
+			if (isRecScreenVisible()) {
+				if (isStoppingProgressionActive()) {
+					// temporary allows to cancel stop request by short press
+					handleStopClick(null);
+				} else {
+					handlePauseClick(null);
+				}
+			} else {
+				handleStartClick(null);
+			}
+		});
+		delegate.registerHwButtonListener(downBtn, () -> {
+			if (isRecScreenVisible()) {
+				mRecordingScrollScreen.scrollToNextPage();
+			}
+		});
+		// this watch has third button, use it as a scroll up, otherwise it would be unused anyway
+		if (secondaryActionBtn == HwButtonActionDescEnum.BTN_3_PRESS) {
+			delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_3_PRESS, () -> {
+				if (isRecScreenVisible()) {
+					mRecordingScrollScreen.scrollToPreviousPage();
+				}
+			});
+		}
+		delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_1_LONG_PRESS, () -> {
+			if (isRecScreenVisible()) {
+				handleStopClick(null);
+			}
+		});
 	}
 
 	/**

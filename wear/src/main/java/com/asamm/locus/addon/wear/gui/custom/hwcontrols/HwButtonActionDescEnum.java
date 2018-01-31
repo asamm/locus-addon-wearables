@@ -36,4 +36,12 @@ public enum HwButtonActionDescEnum {
 		}
 		return null;
 	}
+
+	public boolean isLongPress() {
+		return longPress;
+	}
+
+	public int getKeyCode() {
+		return keyCode;
+	}
 }
