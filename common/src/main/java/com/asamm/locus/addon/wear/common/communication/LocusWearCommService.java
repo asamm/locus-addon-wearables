@@ -38,6 +38,8 @@ public class LocusWearCommService implements
 
 	protected final int MAX_DATA_ITEM_SIZE_B = 99 * 1024;
 
+	protected final String CHANNEL_PATH = "/channel";
+
 	protected Context context;
 
 	// Google API client

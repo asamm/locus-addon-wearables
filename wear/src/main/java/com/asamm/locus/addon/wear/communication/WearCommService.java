@@ -15,10 +15,13 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Channel;
+import com.google.android.gms.wearable.ChannelApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,6 +43,10 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private static final String CAPABILITY_PHONE_APP = "verify_remote_wear_for_locus_map_phone_app";
 
 	private TriStateLogicEnum mCapableClientDetected = TriStateLogicEnum.UNKNOWN;
+
+	private String mConnectedNodeId = null;
+
+	private Channel mChannel = null;
 
 	private WearCommService(MainApplication c) {
 		super(c);
@@ -64,11 +71,16 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	@Override
 	protected void destroy() {
 		if ((mGoogleApiClient != null) && mGoogleApiClient.isConnected()) {
+			if (mChannel != null) {
+				mChannel.close(mGoogleApiClient);
+				mChannel = null;
+			}
 			Wearable.CapabilityApi.removeCapabilityListener(
 					mGoogleApiClient,
 					this,
 					CAPABILITY_PHONE_APP);
 		}
+
 		mApp = null;
 		super.destroy();
 	}
@@ -123,7 +135,19 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 		Set<Node> capableNodes = capabilityInfo != null ? capabilityInfo.getNodes() : null;
 		mCapableClientDetected = capableNodes != null && capableNodes.size() > 0 ?
 				TriStateLogicEnum.TRUE : TriStateLogicEnum.FALSE;
+		if (mCapableClientDetected == TriStateLogicEnum.TRUE) {
+			Iterator<Node> nodeIt = capableNodes.iterator();
+			mConnectedNodeId = null;
+			if (mConnectedNodeId == null && nodeIt.hasNext()) {
+				Node n = nodeIt.next();
+				mConnectedNodeId = n.isNearby() ? n.getId() : null;
 
+				 // open channel
+				ChannelApi.OpenChannelResult result =
+						Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, CHANNEL_PATH).await();
+				mChannel = result.getChannel();
+			}
+		}
 		if (mApp != null) {
 			mApp.onCapableClientConnected();
 		}
@@ -165,6 +189,10 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 				onCapabilityChanged(getCapabilityResult.getCapability());
 			}
 		});
+	}
+
+	public String getConnectedNodeId() {
+		return mConnectedNodeId;
 	}
 }
 

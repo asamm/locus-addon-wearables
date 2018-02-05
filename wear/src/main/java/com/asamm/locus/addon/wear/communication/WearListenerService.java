@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear.communication;
 
 import com.asamm.locus.addon.wear.MainApplication;
+import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.WearableListenerService;
@@ -27,4 +28,10 @@ public class WearListenerService extends WearableListenerService {
 			}
 		}
 	}
+
+	@Override
+	public void onChannelOpened(Channel channel) {
+		super.onChannelOpened(channel);
+	}
+
 }

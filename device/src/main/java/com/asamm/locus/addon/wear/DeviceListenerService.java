@@ -3,6 +3,7 @@ package com.asamm.locus.addon.wear;
 import android.content.Context;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -62,6 +63,12 @@ public class DeviceListenerService extends WearableListenerService {
 				// DataItem deleted
 			}
 		}
+	}
+
+	@Override
+	public void onChannelOpened(Channel channel) {
+		// TODO cejnar
+		super.onChannelOpened(channel);
 	}
 
 	/**
