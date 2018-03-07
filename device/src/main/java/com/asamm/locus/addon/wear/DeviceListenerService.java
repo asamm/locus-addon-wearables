@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear;
 
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -67,8 +68,9 @@ public class DeviceListenerService extends WearableListenerService {
 
 	@Override
 	public void onChannelOpened(Channel channel) {
-		// TODO cejnar
+		Logger.logW(TAG, "Device, received onChannelOpened()");
 		super.onChannelOpened(channel);
+		DeviceCommService.getInstance(this).registerChannel(channel);
 	}
 
 	/**

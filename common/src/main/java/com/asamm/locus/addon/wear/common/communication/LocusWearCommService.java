@@ -12,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.wearable.Asset;
+import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataItemAsset;
@@ -19,6 +20,7 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,12 +40,15 @@ public class LocusWearCommService implements
 
 	protected final int MAX_DATA_ITEM_SIZE_B = 99 * 1024;
 
-	protected final String CHANNEL_PATH = "/channel";
-
 	protected Context context;
 
 	// Google API client
 	protected GoogleApiClient mGoogleApiClient;
+
+	protected volatile Channel mChannel;
+	protected volatile InputStream mChannelInputStream;
+
+	protected volatile boolean mIsAboutToBeDestroyed = false;
 
 	/**
 	 * List of unsent data consisting of pairs of <PATH, DATA>
@@ -64,6 +69,23 @@ public class LocusWearCommService implements
 	}
 
 	protected void destroy() {
+		mIsAboutToBeDestroyed = true;
+		synchronized (this) {
+			Channel tmp = mChannel;
+			if (tmp != null) {
+				tmp.close(mGoogleApiClient);
+			}
+			mChannel = null;
+			InputStream tmpIs = mChannelInputStream;
+			if (tmpIs != null) {
+				try {
+					tmpIs.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			mChannelInputStream = null;
+		}
 		// destroy GoogleAPIClient class
 		mGoogleApiClient.disconnect();
 	}
@@ -181,5 +203,26 @@ public class LocusWearCommService implements
 			Logger.logE("DataPath", "Constructor failed for " + p.name(), e);
 			return null;
 		}
+	}
+
+	public synchronized void registerChannel(final Channel channel) {
+		mChannel = channel;
+		// TODO cejnar error handling, closing channel if new channel is present
+		mChannelInputStream = channel.getInputStream(mGoogleApiClient).await().getInputStream();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (!mIsAboutToBeDestroyed) {
+					InputStream tmpIs = mChannelInputStream;
+					if (tmpIs == null) break;
+					try {
+						int b = tmpIs.read();
+						Logger.logD("Channel read", "Byte read: "+b);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}).start();
 	}
 }

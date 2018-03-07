@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.communication;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,14 +17,16 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.Channel;
-import com.google.android.gms.wearable.ChannelApi;
 import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import locus.api.utils.Logger;
 
 /**
  * Singleton instance handling wear-device communication
@@ -45,8 +48,6 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private TriStateLogicEnum mCapableClientDetected = TriStateLogicEnum.UNKNOWN;
 
 	private String mConnectedNodeId = null;
-
-	private Channel mChannel = null;
 
 	private WearCommService(MainApplication c) {
 		super(c);
@@ -141,11 +142,32 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 			if (mConnectedNodeId == null && nodeIt.hasNext()) {
 				Node n = nodeIt.next();
 				mConnectedNodeId = n.isNearby() ? n.getId() : null;
-
-				 // open channel
-				ChannelApi.OpenChannelResult result =
-						Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, CHANNEL_PATH).await();
-				mChannel = result.getChannel();
+				AsyncTask.execute(() -> {
+						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, DataPath.BASE_PATH).await().getChannel();
+						Logger.logD(TAG, "Wear, opened a channel.");
+						registerChannel(channel);
+						mChannel.getOutputStream(mGoogleApiClient).setResultCallback(new ResultCallback<Channel.GetOutputStreamResult>() {
+							@Override
+							public void onResult(@NonNull Channel.GetOutputStreamResult getOutputStreamResult) {
+								try {
+									int i = 0;
+									byte[] buff = new byte[]{-1,22,33};
+									while (i++ < 120) {
+										// TODO cejnar debug only
+										buff[0] = (byte)i;
+										getOutputStreamResult.getOutputStream().write(buff);
+										try {
+											Thread.sleep(1000);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						});
+				});
 			}
 		}
 		if (mApp != null) {

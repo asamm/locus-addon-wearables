@@ -6,6 +6,8 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import locus.api.utils.Logger;
+
 /**
  * Service listening to Data API data changes
  * <p>
@@ -31,6 +33,7 @@ public class WearListenerService extends WearableListenerService {
 
 	@Override
 	public void onChannelOpened(Channel channel) {
+		Logger.logW(TAG, "channel opened");
 		super.onChannelOpened(channel);
 	}
 

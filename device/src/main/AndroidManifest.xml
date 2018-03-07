@@ -33,6 +33,13 @@
                     android:pathPrefix="/locus/wear"
                     android:scheme="wear" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.CHANNEL_EVENT" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/locus/wear"
+                    android:scheme="wear" />
+            </intent-filter>
 
         </service>
 
