@@ -17,6 +17,7 @@ import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.wearable.CapabilityApi;
 import com.google.android.gms.wearable.CapabilityInfo;
 import com.google.android.gms.wearable.Channel;
@@ -49,8 +50,6 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private static final String CAPABILITY_PHONE_APP = "verify_remote_wear_for_locus_map_phone_app";
 
 	private TriStateLogicEnum mCapableClientDetected = TriStateLogicEnum.UNKNOWN;
-
-	private String mConnectedNodeId = null;
 
 	private WearCommService(MainApplication c) {
 		super(c);
@@ -141,22 +140,25 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 				TriStateLogicEnum.TRUE : TriStateLogicEnum.FALSE;
 		if (mCapableClientDetected == TriStateLogicEnum.TRUE) {
 			Iterator<Node> nodeIt = capableNodes.iterator();
-			mConnectedNodeId = null;
-			while (mConnectedNodeId == null && nodeIt.hasNext()) {
+			mNodeId = null;
+			while (mNodeId == null && nodeIt.hasNext()) {
 				Node n = nodeIt.next();
-				mConnectedNodeId = n.isNearby() ? n.getId() : null;
-				new Thread(() -> {
-						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, DataPath.BASE_PATH).await().getChannel();
-						Logger.logD(TAG, "Wear, opened a channel.");
-						registerChannel(channel, new ChannelDataConsumable() {
-							@Override
-							public void consumeData(DataPayloadStorable data) {
-								if (mApp != null) {
-									mApp.handleDataChannelEvent(data);
-								}
-							}
-						});
-				}).start();
+				mNodeId = n.isNearby() ? n.getId() : null;
+
+//				new Thread(() -> {
+//					//TODO cejnar NPE when client is offline
+//						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, DataPath.BASE_PATH).await().getChannel();
+//						Logger.logD(TAG, "Wear, opened a channel.");
+//						registerChannel(channel, new ChannelDataConsumable() {
+//							@Override
+//							public void consumeData(DataPayloadStorable data) {
+//								if (mApp != null) {
+//									mApp.handleDataChannelEvent(data);
+//								}
+//							}
+//						});
+//				}).start(); // TODO cejnar
+
 			}
 		}
 		if (mApp != null) {
@@ -202,8 +204,5 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 		});
 	}
 
-	public String getConnectedNodeId() {
-		return mConnectedNodeId;
-	}
 }
 

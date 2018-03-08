@@ -53,6 +53,7 @@ public class LocusWearCommService implements
 	protected volatile InputStream mChannelInputStream;
 	protected volatile OutputStream mChannelOutputStream;
 	private volatile long mChannelThreadId = 0L;
+	protected volatile String mNodeId;
 
 	/**
 	 * List of unsent data consisting of pairs of <PATH, DATA>
@@ -137,6 +138,16 @@ public class LocusWearCommService implements
 		}
 	}
 
+	public void sendMessage(DataPath path, TimeStampStorable data) {
+		Logger.logD(TAG, "Sending message "+path.getPath());
+		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
+
+		// You can add success and/or failure listeners,
+		// Or you can call Tasks.await() and catch ExecutionException
+		//sendTask.addOnSuccessListener(...);
+		//sendTask.addOnFailureListener(...);
+	}
+
 	/**
 	 * Sends payload, should be only called from this class and its subclasses
 	 *
@@ -147,11 +158,14 @@ public class LocusWearCommService implements
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
 		Logger.logD(TAG, "Sending data");
 		// TODO cejnar debug
-		if (mChannel == null) {
-			Logger.logD(TAG, "channel null, ignoring send of " + path.name());
-			return;
-		}
-		if (mChannel != null) {
+//		if (mChannel == null) {
+//			Logger.logD(TAG, "channel null, ignoring send of " + path.name());
+//			return;
+//		}
+		sendMessage(path, data);
+		if (1 == 1) return;
+
+		if (1 == 0 && mChannel != null) {
 			try {
 				DataPayloadStorable channelData = new DataPayloadStorable(path, data);
 				mChannelOutputStream.write(channelData.getAsBytes());
@@ -270,5 +284,11 @@ public class LocusWearCommService implements
 		}).start();
 	}
 
+	public String getNodeId() {
+		return mNodeId;
+	}
 
+	public void setNodeId(String nodeId) {
+		mNodeId = nodeId;
+	}
 }

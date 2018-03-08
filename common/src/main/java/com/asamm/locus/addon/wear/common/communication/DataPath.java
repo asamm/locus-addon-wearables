@@ -84,8 +84,12 @@ public enum DataPath {
 	}
 
 	public static DataPath valueOf(DataItem item) {
+		return fromPath(item.getUri().getPath());
+	}
+
+	public static DataPath fromPath(String path) {
 		for (DataPath p : values) {
-			if (p.getPath().equals(item.getUri().getPath())) {
+			if (p.getPath().equals(path)) {
 				return p;
 			}
 		}

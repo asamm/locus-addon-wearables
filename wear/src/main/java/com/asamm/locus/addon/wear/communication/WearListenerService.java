@@ -1,9 +1,12 @@
 package com.asamm.locus.addon.wear.communication;
 
 import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import locus.api.utils.Logger;
@@ -37,4 +40,20 @@ public class WearListenerService extends WearableListenerService {
 		super.onChannelOpened(channel);
 	}
 
+	@Override
+	public void onMessageReceived(MessageEvent messageEvent) {
+
+		DataPath p = DataPath.fromPath(messageEvent.getPath());
+		Logger.logD(TAG, "Received message " + p);
+		if (p == null)
+			return;
+		try {
+			((MainApplication) getApplication()).handleDataChannelEvent(
+					new DataPayloadStorable(p, p.getContainerClass().getConstructor(byte[].class).newInstance(messageEvent.getData())));
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+	}
 }

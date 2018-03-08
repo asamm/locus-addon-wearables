@@ -189,6 +189,7 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	public void handleData(DataPath p, TimeStampStorable value) {
+		Logger.logD(TAG, "received data handling");
 		final LocusWearActivity currentActivity = mCurrentActivity;
 		if (currentActivity != null && p != null) {
 

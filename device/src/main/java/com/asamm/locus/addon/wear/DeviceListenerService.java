@@ -9,8 +9,11 @@ import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +59,9 @@ public class DeviceListenerService extends WearableListenerService {
 	private final DataConsumer<DataPayloadStorable> dataChannelConsumer = new DataConsumer<DataPayloadStorable>() {
 		@Override
 		public void consume(Context c, DeviceCommService rh, DataPayloadStorable newData) {
+			if (newData.getDataPath() == DataPath.GET_HAND_SHAKE) {
+				Logger.logD(TAG, "handling hand shake");
+			}
 			if (newData.isValid()) {
 				rh.onDataReceived(c, newData.getDataPath(), newData.getData(newData.getDataPath().getContainerClass()));
 			}
@@ -82,6 +88,25 @@ public class DeviceListenerService extends WearableListenerService {
 				// DataItem deleted
 			}
 		}
+	}
+
+	@Override
+	public void onMessageReceived(MessageEvent messageEvent) {
+
+		DeviceCommService.getInstance(this).setNodeId(messageEvent.getSourceNodeId());
+		DataPath p = DataPath.fromPath(messageEvent.getPath());
+		Logger.logW(TAG, "Received message "+p);
+		if (p == null)
+			return;
+		try {
+			handleDataChange(dataChannelConsumer,
+					new DataPayloadStorable(p, p.getContainerClass().getConstructor(byte[].class).newInstance(messageEvent.getData())));
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+		super.onMessageReceived(messageEvent);
 	}
 
 	@Override
