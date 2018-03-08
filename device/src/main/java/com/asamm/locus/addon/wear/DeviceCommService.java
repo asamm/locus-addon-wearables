@@ -158,9 +158,8 @@ public class DeviceCommService extends LocusWearCommService {
 		Logger.logD(TAG, "onIncorrectData()");
 		mLastUpdate = null;
 	}
+	void onDataReceived(Context c, DataPath path, TimeStampStorable params) {
 
-	void onDataChanged(Context c, DataEvent newData) {
-		Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
 		Long currentTime = System.currentTimeMillis();
 		if (currentTime - mLastPeriodicUpdateReceivedMilis > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
 			Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.");
@@ -172,8 +171,7 @@ public class DeviceCommService extends LocusWearCommService {
 				Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException");
 			}
 		}
-		DataItem item = newData.getDataItem();
-		DataPath path = DataPath.valueOf(item);
+
 		switch (path) {
 			case GET_HAND_SHAKE:
 				HandShakeValue hndshk = loadHandShake(c);
@@ -193,7 +191,7 @@ public class DeviceCommService extends LocusWearCommService {
 							loadTrackRecordProfiles(c);
 					mProfileIcons = profilesIcons.second;
 				}
-				ProfileIconGetCommand pigc = createStorableForPath(path, item);
+				ProfileIconGetCommand pigc = (ProfileIconGetCommand) params;
 				if (mProfileIcons != null) {
 					for (TrackProfileIconValue icon : mProfileIcons.getStorables()) {
 						if (pigc.getProfileId() == icon.getId()) {
@@ -206,7 +204,7 @@ public class DeviceCommService extends LocusWearCommService {
 
 			case PUT_TRACK_REC_STATE_CHANGE: {
 				lv = LocusUtils.getActiveVersion(c);
-				TrackRecordingStateChangeValue v = createStorableForPath(path, item);
+				TrackRecordingStateChangeValue v = (TrackRecordingStateChangeValue) params;
 				handleRecordingStateChanged(c, lv, v.getRecordingState(), v.getmProfileName());
 			}
 			break;
@@ -217,7 +215,7 @@ public class DeviceCommService extends LocusWearCommService {
 			}
 			case GET_PERIODIC_DATA: {
 				lv = LocusUtils.getActiveVersion(c);
-				PeriodicCommand v = createStorableForPath(path, item);
+				PeriodicCommand v = (PeriodicCommand) params;
 				handlePeriodicWearUpdate(c, v);
 			}
 			break;
@@ -225,6 +223,13 @@ public class DeviceCommService extends LocusWearCommService {
 				// ignore
 				break;
 		}
+	}
+	void onDataChanged(Context c, DataEvent newData) {
+		Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
+		DataItem item = newData.getDataItem();
+		DataPath path = DataPath.valueOf(item);
+		TimeStampStorable params = createStorableForPath(path, item);
+		onDataReceived(c, path, params);
 	}
 
 	private void destroyPeriodicDataTimer() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.utils.Pair;
@@ -22,6 +23,7 @@ import com.google.android.gms.wearable.Wearable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -38,6 +40,8 @@ public class LocusWearCommService implements
 		GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
 
+	private static final String TAG = "LocusWearCommService";
+
 	protected final int MAX_DATA_ITEM_SIZE_B = 99 * 1024;
 
 	protected Context context;
@@ -47,8 +51,8 @@ public class LocusWearCommService implements
 
 	protected volatile Channel mChannel;
 	protected volatile InputStream mChannelInputStream;
-
-	protected volatile boolean mIsAboutToBeDestroyed = false;
+	protected volatile OutputStream mChannelOutputStream;
+	private volatile long mChannelThreadId = 0L;
 
 	/**
 	 * List of unsent data consisting of pairs of <PATH, DATA>
@@ -69,7 +73,7 @@ public class LocusWearCommService implements
 	}
 
 	protected void destroy() {
-		mIsAboutToBeDestroyed = true;
+		mChannelThreadId = Long.MIN_VALUE;
 		synchronized (this) {
 			Channel tmp = mChannel;
 			if (tmp != null) {
@@ -100,6 +104,7 @@ public class LocusWearCommService implements
 
 	@Override
 	public void onConnectionSuspended(int i) {
+		Logger.logD(TAG, "Connection suspended!");
 		// no handling required
 	}
 
@@ -140,19 +145,36 @@ public class LocusWearCommService implements
 	 */
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
-		PutDataRequest request = PutDataRequest.create(path.getPath());
-		final byte[] dataToSend = data.getAsBytes();
-		// check data size whether to send as and asset or plain data item
-		if (dataToSend.length >= MAX_DATA_ITEM_SIZE_B) {
-			request.putAsset(DataPath.DEFAULT_ASSET_KEY, Asset.createFromBytes(dataToSend));
+		Logger.logD(TAG, "Sending data");
+		// TODO cejnar debug
+		if (mChannel == null) {
+			Logger.logD(TAG, "channel null, ignoring send of " + path.name());
+			return;
+		}
+		if (mChannel != null) {
+			try {
+				DataPayloadStorable channelData = new DataPayloadStorable(path, data);
+				mChannelOutputStream.write(channelData.getAsBytes());
+				Logger.logD(TAG, "Sent data over channel");
+			} catch (IOException e) {
+				// TODO cejnar handle error
+				e.printStackTrace();
+			}
 		} else {
-			request.setData(dataToSend);
+			PutDataRequest request = PutDataRequest.create(path.getPath());
+			final byte[] dataToSend = data.getAsBytes();
+			// check data size whether to send as and asset or plain data item
+			if (dataToSend.length >= MAX_DATA_ITEM_SIZE_B) {
+				request.putAsset(DataPath.DEFAULT_ASSET_KEY, Asset.createFromBytes(dataToSend));
+			} else {
+				request.setData(dataToSend);
+			}
+			if (path.isUrgent()) {
+				request.setUrgent();
+			}
+			PendingResult<DataApi.DataItemResult> pendingResult =
+					Wearable.DataApi.putDataItem(mGoogleApiClient, request);
 		}
-		if (path.isUrgent()) {
-			request.setUrgent();
-		}
-		PendingResult<DataApi.DataItemResult> pendingResult =
-				Wearable.DataApi.putDataItem(mGoogleApiClient, request);
 	}
 
 	public boolean isConnected() {
@@ -205,24 +227,48 @@ public class LocusWearCommService implements
 		}
 	}
 
-	public synchronized void registerChannel(final Channel channel) {
+	public synchronized void registerChannel(final Channel channel, final ChannelDataConsumable consumer) {
+		if (mChannelInputStream != null) {
+			try {
+				mChannelInputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (mChannelOutputStream != null) {
+			try {
+				mChannelOutputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (mChannel != null) {
+			mChannel.close(mGoogleApiClient);
+		}
 		mChannel = channel;
 		// TODO cejnar error handling, closing channel if new channel is present
-		mChannelInputStream = channel.getInputStream(mGoogleApiClient).await().getInputStream();
+		final InputStream is = channel.getInputStream(mGoogleApiClient).await().getInputStream();
+		final long channelThreadId = System.currentTimeMillis();
+		mChannelInputStream = is;
+		mChannelOutputStream = channel.getOutputStream(mGoogleApiClient).await().getOutputStream();
+		mChannelThreadId = channelThreadId;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (!mIsAboutToBeDestroyed) {
-					InputStream tmpIs = mChannelInputStream;
-					if (tmpIs == null) break;
+				StorableStreamReader ssr = new StorableStreamReader(is);
+				while (mChannelThreadId == channelThreadId) {
 					try {
-						int b = tmpIs.read();
-						Logger.logD("Channel read", "Byte read: "+b);
+						DataPayloadStorable channelData = ssr.read(DataPayloadStorable.class);
+						consumer.consumeData(channelData);
+						Logger.logD("Channel read", "Read - " + channelData.isValid());
 					} catch (IOException e) {
-						e.printStackTrace();
+						// TODO cejnar ignore exceptions for now
+						//e.printStackTrace();
 					}
 				}
 			}
 		}).start();
 	}
+
+
 }

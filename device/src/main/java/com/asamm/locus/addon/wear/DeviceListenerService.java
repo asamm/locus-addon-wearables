@@ -1,9 +1,10 @@
 package com.asamm.locus.addon.wear;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 
+import com.asamm.locus.addon.wear.common.communication.ChannelDataConsumable;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.google.android.gms.wearable.Channel;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -50,6 +51,23 @@ public class DeviceListenerService extends WearableListenerService {
 	};
 
 	/**
+	 * DataEvent consumer
+	 */
+	private final DataConsumer<DataPayloadStorable> dataChannelConsumer = new DataConsumer<DataPayloadStorable>() {
+		@Override
+		public void consume(Context c, DeviceCommService rh, DataPayloadStorable newData) {
+			if (newData.isValid()) {
+				rh.onDataReceived(c, newData.getDataPath(), newData.getData(newData.getDataPath().getContainerClass()));
+			}
+		}
+
+		@Override
+		public DataPath getPath(DataPayloadStorable newData) {
+			return newData.getDataPath();
+		}
+	};
+
+	/**
 	 * DataChanged callback
 	 *
 	 * @param dataEventBuffer
@@ -70,7 +88,12 @@ public class DeviceListenerService extends WearableListenerService {
 	public void onChannelOpened(Channel channel) {
 		Logger.logW(TAG, "Device, received onChannelOpened()");
 		super.onChannelOpened(channel);
-		DeviceCommService.getInstance(this).registerChannel(channel);
+		DeviceCommService.getInstance(this).registerChannel(channel, new ChannelDataConsumable() {
+			@Override
+			public void consumeData(DataPayloadStorable data) {
+				handleDataChange(dataChannelConsumer, data);
+			}
+		});
 	}
 
 	/**

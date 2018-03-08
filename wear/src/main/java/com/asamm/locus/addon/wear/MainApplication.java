@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -25,7 +25,6 @@ import com.asamm.locus.addon.wear.gui.MapActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.List;
@@ -183,55 +182,66 @@ public class MainApplication extends Application implements Application.Activity
 
 	}
 
-	public void handleDataEvent(DataItem dataItem) {
+	public void handleDataChannelEvent(DataPayloadStorable data) {
+		if (data.getDataPath() != null) {
+			handleData(data.getDataPath(), data.getData(data.getDataPath().getContainerClass()));
+		}
+	}
+
+	public void handleData(DataPath p, TimeStampStorable value) {
 		final LocusWearActivity currentActivity = mCurrentActivity;
-		if (currentActivity != null) {
-			DataPath p = DataPath.valueOf(dataItem);
-			Logger.logD(TAG, "Received " + p);
-			if (p != null) {
-				TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
-				switch (p) {
-					case PUT_HAND_SHAKE:
-						final HandShakeValue handShakeValue = (HandShakeValue) value;
-						if (!validateHandShakeOrFail(handShakeValue)) {
-							return;
-						}
-						break;
-					case PUT_MAP:
-						mCache.setLastMapData((MapContainer) value);
-						break;
-					case PUT_TRACK_REC:
-						mCache.setLastTrackRecState(this, (TrackRecordingValue) value);
-						break;
-					case PUT_TRACK_REC_PROFILE_INFO: {
-						TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) value;
-						if (profiles != null) {
-							mCache.setProfiles(profiles.getStorables());
-						}
-					}
-					case PUT_PROFILE_ICON: {
-						if (value instanceof TrackProfileIconValue) {
-							AppStorageManager.persistIcon(this, (TrackProfileIconValue) value);
-						}
-						List<TrackProfileInfoValue> profiles = mCache.getProfiles();
-						for (TrackProfileInfoValue info : profiles) {
-							if (!AppStorageManager.isIconCached(this, info.getId())) {
-								WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
-								break;
-							}
-						}
+		if (currentActivity != null && p != null) {
+
+			switch (p) {
+				case PUT_HAND_SHAKE:
+					final HandShakeValue handShakeValue = (HandShakeValue) value;
+					if (!validateHandShakeOrFail(handShakeValue)) {
+						return;
 					}
 					break;
-					default:
-						break;
+				case PUT_MAP:
+					mCache.setLastMapData((MapContainer) value);
+					break;
+				case PUT_TRACK_REC:
+					mCache.setLastTrackRecState(this, (TrackRecordingValue) value);
+					break;
+				case PUT_TRACK_REC_PROFILE_INFO: {
+					TrackProfileInfoValue.ValueList profiles = (TrackProfileInfoValue.ValueList) value;
+					if (profiles != null) {
+						mCache.setProfiles(profiles.getStorables());
+					}
 				}
-				if (mWatchDog != null) {
-					mWatchDog.onNewData(p, value);
+				case PUT_PROFILE_ICON: {
+					if (value instanceof TrackProfileIconValue) {
+						AppStorageManager.persistIcon(this, (TrackProfileIconValue) value);
+					}
+					List<TrackProfileInfoValue> profiles = mCache.getProfiles();
+					for (TrackProfileInfoValue info : profiles) {
+						if (!AppStorageManager.isIconCached(this, info.getId())) {
+							WearCommService.getInstance().sendDataItem(DataPath.GET_PROFILE_ICON, new ProfileIconGetCommand(info.getId()));
+							break;
+						}
+					}
 				}
-				currentActivity.consumeNewData(p, value);
-			} else {
-				Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
+				break;
+				default:
+					break;
 			}
+			if (mWatchDog != null) {
+				mWatchDog.onNewData(p, value);
+			}
+			currentActivity.consumeNewData(p, value);
+		}
+	}
+
+	public void handleDataEvent(DataItem dataItem) {
+		DataPath p = DataPath.valueOf(dataItem);
+		if (p != null) {
+			TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
+			handleData(p, value);
+			Logger.logD(TAG, "Received " + p);
+		} else {
+			Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
 		}
 	}
 

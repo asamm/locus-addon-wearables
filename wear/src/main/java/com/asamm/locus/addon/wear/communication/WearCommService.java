@@ -7,9 +7,12 @@ import android.support.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.WatchDog;
+import com.asamm.locus.addon.wear.common.communication.ChannelDataConsumable;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.PendingResult;
@@ -139,35 +142,21 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 		if (mCapableClientDetected == TriStateLogicEnum.TRUE) {
 			Iterator<Node> nodeIt = capableNodes.iterator();
 			mConnectedNodeId = null;
-			if (mConnectedNodeId == null && nodeIt.hasNext()) {
+			while (mConnectedNodeId == null && nodeIt.hasNext()) {
 				Node n = nodeIt.next();
 				mConnectedNodeId = n.isNearby() ? n.getId() : null;
-				AsyncTask.execute(() -> {
+				new Thread(() -> {
 						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, DataPath.BASE_PATH).await().getChannel();
 						Logger.logD(TAG, "Wear, opened a channel.");
-						registerChannel(channel);
-						mChannel.getOutputStream(mGoogleApiClient).setResultCallback(new ResultCallback<Channel.GetOutputStreamResult>() {
+						registerChannel(channel, new ChannelDataConsumable() {
 							@Override
-							public void onResult(@NonNull Channel.GetOutputStreamResult getOutputStreamResult) {
-								try {
-									int i = 0;
-									byte[] buff = new byte[]{-1,22,33};
-									while (i++ < 120) {
-										// TODO cejnar debug only
-										buff[0] = (byte)i;
-										getOutputStreamResult.getOutputStream().write(buff);
-										try {
-											Thread.sleep(1000);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-									}
-								} catch (IOException e) {
-									e.printStackTrace();
+							public void consumeData(DataPayloadStorable data) {
+								if (mApp != null) {
+									mApp.handleDataChannelEvent(data);
 								}
 							}
 						});
-				});
+				}).start();
 			}
 		}
 		if (mApp != null) {
