@@ -42,7 +42,7 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private static String TAG = WearCommService.class.getSimpleName();
 	private static WearCommService mDeviceCommunicationService;
 
-	private volatile long mLastSentDataTimestamp = 0L;
+	public volatile long mLastSentDataTimestamp = 0L;
 
 	private MainApplication mApp;
 

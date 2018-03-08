@@ -45,7 +45,8 @@ public class MapContainer extends TimeStampStorable {
 	private int mOffsetY;
 	private Location mLastLocation;
 	private short mBearing;
-
+	// TODO cejnar
+	private long timeSpent;
 	public MapContainer() {
 		super();
 	}
@@ -55,9 +56,14 @@ public class MapContainer extends TimeStampStorable {
 	}
 
 	public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li,
-						int zoom, int offsetX, int offsetY, Location lastLocation, short bearing) {
+						int zoom, int offsetX, int offsetY, Location lastLocation, short bearing,
+						long debugTimeSpent) {
 		this();
-		mLoadedMap = loadedMap;
+		// TODO
+		MapPreviewResult f = new MapPreviewResult(new byte[]{0}, 0);
+		//mLoadedMap = loadedMap;
+		mLoadedMap = f;
+		this.timeSpent = debugTimeSpent;
 		this.mOffsetX = offsetX;
 		this.mOffsetY = offsetY;
 		mLastLocation = lastLocation == null ? ZERO_LOCATION : lastLocation;
@@ -94,11 +100,13 @@ public class MapContainer extends TimeStampStorable {
 		mOffsetX = 0;
 		mBearing = 0;
 		mLastLocation = ZERO_LOCATION;
+		timeSpent = -1;
 	}
 
 	@Override
 	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 		super.readObject(version, dr);
+		timeSpent = dr.readLong();
 		mGuideType = dr.readBytes(1)[0];
 		mNavPointAction1Id = dr.readInt();
 		mNavPointAction2Id = dr.readInt();
@@ -129,6 +137,7 @@ public class MapContainer extends TimeStampStorable {
 	@Override
 	protected void writeObject(DataWriterBigEndian dw) throws IOException {
 		super.writeObject(dw);
+		dw.writeLong(timeSpent);
 		dw.write(mGuideType);
 		dw.writeInt(mNavPointAction1Id);
 		dw.writeInt(mNavPointAction2Id);
@@ -217,5 +226,9 @@ public class MapContainer extends TimeStampStorable {
 
 	public short getBearing() {
 		return mBearing;
+	}
+
+	public long getTimeSpent() {
+		return timeSpent;
 	}
 }

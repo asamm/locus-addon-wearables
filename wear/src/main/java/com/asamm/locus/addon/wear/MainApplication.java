@@ -200,6 +200,8 @@ public class MainApplication extends Application implements Application.Activity
 					}
 					break;
 				case PUT_MAP:
+					Logger.logW("TODO cejnar debug", "New map data, time from last send request: " + (System.currentTimeMillis() -  WearCommService.getInstance().mLastSentDataTimestamp));
+					Logger.logW("TODO cejnar debug", "Device processing time:" + ((MapContainer)value).getTimeSpent());
 					mCache.setLastMapData((MapContainer) value);
 					break;
 				case PUT_TRACK_REC:

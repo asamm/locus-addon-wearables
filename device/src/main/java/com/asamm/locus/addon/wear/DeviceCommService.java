@@ -73,6 +73,8 @@ public class DeviceCommService extends LocusWearCommService {
 	 * is updated as side effect of some selected wear requests during handling
 	 */
 	private volatile LocusUtils.LocusVersion lv;
+	// TODO cejnar debug
+	private volatile long periodicRequestStarted = -1;
 
 	/**
 	 * Default constructor.
@@ -214,6 +216,7 @@ public class DeviceCommService extends LocusWearCommService {
 				sendCommand(DataPath.PUT_ADD_WAYPOINT);
 			}
 			case GET_PERIODIC_DATA: {
+				periodicRequestStarted = System.currentTimeMillis();
 				lv = LocusUtils.getActiveVersion(c);
 				PeriodicCommand v = (PeriodicCommand) params;
 				handlePeriodicWearUpdate(c, v);
@@ -275,6 +278,7 @@ public class DeviceCommService extends LocusWearCommService {
 							return;
 						}
 						sendMapPeriodic(ctx, ((MapPeriodicParams) extra));
+						periodicRequestStarted = -1;
 					}
 				};
 				break;
@@ -372,9 +376,16 @@ public class DeviceCommService extends LocusWearCommService {
 			// if offset (panning) is currently applied, then just return last used offset center from the watch
 			locToSend = offsetCenter;
 		}
-
-		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend, (short) rotationDeg);
+		long timeSpent = -1;
+		if (periodicRequestStarted > 0) {
+			timeSpent = System.currentTimeMillis() - periodicRequestStarted;
+		}
+		MapContainer m = new MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend, (short) rotationDeg, timeSpent);
 		sendDataItem(DataPath.PUT_MAP, m);
+		if (timeSpent > 0) {
+			// TODO cejnar debug
+			Logger.logW("TODO cejnar", "Spent: " + timeSpent + ", send: " + (System.currentTimeMillis() - periodicRequestStarted));
+		}
 	}
 
 	private MapPreviewParams createMapPreviewParams(Location location, int zoom, int width, int height,
