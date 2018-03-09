@@ -27,6 +27,7 @@ import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -188,6 +189,8 @@ public class MainApplication extends Application implements Application.Activity
 		}
 	}
 
+	private ArrayList<Long> times = new ArrayList<>();
+
 	public void handleData(DataPath p, TimeStampStorable value) {
 		Logger.logD(TAG, "received data handling");
 		final LocusWearActivity currentActivity = mCurrentActivity;
@@ -201,8 +204,28 @@ public class MainApplication extends Application implements Application.Activity
 					}
 					break;
 				case PUT_MAP:
-					Logger.logW("TODO cejnar debug", "New map data, time from last send request: " + (System.currentTimeMillis() -  WearCommService.getInstance().mLastSentDataTimestamp));
-					Logger.logW("TODO cejnar debug", "Device processing time:" + ((MapContainer)value).getTimeSpent());
+					// TODO cejnar debug
+					if (((MapContainer) value).getTimeSpent() >= 0) {
+						long roundTrip = (System.currentTimeMillis() - WearCommService.getInstance().mLastSentDataTimestamp);
+						long deviceTime = ((MapContainer) value).getTimeSpent();
+						Logger.logW("TODO cejnar debug", "New map data, time from last send request: " + roundTrip);
+						Logger.logW("TODO cejnar debug", "Device processing time:" + deviceTime);
+						times.add(roundTrip - deviceTime);
+						long sum = 0;
+						long sumStdEv=0;
+						double stdEv = 0;
+						for (int i = 0; i< times.size(); sum+=times.get(i++)) {}
+						double mean = sum / (double) times.size();
+						if (times.size() > 1) {
+							for (int i = 0; i < times.size(); i++) {
+								double tmp = times.get(i) - mean;
+								sumStdEv += tmp * tmp;
+							}
+							stdEv = Math.sqrt(sumStdEv / (times.size() - 1));
+						}
+						Logger.logW("TODO cejnar debug", "Time mean:" + mean + " +-" + stdEv + " ms. Samples " + times.size());
+					}
+
 					mCache.setLastMapData((MapContainer) value);
 					break;
 				case PUT_TRACK_REC:

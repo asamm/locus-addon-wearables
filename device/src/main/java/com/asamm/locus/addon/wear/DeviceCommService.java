@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -20,6 +21,7 @@ import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataItem;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -350,6 +352,8 @@ public class DeviceCommService extends LocusWearCommService {
 								zoom, extra.getWidth(), extra.getHeight(),
 								correctedOffsetX, correctedOffsetY,
 								extra.getDensityDpi(), extra.isAutoRotate() ? mapRotation : 0, extra.getDiagonal()));
+				Logger.logW(TAG, "zoom: "+zoom);
+				mapPreview = compressionTest(mapPreview);
 			} else { // first release version, no panning applied to the map
 				ActionTools.BitmapLoadResult loadedMap = ActionTools.getMapPreview(ctx,
 						lv, ZERO_LOCATION, zoom, extra.getWidth(), extra.getHeight(), true);
@@ -404,21 +408,35 @@ public class DeviceCommService extends LocusWearCommService {
 		return mpp;
 	}
 
-//	private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {
-//		// TODO cejnar debug only, delete this method
-//		Bitmap b = loadedMap.getImage();
-//		ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
-//		ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.JPEG, 80, baosJpeg);
-//		ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.WEBP, 90, baosWebp);
-//		Logger.logD(TAG, "Original: " + loadedMap.getImage().getByteCount());
-//		Logger.logD(TAG, "PNG: " + baosPng.toByteArray().length);
-//		Logger.logD(TAG, "JPEG: " + baosJpeg.toByteArray().length);
-//		Logger.logD(TAG, "WEBP: " + baosWebp.toByteArray().length);
-//		Logger.logD(TAG, "finished");
-//	}
+	private MapPreviewResult compressionTest(MapPreviewResult loadedMap) {
+		// TODO cejnar debug only, delete this method
+		Bitmap b = loadedMap.getAsImage();
+		long t1 = System.currentTimeMillis();
+		ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
+		b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
+		long t2 = System.currentTimeMillis();
+
+
+		ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
+		b = loadedMap.getAsImage();
+		b.compress(Bitmap.CompressFormat.WEBP, 71, baosWebp);
+
+
+		long t3 = System.currentTimeMillis();
+		ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
+		b = loadedMap.getAsImage();
+		b.compress(Bitmap.CompressFormat.JPEG, 73, baosJpeg);
+		long t4 = System.currentTimeMillis();
+		Logger.logD(TAG, "compression, time WEBP: " + (t2 - t1));
+		Logger.logD(TAG, "compression, time JPEG: " + (t4 - t3));
+		Logger.logD(TAG, "compression, Original: " + loadedMap.getAsBytes().length);
+		Logger.logD(TAG, "compression, PNG: " + baosPng.toByteArray().length);
+		Logger.logD(TAG, "compression, JPEG: " + baosJpeg.toByteArray().length);
+		Logger.logD(TAG, "compression, WEBP: " + baosWebp.toByteArray().length);
+		Logger.logD(TAG, "compression, finished");
+		return new MapPreviewResult(baosJpeg.toByteArray(),loadedMap.getNumOfNotYetLoadedTiles());
+//		return loadedMap;
+	}
 
 	public static boolean isInstance() {
 		return mInstance != null;

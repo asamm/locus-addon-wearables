@@ -419,6 +419,14 @@ public class MapActivity extends LocusWearActivity {
 					getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
 							getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				} else {
+//					// TODO cejnar
+//					runOnUiThread(() -> {
+//						new Handler().postDelayed(() -> {
+//							getMainApplication().sendDataWithWatchDog(getInitialCommandType(),
+//									getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
+//						}, 1000);
+//					});
+
 					getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT_MS);
 				}
 				break;

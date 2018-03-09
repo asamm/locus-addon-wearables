@@ -59,10 +59,10 @@ public class MapContainer extends TimeStampStorable {
 						int zoom, int offsetX, int offsetY, Location lastLocation, short bearing,
 						long debugTimeSpent) {
 		this();
-		// TODO
-		MapPreviewResult f = new MapPreviewResult(new byte[]{0}, 0);
-		//mLoadedMap = loadedMap;
-		mLoadedMap = f;
+//		// TODO
+//		MapPreviewResult f = new MapPreviewResult(new byte[]{0}, 0);
+		mLoadedMap = loadedMap;
+//		mLoadedMap = f;
 		this.timeSpent = debugTimeSpent;
 		this.mOffsetX = offsetX;
 		this.mOffsetY = offsetY;

@@ -20,6 +20,8 @@ import com.google.android.gms.wearable.DataItemAsset;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +64,7 @@ public class LocusWearCommService implements
 
 	protected LocusWearCommService(Context context) {
 		this.context = context;
+		mUnsentData = new ConcurrentLinkedQueue<>();
 		mUnsentData = new ConcurrentLinkedQueue<>();
 		// connect the GoogleApiClient
 		mGoogleApiClient = new GoogleApiClient.Builder(context.getApplicationContext()).
@@ -162,19 +165,24 @@ public class LocusWearCommService implements
 //			Logger.logD(TAG, "channel null, ignoring send of " + path.name());
 //			return;
 //		}
+		Logger.logW(TAG, "compression, data size: " + (data.getAsBytes().length/1024.0) + " KB");
 		sendMessage(path, data);
-		if (1 == 1) return;
+		if (1==1)return;
 
-		if (1 == 0 && mChannel != null) {
+		if (mChannel != null) {
 			try {
 				DataPayloadStorable channelData = new DataPayloadStorable(path, data);
+				long dataSize = channelData.getAsBytes().length;
+				Logger.logW(TAG, "data size: " + (dataSize/1024.0) + " KB");
 				mChannelOutputStream.write(channelData.getAsBytes());
+				mChannelOutputStream.flush();
 				Logger.logD(TAG, "Sent data over channel");
 			} catch (IOException e) {
 				// TODO cejnar handle error
 				e.printStackTrace();
 			}
 		} else {
+			Logger.logD(TAG, "Sent data over Data API");
 			PutDataRequest request = PutDataRequest.create(path.getPath());
 			final byte[] dataToSend = data.getAsBytes();
 			// check data size whether to send as and asset or plain data item
@@ -263,25 +271,25 @@ public class LocusWearCommService implements
 		// TODO cejnar error handling, closing channel if new channel is present
 		final InputStream is = channel.getInputStream(mGoogleApiClient).await().getInputStream();
 		final long channelThreadId = System.currentTimeMillis();
-		mChannelInputStream = is;
-		mChannelOutputStream = channel.getOutputStream(mGoogleApiClient).await().getOutputStream();
+		mChannelInputStream = new BufferedInputStream(is, 200 * 1024);
+		mChannelOutputStream = new BufferedOutputStream(channel.getOutputStream(mGoogleApiClient).await().getOutputStream(), 200 * 1024);
 		mChannelThreadId = channelThreadId;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				StorableStreamReader ssr = new StorableStreamReader(is);
-				while (mChannelThreadId == channelThreadId) {
-					try {
-						DataPayloadStorable channelData = ssr.read(DataPayloadStorable.class);
-						consumer.consumeData(channelData);
-						Logger.logD("Channel read", "Read - " + channelData.isValid());
-					} catch (IOException e) {
-						// TODO cejnar ignore exceptions for now
-						//e.printStackTrace();
-					}
-				}
-			}
-		}).start();
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				StorableStreamReader ssr = new StorableStreamReader(is);
+//				while (mChannelThreadId == channelThreadId) {
+//					try {
+//						DataPayloadStorable channelData = ssr.read(DataPayloadStorable.class);
+//						consumer.consumeData(channelData);
+//						Logger.logD("Channel read", "Read - " + channelData.isValid());
+//					} catch (IOException e) {
+//						// TODO cejnar ignore exceptions for now
+//						//e.printStackTrace();
+//					}
+//				}
+//			}
+//		}).start();
 	}
 
 	public String getNodeId() {

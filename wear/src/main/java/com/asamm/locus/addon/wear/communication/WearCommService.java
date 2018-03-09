@@ -145,19 +145,19 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 				Node n = nodeIt.next();
 				mNodeId = n.isNearby() ? n.getId() : null;
 
-//				new Thread(() -> {
-//					//TODO cejnar NPE when client is offline
-//						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mConnectedNodeId, DataPath.BASE_PATH).await().getChannel();
-//						Logger.logD(TAG, "Wear, opened a channel.");
-//						registerChannel(channel, new ChannelDataConsumable() {
-//							@Override
-//							public void consumeData(DataPayloadStorable data) {
-//								if (mApp != null) {
-//									mApp.handleDataChannelEvent(data);
-//								}
-//							}
-//						});
-//				}).start(); // TODO cejnar
+				new Thread(() -> {
+					//TODO cejnar NPE when client is offline
+						Channel channel = Wearable.ChannelApi.openChannel(mGoogleApiClient, mNodeId, DataPath.BASE_PATH).await().getChannel();
+						Logger.logD(TAG, "Wear, opened a channel.");
+						registerChannel(channel, new ChannelDataConsumable() {
+							@Override
+							public void consumeData(DataPayloadStorable data) {
+								if (mApp != null) {
+									mApp.handleDataChannelEvent(data);
+								}
+							}
+						});
+				}).start(); // TODO cejnar
 
 			}
 		}
