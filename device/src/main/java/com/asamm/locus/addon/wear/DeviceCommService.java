@@ -361,7 +361,7 @@ public class DeviceCommService extends LocusWearCommService {
 		final Location locToSend;
 		// if there is no offset applied, then return last know location
 		if (isZeroOffset) {
-			Location tmp = data.getLocMyLocation();
+			Location tmp = data != null ? data.getLocMyLocation() : null;
 			locToSend = tmp == null ? ZERO_LOCATION : tmp;
 		} else {
 			// if offset (panning) is currently applied, then just return last used offset center from the watch
@@ -387,22 +387,6 @@ public class DeviceCommService extends LocusWearCommService {
 		mpp.setRadius(diagonal);
 		return mpp;
 	}
-
-//	private void compressionTest(ActionTools.BitmapLoadResult loadedMap) {
-//		// TODO cejnar debug only, delete this method
-//		Bitmap b = loadedMap.getImage();
-//		ByteArrayOutputStream baosPng = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.PNG, 0, baosPng);
-//		ByteArrayOutputStream baosJpeg = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.JPEG, 80, baosJpeg);
-//		ByteArrayOutputStream baosWebp = new ByteArrayOutputStream();
-//		b.compress(Bitmap.CompressFormat.WEBP, 90, baosWebp);
-//		Logger.logD(TAG, "Original: " + loadedMap.getImage().getByteCount());
-//		Logger.logD(TAG, "PNG: " + baosPng.toByteArray().length);
-//		Logger.logD(TAG, "JPEG: " + baosJpeg.toByteArray().length);
-//		Logger.logD(TAG, "WEBP: " + baosWebp.toByteArray().length);
-//		Logger.logD(TAG, "finished");
-//	}
 
 	public static boolean isInstance() {
 		return mInstance != null;
