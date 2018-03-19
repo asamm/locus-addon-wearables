@@ -19,6 +19,7 @@ import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -123,7 +124,14 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 		Set<Node> capableNodes = capabilityInfo != null ? capabilityInfo.getNodes() : null;
 		mCapableClientDetected = capableNodes != null && capableNodes.size() > 0 ?
 				TriStateLogicEnum.TRUE : TriStateLogicEnum.FALSE;
-
+		if (mCapableClientDetected == TriStateLogicEnum.TRUE) {
+			Iterator<Node> nodeIt = capableNodes.iterator();
+			mNodeId = null;
+			while (mNodeId == null && nodeIt.hasNext()) {
+				Node n = nodeIt.next();
+				mNodeId = n.isNearby() ? n.getId() : null;
+			}
+		}
 		if (mApp != null) {
 			mApp.onCapableClientConnected();
 		}

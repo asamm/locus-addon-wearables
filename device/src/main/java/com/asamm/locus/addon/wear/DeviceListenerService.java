@@ -3,9 +3,11 @@ package com.asamm.locus.addon.wear;
 import android.content.Context;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import java.util.Timer;
@@ -48,6 +50,26 @@ public class DeviceListenerService extends WearableListenerService {
 	};
 
 	/**
+	 * DataEvent consumer
+	 */
+	private final DataConsumer<DataPayloadStorable> dataChannelConsumer = new DataConsumer<DataPayloadStorable>() {
+		@Override
+		public void consume(Context c, DeviceCommService rh, DataPayloadStorable newData) {
+			if (newData.getDataPath() == DataPath.GET_HAND_SHAKE) {
+				Logger.logD(TAG, "handling hand shake");
+			}
+			if (newData.isValid()) {
+				rh.onDataReceived(c, newData.getDataPath(), newData.getData(newData.getDataPath().getContainerClass()));
+			}
+		}
+
+		@Override
+		public DataPath getPath(DataPayloadStorable newData) {
+			return newData.getDataPath();
+		}
+	};
+
+	/**
 	 * DataChanged callback
 	 *
 	 * @param dataEventBuffer
@@ -64,6 +86,21 @@ public class DeviceListenerService extends WearableListenerService {
 		}
 	}
 
+	@Override
+	public void onMessageReceived(MessageEvent messageEvent) {
+		DeviceCommService.getInstance(this).setNodeId(messageEvent.getSourceNodeId());
+		DataPath p = DataPath.fromPath(messageEvent.getPath());
+		Logger.logD(TAG, "Received message " + p);
+		if (p == null)
+			return;
+		try {
+			handleDataChange(dataChannelConsumer,
+					new DataPayloadStorable(p, p.getContainerClass().getConstructor(byte[].class).newInstance(messageEvent.getData())));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		super.onMessageReceived(messageEvent);
+	}
 	/**
 	 * Helper method for data consumption using supplied consumer.
 	 *

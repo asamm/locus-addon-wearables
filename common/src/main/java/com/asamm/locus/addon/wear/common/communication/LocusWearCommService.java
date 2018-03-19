@@ -36,6 +36,8 @@ public class LocusWearCommService implements
 		GoogleApiClient.ConnectionCallbacks,
 		GoogleApiClient.OnConnectionFailedListener {
 
+	private static final String TAG = "LocusWearCommService";
+
 	protected final int MAX_DATA_ITEM_SIZE_B = 99 * 1024;
 
 	protected Context context;
@@ -43,6 +45,7 @@ public class LocusWearCommService implements
 	// Google API client
 	protected GoogleApiClient mGoogleApiClient;
 
+	protected volatile String mNodeId;
 	/**
 	 * List of unsent data consisting of pairs of <PATH, DATA>
 	 */
@@ -108,6 +111,16 @@ public class LocusWearCommService implements
 		}
 	}
 
+	public void sendMessage(DataPath path, TimeStampStorable data) {
+		Logger.logD(TAG, "Sending message "+path.getPath());
+		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
+
+		// You can add success and/or failure listeners,
+		// Or you can call Tasks.await() and catch ExecutionException
+		//sendTask.addOnSuccessListener(...);
+		//sendTask.addOnFailureListener(...);
+	}
+
 	/**
 	 * Sends payload, should be only called from this class and its subclasses
 	 *
@@ -116,6 +129,7 @@ public class LocusWearCommService implements
 	 */
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
 		Logger.logD(getClass().getSimpleName(), "Sending " + path);
+
 		PutDataRequest request = PutDataRequest.create(path.getPath());
 		final byte[] dataToSend = data.getAsBytes();
 		// check data size whether to send as and asset or plain data item
@@ -179,5 +193,12 @@ public class LocusWearCommService implements
 			Logger.logE("DataPath", "Constructor failed for " + p.name(), e);
 			return null;
 		}
+	}
+	public String getNodeId() {
+		return mNodeId;
+	}
+
+	public void setNodeId(String nodeId) {
+		mNodeId = nodeId;
 	}
 }

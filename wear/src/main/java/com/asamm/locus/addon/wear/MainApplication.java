@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -183,13 +184,16 @@ public class MainApplication extends Application implements Application.Activity
 
 	}
 
-	public void handleDataEvent(DataItem dataItem) {
+	public void handleDataChannelEvent(DataPayloadStorable data) {
+		if (data.getDataPath() != null) {
+			handleData(data.getDataPath(), data.getData(data.getDataPath().getContainerClass()));
+		}
+	}
+
+	public void handleData(DataPath p, TimeStampStorable value) {
 		final LocusWearActivity currentActivity = mCurrentActivity;
-		if (currentActivity != null) {
-			DataPath p = DataPath.valueOf(dataItem);
-			Logger.logD(TAG, "Received " + p);
-			if (p != null) {
-				TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
+		if (currentActivity != null && p != null) {
+
 				switch (p) {
 					case PUT_HAND_SHAKE:
 						final HandShakeValue handShakeValue = (HandShakeValue) value;
@@ -229,11 +233,19 @@ public class MainApplication extends Application implements Application.Activity
 					mWatchDog.onNewData(p, value);
 				}
 				currentActivity.consumeNewData(p, value);
+		}
+	}
+
+	public void handleDataEvent(DataItem dataItem) {
+		DataPath p = DataPath.valueOf(dataItem);
+		if (p != null) {
+			TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
+			handleData(p, value);
+			Logger.logD(TAG, "Received " + p);
 			} else {
 				Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
 			}
 		}
-	}
 
 	public LocusWearActivity getCurrentActivity() {
 		return mCurrentActivity;

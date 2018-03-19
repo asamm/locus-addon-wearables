@@ -23,24 +23,24 @@ import com.google.android.gms.wearable.DataItem;
  */
 
 public enum DataPath {
-	GET_HAND_SHAKE(EmptyCommand.class),
-	PUT_HAND_SHAKE(HandShakeValue.class),
-	GET_TRACK_REC_PROFILES(EmptyCommand.class),
-	PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class),
-	PUT_TRACK_REC(TrackRecordingValue.class),
-	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class),
-	GET_PROFILE_ICON(ProfileIconGetCommand.class),
-	PUT_PROFILE_ICON(TrackProfileIconValue.class),
-	GET_ADD_WAYPOINT(EmptyCommand.class),
-	PUT_ADD_WAYPOINT(EmptyCommand.class),
-	GET_PERIODIC_DATA(PeriodicCommand.class),
-	GET_KEEP_ALIVE(EmptyCommand.class),
-	PUT_MAP(MapContainer.class),
+	GET_HAND_SHAKE(EmptyCommand.class, (byte) 1),
+	PUT_HAND_SHAKE(HandShakeValue.class, (byte) 2),
+	GET_TRACK_REC_PROFILES(EmptyCommand.class, (byte) 3),
+	PUT_TRACK_REC_PROFILE_INFO(TrackProfileInfoValue.ValueList.class, (byte) 4),
+	PUT_TRACK_REC(TrackRecordingValue.class, (byte) 5),
+	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class, (byte) 6),
+	GET_PROFILE_ICON(ProfileIconGetCommand.class, (byte) 7),
+	PUT_PROFILE_ICON(TrackProfileIconValue.class, (byte) 8),
+	GET_ADD_WAYPOINT(EmptyCommand.class, (byte) 9),
+	PUT_ADD_WAYPOINT(EmptyCommand.class, (byte) 10),
+	GET_PERIODIC_DATA(PeriodicCommand.class, (byte) 11),
+	GET_KEEP_ALIVE(EmptyCommand.class, (byte) 12),
+	PUT_MAP(MapContainer.class, (byte) 13),
 	/**
 	 * Fake communication data path, used for signalling activity about ON_CONNECTED event inside
 	 * strictly the application. Should not be used over network.
 	 */
-	PUT_ON_CONNECTED_EVENT(EmptyCommand.class);
+	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14);
 
 	public static final String BASE_PATH = "/locus/wear";
 
@@ -48,6 +48,7 @@ public enum DataPath {
 
 	public static final String DEFAULT_ASSET_KEY = ":";
 
+	private byte mId;
 	private String mKey;
 	private String mPath;
 	private boolean mUrgent;
@@ -62,11 +63,12 @@ public enum DataPath {
 	 */
 	private static final boolean USE_ASSETS_DEFAULT = false;
 
-	DataPath(Class<? extends TimeStampStorable> container) {
-		this(container, URGENT_DEFAULT);
+	DataPath(Class<? extends TimeStampStorable> container, byte id) {
+		this(container, URGENT_DEFAULT, id);
 	}
 
-	DataPath(Class<? extends TimeStampStorable> container, boolean isUrgent) {
+	DataPath(Class<? extends TimeStampStorable> container, boolean isUrgent, byte id) {
+		mId = id;
 		mKey = this.name().toLowerCase();
 		mPath = BASE_PATH + '/' + mKey;
 		this.mContainerClass = container;
@@ -82,8 +84,21 @@ public enum DataPath {
 	}
 
 	public static DataPath valueOf(DataItem item) {
+		return fromPath(item.getUri().getPath());
+	}
+
+	public static DataPath fromPath(String path) {
 		for (DataPath p : values) {
-			if (p.getPath().equals(item.getUri().getPath())) {
+			if (p.getPath().equals(path)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	public static DataPath valueOf(byte id) {
+		for (DataPath p : values) {
+			if (p.mId == id) {
 				return p;
 			}
 		}
@@ -96,5 +111,9 @@ public enum DataPath {
 
 	public Class<? extends TimeStampStorable> getContainerClass() {
 		return mContainerClass;
+	}
+
+	public byte getId() {
+		return mId;
 	}
 }
