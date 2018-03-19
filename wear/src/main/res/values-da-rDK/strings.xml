@@ -10,15 +10,23 @@
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <!-- UI Label elevation downhill -->
+  <string name="stat_elevation_down">Elevation (ned ad bakke)</string>
   <!-- UI Label elevation uphill -->
+  <string name="stat_elevation_up">Højde (op ad bakke)</string>
   <!-- UI Label speed (current) -->
+  <string name="stat_speed">Hastighed</string>
   <!-- UI Label Average moving speed -->
   <!-- UI Label distance -->
+  <string name="stat_distance">Afstand</string>
   <!-- UI Label track recording time total -->
   <!-- Loading (placeholder text) -->
+  <string name="loading_profiles">Indlæser</string>
   <!-- Ambient mode (UI text) -->
   <!-- Install button text -->
+  <string name="install">Installer</string>
   <!-- Screen header for track recording screen, should be reasonably short -->
   <!-- Screen header for profile list screen, should be short -->
+  <string name="title_activity_profile_list">Profiler</string>
   <!-- Error (label/header)-->
+  <string name="title_activity_error">Fejl</string>
 </resources>
