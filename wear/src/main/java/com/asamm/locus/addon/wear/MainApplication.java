@@ -56,7 +56,6 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onCreate() {
-
 		super.onCreate();
 
 		// set logger
@@ -88,7 +87,7 @@ public class MainApplication extends Application implements Application.Activity
 		});
 
 		// notify about create of app
-		Logger.logE(TAG, "onCreate()");
+		Logger.logD(TAG, "onCreate()");
 		registerActivityLifecycleCallbacks(this);
 		setTerminationTimer();
 		mCache = new ApplicationMemoryCache(this);
@@ -257,7 +256,7 @@ public class MainApplication extends Application implements Application.Activity
 			return false;
 		}
 		if (handShakeValue.isEmpty() ||
-				handShakeValue.getmLocusVersion() < Const.LOCUS_MIN_VERSION_CODE.vcFree) {
+				handShakeValue.getmLocusVersion() < Const.LOCUS_MIN_VERSION_CODE) {
 			doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION);
 			return false;
 		}

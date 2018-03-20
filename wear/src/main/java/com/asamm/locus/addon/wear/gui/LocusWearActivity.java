@@ -139,6 +139,12 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// Detect that application was started from main application menu
+		if ("android.intent.action.MAIN" .equals(getIntent().getAction()) &&
+				(getIntent().getCategories().contains("android.intent.category.LAUNCHER"))) {
+				AppPreferencesManager.persistMapOffsetValues(this, 0, 0);
+				AppPreferencesManager.persistMapBearing(this, (short)0);
+		}
 		this.mState = WearActivityState.ON_CREATE;
 		super.onCreate(savedInstanceState);
 		Class<? extends LocusWearActivity> c = MainApplication.getLastAppTask(this);
@@ -161,7 +167,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 			mNavDrawerTimeHandler.post(new Runnable() {
 				@Override
 				public void run() {
-					mTvNavDrawerTime.setText(mDateFormat.format(new Date()));
+					String time = mDateFormat.format(new Date());
+					mTvNavDrawerTime.setText((time.length() <= 4? " " : "") + time);
 					mNavDrawerTimeHandler.postDelayed(this, 999);
 				}
 			});

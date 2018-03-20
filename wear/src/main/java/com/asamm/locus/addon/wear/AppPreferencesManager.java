@@ -33,6 +33,11 @@ public class AppPreferencesManager {
 
 	private static final String PREF_USE_HW_BUTTONS = "PREF_USE_HW_BUTTONS";
 
+	private static final String PREF_MAP_AUTOROTATE_ENABLED = "PREF_MAP_AUTOROTATE_ENABLED";
+	private static final String PREF_MAP_OFFSET_X = "PREF_MAP_OFFSET_X";
+	private static final String PREF_MAP_OFFSET_Y = "PREF_MAP_OFFSET_Y";
+	private static final String PREF_MAP_BEARING = "PREF_MAP_BEARING";
+
 	public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
 		if (trackRec == null || !trackRec.isInfoAvailable()) {
 			return;
@@ -138,5 +143,56 @@ public class AppPreferencesManager {
 		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
 				.putBoolean(PREF_USE_HW_BUTTONS, useHwButons)
 				.apply();
+	}
+
+	public static boolean isMapAutoRotateEnabled(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return prefs.getBoolean(PREF_MAP_AUTOROTATE_ENABLED, false);
+	}
+
+	public static void persistMapAutoRotateEnabled(Context ctx, boolean mapAutorotateEnabled) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+				.putBoolean(PREF_MAP_AUTOROTATE_ENABLED, mapAutorotateEnabled)
+				.apply();
+	}
+
+	public static short getMapBearing(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		return (short) prefs.getInt(PREF_MAP_BEARING, 0);
+	}
+
+	public static void persistMapBearing(Context ctx, short mapBearing) {
+		PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+				.putInt(PREF_MAP_BEARING, mapBearing)
+				.apply();
+	}
+
+	/**
+	 * Sets map offset x and y values if not null. Null values are ignored and not stored.
+	 *
+	 * @param ctx
+	 * @param offsetX
+	 * @param offsetY
+	 */
+	public static void persistMapOffsetValues(Context ctx, Integer offsetX, Integer offsetY) {
+		SharedPreferences.Editor prefsEditor =
+				PreferenceManager.getDefaultSharedPreferences(ctx).edit();
+		if (offsetX != null) {
+			prefsEditor.putInt(PREF_MAP_OFFSET_X, offsetX.intValue());
+		}
+		if (offsetY != null) {
+			prefsEditor.putInt(PREF_MAP_OFFSET_Y, offsetY.intValue());
+		}
+		prefsEditor.apply();
+	}
+
+	/**
+	 * @return pair of values - offsetX, offsetY
+	 */
+	public static Pair<Integer, Integer> getMapOffsetValues(Context ctx) {
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+		Integer offsetX = prefs.getInt(PREF_MAP_OFFSET_X, 0);
+		Integer offsetY = prefs.getInt(PREF_MAP_OFFSET_Y, 0);
+		return Pair.of(offsetX, offsetY);
 	}
 }
