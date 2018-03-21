@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.0] - 2018-03-21
+### Added
+- map panning by swiping/scrolling gestures on the map screen 
+- map auto-rotate function 
+- map auto-center function 
+- support for watch hardware buttons - rotary input button and push-buttons
+- support for communication via Message API (not currently used, but seems fully functional when enabled)
+
 ## [1.0.0] - 2017-12-22
 ### Fixed
 - App returns to the last opened activity (for ambient-enabled screens) after wake up from the sleep mode. Originally returned to watch face.
