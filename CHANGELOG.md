@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.1] - 2018-03-22
+### Fixed
+- crashes on Android Wear 1.x due to NPE when checking getIntent().getCategories() after app startup.
+
 ## [1.1.0] - 2018-03-21
 ### Added
 - map panning by swiping/scrolling gestures on the map screen 
