@@ -140,8 +140,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// Detect that application was started from main application menu
-		if ("android.intent.action.MAIN" .equals(getIntent().getAction()) &&
-				(getIntent().getCategories().contains("android.intent.category.LAUNCHER"))) {
+		if (getIntent() != null && getIntent().getAction() != null &&
+				"android.intent.action.MAIN".equals(getIntent().getAction()) &&
+				(getIntent().getCategories() == null || getIntent().getCategories().contains("android.intent.category.LAUNCHER"))) {
 				AppPreferencesManager.persistMapOffsetValues(this, 0, 0);
 				AppPreferencesManager.persistMapBearing(this, (short)0);
 		}
