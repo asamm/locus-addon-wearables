@@ -1,12 +1,16 @@
 package com.asamm.locus.addon.wear.gui.trackrec;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.wear.widget.CircularProgressLayout;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,13 +37,13 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.StatsScreenController;
 
 import java.io.IOException;
@@ -106,6 +110,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	 * component for track recording profile display and selection
 	 */
 	private TrackRecordProfileSelectLayout mProfileSelect;
+    private RecordingSensorManager mSensors = new RecordingSensorManager();
+
 
 	@Override
 	protected DataPayload getInitialCommandType() {
@@ -289,6 +295,15 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (mSensors != null) {
+			mSensors.destroy();
+			mSensors = null;
+		}
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
 		TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
@@ -318,15 +333,22 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
 	private volatile Handler mDelayedStartClickHandler;
 
+	private synchronized void startRecording() {
+	    mSensors.startHrSensor(this);
+		sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
+		mStateMachine.transitionTo(REC_WAITING);
+		mImgStartRecording.setEnabled(true);
+	}
+
 	public void handleStartClick(final View v) {
 		if (isIdleScreenAlive()) {
 			mImgStartRecording.setEnabled(false);
 		}
 		synchronized (this) {
 			if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
-				sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
-				mStateMachine.transitionTo(REC_WAITING);
-				mImgStartRecording.setEnabled(true);
+				if (mSensors.checkAndRequestBodySensorPermission(this)) {
+                    startRecording();
+				}
 			} else {
 				if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
 					mDelayedStartClickHandler = new Handler();
@@ -338,6 +360,13 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 			}
 		}
 	}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        mSensors.handlePermissionResult(this, requestCode, permissions, grantResults);
+		startRecording();
+    }
 
 	private boolean isIdleScreenAlive() {
 		final TrackRecActivityState state = mStateMachine.getCurrentState();
