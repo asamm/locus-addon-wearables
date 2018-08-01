@@ -111,15 +111,16 @@ public class LocusWearCommService implements
 		}
 	}
 
-	public void sendMessage(DataPath path, TimeStampStorable data) {
-		Logger.logD(TAG, "Sending message "+path.getPath());
-		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
-
-		// You can add success and/or failure listeners,
-		// Or you can call Tasks.await() and catch ExecutionException
-		//sendTask.addOnSuccessListener(...);
-		//sendTask.addOnFailureListener(...);
-	}
+	// message api not used currently
+//	public void sendMessage(DataPath path, TimeStampStorable data) {
+//		Logger.logD(TAG, "Sending message "+path.getPath());
+//		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
+//
+//		// You can add success and/or failure listeners,
+//		// Or you can call Tasks.await() and catch ExecutionException
+//		//sendTask.addOnSuccessListener(...);
+//		//sendTask.addOnFailureListener(...);
+//	}
 
 	/**
 	 * Sends payload, should be only called from this class and its subclasses

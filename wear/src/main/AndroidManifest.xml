@@ -46,13 +46,14 @@
         </activity>
         <activity
             android:name=".gui.MapActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
         <activity
             android:name=".gui.trackrec.profiles.ProfileListActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
         <activity
             android:name=".gui.error.AppFailActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
+        <activity android:name=".gui.custom.LocusWearInputTextActivity" />
     </application>
 
 </manifest>

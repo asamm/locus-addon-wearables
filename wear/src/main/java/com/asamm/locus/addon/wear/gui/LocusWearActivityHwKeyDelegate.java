@@ -74,7 +74,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	 * Delegate facotry. If Hw button support is disabled, returns dummy delegate with no sideeffects
 	 */
 	class Factory {
-		static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
+		public static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
 			if (AppPreferencesManager.isUseHwButtons(ctx)) {
 				return new LocusWearActivityHwKeyDelegateImpl(ctx);
 			} else {

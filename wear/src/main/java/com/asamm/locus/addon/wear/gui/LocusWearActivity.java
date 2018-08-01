@@ -150,9 +150,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onCreate(savedInstanceState);
 		Class<? extends LocusWearActivity> c = MainApplication.getLastAppTask(this);
 		// dispatch to correct activity - if activities are different, then application was restored
-		// do not apply for ProfileListActivity which is not persisted when opened
+		// do not apply for child activities, which are not persisted when opened
 		if (!c.equals(getClass())
-				&& !getClass().equals(ProfileListActivity.class)) {
+				//&& !getClass().equals(ProfileListActivity.class)) {
+				&& !isChildLocusWearActivity()) {
 			Intent i = new Intent(this, c);
 			startActivity(i);
 			finish();
@@ -455,6 +456,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	}
 
 	public abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
+
 	protected void enableCustomRotatryActions() {
 		getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
 	}

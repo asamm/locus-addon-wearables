@@ -6,6 +6,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -31,6 +32,7 @@ public enum DataPath {
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class, (byte) 6),
 	GET_PROFILE_ICON(ProfileIconGetCommand.class, (byte) 7),
 	PUT_PROFILE_ICON(TrackProfileIconValue.class, (byte) 8),
+	@Deprecated // can be removed in future versions
 	GET_ADD_WAYPOINT(EmptyCommand.class, (byte) 9),
 	PUT_ADD_WAYPOINT(EmptyCommand.class, (byte) 10),
 	GET_PERIODIC_DATA(PeriodicCommand.class, (byte) 11),
@@ -40,7 +42,8 @@ public enum DataPath {
 	 * Fake communication data path, used for signalling activity about ON_CONNECTED event inside
 	 * strictly the application. Should not be used over network.
 	 */
-	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14);
+	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14),
+	POST_ADD_WAYPOINT(StringCommand.class, (byte)15);
 
 	public static final String BASE_PATH = "/locus/wear";
 
