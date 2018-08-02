@@ -1,9 +1,12 @@
+/**
+ * Created by Milan Cejnar on 01.12.2017.
+ * Asamm Software, s.r.o.
+ */
 package com.asamm.locus.addon.wear.gui.trackrec.stats.view;
 
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -21,11 +24,9 @@ import com.asamm.locus.addon.wear.gui.custom.SpannableTextUtils;
 import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecStatTypeEnum;
 
+
 /**
  * Componend for displaying various(specified by {@code mType} single-value statistics
- * <p>
- * Created by Milan Cejnar on 01.12.2017.
- * Asamm Software, s.r.o.
  */
 public class TrackStatLayout extends ConstraintLayout {
 

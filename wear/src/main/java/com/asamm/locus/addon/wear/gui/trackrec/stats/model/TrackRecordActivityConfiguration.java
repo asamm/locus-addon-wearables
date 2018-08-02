@@ -53,6 +53,8 @@ public class TrackRecordActivityConfiguration {
         return INSTANCE;
     }
 
+    public int getScreenCount(){ return config.getScreenCount();}
+
     public byte[] getAsBytes() {
         return config.getAsBytes();
     }
@@ -72,12 +74,20 @@ public class TrackRecordActivityConfiguration {
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C1, secondScreenConfig));
 
         // Init third screen with R2C2 configuration
-        List<TrackRecCellConfigDto> thirdScreenConfig = new ArrayList<>(2);
+        List<TrackRecCellConfigDto> thirdScreenConfig = new ArrayList<>(4);
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackRecStatTypeEnum.ELEVATION_DOWNHILL));
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackRecStatTypeEnum.ELEVATION_UPHILL));
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackRecStatTypeEnum.SPEED_AVG_MOVE));
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 3, TrackRecStatTypeEnum.BLANK));
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C2, thirdScreenConfig));
+
+        // Init fourth screen with R2C2 configuration
+        List<TrackRecCellConfigDto> fourthScreenConfig = new ArrayList<>(4);
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackRecStatTypeEnum.SPEED));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackRecStatTypeEnum.BLANK));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackRecStatTypeEnum.BLANK));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 3, TrackRecStatTypeEnum.BLANK));
+        cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C2, fourthScreenConfig));
 
         return cont;
     }

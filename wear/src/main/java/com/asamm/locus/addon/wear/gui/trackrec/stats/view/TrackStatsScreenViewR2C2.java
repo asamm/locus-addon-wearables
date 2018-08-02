@@ -1,3 +1,8 @@
+/*
+ * Created by milan on 02.08.2018.
+ * This code is part of Locus project from Asamm Software, s. r. o.
+ * Copyright (C) 2018
+ */
 package com.asamm.locus.addon.wear.gui.trackrec.stats.view;
 
 import android.view.LayoutInflater;
@@ -7,13 +12,15 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecScreenConfigDto;
 
-/*
- * Created by milan on 02.08.2018.
- * This code is part of Locus project from Asamm Software, s. r. o.
- * Copyright (C) 2018
+import java.util.Arrays;
+
+/**
+ * Implementation of a view for 2 by 2 grid statistics screen
  */
-public class TrackStatsScreenViewR2C2 implements TrackStatsScreenView {
+public class TrackStatsScreenViewR2C2 extends TrackStatsScreenViewBase {
+
     private final ViewGroup mLayout;
+    private final TrackStatLayout[] statLayouts;
     private TrackStatLayout mTopLeft, mTopRight, mBottomLeft, mBottomRight;
     private TrackRecordingValue lastData = null;
 
@@ -24,6 +31,7 @@ public class TrackStatsScreenViewR2C2 implements TrackStatsScreenView {
         mTopRight = mLayout.findViewById(R.id.track_stats_top_right);
         mBottomLeft = mLayout.findViewById(R.id.track_stats_bottom_left);
         mBottomRight = mLayout.findViewById(R.id.track_stats_bottom_right);
+        statLayouts = Arrays.asList(mTopRight, mTopLeft, mBottomLeft, mBottomRight).toArray(new TrackStatLayout[4]);
         refreshConfiguration(screenConfig);
     }
 
@@ -33,29 +41,7 @@ public class TrackStatsScreenViewR2C2 implements TrackStatsScreenView {
     }
 
     @Override
-    public void refreshConfiguration(TrackRecScreenConfigDto screenConfig) {
-        mTopRight.setType(screenConfig.getCellTypeAtIdx(0));
-        mTopLeft.setType(screenConfig.getCellTypeAtIdx(1));
-        mBottomLeft.setType(screenConfig.getCellTypeAtIdx(2));
-        mBottomRight.setType(screenConfig.getCellTypeAtIdx(3));
-        handleNewTrackRecData(lastData);
-    }
-
-    @Override
-    public void handleNewTrackRecData(TrackRecordingValue newData) {
-        if (newData == null) return;
-        lastData = newData;
-        mTopLeft.consumeNewStatistics(lastData);
-        mTopRight.consumeNewStatistics(lastData);
-        mBottomLeft.consumeNewStatistics(lastData);
-        mBottomRight.consumeNewStatistics(lastData);
-    }
-
-    @Override
-    public void setAmbientMode(boolean isAmbient) {
-        mBottomLeft.setAmbientMode(isAmbient);
-        mBottomRight.setAmbientMode(isAmbient);
-        mTopLeft.setAmbientMode(isAmbient);
-        mTopRight.setAmbientMode(isAmbient);
+    protected TrackStatLayout[] getStatLayouts() {
+        return statLayouts;
     }
 }

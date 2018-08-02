@@ -42,10 +42,12 @@ import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelect
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingSensorManager;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -149,9 +151,13 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         mRecordingScrollScreen = findViewById(R.id.recording_scroll_view);
         mTrackRecMainScreen = new MainScreenController(mRecordingScrollScreen);
         TrackRecordActivityConfiguration cfg = TrackRecordActivityConfiguration.getConfiguration(this);
-
-        mRecordingScrollScreen.setFeatureItems(Arrays.asList(mTrackRecMainScreen,
-                new StatsScreenController(mRecordingScrollScreen, 1)));
+        ArrayList<TrackRecordingControllerUpdatable> screens = new ArrayList<>(4);
+        screens.add(mTrackRecMainScreen);
+        // 0 index reserved for mTrackRecMainScreen which must always be present
+        for (int i = 1; i < cfg.getScreenCount(); i++) {
+            screens.add(new StatsScreenController(mRecordingScrollScreen, i));
+        }
+        mRecordingScrollScreen.setFeatureItems(screens);
         mCircularProgress = mRecordingScrollScreen.findViewById(R.id.circular_progress);
         setProgression(false);
         mCircularProgress.setOnTimerFinishedListener(this);

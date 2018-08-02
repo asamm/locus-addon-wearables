@@ -1,3 +1,8 @@
+/*
+ * Created by milan on 02.08.2018.
+ * This code is part of Locus project from Asamm Software, s. r. o.
+ * Copyright (C) 2018
+ */
 package com.asamm.locus.addon.wear.gui.trackrec.stats.view;
 
 import android.view.LayoutInflater;
@@ -8,10 +13,9 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecScreenConfigDto;
 
-/*
- * Created by milan on 02.08.2018.
- * This code is part of Locus project from Asamm Software, s. r. o.
- * Copyright (C) 2018
+/**
+ * Blank screen with a sigle TextView with error message.
+ * This screen should never display in normal operation (only present because of NPE prevention)
  */
 public class TrackStatsScreenViewEmptyScreen implements TrackStatsScreenView {
 
