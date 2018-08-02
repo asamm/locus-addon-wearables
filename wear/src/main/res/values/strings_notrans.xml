@@ -3,4 +3,5 @@
     <!-- Name of the application -->
     <string translatable="false" name="app_name">Locus Map</string>
     <string translatable="false" name="empty_string"></string>
+    <string translatable="false" name="error_inflating_stats_screen">Error! Incompatible statistics screen configuration!</string>
 </resources>

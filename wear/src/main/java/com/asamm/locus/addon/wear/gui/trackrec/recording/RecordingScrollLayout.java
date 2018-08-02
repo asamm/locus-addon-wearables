@@ -145,6 +145,12 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 		}
 	}
 
+	@Override
+	public int getControllerScreenIdx() {
+		// This is only container/delegate wrapping multiple screens having no usable screenId on its own
+		return -1;
+	}
+
 	private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {

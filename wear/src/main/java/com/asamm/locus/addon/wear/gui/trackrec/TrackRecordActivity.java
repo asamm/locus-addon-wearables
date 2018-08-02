@@ -42,7 +42,8 @@ import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelect
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingSensorManager;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.StatsScreenController;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -147,7 +148,10 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     private void initRecordingScrollScreen() {
         mRecordingScrollScreen = findViewById(R.id.recording_scroll_view);
         mTrackRecMainScreen = new MainScreenController(mRecordingScrollScreen);
-        mRecordingScrollScreen.setFeatureItems(Arrays.asList(mTrackRecMainScreen, new StatsScreenController(mRecordingScrollScreen, 1)));
+        TrackRecordActivityConfiguration cfg = TrackRecordActivityConfiguration.getConfiguration(this);
+
+        mRecordingScrollScreen.setFeatureItems(Arrays.asList(mTrackRecMainScreen,
+                new StatsScreenController(mRecordingScrollScreen, 1)));
         mCircularProgress = mRecordingScrollScreen.findViewById(R.id.circular_progress);
         setProgression(false);
         mCircularProgress.setOnTimerFinishedListener(this);

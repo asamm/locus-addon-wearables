@@ -41,4 +41,7 @@ public interface TrackRecordingControllerUpdatable {
 	 * @param isAmbient
 	 */
 	void setAmbient(boolean isAmbient);
+
+	/** @return idx/position of the screen represented by this controller */
+	int getControllerScreenIdx();
 }
