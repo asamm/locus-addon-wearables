@@ -42,11 +42,17 @@ public class TrackRecScreenConfigDto extends Storable {
         return screenType;
     }
 
-    public TrackRecStatTypeEnum getCellTypeAtIdx(int cellIdx) {
+    public TrackStatTypeEnum getCellTypeAtIdx(int cellIdx) {
         if (cellIdx < 0 || cellIdx >= cellConfigs.size()) {
-            return TrackRecStatTypeEnum.BLANK;
+            return TrackStatTypeEnum.BLANK;
         } else {
             return cellConfigs.get(cellIdx).getContentType();
+        }
+    }
+
+    public void setCellTypeAtIdx(int cellIdx, TrackStatTypeEnum newType) {
+        if (cellIdx >= 0 && cellIdx < cellConfigs.size()) {
+            cellConfigs.get(cellIdx).setContentType(newType);
         }
     }
 

@@ -21,13 +21,13 @@ public class TrackStatsScreenViewR2C1 extends TrackStatsScreenViewBase {
     private final TrackStatLayout[] statLayouts;
     private TrackStatLayout mTop, mBottom;
 
-    TrackStatsScreenViewR2C1(ViewGroup contentView, TrackRecScreenConfigDto screenConfig) {
+    TrackStatsScreenViewR2C1(ViewGroup contentView, int screenIdx, TrackRecScreenConfigDto screenConfig) {
         LayoutInflater inflater = LayoutInflater.from(contentView.getContext());
         mLayout = (ViewGroup) inflater.inflate(R.layout.track_record_recording_screen_stats_r2_c1, contentView, false);
         mTop = mLayout.findViewById(R.id.track_stats_top);
         mBottom = mLayout.findViewById(R.id.track_stats_bottom);
         statLayouts = Arrays.asList(mTop, mBottom).toArray(new TrackStatLayout[2]);
-        refreshConfiguration(screenConfig);
+        initLayoutsCommon(screenIdx, screenConfig);
     }
 
     @Override

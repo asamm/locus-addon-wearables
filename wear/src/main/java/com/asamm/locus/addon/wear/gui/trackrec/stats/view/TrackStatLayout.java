@@ -5,7 +5,9 @@
 package com.asamm.locus.addon.wear.gui.trackrec.stats.view;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
@@ -22,7 +24,8 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.gui.custom.SpannableTextUtils;
 import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
-import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecStatTypeEnum;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
 
 
 /**
@@ -33,12 +36,13 @@ public class TrackStatLayout extends ConstraintLayout {
 	/**
 	 * Type of displayed statistics
 	 */
-	private TrackRecStatTypeEnum mType;
+	private TrackStatTypeEnum mType;
 	// formatted text of measured value/statistics
 	private TextView mTextViewValue;
 
 	private ImageView mImageViewIcon;
 	private TextView mTextViewDescription;
+	private TrackStatViewId trackStatViewPositionId = new TrackStatViewId(-1, -1);
 
 	public TrackStatLayout(Context context) {
 		this(context, null);
@@ -50,7 +54,7 @@ public class TrackStatLayout extends ConstraintLayout {
 
 	public TrackStatLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		this.mType = TrackRecStatTypeEnum.BLANK;
+		this.mType = TrackStatTypeEnum.BLANK;
 		initView(context, attrs);
 	}
 
@@ -60,6 +64,14 @@ public class TrackStatLayout extends ConstraintLayout {
 		boolean isPositionTopScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionTop, true);
 		boolean isPositionLeftScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionLeft, true);
 		ta.recycle();
+		this.setOnLongClickListener(v -> {
+			Intent i = new Intent(ctx, TrackStatsSelectListActivity.class);
+			i.putExtra(TrackStatsSelectListActivity.PARAM_STAT_ID, mType.getId());
+			i.putExtra(TrackStatsSelectListActivity.PARAM_SCREEN_IDX, trackStatViewPositionId.getScreenIdx());
+			i.putExtra(TrackStatsSelectListActivity.PARAM_CELL_IDX, trackStatViewPositionId.getCellIdx());
+			((Activity) ctx).startActivityForResult(i, TrackStatsSelectListActivity.REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY);
+            return true;
+        });
 
 		View.inflate(ctx,
 				isPositionTopScreen ? R.layout.track_stat_layout_icon_top : R.layout.track_stat_layout_icon_bottom,
@@ -78,7 +90,16 @@ public class TrackStatLayout extends ConstraintLayout {
 		setType(mType);
 	}
 
-	public void setType(TrackRecStatTypeEnum statType) {
+	public TrackStatViewId getTrackStatViewPositionId() {
+		return trackStatViewPositionId;
+	}
+
+	/** used during controller initialization to setup screen and cell id that identifies this view */
+	public void setTrackStatViewPositionId(int screenIdx, int cellIdx) {
+		this.trackStatViewPositionId = new TrackStatViewId(screenIdx, cellIdx);
+	}
+
+	public void setType(TrackStatTypeEnum statType) {
 		this.mType = statType;
 		mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
 		mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));

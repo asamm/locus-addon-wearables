@@ -43,4 +43,12 @@ abstract class TrackStatsScreenViewBase implements TrackStatsScreenView {
             layout.consumeNewStatistics(lastData);
         }
     }
+
+    protected void initLayoutsCommon(int screenIdx, TrackRecScreenConfigDto screenConfig) {
+        int cellIdx = 0;
+        for (TrackStatLayout layout : getStatLayouts()) {
+            layout.setTrackStatViewPositionId(screenIdx, cellIdx++);
+        }
+        refreshConfiguration(screenConfig);
+    }
 }

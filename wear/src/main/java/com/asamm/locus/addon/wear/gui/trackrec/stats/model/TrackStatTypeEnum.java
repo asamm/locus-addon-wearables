@@ -12,7 +12,7 @@ import com.asamm.locus.addon.wear.gui.custom.TrackStatConsumable;
  * Asamm Software, s.r.o.
  */
 
-public enum TrackRecStatTypeEnum implements TrackStatConsumable {
+public enum TrackStatTypeEnum implements TrackStatConsumable {
 	// serves as a blank placeholder displaying nothing
 	BLANK((byte) 0, R.string.empty_string, R.drawable.blank_1px,
 			TrackStatConsumable.TscFactory.createBlankConsumable()),
@@ -34,7 +34,7 @@ public enum TrackRecStatTypeEnum implements TrackStatConsumable {
 	private final TrackStatConsumable mConsumer;
 	private final int mNameStringId;
 
-	TrackRecStatTypeEnum(byte id, int nameStringId, int iconId, TrackStatConsumable consumer) {
+	TrackStatTypeEnum(byte id, int nameStringId, int iconId, TrackStatConsumable consumer) {
 		this.id = id;
 		this.mNameStringId = nameStringId;
 		this.mIconId = iconId;
@@ -58,10 +58,10 @@ public enum TrackRecStatTypeEnum implements TrackStatConsumable {
 		return id;
 	}
 
-	private static TrackRecStatTypeEnum[] values = values();
+	private static TrackStatTypeEnum[] values = values();
 
-	public static TrackRecStatTypeEnum getById(byte id) {
-		for(TrackRecStatTypeEnum it : values) {
+	public static TrackStatTypeEnum getById(byte id) {
+		for(TrackStatTypeEnum it : values) {
 			if (it.id == id) return it;
 		}
 		return BLANK;

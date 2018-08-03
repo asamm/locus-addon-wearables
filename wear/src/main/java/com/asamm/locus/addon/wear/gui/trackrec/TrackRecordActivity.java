@@ -45,6 +45,9 @@ import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
+import com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatsSelectListActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -229,6 +232,20 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == TrackStatsSelectListActivity.REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY) {
+            if (resultCode == RESULT_OK) {
+                byte b = data.getByteExtra(TrackStatsSelectListActivity.RESULT_STAT_ID, TrackStatTypeEnum.BLANK.getId());
+                TrackStatTypeEnum result = TrackStatTypeEnum.getById(b);
+                TrackStatViewId viewId = new TrackStatViewId(
+                        data.getIntExtra(TrackStatsSelectListActivity.PARAM_SCREEN_IDX, -1),
+                        data.getIntExtra(TrackStatsSelectListActivity.PARAM_CELL_IDX, -1));
+                TrackRecordActivityConfiguration.getConfiguration(this)
+                        .setStatConfigAtPosition(this, viewId.getScreenIdx(),
+                                viewId.getCellIdx(), result);
+                mRecordingScrollScreen.refreshStatisticsConfiguration(this);
+            }
+            return;
+        }
         if (requestCode == REQUEST_WP_NAME) {
             if (resultCode == RESULT_OK) {
                 String name = data.getStringExtra(LocusWearInputTextActivity.KEY_RESULT_DATA);

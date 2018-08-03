@@ -5,8 +5,6 @@
  */
 package com.asamm.locus.addon.wear.gui.trackrec.stats.model;
 
-import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecStatTypeEnum;
-
 import java.io.IOException;
 
 import locus.api.objects.Storable;
@@ -21,9 +19,9 @@ public class TrackRecCellConfigDto extends Storable {
      * position(cell) index marking the position at the given statistics screen
      */
     private byte positionIdx;
-    private TrackRecStatTypeEnum contentType;
+    private TrackStatTypeEnum contentType;
 
-    public TrackRecCellConfigDto(byte positionIdx, TrackRecStatTypeEnum contentType) {
+    public TrackRecCellConfigDto(byte positionIdx, TrackStatTypeEnum contentType) {
         this();
         this.positionIdx = positionIdx;
         this.contentType = contentType;
@@ -41,8 +39,12 @@ public class TrackRecCellConfigDto extends Storable {
         return positionIdx;
     }
 
-    public TrackRecStatTypeEnum getContentType() {
+    public TrackStatTypeEnum getContentType() {
         return contentType;
+    }
+
+    public void setContentType(TrackStatTypeEnum contentType) {
+        this.contentType = contentType;
     }
 
     @Override
@@ -53,14 +55,14 @@ public class TrackRecCellConfigDto extends Storable {
     @Override
     public void reset() {
         positionIdx = 0;
-        contentType = TrackRecStatTypeEnum.BLANK;
+        contentType = TrackStatTypeEnum.BLANK;
     }
 
     @Override
     protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
         byte[] bytes = dr.readBytes(2);
         positionIdx = bytes[0];
-        contentType = TrackRecStatTypeEnum.getById(bytes[1]);
+        contentType = TrackStatTypeEnum.getById(bytes[1]);
     }
 
     @Override

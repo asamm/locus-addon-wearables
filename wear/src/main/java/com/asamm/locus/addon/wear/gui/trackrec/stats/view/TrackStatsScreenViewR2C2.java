@@ -24,7 +24,7 @@ public class TrackStatsScreenViewR2C2 extends TrackStatsScreenViewBase {
     private TrackStatLayout mTopLeft, mTopRight, mBottomLeft, mBottomRight;
     private TrackRecordingValue lastData = null;
 
-    TrackStatsScreenViewR2C2(ViewGroup contentView, TrackRecScreenConfigDto screenConfig) {
+    TrackStatsScreenViewR2C2(ViewGroup contentView, int screenIdx, TrackRecScreenConfigDto screenConfig) {
         LayoutInflater inflater = LayoutInflater.from(contentView.getContext());
         mLayout = (ViewGroup) inflater.inflate(R.layout.track_record_recording_screen_stats_r2_c2, contentView, false);
         mTopLeft = mLayout.findViewById(R.id.track_stats_top_left);
@@ -32,7 +32,7 @@ public class TrackStatsScreenViewR2C2 extends TrackStatsScreenViewBase {
         mBottomLeft = mLayout.findViewById(R.id.track_stats_bottom_left);
         mBottomRight = mLayout.findViewById(R.id.track_stats_bottom_right);
         statLayouts = Arrays.asList(mTopRight, mTopLeft, mBottomLeft, mBottomRight).toArray(new TrackStatLayout[4]);
-        refreshConfiguration(screenConfig);
+        initLayoutsCommon(screenIdx, screenConfig);
     }
 
     @Override

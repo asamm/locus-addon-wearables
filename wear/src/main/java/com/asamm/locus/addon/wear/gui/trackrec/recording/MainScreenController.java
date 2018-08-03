@@ -33,7 +33,6 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
     private TrackStatLayout mStatsTop, mStatsBottom;
     private CircularProgressLayout mCircularProgress;
 
-    private TrackRecordActivityConfiguration mConfig;
     private Drawable mPauseDrawable;
     private Drawable mResumeDrawable;
     private Drawable mStopDrawable;
@@ -47,7 +46,10 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
         mStatsTop = mLayout.findViewById(R.id.track_main_top);
         mStatsBottom = mLayout.findViewById(R.id.track_main_bottom);
         mCircularProgress = mLayout.findViewById(R.id.circular_progress);
-        loadAndInitStats(parentViewGroup.getContext(), mLayout);
+
+        mStatsTop.setTrackStatViewPositionId(0, 0);
+        mStatsBottom.setTrackStatViewPositionId(0, 1);
+        refreshStatisticsConfiguration(parentViewGroup.getContext());
         setDisabledDrawables(parentViewGroup.getContext());
     }
 
@@ -82,12 +84,6 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
         mImgAddWaypoint.setEnabled(isEnabled);
         mImgStopRecording.setEnabled(isEnabled);
         mCircularProgress.setEnabled(isEnabled);
-    }
-
-    private void loadAndInitStats(Context context, ViewGroup view) {
-        mConfig = TrackRecordActivityConfiguration.getConfiguration(context);
-        mStatsTop.setType(mConfig.getStatConfigAtPosition(getControllerScreenIdx(), 0));
-        mStatsBottom.setType(mConfig.getStatConfigAtPosition(getControllerScreenIdx(), 1));
     }
 
     @Override
@@ -131,6 +127,13 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
         return 0;
     }
 
+    @Override
+    public void refreshStatisticsConfiguration(Context ctx) {
+        TrackRecordActivityConfiguration mConfig = TrackRecordActivityConfiguration.getConfiguration(ctx);
+        mStatsTop.setType(mConfig.getStatConfigAtPosition(getControllerScreenIdx(), 0));
+        mStatsBottom.setType(mConfig.getStatConfigAtPosition(getControllerScreenIdx(), 1));
+
+    }
 
     public void setProgressionVisible(boolean enableProgression) {
         mImgStopRecording.setTag(Boolean.valueOf(enableProgression));

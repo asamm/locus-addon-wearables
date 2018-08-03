@@ -54,6 +54,7 @@
             android:name=".gui.error.AppFailActivity"
             android:launchMode="singleInstance" />
         <activity android:name=".gui.custom.LocusWearInputTextActivity" />
+        <activity android:name=".gui.trackrec.stats.view.TrackStatsSelectListActivity" />
     </application>
 
 </manifest>

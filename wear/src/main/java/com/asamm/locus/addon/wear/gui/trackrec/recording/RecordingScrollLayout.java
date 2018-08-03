@@ -151,6 +151,13 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
 		return -1;
 	}
 
+	@Override
+	public void refreshStatisticsConfiguration(Context ctx) {
+		for (TrackRecordingControllerUpdatable controller: mScreens) {
+			controller.refreshStatisticsConfiguration(ctx);
+		}
+	}
+
 	private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
