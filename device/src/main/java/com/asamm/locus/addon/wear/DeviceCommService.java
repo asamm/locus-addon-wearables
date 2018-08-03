@@ -1,6 +1,8 @@
 package com.asamm.locus.addon.wear;
 
+import android.app.IntentService;
 import android.content.Context;
+import android.content.Intent;
 
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -8,10 +10,11 @@ import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -44,7 +47,7 @@ import locus.api.utils.Logger;
  * Asamm Software, s.r.o.
  */
 
-public class DeviceCommService extends LocusWearCommService {
+public class DeviceCommService extends LocusWearCommService  {
 
     private static volatile DeviceCommService mInstance;
 
@@ -222,10 +225,20 @@ public class DeviceCommService extends LocusWearCommService {
             }
             break;
             case POST_ADD_WAYPOINT: {
-                String wptName = ((StringCommand) params).getValue();
+                String wptName = ((CommandStringExtra) params).getValue();
                 lv = LocusUtils.getActiveVersion(c);
                 handleAddWpt(c, lv, wptName);
                 sendCommand(DataPath.PUT_ADD_WAYPOINT);
+            }
+            break;
+            case PUT_HEART_RATE: {
+                double hrValue = ((CommandDoubleExtra) params).getValue();
+                Intent intent = new Intent();
+                intent.setAction("com.asamm.locus.DATA_TASK");
+                intent.putExtra("tasks","{ heart_rate: { data:"+hrValue+" } }");
+                c.sendBroadcast(intent);
+                Logger.logD("PUT_HEART_RATE", intent.getStringExtra("tasks"));
+
             }
             break;
             default:

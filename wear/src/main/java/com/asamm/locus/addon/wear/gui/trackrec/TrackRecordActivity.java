@@ -22,9 +22,10 @@ import com.asamm.locus.addon.wear.WatchDogPredicate;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -41,7 +42,7 @@ import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingSensorManager;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
@@ -56,6 +57,7 @@ import java.util.HashMap;
 
 import locus.api.utils.Logger;
 
+import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.IDLE;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.IDLE_WAITING;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.PAUSED;
@@ -204,6 +206,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 TrackRecordingValue trv = (TrackRecordingValue) data;
                 onPutTrackRec(trv);
                 getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
+                // TODO cejnar mock HR value
+                WearCommService.getInstance().sendDataItem(PUT_HEART_RATE, new CommandDoubleExtra(99.0));
                 break;
             case PUT_ADD_WAYPOINT:
                 runOnUiThread(() -> Toast.makeText(this, getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());
@@ -249,7 +253,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         if (requestCode == REQUEST_WP_NAME) {
             if (resultCode == RESULT_OK) {
                 String name = data.getStringExtra(LocusWearInputTextActivity.KEY_RESULT_DATA);
-                WearCommService.getInstance().sendDataItem(DataPath.POST_ADD_WAYPOINT, new StringCommand(name));
+                WearCommService.getInstance().sendDataItem(DataPath.POST_ADD_WAYPOINT, new CommandStringExtra(name));
             }
             return;
         }

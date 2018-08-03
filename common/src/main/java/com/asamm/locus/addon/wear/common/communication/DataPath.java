@@ -3,10 +3,11 @@ package com.asamm.locus.addon.wear.common.communication;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.StringCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -43,7 +44,8 @@ public enum DataPath {
 	 * strictly the application. Should not be used over network.
 	 */
 	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14),
-	POST_ADD_WAYPOINT(StringCommand.class, (byte)15);
+	POST_ADD_WAYPOINT(CommandStringExtra.class, (byte)15),
+	PUT_HEART_RATE(CommandDoubleExtra.class, (byte) 16);
 
 	public static final String BASE_PATH = "/locus/wear";
 

@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.gui.trackrec.recording;
+package com.asamm.locus.addon.wear.gui.trackrec.recording.sensors;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

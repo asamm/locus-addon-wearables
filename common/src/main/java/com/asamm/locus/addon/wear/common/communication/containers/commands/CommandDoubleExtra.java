@@ -12,19 +12,19 @@ import locus.api.utils.DataWriterBigEndian;
  * This code is part of Locus project from Asamm Software, s. r. o.
  * Copyright (C) 2018
  */
-public class StringCommand extends TimeStampStorable {
-    private String value;
+public class CommandDoubleExtra extends TimeStampStorable {
+    private double value;
 
-    public StringCommand() {
+    public CommandDoubleExtra() {
         super();
     }
 
-    public StringCommand(String value) {
+    public CommandDoubleExtra(double value) {
         this();
         this.value = value;
     }
 
-    public StringCommand(byte[] data) throws IOException {
+    public CommandDoubleExtra(byte[] data) throws IOException {
         super(data);
     }
 
@@ -36,26 +36,26 @@ public class StringCommand extends TimeStampStorable {
     @Override
     public void reset() {
         super.reset();
-        value = "";
+        value = Double.NaN;
     }
 
     @Override
     protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
         super.readObject(version, dr);
-        value = dr.readString();
+        value = dr.readDouble();
     }
 
     @Override
     protected void writeObject(DataWriterBigEndian dw) throws IOException {
         super.writeObject(dw);
-        dw.writeString(value);
+        dw.writeDouble(value);
     }
 
-    public String getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(double value) {
         this.value = value;
     }
 }
