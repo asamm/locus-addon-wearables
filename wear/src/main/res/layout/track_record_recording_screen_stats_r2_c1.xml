@@ -20,7 +20,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:positionLeft="true"
+        android:gravity="center"
         app:positionTop="true">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
@@ -32,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/track_stats_top"
-        app:positionLeft="true"
+        android:gravity="center"
         app:positionTop="false">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>

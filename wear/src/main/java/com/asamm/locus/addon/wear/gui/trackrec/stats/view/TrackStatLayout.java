@@ -33,93 +33,101 @@ import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
  */
 public class TrackStatLayout extends ConstraintLayout {
 
-	/**
-	 * Type of displayed statistics
-	 */
-	private TrackStatTypeEnum mType;
-	// formatted text of measured value/statistics
-	private TextView mTextViewValue;
+    /**
+     * Type of displayed statistics
+     */
+    private TrackStatTypeEnum mType;
+    private int mGravity;
+    // formatted text of measured value/statistics
+    private TextView mTextViewValue;
 
-	private ImageView mImageViewIcon;
-	private TextView mTextViewDescription;
-	private TrackStatViewId trackStatViewPositionId = new TrackStatViewId(-1, -1);
+    private ImageView mImageViewIcon;
+    private TextView mTextViewDescription;
+    private TrackStatViewId trackStatViewPositionId = new TrackStatViewId(-1, -1);
 
-	public TrackStatLayout(Context context) {
-		this(context, null);
-	}
+    public TrackStatLayout(Context context) {
+        this(context, null);
+    }
 
-	public TrackStatLayout(Context context, @Nullable AttributeSet attrs) {
-		this(context, attrs, 0);
-	}
+    public TrackStatLayout(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-	public TrackStatLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		this.mType = TrackStatTypeEnum.BLANK;
-		initView(context, attrs);
-	}
+    public TrackStatLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        this.mType = TrackStatTypeEnum.BLANK;
+        initView(context, attrs);
+    }
 
-	private void initView(Context ctx, AttributeSet attrs) {
-		// get parameters from attributes
-		final TypedArray ta = ctx.obtainStyledAttributes(attrs, R.styleable.TrackStatLayout);
-		boolean isPositionTopScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionTop, true);
-		boolean isPositionLeftScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionLeft, true);
-		ta.recycle();
-		this.setOnLongClickListener(v -> {
-			Intent i = new Intent(ctx, TrackStatsSelectListActivity.class);
-			i.putExtra(TrackStatsSelectListActivity.PARAM_STAT_ID, mType.getId());
-			i.putExtra(TrackStatsSelectListActivity.PARAM_SCREEN_IDX, trackStatViewPositionId.getScreenIdx());
-			i.putExtra(TrackStatsSelectListActivity.PARAM_CELL_IDX, trackStatViewPositionId.getCellIdx());
-			((Activity) ctx).startActivityForResult(i, TrackStatsSelectListActivity.REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY);
+    private void initView(Context ctx, AttributeSet attrs) {
+        // get parameters from attributes
+        final TypedArray ta = ctx.obtainStyledAttributes(attrs, R.styleable.TrackStatLayout);
+        boolean isPositionTopScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionTop, true);
+        mGravity = ta.getInteger(R.styleable.TrackStatLayout_android_gravity, Gravity.CENTER);
+        ta.recycle();
+        this.setOnLongClickListener(v -> {
+            Intent i = new Intent(ctx, TrackStatsSelectListActivity.class);
+            i.putExtra(TrackStatsSelectListActivity.PARAM_STAT_ID, mType.getId());
+            i.putExtra(TrackStatsSelectListActivity.PARAM_SCREEN_IDX, trackStatViewPositionId.getScreenIdx());
+            i.putExtra(TrackStatsSelectListActivity.PARAM_CELL_IDX, trackStatViewPositionId.getCellIdx());
+            ((Activity) ctx).startActivityForResult(i, TrackStatsSelectListActivity.REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY);
             return true;
         });
 
-		View.inflate(ctx,
-				isPositionTopScreen ? R.layout.track_stat_layout_icon_top : R.layout.track_stat_layout_icon_bottom,
-				this);
-		mTextViewValue = findViewById(R.id.stat_value);
-		mImageViewIcon = findViewById(R.id.stat_icon);
-		mTextViewDescription = findViewById(R.id.stat_description);
+        boolean isPositionCentered = mGravity == Gravity.CENTER;
+        final int layoutId;
+        if (isPositionCentered && isPositionTopScreen) {
+            layoutId = R.layout.track_stat_layout_icon_centered_top;
+        } else if (isPositionCentered) {
+            layoutId = R.layout.track_stat_layout_icon_centered_bottom;
+        } else if (isPositionTopScreen) {
+            layoutId = R.layout.track_stat_layout_icon_top;
+        } else {
+            layoutId = R.layout.track_stat_layout_icon_bottom;
+        }
+        View v = View.inflate(ctx,
+                layoutId,
+                this);
+        mTextViewValue = v.findViewById(R.id.stat_value);
+        mImageViewIcon = v.findViewById(R.id.stat_icon);
+        mTextViewDescription = v.findViewById(R.id.stat_description);
 
-		int gravity = Gravity.CENTER_VERTICAL |
-				(isPositionLeftScreen ? Gravity.RIGHT : Gravity.LEFT);
-		mTextViewValue.setGravity(gravity);
-		mTextViewDescription.setGravity(gravity);
-		mImageViewIcon.setScaleType(isPositionLeftScreen ?
-				ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
+        boolean alightRight = (mGravity & Gravity.LEFT) != Gravity.LEFT;
+        mTextViewValue.setGravity(mGravity);
+        mTextViewDescription.setGravity(mGravity);
+        mImageViewIcon.setScaleType(isPositionCentered ? ImageView.ScaleType.FIT_CENTER :
+                alightRight ? ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
+        setType(mType);
+    }
 
-		setType(mType);
-	}
+    /**
+     * used during controller initialization to setup screen and cell id that identifies this view
+     */
+    public void setTrackStatViewPositionId(int screenIdx, int cellIdx) {
+        this.trackStatViewPositionId = new TrackStatViewId(screenIdx, cellIdx);
+    }
 
-	public TrackStatViewId getTrackStatViewPositionId() {
-		return trackStatViewPositionId;
-	}
+    public void setType(TrackStatTypeEnum statType) {
+        this.mType = statType;
+        mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
+        mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
+        mTextViewValue.setText("");
+    }
 
-	/** used during controller initialization to setup screen and cell id that identifies this view */
-	public void setTrackStatViewPositionId(int screenIdx, int cellIdx) {
-		this.trackStatViewPositionId = new TrackStatViewId(screenIdx, cellIdx);
-	}
+    public void consumeNewStatistics(TrackRecordingValue trv) {
+        TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
+        SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
+        SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);
+        mTextViewValue.setText(ssb);
+    }
 
-	public void setType(TrackStatTypeEnum statType) {
-		this.mType = statType;
-		mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
-		mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
-		mTextViewValue.setText("");
-	}
-
-	public void consumeNewStatistics(TrackRecordingValue trv) {
-		TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
-		SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
-		SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);
-		mTextViewValue.setText(ssb);
-	}
-
-	public void setAmbientMode(boolean enabled) {
-		mTextViewDescription.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
-		mTextViewValue.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
-		if (enabled) {
-			mImageViewIcon.setColorFilter(R.color.base_light_primary);
-		} else {
-			mImageViewIcon.clearColorFilter();
-		}
-	}
+    public void setAmbientMode(boolean enabled) {
+        mTextViewDescription.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
+        mTextViewValue.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
+        if (enabled) {
+            mImageViewIcon.setColorFilter(R.color.base_light_primary);
+        } else {
+            mImageViewIcon.clearColorFilter();
+        }
+    }
 }

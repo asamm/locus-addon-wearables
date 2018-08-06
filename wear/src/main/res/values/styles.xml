@@ -49,6 +49,9 @@
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="statText.Big">
+        <item name="android:textSize">@dimen/text_size_enormous</item>
+    </style>
     <style name="statDescription">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -63,7 +66,7 @@
 
     <style name="statIcon">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_height">@dimen/stat_icon_height</item>
         <item name="android:paddingBottom">1dp</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>

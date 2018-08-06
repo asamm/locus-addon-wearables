@@ -58,6 +58,11 @@ public class RecordingSensorManager {
                         // TODO cejnar consume data
                         // TODO cejnar start on resume directlz to active recording
                         //SensorManager.SENSOR_STATUS_ACCURACY_LOW
+                        if (sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
+                            RecordingSensorStore.hrm.setValue(sensorEvent.values[0]);
+                        }
+                        // TODO cejnar debug only
+                    RecordingSensorStore.hrm.setValue(sensorEvent.values[0]);
                         Logger.logD("HR", "Measured value " + sensorEvent.values[0]);
                         Logger.logD("HR", "Measured accurayy " + sensorEvent.accuracy);
                 }

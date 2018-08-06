@@ -8,5 +8,5 @@ import com.asamm.locus.addon.wear.common.utils.Pair;
  * Copyright (C) 2018
  */
 public class RecordingSensorStore {
-
+    public static HrmValue hrm = new HrmValue();
 }

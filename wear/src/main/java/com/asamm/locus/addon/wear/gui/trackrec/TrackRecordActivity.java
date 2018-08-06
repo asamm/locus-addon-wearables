@@ -44,6 +44,7 @@ import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
@@ -207,7 +208,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 onPutTrackRec(trv);
                 getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
                 // TODO cejnar mock HR value
-                WearCommService.getInstance().sendDataItem(PUT_HEART_RATE, new CommandDoubleExtra(99.0));
+                WearCommService.getInstance().sendDataItem(PUT_HEART_RATE, new CommandDoubleExtra(RecordingSensorStore.hrm.getValue()));
                 break;
             case PUT_ADD_WAYPOINT:
                 runOnUiThread(() -> Toast.makeText(this, getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());

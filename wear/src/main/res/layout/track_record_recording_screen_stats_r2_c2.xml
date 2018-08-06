@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toStartOf="@id/track_stats_top_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:positionLeft="true"
+        android:gravity="center_vertical|right"
         app:positionTop="true">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/track_stats_top_left"
         app:layout_constraintTop_toTopOf="parent"
-        app:positionLeft="false"
+        android:gravity="center_vertical|left"
         app:positionTop="true">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
@@ -53,7 +53,7 @@
         app:layout_constraintEnd_toStartOf="@id/track_stats_bottom_right"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/track_stats_top_left"
-        app:positionLeft="true"
+        android:gravity="center_vertical|right"
         app:positionTop="false">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
@@ -65,7 +65,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/track_stats_bottom_left"
         app:layout_constraintTop_toBottomOf="@id/track_stats_top_right"
-        app:positionLeft="false"
+        android:gravity="center_vertical|left"
         app:positionTop="false">
 
     </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>

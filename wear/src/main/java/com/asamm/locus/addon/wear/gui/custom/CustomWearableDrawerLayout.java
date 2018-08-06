@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 
 public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 
-	private static final float NAV_DRAWER_PULL_DOWN_AREA_SCALE = 1.2f;
+	private static final float NAV_DRAWER_PULL_DOWN_AREA_SCALE = 1.05f;
 
 	public CustomWearableDrawerLayout(Context context) {
 		this(context, null);
@@ -30,16 +30,20 @@ public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 	public CustomWearableDrawerLayout(
 			Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
 		super(context, attrs, defStyleAttr, defStyleRes);
+
+		// Area now seems to work correctly even without enlarging it manually,
+		// possibly fixed in OS update, because last time I check it was quite hard to open up the drawer
+
 		// try to make top navigation drawer trigger area bigger
-		try {
-			Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
-			topDragger.setAccessible(true);
-			Object topDraggerInstance = topDragger.get(this);
-			Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
-			edgeSize.setAccessible(true);
-			int edgeSizePx = edgeSize.getInt(topDraggerInstance);
-			edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
-		} catch (Exception e) {
-		}
+//		try {
+//			Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
+//			topDragger.setAccessible(true);
+//			Object topDraggerInstance = topDragger.get(this);
+//			Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
+//			edgeSize.setAccessible(true);
+//			int edgeSizePx = edgeSize.getInt(topDraggerInstance);
+//			edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
+//		} catch (Exception e) {
+//		}
 	}
 }
