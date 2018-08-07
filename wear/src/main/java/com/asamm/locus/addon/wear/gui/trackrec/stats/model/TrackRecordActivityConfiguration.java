@@ -76,7 +76,7 @@ public class TrackRecordActivityConfiguration {
         CfgContainer cont = new CfgContainer();
         // Init statistics for main screen at the 0th index
         List<TrackRecCellConfigDto> mainScreenConfig = new ArrayList<>(2);
-        mainScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.TOTAL_TIME));
+        mainScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.TRACK_TIME));
         mainScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.TOTAL_LENGTH_MOVE));
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C1, mainScreenConfig));
 

@@ -17,18 +17,53 @@
     <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <string name="continue_installation">Proceed installation on your phone...</string>
 
-    <!-- UI Label elevation downhill -->
-    <string name="stat_elevation_down">Elevation (Downhill)</string>
-    <!-- UI Label elevation uphill -->
-    <string name="stat_elevation_up">Elevation (Uphill)</string>
+    <!-- Statistics dashboard section -->
+
+    <!-- UI Label current altitude -->
+    <string name="stat_altitude">Altitude</string>
+    <!-- UI Label Altitude minimal -->
+    <string name="stat_altitude_min">Min. altitude</string>
+    <!-- UI Label Altitude maximal -->
+    <string name="stat_altitude_max">Max. altitude</string>
+    <!-- UI Label Battery level (remaining battery charge in percent) -->
+    <string name="stat_battery_level">Battery level</string>
+    <!-- UI Label average cadence -->
+    <string name="stat_cadence_avg">Cadence (avg.)</string>
+    <!-- UI Label maximal cadence -->
+    <string name="stat_cadence_max">Cadence (max.)</string>
+    <!-- UI Label Current time -->
+    <string name="stat_current_time">Current time</string>
+    <!-- UI Label Distance downhill -->
+    <string name="stat_distance_down">Distance (Downhill)</string>
+    <!-- UI Label Distance uphill -->
+    <string name="stat_distance_up">Distance (Uphill)</string>
+    <!-- UI Label elevation loss -->
+    <string name="stat_elevation_down">Elevation loss</string>
+    <!-- UI Label elevation gain -->
+    <string name="stat_elevation_up">Elevation gain</string>
+    <!-- UI Label Energy -->
+    <string name="stat_energy">Energy</string>
+    <!-- UI Label heart rate (current value) -->
+    <string name="stat_hrm">Heart rate</string>
+    <!-- UI Label heart rate average -->
+    <string name="stat_hrm_avg">Heart rate (avg.)</string>
+    <!-- UI Label maximal heart rate -->
+    <string name="stat_hrm_max">Heart rate (max.)</string>
     <!-- UI Label speed (current) -->
     <string name="stat_speed">Speed</string>
+    <!-- UI Label Average speed -->
+    <string name="stat_speed_avg">Avg. speed</string>
     <!-- UI Label Average moving speed -->
     <string name="stat_speed_avg_moving">Avg. moving speed</string>
+    <!-- UI Label maximal speed -->
+    <string name="stat_speed_max">Max. speed</string>
     <!-- UI Label distance -->
     <string name="stat_distance">Distance</string>
     <!-- UI Label track recording time total -->
     <string name="stat_track_time">Track time</string>
+    <!-- UI Label track recording time - movement only -->
+    <string name="stat_track_time_move">Track time (Movement)</string>
+
 
     <!-- Loading (placeholder text) -->
     <string name="loading_profiles">Loading</string>

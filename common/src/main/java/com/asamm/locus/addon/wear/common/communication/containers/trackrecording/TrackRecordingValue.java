@@ -113,6 +113,13 @@ public class TrackRecordingValue extends TimeStampStorable {
 		return mExtendedTrackInfo.mSpeed;
 	}
 
+	public int getHrm() {
+		return mExtendedTrackInfo.hrm;
+	}
+	public float getAltitude() {
+		return mExtendedTrackInfo.altitude;
+	}
+
 	@Override
 	public void reset() {
 		super.reset();
@@ -207,6 +214,9 @@ public class TrackRecordingValue extends TimeStampStorable {
 	public static class ExtendedTrackInfo extends Storable {
 		private static final float INVALID_SPEED = -1f;
 		private float mSpeed;
+		/** current hrm value */
+		private int hrm;
+		private float altitude;
 
 		public ExtendedTrackInfo() {
 			super();
@@ -216,29 +226,39 @@ public class TrackRecordingValue extends TimeStampStorable {
 			super(data);
 		}
 
-		public ExtendedTrackInfo(Float speed) {
+		public ExtendedTrackInfo(Float speed, int hr, float altitude) {
 			this();
 			mSpeed = speed == null ? INVALID_SPEED : speed;
+			this.hrm = hr;
+			this.altitude = altitude;
 		}
 
 		@Override
 		protected int getVersion() {
-			return 0;
+			return 1;
 		}
 
 		@Override
 		public void reset() {
 			mSpeed = INVALID_SPEED;
+			hrm = 0;
+			altitude = Float.NaN;
 		}
 
 		@Override
 		protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 			mSpeed = dr.readFloat();
+			if (version >= 1) {
+				hrm = dr.readShort(); // TODO cejnar check if this value is in BPM and can be short
+				altitude = dr.readFloat();
+			}
 		}
 
 		@Override
 		protected void writeObject(DataWriterBigEndian dw) throws IOException {
 			dw.writeFloat(mSpeed);
+			dw.writeShort(hrm);
+			dw.writeFloat(altitude);
 		}
 	}
 }

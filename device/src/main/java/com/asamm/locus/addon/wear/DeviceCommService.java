@@ -548,10 +548,14 @@ public class DeviceCommService extends LocusWearCommService  {
     private TrackRecordingValue loadTrackRecordingValue(Context ctx) {
         boolean infoAvailable = mLastUpdate != null;
         boolean myLocAvailable = infoAvailable && mLastUpdate.getLocMyLocation() != null;
+        final Location myLoc = myLocAvailable ? mLastUpdate.getLocMyLocation() : null;
+
         boolean trackRec = infoAvailable && mLastUpdate.isTrackRecRecording();
         boolean trackRecPause = infoAvailable && mLastUpdate.isTrackRecPaused();
         String profileName = infoAvailable ? mLastUpdate.getTrackRecProfileName() : "";
-        Float speed = myLocAvailable ? mLastUpdate.getLocMyLocation().getSpeed() : null;
+        Float speed = myLocAvailable ? myLoc.getSpeed() : null;
+        int hrm = myLocAvailable ? myLoc.getSensorHeartRate() : 0;
+        float altitude = myLocAvailable && myLoc.hasAltitude() ? (float)myLoc.getAltitude() : Float.NaN;
 
         TrackStats stats = infoAvailable ? mLastUpdate.getTrackRecStats() : null;
 
@@ -563,7 +567,7 @@ public class DeviceCommService extends LocusWearCommService  {
         }
 
         TrackRecordingValue trv = new TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
-                profileName, stats, locusInfo, new TrackRecordingValue.ExtendedTrackInfo(speed));
+                profileName, stats, locusInfo, new TrackRecordingValue.ExtendedTrackInfo(speed, hrm, altitude));
         return trv;
     }
 

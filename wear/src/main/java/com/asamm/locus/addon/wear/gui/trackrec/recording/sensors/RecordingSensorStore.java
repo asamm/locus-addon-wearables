@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.gui.trackrec.recording.sensors;
 
+import android.app.ApplicationErrorReport;
+
 import com.asamm.locus.addon.wear.common.utils.Pair;
 
 /*
@@ -9,4 +11,9 @@ import com.asamm.locus.addon.wear.common.utils.Pair;
  */
 public class RecordingSensorStore {
     public static HrmValue hrm = new HrmValue();
+    /** TODO cejnar
+     * BatteryManager bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
+     int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+     * */
+    public static BatteryValue battery = new BatteryValue();
 }

@@ -101,7 +101,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
     }
 
     private class StatsTypeListAdapter extends RecyclerView.Adapter<StatsTypeListAdapter.ViewHolder> {
-        private TrackStatTypeEnum[] mModel = TrackStatTypeEnum.values();
+        private TrackStatTypeEnum[] mModel = TrackStatTypeEnum.VALUES_FOR_SELECTIONS;
 
         private void onItemSelected(TrackStatTypeEnum selectedType) {
             Intent resultIntent = new Intent();
