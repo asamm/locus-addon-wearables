@@ -98,6 +98,7 @@ public enum TrackStatTypeEnum implements TrackStatConsumable {
 
 	/** This list and its items order is used in dashboard item select list activity*/
 	public static final TrackStatTypeEnum[] VALUES_FOR_SELECTIONS = {
+			BLANK,
 			TOTAL_LENGTH_MOVE,
 			TRACK_TIME,
 			TRACK_TIME_MOVEMENT,

@@ -23,9 +23,9 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -35,15 +35,15 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.custom.LocusWearInputTextActivity;
+import com.asamm.locus.addon.wear.gui.custom.WaypointInputTextActivity;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
@@ -253,7 +253,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         }
         if (requestCode == REQUEST_WP_NAME) {
             if (resultCode == RESULT_OK) {
-                String name = data.getStringExtra(LocusWearInputTextActivity.KEY_RESULT_DATA);
+                String name = data.getStringExtra(WaypointInputTextActivity.KEY_RESULT_DATA);
                 WearCommService.getInstance().sendDataItem(DataPath.POST_ADD_WAYPOINT, new CommandStringExtra(name));
             }
             return;
@@ -440,7 +440,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     public void handleAddWaypointClick(View v) {
-        Intent i = new Intent(this, LocusWearInputTextActivity.class);
+        Intent i = new Intent(this, WaypointInputTextActivity.class);
         startActivityForResult(i, REQUEST_WP_NAME);
     }
 

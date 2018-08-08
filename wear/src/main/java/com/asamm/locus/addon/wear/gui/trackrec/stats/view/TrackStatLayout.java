@@ -18,6 +18,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
@@ -38,12 +39,14 @@ public class TrackStatLayout extends ConstraintLayout {
      */
     private TrackStatTypeEnum mType;
     private int mGravity;
+    private boolean isPositionTopScreen;
     // formatted text of measured value/statistics
     private TextView mTextViewValue;
 
     private ImageView mImageViewIcon;
     private TextView mTextViewDescription;
     private TrackStatViewId trackStatViewPositionId = new TrackStatViewId(-1, -1);
+    private LinearLayout blankInfo = null;
 
     public TrackStatLayout(Context context) {
         this(context, null);
@@ -55,16 +58,15 @@ public class TrackStatLayout extends ConstraintLayout {
 
     public TrackStatLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.mType = TrackStatTypeEnum.BLANK;
-        initView(context, attrs);
+        init(context, attrs);
     }
-
-    private void initView(Context ctx, AttributeSet attrs) {
+    private void init(Context ctx, AttributeSet attrs) {
         // get parameters from attributes
         final TypedArray ta = ctx.obtainStyledAttributes(attrs, R.styleable.TrackStatLayout);
-        boolean isPositionTopScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionTop, true);
+        isPositionTopScreen = ta.getBoolean(R.styleable.TrackStatLayout_positionTop, true);
         mGravity = ta.getInteger(R.styleable.TrackStatLayout_android_gravity, Gravity.CENTER);
         ta.recycle();
+
         this.setOnLongClickListener(v -> {
             Intent i = new Intent(ctx, TrackStatsSelectListActivity.class);
             i.putExtra(TrackStatsSelectListActivity.PARAM_STAT_ID, mType.getId());
@@ -73,7 +75,10 @@ public class TrackStatLayout extends ConstraintLayout {
             ((Activity) ctx).startActivityForResult(i, TrackStatsSelectListActivity.REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY);
             return true;
         });
+        initView(ctx);
+    }
 
+    private void initView(Context ctx) {
         boolean isPositionCentered = mGravity == Gravity.CENTER;
         final int layoutId;
         if (isPositionCentered && isPositionTopScreen) {
@@ -85,9 +90,7 @@ public class TrackStatLayout extends ConstraintLayout {
         } else {
             layoutId = R.layout.track_stat_layout_icon_bottom;
         }
-        View v = View.inflate(ctx,
-                layoutId,
-                this);
+        View v = View.inflate(ctx, layoutId, this);
         mTextViewValue = v.findViewById(R.id.stat_value);
         mImageViewIcon = v.findViewById(R.id.stat_icon);
         mTextViewDescription = v.findViewById(R.id.stat_description);
@@ -97,7 +100,6 @@ public class TrackStatLayout extends ConstraintLayout {
         mTextViewDescription.setGravity(mGravity);
         mImageViewIcon.setScaleType(isPositionCentered ? ImageView.ScaleType.FIT_CENTER :
                 alightRight ? ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
-        setType(mType);
     }
 
     /**
@@ -112,9 +114,16 @@ public class TrackStatLayout extends ConstraintLayout {
         mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
         mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
         mTextViewValue.setText("");
+        if (mType == TrackStatTypeEnum.BLANK && blankInfo == null) {
+            View v = View.inflate(getContext(), R.layout.track_stat_layout_empty_info_overlay, this);
+        } else if (blankInfo != null){
+            removeView(blankInfo);
+            blankInfo = null;
+        }
     }
 
     public void consumeNewStatistics(TrackRecordingValue trv) {
+        if(mType == null) return;
         TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
         SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
         SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);

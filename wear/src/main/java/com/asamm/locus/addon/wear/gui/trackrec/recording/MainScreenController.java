@@ -74,7 +74,6 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
 
     @Override
     public void onNewTrackRecordingData(Activity context, TrackRecordingValue newData) {
-        if (newData == null) return;
         mStatsTop.consumeNewStatistics(newData);
         mStatsBottom.consumeNewStatistics(newData);
     }

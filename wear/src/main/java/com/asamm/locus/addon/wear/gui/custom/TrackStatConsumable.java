@@ -57,19 +57,19 @@ public interface TrackStatConsumable {
         }
 
         public static TrackStatConsumable createTotalLengthMoveConsumable() {
-            return (rec) -> createDistanceConsumable(rec, rec.getTrackRecStats().getTotalLengthMove());
+            return (rec) -> createDistanceConsumable(rec, () -> rec.getTrackRecStats().getTotalLengthMove());
         }
 
         public static TrackStatConsumable createAvgSpeedConsumable(boolean moveOnly) {
-            return (rec) -> createSpeedConsumable(rec, rec.getTrackRecStats().getSpeedAverage(moveOnly));
+            return (rec) -> createSpeedConsumable(rec, () -> rec.getTrackRecStats().getSpeedAverage(moveOnly));
         }
 
         public static TrackStatConsumable createSpeedMaxConsumable() {
-            return (rec) -> createSpeedConsumable(rec, rec.getTrackRecStats().getSpeedMax());
+            return (rec) -> createSpeedConsumable(rec, () -> rec.getTrackRecStats().getSpeedMax());
         }
 
         public static TrackStatConsumable createSpeedMoveConsumable() {
-            return (rec) -> createSpeedConsumable(rec, rec.getSpeed());
+            return (rec) -> createSpeedConsumable(rec, () -> rec.getSpeed());
         }
 
         public static TrackStatConsumable createHrmConsumable(TrackStatConsumableModifierEnum type) {
@@ -93,10 +93,10 @@ public interface TrackStatConsumable {
         }
 
         public static TrackStatConsumable createDistanceUphillConsumable() {
-            return (rec) -> createDistanceConsumable(rec, rec.getTrackRecStats().getElePositiveDistance());
+            return (rec) -> createDistanceConsumable(rec, () -> rec.getTrackRecStats().getElePositiveDistance());
         }
         public static TrackStatConsumable createDistanceDownhillConsumable() {
-            return (rec) -> createDistanceConsumable(rec, rec.getTrackRecStats().getEleNegativeDistance());
+            return (rec) -> createDistanceConsumable(rec, () -> rec.getTrackRecStats().getEleNegativeDistance());
         }
 
         public static TrackStatConsumable createElevationUpConsumable() {
@@ -190,8 +190,8 @@ public interface TrackStatConsumable {
         public static TrackStatConsumable createBatteryConsumable() {
             return (rec) -> {
                 // TODO cejnar
-                String value = RecordingSensorStore.battery.isValid() ?
-                        String.valueOf(RecordingSensorStore.battery.getValue()) : "???";
+                String value = RecordingSensorStore.getBatteryValue().isValid() ?
+                        String.valueOf(RecordingSensorStore.getBatteryValue().getValue()) : "???";
                 return new ValueUnitContainer(value, "%");
             };
         }
@@ -200,15 +200,22 @@ public interface TrackStatConsumable {
             return (stats) -> ValueUnitContainer.empty();
         }
 
-        private static ValueUnitContainer createSpeedConsumable(TrackRecordingValue rec, float speed) {
+        /** Interface is used to provide lazy loaded floats which are safely available only after
+         * their parents container null checks */
+        @FunctionalInterface
+        private interface FloatProducer {
+            float produce();
+        }
+        private static ValueUnitContainer createSpeedConsumable(TrackRecordingValue rec, FloatProducer speedProducer) {
             if (isInvalidInput(rec)) return ValueUnitContainer.empty();
             return new ValueUnitContainer(
-                    UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(), speed, true),
+                    UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(), speedProducer.produce(), true),
                     UtilsFormat.formatSpeedUnits(rec.getUnitsFormatSpeed()));
         }
 
-        private static ValueUnitContainer createDistanceConsumable(TrackRecordingValue rec, float distance) {
+        private static ValueUnitContainer createDistanceConsumable(TrackRecordingValue rec, FloatProducer distanceProducer) {
             if (isInvalidInput(rec)) return ValueUnitContainer.empty();
+            float distance = distanceProducer.produce();
             return new ValueUnitContainer(
                     UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
                             distance, true),

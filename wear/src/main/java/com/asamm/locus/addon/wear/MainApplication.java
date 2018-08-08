@@ -54,10 +54,13 @@ public class MainApplication extends Application implements Application.Activity
 	// tag for logger
 	private static final String TAG = MainApplication.class.getSimpleName();
 
+	public static volatile Context applicationContext = null;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
+		applicationContext = getApplicationContext();
 		// set logger
 		Logger.registerLogger(new Logger.ILogger() {
 			@Override
@@ -106,6 +109,7 @@ public class MainApplication extends Application implements Application.Activity
 			}
 			mWatchDog = null;
 		}
+		applicationContext = null;
 		WearCommService.destroyInstance();
 	}
 
@@ -135,6 +139,7 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityResumed(Activity activity) {
+		applicationContext = getApplicationContext();
 		// set current activity
 		LocusWearActivity oldAct = mCurrentActivity;
 		if (oldAct == null) {

@@ -34,7 +34,6 @@ public class StatsScreenController implements TrackRecordingControllerUpdatable 
 
     @Override
     public void onNewTrackRecordingData(Activity context, TrackRecordingValue newData) {
-        if (newData == null) return;
         view.handleNewTrackRecData(newData);
     }
 

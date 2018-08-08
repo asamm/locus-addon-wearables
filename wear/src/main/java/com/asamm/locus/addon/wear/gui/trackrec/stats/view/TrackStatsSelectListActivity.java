@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.wear.widget.WearableLinearLayoutManager;
 import android.support.wear.widget.WearableRecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
+
+import kotlin.Unit;
 
 /**
  * Activity containing single recycler view for choosing recording profile.
@@ -63,7 +66,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         setContentView(R.layout.activity_profile_list);
         TextView header = findViewById(R.id.text_view_screen_header);
         if (header != null) {
-            header.setText(getText(R.string.title_activity_profile_list));
+            header.setText(getText(R.string.title_activity_stats_select_list));
         }
         mRecyclerView = findViewById(R.id.profile_list);
         mRecyclerView.setEdgeItemsCenteringEnabled(true);
@@ -71,8 +74,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
                 new WearableLinearLayoutManager(this));
         mRecyclerView.setHasFixedSize(true);
 
-        // TODO cejnar set default to blank
-        mCurrentStatId = getIntent().getExtras().getByte(PARAM_STAT_ID, (byte) 0);
+        mCurrentStatId = getIntent().getExtras().getByte(PARAM_STAT_ID, TrackStatTypeEnum.BLANK.getId());
         viewId = new TrackStatViewId(getIntent().getExtras().getInt(PARAM_SCREEN_IDX, -1),
                 getIntent().getExtras().getInt(PARAM_CELL_IDX, -1));
         mAdapter = new StatsTypeListAdapter();
@@ -118,7 +120,14 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
                                                                   int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_layout, parent, false);
-            // set the view's size, margins, paddings and layout parameters
+            // customize layout to be able to handle longer multiline statistics names
+            v.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            TextView tv = v.findViewById(R.id.profile_list_item_name);
+            tv.setMinHeight((int)getResources().getDimension(R.dimen.list_select_icon_height));
+            float textSize = getResources().getDimension(R.dimen.text_size_base);
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            tv.setMaxLines(3);
+            tv.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             return new ViewHolder(v);
         }
 
@@ -138,6 +147,8 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
 
             if (mCurrentStatId == value.getId()) {
                 holder.mTextViewName.setTextColor(getColor(R.color.crimson));
+            } else {
+                holder.mTextViewName.setTextColor(getColor(R.color.base_dark_primary));
             }
         }
 

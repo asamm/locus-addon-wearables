@@ -27,6 +27,8 @@
     <string name="stat_altitude_max">Max. altitude</string>
     <!-- UI Label Battery level (remaining battery charge in percent) -->
     <string name="stat_battery_level">Battery level</string>
+    <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+    <string name="stat_blank_info_text">Long press to edit</string>
     <!-- UI Label average cadence -->
     <string name="stat_cadence_avg">Cadence (avg.)</string>
     <!-- UI Label maximal cadence -->
@@ -76,6 +78,8 @@
     <string name="title_activity_track_record">Track recording</string>
     <!-- Screen header for profile list screen, should be short -->
     <string name="title_activity_profile_list">Profiles</string>
+    <!-- Screen header for statistics dashboard selection list screen. The header should be short. -->
+    <string name="title_activity_stats_select_list">Select:</string>
     <!-- Error (label/header)-->
     <string name="title_activity_error">Error</string>
 </resources>

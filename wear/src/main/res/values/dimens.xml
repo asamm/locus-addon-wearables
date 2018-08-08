@@ -31,6 +31,7 @@
     <dimen name="component_padding_half">8dp</dimen>
     <dimen name="component_padding_quarter">4dp</dimen>
     <dimen name="stat_icon_height">24dp</dimen>
+    <dimen name="list_select_icon_height">32dp</dimen>
 
 
     <item name="map_fab_scale" format="float" type="dimen">0.8</item>
