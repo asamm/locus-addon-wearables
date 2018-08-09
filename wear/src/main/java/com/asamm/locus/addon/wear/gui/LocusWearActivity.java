@@ -48,6 +48,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private TextView mTvNavDrawerTime;
 	private Handler mNavDrawerTimeHandler;
 	private DateFormat mDateFormat;
+	/** Can be set by inheriting activity to skip drawer peek behavior on next resume */
+	private boolean ignoreNextDrawerPeek = false;
 	private static final int HANDSHAKE_TIMEOUT_MS = 8000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
@@ -186,9 +188,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
 			AppPreferencesManager.persistFirstAppStart(this);
 			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800);
-		} else if (mDrawer != null) {
+		} else if (mDrawer != null && !ignoreNextDrawerPeek) {
 			new Handler().postDelayed(() -> mDrawer.getController().peekDrawer(), 800);
 		}
+		ignoreNextDrawerPeek = false;
 	}
 
 	@Override
@@ -459,5 +462,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	protected void enableCustomRotatryActions() {
 		getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
+	}
+	protected void setIgnoreNextDrawerPeek() {
+		ignoreNextDrawerPeek = true;
 	}
 }

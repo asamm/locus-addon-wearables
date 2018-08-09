@@ -360,6 +360,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         } else {
             transitionToIdlestate();
         }
+        setIgnoreNextDrawerPeek();
     }
 
     @Override

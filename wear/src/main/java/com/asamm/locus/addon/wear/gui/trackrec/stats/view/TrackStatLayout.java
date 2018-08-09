@@ -15,6 +15,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -60,6 +61,7 @@ public class TrackStatLayout extends ConstraintLayout {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
+
     private void init(Context ctx, AttributeSet attrs) {
         // get parameters from attributes
         final TypedArray ta = ctx.obtainStyledAttributes(attrs, R.styleable.TrackStatLayout);
@@ -78,12 +80,19 @@ public class TrackStatLayout extends ConstraintLayout {
         initView(ctx);
     }
 
+    private boolean isPositionCentered() {
+        return mGravity == Gravity.CENTER;
+    }
+
+    private boolean isAlignRight() {
+        return (mGravity & Gravity.RIGHT) == Gravity.RIGHT;
+    }
+
     private void initView(Context ctx) {
-        boolean isPositionCentered = mGravity == Gravity.CENTER;
         final int layoutId;
-        if (isPositionCentered && isPositionTopScreen) {
+        if (isPositionCentered() && isPositionTopScreen) {
             layoutId = R.layout.track_stat_layout_icon_centered_top;
-        } else if (isPositionCentered) {
+        } else if (isPositionCentered()) {
             layoutId = R.layout.track_stat_layout_icon_centered_bottom;
         } else if (isPositionTopScreen) {
             layoutId = R.layout.track_stat_layout_icon_top;
@@ -95,11 +104,21 @@ public class TrackStatLayout extends ConstraintLayout {
         mImageViewIcon = v.findViewById(R.id.stat_icon);
         mTextViewDescription = v.findViewById(R.id.stat_description);
 
-        boolean alightRight = (mGravity & Gravity.LEFT) != Gravity.LEFT;
+        // apply a bit of margin to the description text on round screens
+        if (!isPositionCentered() && getContext().getResources().getConfiguration().isScreenRound()) {
+            int widthMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                    4, getContext().getResources().getDisplayMetrics());
+            if (isAlignRight()) {
+                ((LayoutParams) mTextViewDescription.getLayoutParams()).leftMargin = widthMargin;
+            } else {
+                ((LayoutParams) mTextViewDescription.getLayoutParams()).rightMargin = widthMargin;
+            }
+        }
+
         mTextViewValue.setGravity(mGravity);
         mTextViewDescription.setGravity(mGravity);
-        mImageViewIcon.setScaleType(isPositionCentered ? ImageView.ScaleType.FIT_CENTER :
-                alightRight ? ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
+        mImageViewIcon.setScaleType(isPositionCentered() ? ImageView.ScaleType.FIT_CENTER :
+                isAlignRight() ? ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
     }
 
     /**
@@ -114,16 +133,49 @@ public class TrackStatLayout extends ConstraintLayout {
         mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
         mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
         mTextViewValue.setText("");
+
+        // initiate blank value overlay and set its layout properties based on position of the cell
         if (mType == TrackStatTypeEnum.BLANK && blankInfo == null) {
             View v = View.inflate(getContext(), R.layout.track_stat_layout_empty_info_overlay, this);
-        } else if (blankInfo != null){
+            blankInfo = v.findViewById(R.id.linear_layout);
+            blankInfo.setGravity(Gravity.CENTER);
+            int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                    28, getContext().getResources().getDisplayMetrics()
+            );
+            if (!isPositionCentered()) {
+                if (isPositionTopScreen) {
+                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).topMargin = px;
+                    // compensate a bit on the bottom - text looks closer to the center than icon on the bottom
+                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).bottomMargin = px / 10;
+                } else {
+                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).bottomMargin = px + px / 10;
+                }
+                int widthMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                        18, getContext().getResources().getDisplayMetrics());
+                if (isAlignRight()) {
+                    ((LayoutParams) blankInfo.getLayoutParams()).leftMargin = widthMargin;
+                } else {
+                    ((LayoutParams) blankInfo.getLayoutParams()).rightMargin = widthMargin;
+                }
+            }
+        } else if (mType != TrackStatTypeEnum.BLANK && blankInfo != null) {
             removeView(blankInfo);
             blankInfo = null;
+        }
+        if (mType == TrackStatTypeEnum.BLANK) {
+//            mTextViewValue.setVisibility(INVISIBLE);
+//            mTextViewDescription.setTextColor(Color.GRAY);
+//            mImageViewIcon.setColorFilter(getContext().getColor(R.color.grey));
+        } else {
+//            mTextViewValue.setVisibility(VISIBLE);
+//            int textColor = getContext().getColor(R.color.base_dark_primary);
+//            mTextViewDescription.setTextColor(textColor);
+//            mImageViewIcon.clearColorFilter();
         }
     }
 
     public void consumeNewStatistics(TrackRecordingValue trv) {
-        if(mType == null) return;
+        if (mType == null) return;
         TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
         SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
         SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);
@@ -134,7 +186,7 @@ public class TrackStatLayout extends ConstraintLayout {
         mTextViewDescription.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
         mTextViewValue.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
         if (enabled) {
-            mImageViewIcon.setColorFilter(R.color.base_light_primary);
+            mImageViewIcon.setColorFilter(getResources().getColor(R.color.base_light_primary));
         } else {
             mImageViewIcon.clearColorFilter();
         }

@@ -16,6 +16,8 @@ public enum TrackStatTypeEnum implements TrackStatConsumable {
 	// serves as a blank placeholder displaying nothing
 	BLANK((byte) 0, R.string.empty_string, R.drawable.blank_1px,
 			TrackStatConsumable.TscFactory.createBlankConsumable()),
+//    BLANK((byte) 0, R.string.stat_blank_info_text, R.drawable.ic_circle_edit,
+//            TrackStatConsumable.TscFactory.createBlankConsumable()),
 	TOTAL_LENGTH_MOVE((byte) 1, R.string.stat_distance, R.drawable.ic_symbol_distance,
 			TrackStatConsumable.TscFactory.createTotalLengthMoveConsumable()),
 	TRACK_TIME((byte) 2, R.string.stat_track_time, R.drawable.ic_symbol_track_time,
