@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.gui.trackrec.stats.model;
 
 import android.content.Context;
 
-import com.asamm.locus.addon.wear.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 
 import java.io.IOException;
 import java.util.ArrayList;

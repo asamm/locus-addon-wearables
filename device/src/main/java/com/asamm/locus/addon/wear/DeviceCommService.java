@@ -1,6 +1,5 @@
 package com.asamm.locus.addon.wear;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 
@@ -10,7 +9,7 @@ import com.asamm.locus.addon.wear.common.communication.LocusWearCommService;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
@@ -232,13 +231,18 @@ public class DeviceCommService extends LocusWearCommService  {
             }
             break;
             case PUT_HEART_RATE: {
-                double hrValue = ((CommandDoubleExtra) params).getValue();
+                double hrValue = ((CommandFloatExtra) params).getValue();
                 Intent intent = new Intent();
                 intent.setAction("com.asamm.locus.DATA_TASK");
                 intent.putExtra("tasks","{ heart_rate: { data:"+hrValue+" } }");
                 c.sendBroadcast(intent);
-                Logger.logD("PUT_HEART_RATE", intent.getStringExtra("tasks"));
 
+                UpdateContainer lastUpdate = mLastUpdate;
+                if (lastUpdate != null && !lastUpdate.isTrackRecRecording()) {
+                    Logger.logD(TAG, "SENDING STOP_WATCH_TRACK_REC_SERVICE");
+                    sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE);
+                }
+                Logger.logD("PUT_HEART_RATE", intent.getStringExtra("tasks"));
             }
             break;
             default:

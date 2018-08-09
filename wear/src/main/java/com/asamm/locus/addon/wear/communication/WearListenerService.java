@@ -1,6 +1,10 @@
 package com.asamm.locus.addon.wear.communication;
 
+import android.app.Application;
+import android.content.Intent;
+
 import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
 import com.google.android.gms.wearable.DataEvent;
@@ -26,7 +30,18 @@ public class WearListenerService extends WearableListenerService {
 
 		for (DataEvent event : dataEventBuffer) {
 			if (event.getType() == DataEvent.TYPE_CHANGED) {
-				((MainApplication) getApplication()).handleDataEvent(event.getDataItem());
+				Application a = getApplication();
+				if (a == null) {
+					Logger.logW(TAG, "Received data but application is null");
+					DataPath p = DataPath.valueOf(event.getDataItem());
+					if (p == DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
+						Intent intent = new Intent(this, TrackRecordingService.class);
+						intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
+						startService(intent);
+					}
+				} else {
+					((MainApplication) getApplication()).handleDataEvent(event.getDataItem());
+				}
 			} else if (event.getType() == DataEvent.TYPE_DELETED) {
 				// DataItem deleted
 			}

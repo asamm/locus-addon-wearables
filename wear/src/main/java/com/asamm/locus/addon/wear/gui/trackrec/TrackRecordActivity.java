@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.wear.widget.CircularProgressLayout;
@@ -15,14 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.WatchDogPredicate;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.FeatureConfigEnum;
+import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
@@ -44,7 +46,6 @@ import com.asamm.locus.addon.wear.gui.trackrec.recording.MainScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.RecordingScrollLayout;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.TrackRecordingControllerUpdatable;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
@@ -58,7 +59,6 @@ import java.util.HashMap;
 
 import locus.api.utils.Logger;
 
-import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.IDLE;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.IDLE_WAITING;
 import static com.asamm.locus.addon.wear.gui.trackrec.TrackRecActivityState.PAUSED;
@@ -207,8 +207,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 TrackRecordingValue trv = (TrackRecordingValue) data;
                 onPutTrackRec(trv);
                 getMainApplication().addWatchDog(getInitialCommandType(), getInitialCommandResponseType(), WATCHDOG_TIMEOUT);
-                // TODO cejnar mock HR value
-                WearCommService.getInstance().sendDataItem(PUT_HEART_RATE, new CommandDoubleExtra(RecordingSensorStore.hrm.getValue()));
                 break;
             case PUT_ADD_WAYPOINT:
                 runOnUiThread(() -> Toast.makeText(this, getResources().getString(R.string.waypoint_added), Toast.LENGTH_SHORT).show());
@@ -333,15 +331,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mSensors != null) {
-            mSensors.destroy();
-            mSensors = null;
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
@@ -373,10 +362,10 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     private volatile Handler mDelayedStartClickHandler;
 
     private synchronized void startRecording() {
-        mSensors.startHrSensor(this);
         sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
         mStateMachine.transitionTo(REC_WAITING);
         mImgStartRecording.setEnabled(true);
+        startTrackRecService();
     }
 
     public void handleStartClick(final View v) {
@@ -491,6 +480,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     private void enableIdleScreen() {
+        stopTrackRecService();
         setIdleScreenEnabled(true);
         mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
         Logger.logD(TAG, "Enabling idle screen");
@@ -503,6 +493,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     private void enableRecScreen() {
+        startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
         Logger.logD(TAG, "Enabling rec screen");
@@ -545,6 +536,28 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         mCircularProgress.stopTimer();
         sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
         mStateMachine.transitionTo(IDLE_WAITING);
+        stopTrackRecService();
+    }
+
+    private void startTrackRecService() {
+        if (!TrackRecordingService.isRunning()
+                && AppPreferencesManager.getHrmFeatureConfig(this) == FeatureConfigEnum.ENABLED) {
+            Intent i = new Intent(this, TrackRecordingService.class);
+            i.setAction(TrackRecordingService.ACTION_START_FOREGROUND_SERVICE);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(i);
+            } else {
+                startService(i);
+            }
+        }
+    }
+
+    private void stopTrackRecService() {
+        if (TrackRecordingService.isRunning()) {
+            Intent intent = new Intent(this, TrackRecordingService.class);
+            intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
+            startService(intent);
+        }
     }
 
     @Override

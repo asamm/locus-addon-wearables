@@ -3,7 +3,7 @@ package com.asamm.locus.addon.wear.common.communication;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandDoubleExtra;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
@@ -45,7 +45,10 @@ public enum DataPath {
 	 */
 	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14),
 	POST_ADD_WAYPOINT(CommandStringExtra.class, (byte)15),
-	PUT_HEART_RATE(CommandDoubleExtra.class, (byte) 16);
+	PUT_HEART_RATE(CommandFloatExtra.class, (byte) 16),
+	/** Sent if track recording end detected but device is receiving sensor data
+	 * from watch track recording service */
+	STOP_WATCH_TRACK_REC_SERVICE(EmptyCommand.class, (byte) 17);
 
 	public static final String BASE_PATH = "/locus/wear";
 
