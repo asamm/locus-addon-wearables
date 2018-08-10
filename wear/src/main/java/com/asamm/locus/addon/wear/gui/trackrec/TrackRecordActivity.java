@@ -118,8 +118,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
      * component for track recording profile display and selection
      */
     private TrackRecordProfileSelectLayout mProfileSelect;
-    private RecordingSensorManager mSensors = new RecordingSensorManager();
-
 
     @Override
     protected DataPayload getInitialCommandType() {
@@ -374,9 +372,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         }
         synchronized (this) {
             if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
-                if (mSensors.checkAndRequestBodySensorPermission(this)) {
                     startRecording();
-                }
             } else {
                 if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
                     mDelayedStartClickHandler = new Handler();
@@ -387,13 +383,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 }
             }
         }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        mSensors.handlePermissionResult(this, requestCode, permissions, grantResults);
-        startRecording();
     }
 
     private boolean isIdleScreenAlive() {
@@ -487,6 +476,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     private void transitionToRecState() {
+        startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
         Logger.logD(TAG, "setting rec screen");

@@ -11,7 +11,8 @@ package com.asamm.locus.addon.wear.application;
 public enum FeatureConfigEnum {
     ENABLED((byte) 0),
     DISABLED((byte) 1),
-    NOT_AVAILABLE((byte) 2);
+    NOT_AVAILABLE((byte) 2),
+    NO_PERMISSION((byte) 3);
 
     private byte id;
 

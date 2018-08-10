@@ -226,7 +226,6 @@ public class MainApplication extends Application implements Application.Activity
 				currentActivity.consumeNewData(p, value);
 		}
 		if (p == DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
-			Logger.logD(TAG, "Received STOP_WATCH_TRACK_REC_SERVICE, killing service");
 			Intent intent = new Intent(this, TrackRecordingService.class);
 			intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
 			startService(intent);

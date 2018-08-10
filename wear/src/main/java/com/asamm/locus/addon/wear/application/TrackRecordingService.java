@@ -120,6 +120,11 @@ public class TrackRecordingService extends Service {
     }
 
     private void afterStart() {
+        if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
+            Logger.logW(TAG, "checkAndRequestBodySensorPermission() failed during serivce start.");
+            stopForegroundService();
+            return;
+        }
         FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
         if (hrmConfig == FeatureConfigEnum.ENABLED) {
             if (mSensors.startHrSensor(this)) {

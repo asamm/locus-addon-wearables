@@ -58,6 +58,7 @@
         <activity android:name=".gui.custom.EditTextKeyboardActivity"
             android:windowSoftInputMode="stateAlwaysVisible"/>
         <activity android:name=".gui.trackrec.stats.view.TrackStatsSelectListActivity" />
+        <activity android:name=".gui.MainSettingsActivity" />
         <service android:name=".application.TrackRecordingService" android:exported="false"/>
 
     </application>

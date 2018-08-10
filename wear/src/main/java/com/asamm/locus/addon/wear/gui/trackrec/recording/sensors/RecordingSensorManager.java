@@ -6,6 +6,7 @@
 package com.asamm.locus.addon.wear.gui.trackrec.recording.sensors;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
@@ -31,12 +32,18 @@ public class RecordingSensorManager {
     private SensorEventListener mSensorEventListener;
     private static final int HR_REQUEST_CODE = Math.abs(Manifest.permission.BODY_SENSORS.hashCode());
 
-    public boolean checkAndRequestBodySensorPermission(LocusWearActivity owner) {
+    public static boolean checkBodySensorPermission(Context owner) {
+        return ContextCompat.checkSelfPermission(owner, Manifest.permission.BODY_SENSORS) == PackageManager.PERMISSION_GRANTED;
+    }
+    public static boolean checkAndRequestBodySensorPermission(Context owner) {
         if (ContextCompat.checkSelfPermission(owner, Manifest.permission.BODY_SENSORS)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
-            ActivityCompat.requestPermissions(owner,
-                    new String[]{Manifest.permission.BODY_SENSORS}, HR_REQUEST_CODE);
+            AppPreferencesManager.persistHrmFeatureConfig(owner, FeatureConfigEnum.NO_PERMISSION);
+            if (owner instanceof Activity) {
+                // Permission is not granted
+                ActivityCompat.requestPermissions((Activity) owner,
+                        new String[]{Manifest.permission.BODY_SENSORS}, HR_REQUEST_CODE);
+            }
             return false;
         } else {
             return true;
@@ -95,7 +102,31 @@ public class RecordingSensorManager {
         }
     }
 
-    public FeatureConfigEnum handlePermissionResult(LocusWearActivity owner, int requestCode, String[] permissions, int[] grantResults) {
+    /** Should only be called if app has permission to read body sensors */
+    public static FeatureConfigEnum recheckSensorAvailability(Context ctx){
+        FeatureConfigEnum currentState = AppPreferencesManager.getHrmFeatureConfig(ctx);
+        if (currentState != FeatureConfigEnum.NOT_AVAILABLE) {
+            Logger.logW(TAG, "recheckSensorAvailability() called with state  FeatureConfigEnum.NOT_AVAILABLE ");
+            return currentState; // Other state than not available, do not check, should have not been called at all.
+        }
+        try {
+            Sensor hearRateSensor = null;
+            SensorManager sensorManager = ((SensorManager) ctx.getSystemService(SENSOR_SERVICE));
+            if (sensorManager != null) {
+                hearRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
+            }
+            FeatureConfigEnum hrmConfig = hearRateSensor != null ? FeatureConfigEnum.ENABLED : FeatureConfigEnum.NOT_AVAILABLE;
+            if (hrmConfig == FeatureConfigEnum.ENABLED) {
+                // great, HRM has become accessible, enable it
+                AppPreferencesManager.persistHrmFeatureConfig(ctx, hrmConfig);
+            }
+            return hrmConfig;
+        } catch (Exception e) {
+            Logger.logE(TAG, "Error in recheckSensorAvailability(), e");
+            return FeatureConfigEnum.NOT_AVAILABLE;
+        }
+    }
+    public static FeatureConfigEnum handlePermissionResult(LocusWearActivity owner, int requestCode, String[] permissions, int[] grantResults) {
         final FeatureConfigEnum hrmConfig;
         if (requestCode == HR_REQUEST_CODE) {
             // If request is cancelled, the result arrays are empty.

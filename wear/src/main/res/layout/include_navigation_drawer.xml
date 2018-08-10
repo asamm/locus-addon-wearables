@@ -36,7 +36,7 @@
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_map"
                 android:tint="@color/white"
-                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_87_5"
+                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
                 app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
                 app:layout_constraintEnd_toEndOf="@+id/x_nav_drawer_vertical_center"
                 app:layout_constraintStart_toEndOf="@id/x_nav_drawer_vertical_12_5" />
@@ -47,10 +47,27 @@
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_track_record"
                 android:tint="@color/white"
-                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_87_5"
+                app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
                 app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
                 app:layout_constraintEnd_toEndOf="@id/x_nav_drawer_vertical_87_5"
                 app:layout_constraintStart_toEndOf="@+id/x_nav_drawer_vertical_center" />
+
+            <Button
+                android:id="@+id/btn_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:drawableStart="@drawable/ic_settings"
+                android:drawablePadding="@dimen/component_padding"
+                android:drawableTint="@color/base_light_primary"
+                android:gravity="center"
+                android:onClick="handleNavigationDrawerItemClicked"
+                android:text="@string/settings"
+                android:textColor="@color/base_light_primary"
+                app:layout_constraintBottom_toTopOf="@id/imageViewDrawerOpened"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/x_nav_drawer_horizontal_bottom" />
 
             <View
                 style="@style/SeparatorVertical"
@@ -102,14 +119,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.225" />
+                app:layout_constraintGuide_percent="0.25" />
 
             <android.support.constraint.Guideline
-                android:id="@+id/x_nav_drawer_horizontal_87_5"
+                android:id="@+id/x_nav_drawer_horizontal_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.725" />
+                app:layout_constraintGuide_percent="0.65" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/x_nav_drawer_horizontal_center"

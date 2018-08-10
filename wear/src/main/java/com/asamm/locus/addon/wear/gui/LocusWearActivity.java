@@ -373,6 +373,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 			case R.id.navigation_drawer_item_track_rec:
 				activityToStart = TrackRecordActivity.class;
 				break;
+			case R.id.btn_settings:
+				activityToStart = MainSettingsActivity.class;
+				break;
 			default:
 				activityToStart = null;
 				break;

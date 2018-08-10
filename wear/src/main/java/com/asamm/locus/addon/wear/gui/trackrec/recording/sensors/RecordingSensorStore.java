@@ -5,6 +5,8 @@ import android.os.BatteryManager;
 
 import com.asamm.locus.addon.wear.MainApplication;
 
+import locus.api.utils.Logger;
+
 import static android.content.Context.BATTERY_SERVICE;
 
 /*
@@ -17,14 +19,18 @@ public class RecordingSensorStore {
     private static BatteryValue battery = new BatteryValue();
 
     public static BatteryValue getBatteryValue() {
-        if (!battery.isValid() || System.currentTimeMillis() - battery.timestamp > 15_000) {
-            // TODO cejnar debug output
-            Context ctx = MainApplication.applicationContext;
-            if (ctx != null) {
-                locus.api.utils.Logger.logD("RecordingSensorStore", "updating battery info");
-                BatteryManager bm = (BatteryManager) ctx.getSystemService(BATTERY_SERVICE);
-                int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-                battery.setValue(batLevel);
+        if (!battery.isValid() || System.currentTimeMillis() - battery.timestamp > 30_000) {
+            try {
+                Context ctx = MainApplication.applicationContext;
+                if (ctx != null) {
+                    BatteryManager bm = (BatteryManager) ctx.getSystemService(BATTERY_SERVICE);
+                    int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                    battery.setValue(batLevel);
+                }
+
+            } catch (Exception e) {
+                Logger.logE("RecordingSensorStore", "Battery level read failed", e);
+                battery.setValue(BatteryValue.INVALID_VALUE);
             }
         }
         return battery;

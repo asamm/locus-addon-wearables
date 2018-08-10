@@ -9,10 +9,10 @@ package com.asamm.locus.addon.wear.gui.trackrec.recording.sensors;
 public class BatteryValue extends SensorValue{
     /** Battery level in [%] */
     private int value;
-
+    public static final int INVALID_VALUE = -1;
 
     public BatteryValue() {
-        this.value = -1;
+        this.value = INVALID_VALUE;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -27,6 +27,6 @@ public class BatteryValue extends SensorValue{
 
     @Override
     public boolean isValid() {
-        return value >= 0;
+        return value >= 0 && value <= 100;
     }
 }

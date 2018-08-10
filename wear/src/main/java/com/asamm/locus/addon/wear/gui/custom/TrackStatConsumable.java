@@ -200,10 +200,9 @@ public interface TrackStatConsumable {
 
         public static TrackStatConsumable createBatteryConsumable() {
             return (rec) -> {
-                // TODO cejnar
-                String value = RecordingSensorStore.getBatteryValue().isValid() ?
-                        String.valueOf(RecordingSensorStore.getBatteryValue().getValue()) : "???";
-                return new ValueUnitContainer(value, "%");
+                boolean isValid = RecordingSensorStore.getBatteryValue().isValid();
+                String value = isValid ? String.valueOf(RecordingSensorStore.getBatteryValue().getValue()) : "???";
+                return new ValueUnitContainer(value, isValid ? "%" : "");
             };
         }
 

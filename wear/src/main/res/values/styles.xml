@@ -129,6 +129,19 @@
         <item name="android:scaleType">fitStart</item>
     </style>
 
+    <style name="BtnWaypointNameSelect" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">128dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">@dimen/component_padding_half</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:background">@color/base_light_primary</item>
+        <item name="android:textColor">@color/base_dark_primary</item>
+        <item name="android:drawableTint">@color/base_primary</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <!-- *************************************************** -->
     <!-- LIST ITEMS -->
     <!-- *************************************************** -->

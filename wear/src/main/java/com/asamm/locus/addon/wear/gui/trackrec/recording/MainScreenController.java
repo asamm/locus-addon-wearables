@@ -90,7 +90,6 @@ public class MainScreenController implements TrackRecordingControllerUpdatable {
         return mLayout;
     }
 
-    // TODO cejnar disable drawables should not be generated programatically
     private void setDisabledDrawables(Context ctx) {
         Drawable d = DisableGuiHelper.getImageWithDisabled(ctx,
                 BitmapFactory.decodeResource(ctx.getResources(), R.drawable.ic_track_record_stop));

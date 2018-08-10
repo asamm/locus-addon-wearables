@@ -61,7 +61,6 @@ public class TrackRecordingValue extends TimeStampStorable {
 		this.mExtendedTrackInfo = ext != null ? ext : new ExtendedTrackInfo();
 	}
 
-	// TODO cejnar test serialization & units packing
 	private void fillUnitsFormatInfo(LocusInfo info) {
 		mUnitsPacked1 = (byte) (info.getUnitsFormatTemperature()
 				| info.getUnitsFormatSlope() << 2
@@ -249,7 +248,7 @@ public class TrackRecordingValue extends TimeStampStorable {
 		protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 			mSpeed = dr.readFloat();
 			if (version >= 1) {
-				hrm = dr.readShort(); // TODO cejnar check if this value is in BPM and can be short
+				hrm = dr.readShort();
 				altitude = dr.readFloat();
 			}
 		}

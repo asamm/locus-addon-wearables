@@ -53,8 +53,8 @@ public class WaypointInputTextActivity extends LocusWearActivity {
         return true;
     }
 
-    private ImageButton btnKeyboard;
-    private ImageButton btnSpeech;
+    private Button btnKeyboard;
+    private Button btnSpeech;
     private Button btnDefault;
 
     private String defaultValue = new SimpleDateFormat("HH:mm:ss").format(new Date());
