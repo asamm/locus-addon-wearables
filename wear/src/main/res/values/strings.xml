@@ -51,6 +51,8 @@
     <string name="stat_hrm_avg">Heart rate (avg.)</string>
     <!-- UI Label maximal heart rate -->
     <string name="stat_hrm_max">Heart rate (max.)</string>
+    <!-- UI Label pace -->
+    <string name="stat_pace">Pace</string>
     <!-- UI Label speed (current) -->
     <string name="stat_speed">Speed</string>
     <!-- UI Label Average speed -->

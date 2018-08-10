@@ -61,9 +61,8 @@ public enum TrackStatTypeEnum implements TrackStatConsumable {
 			TrackStatConsumable.TscFactory.createCadenceAvgConsumable()),
 	CADENCE_MAX((byte) 19, R.string.stat_cadence_max, R.drawable.ic_symbol_cadence_max,
 			TrackStatConsumable.TscFactory.createCadenceMaxConsumable()),
-//	PACE((byte) 20, R.string.stat_elevation_up, R.drawable.ic_symbol_cadence,
-//			TrackStatConsumable.TscFactory.createElevationUpConsumable()),
-
+	PACE((byte) 20, R.string.stat_pace, R.drawable.ic_symbol_cadence,
+			TrackStatConsumable.TscFactory.createPaceConsumable()),
 	CURRENT_TIME((byte) 21, R.string.stat_current_time, R.drawable.ic_symbol_time,
 			TrackStatConsumable.TscFactory.createCurrentTimeConsumable()),
 	BATTERY((byte) 23, R.string.stat_battery_level, R.drawable.ic_symbol_battery,
@@ -123,6 +122,7 @@ public enum TrackStatTypeEnum implements TrackStatConsumable {
 			ENERGY,
 			CADENCE_AVG,
 			CADENCE_MAX,
+			PACE,
 
 			CURRENT_TIME,
 			BATTERY

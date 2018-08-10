@@ -5,12 +5,14 @@ import android.text.Html;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
+import com.asamm.locus.addon.wear.utils.UtilsFormatWear;
 
 import java.text.DateFormat;
 import java.util.Date;
 
 import locus.api.android.utils.UtilsFormat;
 
+import static com.asamm.locus.addon.wear.utils.UtilsFormatWear.formatTime;
 import static locus.api.android.utils.UtilsFormat.formatDouble;
 
 /**
@@ -180,8 +182,17 @@ public interface TrackStatConsumable {
                             getCadenceUnit());
         }
 
+        public static TrackStatConsumable createPaceConsumable() {
+            return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
+                    new ValueUnitContainer(
+                            UtilsFormatWear.formatPace(
+                                    rec.getTrackRecStats().getTotalTime(),
+                                    rec.getTrackRecStats().getTotalLength(),
+                                    rec.getUnitsFormatLength()),
+                            UtilsFormatWear.formatPaceUnit(rec.getUnitsFormatLength()));
+        }
 
-        // TODO cejnar test format
+
         public static TrackStatConsumable createCurrentTimeConsumable() {
             return (rec) ->
                     new ValueUnitContainer(DateFormat.getTimeInstance().format(new Date()), "");
@@ -220,56 +231,6 @@ public interface TrackStatConsumable {
                     UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
                             distance, true),
                     UtilsFormat.formatDistanceUnits(rec.getUnitsFormatLength(), distance));
-        }
-
-        private static String formatTime(boolean full, long time, boolean withUnits) {
-            long hours = time / 3600000;
-            long mins = (time - (hours * 3600000)) / 60000;
-            double sec = (time - (hours * 3600000) - mins * 60000) / 1000.0;
-            if (sec > 59.5) {
-                mins++;
-                sec = 0.0;
-            }
-            if (mins > 59.5) {
-                hours++;
-                mins = 0;
-            }
-
-            if (full) {
-                if (withUnits) {
-                    return hours + "h:" +
-                            formatDouble(mins, 0, 2) + "m:" +
-                            formatDouble(sec, 0, 2) + "s";
-                } else {
-                    return formatDouble(hours, 0, 2) + ":" +
-                            formatDouble(mins, 0, 2) + ":" +
-                            formatDouble(sec, 0, 2);
-                }
-            } else {
-                if (hours == 0) {
-                    if (mins == 0) {
-                        if (withUnits) {
-                            return "00m:" + formatDouble(sec, 0, 2) + "s";
-                        } else {
-                            return "00:" + formatDouble(sec, 0, 2);
-                        }
-                    } else {
-                        if (withUnits) {
-                            return formatDouble(mins, 0, 2) + "m:" + formatDouble(sec, 0, 2) + "s";
-                        } else {
-                            return formatDouble(mins, 0, 2) + ":" + formatDouble(sec, 0, 2);
-                        }
-                    }
-                } else {
-                    if (withUnits) {
-                        return hours + "h:" + formatDouble(mins, 0, 2) + "m";
-                    } else {
-                        return formatDouble(hours, 0, 2) + ":" +
-                                formatDouble(mins, 0, 2) + ":" +
-                                formatDouble(sec, 0, 2);
-                    }
-                }
-            }
         }
     }
 }
