@@ -28,6 +28,7 @@ import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensor
 
 import locus.api.utils.Logger;
 
+import static com.asamm.locus.addon.wear.common.communication.DataPath.DEVICE_KEEP_ALIVE;
 import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
 
 /**
@@ -40,6 +41,9 @@ public class TrackRecordingService extends Service {
     private static final String DEFAULT_CHANNEL_ID = "lm_default_channel";
     public static final String ACTION_START_FOREGROUND_SERVICE = "ACTION_START_FOREGROUND_SERVICE";
     public static final String ACTION_STOP_FOREGROUND_SERVICE = "ACTION_STOP_FOREGROUND_SERVICE";
+    // TODO cejnar 30 minutes
+    private static final long DEVICE_KEEP_ALIVE_TIMEOUT_MS = 1 * 60_000;
+
     private static TrackRecordingService instance = null;
 
     private RecordingSensorManager mSensors = new RecordingSensorManager();
@@ -120,6 +124,9 @@ public class TrackRecordingService extends Service {
     }
 
     private void afterStart() {
+        // fake push first device keep alive, real ones start to come in a while
+        WearCommService.getInstance().pushLastTransmitTimeFor(DEVICE_KEEP_ALIVE);
+
         if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
             Logger.logW(TAG, "checkAndRequestBodySensorPermission() failed during serivce start.");
             stopForegroundService();
@@ -134,6 +141,11 @@ public class TrackRecordingService extends Service {
                     public void run() {
                         if (mSensors == null)
                             return;
+                        if (System.currentTimeMillis() - WearCommService.getInstance().getLastTransmitTimeFor(DEVICE_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
+                            Logger.logW(TAG, "DEVICE_KEEP_ALIVE has not come in time, terminating HRM service.");
+                            stopForegroundService();
+                            return;
+                        }
                         HrmValue hrm = RecordingSensorStore.hrm;
                         if (hrm.isValid()) {
                             WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,

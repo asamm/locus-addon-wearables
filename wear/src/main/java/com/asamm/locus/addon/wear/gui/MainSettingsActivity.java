@@ -51,7 +51,9 @@ public class MainSettingsActivity extends LocusWearActivity {
     }
 
     private void updateSwitchState() {
-        switchHrm.setChecked(isHrmEnabled());
+        FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
+        switchHrm.setChecked(hrmConfig == FeatureConfigEnum.ENABLED);
+        switchHrm.setTextColor(hrmConfig != FeatureConfigEnum.NOT_AVAILABLE ? getColor(R.color.base_dark_primary) : getColor(R.color.base_light_disabled));
     }
 
     private boolean isHrmEnabled() {
@@ -97,7 +99,7 @@ public class MainSettingsActivity extends LocusWearActivity {
         runOnUiThread(() -> {
             FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
             if (hrmConfig == FeatureConfigEnum.NO_PERMISSION) {
-                if (RecordingSensorManager.checkBodySensorPermission(this)){
+                if (RecordingSensorManager.checkBodySensorPermission(this)) {
                     AppPreferencesManager.persistHrmFeatureConfig(this, FeatureConfigEnum.NOT_AVAILABLE);
                 } else {
                     Toast.makeText(this, getString(R.string.err_no_hrm_permission), Toast.LENGTH_LONG).show();

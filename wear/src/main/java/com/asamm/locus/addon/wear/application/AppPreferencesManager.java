@@ -244,6 +244,7 @@ public class AppPreferencesManager {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         int featureConfigID = prefs.getInt(PREF_USE_HRM, FeatureConfigEnum.NO_PERMISSION.getId());
         return FeatureConfigEnum.getById(featureConfigID);
+
     }
 
 }

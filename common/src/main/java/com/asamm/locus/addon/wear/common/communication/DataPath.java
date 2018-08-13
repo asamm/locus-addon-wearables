@@ -48,7 +48,10 @@ public enum DataPath {
 	PUT_HEART_RATE(CommandFloatExtra.class, (byte) 16),
 	/** Sent if track recording end detected but device is receiving sensor data
 	 * from watch track recording service */
-	STOP_WATCH_TRACK_REC_SERVICE(EmptyCommand.class, (byte) 17);
+	STOP_WATCH_TRACK_REC_SERVICE(EmptyCommand.class, (byte) 17),
+    /** Special keep alive data packet sent to notify the watch running foreground track rec service
+     * that the phone app is still alive and connected .*/
+    DEVICE_KEEP_ALIVE(EmptyCommand.class, (byte) 18);
 
 	public static final String BASE_PATH = "/locus/wear";
 

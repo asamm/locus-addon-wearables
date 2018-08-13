@@ -225,10 +225,9 @@ public class MainApplication extends Application implements Application.Activity
 				}
 				currentActivity.consumeNewData(p, value);
 		}
-		if (p == DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
-			Intent intent = new Intent(this, TrackRecordingService.class);
-			intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
-			startService(intent);
+		// special activity/context free requests handling
+		if (p != null) {
+			handleActivityFreeCommRequests(this, p, value);
 		}
 	}
 
@@ -404,6 +403,23 @@ public class MainApplication extends Application implements Application.Activity
 		WatchDog wd = WatchDog.getInstance();
 		if (wd != null && act != null) {
 			wd.startWatching(act.getClass(), request, expectedResponse, timeoutToFailMs);
+		}
+	}
+
+	/**
+	 * This method contains some logic to handle requests that are not dependent
+	 * on specific activity context.
+	 * The method is especially used to handle new communication problems and lifecycle handling
+	 * that arised as a result of standalone foreground HRM/track rec service which is quite
+	 * independent from the rest of the application.
+	 */
+	public static void handleActivityFreeCommRequests(Context ctx, DataPath p, TimeStampStorable value) {
+		if (p == DataPath.DEVICE_KEEP_ALIVE) {
+			WearCommService.getInstance().pushLastTransmitTimeFor(p);
+		} else if (p == DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
+			Intent intent = new Intent(ctx, TrackRecordingService.class);
+			intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
+			ctx.startService(intent);
 		}
 	}
 }

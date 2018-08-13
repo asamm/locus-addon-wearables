@@ -10,10 +10,10 @@ import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.MapPeriodicParams;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
-import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -50,7 +50,8 @@ public class DeviceCommService extends LocusWearCommService  {
 
     private static volatile DeviceCommService mInstance;
 
-    private static final Long REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS = 5000L;
+    private static final long REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS = 5000L;
+    private static final long DEVICE_KEEP_ALIVE_SEND_PERIOD_MS = 90_000L;
 
     // tag for logger
     private static final String TAG = DeviceCommService.class.getSimpleName();
@@ -164,7 +165,7 @@ public class DeviceCommService extends LocusWearCommService  {
 
     void onDataReceived(Context c, DataPath path, TimeStampStorable params) {
 
-        Long currentTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
         if (currentTime - mLastPeriodicUpdateReceivedMilis > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
             Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.");
             try {
@@ -237,12 +238,19 @@ public class DeviceCommService extends LocusWearCommService  {
                 intent.putExtra("tasks","{ heart_rate: { data:"+hrValue+" } }");
                 c.sendBroadcast(intent);
 
+
+
+
+                Long lastHr = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 UpdateContainer lastUpdate = mLastUpdate;
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording()) {
                     Logger.logD(TAG, "SENDING STOP_WATCH_TRACK_REC_SERVICE");
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE);
+                    pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
+                } else if (currentTime - lastHr > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS ){
+                    sendCommand(DataPath.DEVICE_KEEP_ALIVE);
+                    pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 }
-                Logger.logD("PUT_HEART_RATE", intent.getStringExtra("tasks"));
             }
             break;
             default:

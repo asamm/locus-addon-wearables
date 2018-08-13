@@ -121,6 +121,7 @@ public class DeviceListenerService extends WearableListenerService {
 			case GET_TRACK_REC_PROFILES:
 			case GET_PERIODIC_DATA:
 			case GET_PROFILE_ICON:
+			case PUT_HEART_RATE:
 				cancelTerminationTimer();
 				// start "destroyer"
 				mTimerTerminate = new Timer();
