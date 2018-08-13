@@ -96,12 +96,11 @@ public class MainSettingsActivity extends LocusWearActivity {
     private void enableHrm() {
         runOnUiThread(() -> {
             FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
-            // TODO cejnar string texts
             if (hrmConfig == FeatureConfigEnum.NO_PERMISSION) {
                 if (RecordingSensorManager.checkBodySensorPermission(this)){
                     AppPreferencesManager.persistHrmFeatureConfig(this, FeatureConfigEnum.NOT_AVAILABLE);
                 } else {
-                    Toast.makeText(this, "Missing permission to read body sensors.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.err_no_hrm_permission), Toast.LENGTH_LONG).show();
                 }
             }
             if (hrmConfig == FeatureConfigEnum.NOT_AVAILABLE) {
@@ -109,7 +108,7 @@ public class MainSettingsActivity extends LocusWearActivity {
                 // HRM could have been enabled as side effect of calling recheckSensorAvailability()
                 if (tmpHrmConfig == FeatureConfigEnum.NOT_AVAILABLE) {
                     // sensor still not available even after recheck
-                    Toast.makeText(this, "HRM not available on your device.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.err_hrm_sensor_not_available), Toast.LENGTH_LONG).show();
                 }
             }
             if (hrmConfig == FeatureConfigEnum.DISABLED) {

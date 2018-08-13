@@ -18,6 +18,31 @@
     <string name="continue_installation">Proceed installation on your phone...</string>
 
     <!-- Statistics dashboard section -->
+    <!-- UI Label speed (current) -->
+    <string name="stat_speed">Speed</string>
+    <!-- UI Label Average moving speed -->
+    <string name="stat_speed_avg_moving">Avg. moving speed</string>
+    <!-- UI Label distance -->
+    <string name="stat_distance">Distance</string>
+    <!-- UI Label track recording time total -->
+    <string name="stat_track_time">Track time</string>
+
+    <!-- Loading (placeholder text) -->
+    <string name="loading_profiles">Loading</string>
+    <!-- Ambient mode (UI text) -->
+    <string name="ambient_mode">Ambient mode</string>
+    <!-- Install button text -->
+    <string name="install">Install</string>
+
+    <!-- Screen header for track recording screen, should be reasonably short -->
+    <string name="title_activity_track_record">Track recording</string>
+    <!-- Screen header for profile list screen, should be short -->
+    <string name="title_activity_profile_list">Profiles</string>
+    <!-- Error (label/header)-->
+    <string name="title_activity_error">Error</string>
+
+
+    <!-- NOT YET VALIDATED -->
 
     <!-- UI Label current altitude -->
     <string name="stat_altitude">Altitude</string>
@@ -51,45 +76,25 @@
     <string name="stat_hrm_avg">Heart rate (avg.)</string>
     <!-- UI Label maximal heart rate -->
     <string name="stat_hrm_max">Heart rate (max.)</string>
-
-    <!-- UI Label speed (current) -->
-    <string name="stat_speed">Speed</string>
-    <!-- UI Label Average speed -->
-    <string name="stat_speed_avg">Avg. speed</string>
-    <!-- UI Label Average moving speed -->
-    <string name="stat_speed_avg_moving">Avg. moving speed</string>
-    <!-- UI Label maximal speed -->
-    <string name="stat_speed_max">Max. speed</string>
-    <!-- UI Label distance -->
-    <string name="stat_distance">Distance</string>
-    <!-- UI Label track recording time total -->
-    <string name="stat_track_time">Track time</string>
-    <!-- UI Label track recording time - movement only -->
-    <string name="stat_track_time_move">Track time (Movement)</string>
-
-
-    <!-- Loading (placeholder text) -->
-    <string name="loading_profiles">Loading</string>
-    <!-- Ambient mode (UI text) -->
-    <string name="ambient_mode">Ambient mode</string>
-    <!-- Install button text -->
-    <string name="install">Install</string>
-
-    <!-- Screen header for track recording screen, should be reasonably short -->
-    <string name="title_activity_track_record">Track recording</string>
-    <!-- Screen header for profile list screen, should be short -->
-    <string name="title_activity_profile_list">Profiles</string>
-    <!-- Screen header for statistics dashboard selection list screen. The header should be short. -->
-    <string name="title_activity_stats_select_list">Select:</string>
-    <!-- Error (label/header)-->
-    <string name="title_activity_error">Error</string>
-
-
-    <!-- NOT YET VALIDATED -->
-    <!-- Label "Settings"-->
-    <string name="settings">Settings</string>
     <!-- UI Label pace -->
     <string name="stat_pace">Pace</string>
+    <!-- UI Label track recording time - movement only -->
+    <string name="stat_track_time_move">Track time (Movement)</string>
+    <!-- UI Label Average speed -->
+    <string name="stat_speed_avg">Avg. speed</string>
+    <!-- UI Label maximal speed -->
+    <string name="stat_speed_max">Max. speed</string>
+
+    <!-- Description text for HRM/track rec. service in system notification area -->
+    <string name="hrm_rec_service_desc">HRM active due to track recording</string>
+    <!-- Label "Settings"-->
+    <string name="settings">Settings</string>
+    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+    <string name="err_no_hrm_permission">Missing permission to read body sensors</string>
+    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+    <string name="err_hrm_sensor_not_available">HRM not available on your device</string>
+    <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+    <string name="title_activity_stats_select_list">Select:</string>
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Leave it as is</string>
     <!-- Option to type in a point name when creating new waypoint -->

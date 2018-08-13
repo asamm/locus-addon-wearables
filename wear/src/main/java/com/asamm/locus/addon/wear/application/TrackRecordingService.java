@@ -104,7 +104,7 @@ public class TrackRecordingService extends Service {
         NotificationCompat.Builder b = new NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID);
 
         b.setContentTitle(getString(R.string.app_name));
-        b.setContentText("desc");
+        b.setContentText(getString(R.string.hrm_rec_service_desc));
         b.setSmallIcon(R.mipmap.ic_launcher);
         b.setContentIntent(pendingIntent);
         b.setTicker(getString(R.string.app_name));
