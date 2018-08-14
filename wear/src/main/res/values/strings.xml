@@ -17,8 +17,6 @@
     <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <string name="continue_installation">Proceed installation on your phone...</string>
 
-    <!-- Statistics dashboard section -->
-    <!-- NOT YET VALIDATED -->
 
     <!-- UI Label current altitude -->
     <string name="stat_altitude">Altitude</string>

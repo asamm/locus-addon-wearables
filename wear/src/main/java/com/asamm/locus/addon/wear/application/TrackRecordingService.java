@@ -41,8 +41,7 @@ public class TrackRecordingService extends Service {
     private static final String DEFAULT_CHANNEL_ID = "lm_default_channel";
     public static final String ACTION_START_FOREGROUND_SERVICE = "ACTION_START_FOREGROUND_SERVICE";
     public static final String ACTION_STOP_FOREGROUND_SERVICE = "ACTION_STOP_FOREGROUND_SERVICE";
-    // TODO cejnar 30 minutes
-    private static final long DEVICE_KEEP_ALIVE_TIMEOUT_MS = 1 * 60_000;
+    private static final long DEVICE_KEEP_ALIVE_TIMEOUT_MS = 20 * 60_000;
 
     private static TrackRecordingService instance = null;
 
