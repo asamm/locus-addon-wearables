@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -16,8 +17,10 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -138,39 +141,28 @@ public class TrackStatLayout extends ConstraintLayout {
         if (mType == TrackStatTypeEnum.BLANK && blankInfo == null) {
             View v = View.inflate(getContext(), R.layout.track_stat_layout_empty_info_overlay, this);
             blankInfo = v.findViewById(R.id.linear_layout);
-            blankInfo.setGravity(Gravity.CENTER);
-            int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    28, getContext().getResources().getDisplayMetrics()
-            );
             if (!isPositionCentered()) {
+                WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+                Display display = wm.getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                int height = size.y;
+                ConstraintLayout.LayoutParams layoutParams = ((ConstraintLayout.LayoutParams)blankInfo.getLayoutParams());
                 if (isPositionTopScreen) {
-                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).topMargin = px;
-                    // compensate a bit on the bottom - text looks closer to the center than icon on the bottom
-                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).bottomMargin = px / 10;
+                    layoutParams.topMargin = height / 11;
                 } else {
-                    ((ConstraintLayout.LayoutParams) blankInfo.getLayoutParams()).bottomMargin = px + px / 10;
+                    layoutParams.bottomMargin = height / 11;
                 }
-                int widthMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        18, getContext().getResources().getDisplayMetrics());
-                if (isAlignRight()) {
-                    ((LayoutParams) blankInfo.getLayoutParams()).leftMargin = widthMargin;
+                if(isAlignRight()) {
+                    layoutParams.leftMargin = width / 11;
                 } else {
-                    ((LayoutParams) blankInfo.getLayoutParams()).rightMargin = widthMargin;
+                    layoutParams.rightMargin = width / 11;
                 }
             }
         } else if (mType != TrackStatTypeEnum.BLANK && blankInfo != null) {
             removeView(blankInfo);
             blankInfo = null;
-        }
-        if (mType == TrackStatTypeEnum.BLANK) {
-//            mTextViewValue.setVisibility(INVISIBLE);
-//            mTextViewDescription.setTextColor(Color.GRAY);
-//            mImageViewIcon.setColorFilter(getContext().getColor(R.color.grey));
-        } else {
-//            mTextViewValue.setVisibility(VISIBLE);
-//            int textColor = getContext().getColor(R.color.base_dark_primary);
-//            mTextViewDescription.setTextColor(textColor);
-//            mImageViewIcon.clearColorFilter();
         }
     }
 

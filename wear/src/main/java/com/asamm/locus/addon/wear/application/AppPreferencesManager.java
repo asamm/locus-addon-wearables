@@ -44,7 +44,7 @@ public class AppPreferencesManager {
     private static final String PREF_MAP_BEARING = "PREF_MAP_BEARING";
 
     //statistics screen
-    private static final String PREF_STAT_CONFIG = "PREF_STAT_CONFIG";
+    private static final String PREF_STAT_CONFIG = "PREF_STAT_CFG";
 
     private static final String PREF_USE_HRM = "PREF_USE_HRM";
 

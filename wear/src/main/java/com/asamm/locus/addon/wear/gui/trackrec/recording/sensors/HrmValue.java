@@ -7,8 +7,9 @@ package com.asamm.locus.addon.wear.gui.trackrec.recording.sensors;
 
 /** Simple container to store HRM value */
 public class HrmValue extends SensorValue{
+    private static final int VALUE_TIMEOUT_MS = 7_000;
     /** HRM value in BPM */
-    private float value;
+    volatile private float value;
 
 
     public HrmValue() {
@@ -27,6 +28,6 @@ public class HrmValue extends SensorValue{
 
     @Override
     public boolean isValid() {
-        return value >= 0;
+        return value >= 25 && value <= 250 && System.currentTimeMillis() - timestamp < VALUE_TIMEOUT_MS ;
     }
 }

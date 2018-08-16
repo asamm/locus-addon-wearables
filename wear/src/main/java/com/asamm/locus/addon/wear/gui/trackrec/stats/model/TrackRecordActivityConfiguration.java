@@ -82,23 +82,23 @@ public class TrackRecordActivityConfiguration {
 
         // Init second screen with R2C1 configuration
         List<TrackRecCellConfigDto> secondScreenConfig = new ArrayList<>(2);
-        secondScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.SPEED));
-        secondScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.SPEED_AVG_MOVE));
+        secondScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.SPEED_AVG_MOVE));
+        secondScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.BLANK));
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C1, secondScreenConfig));
 
         // Init third screen with R2C2 configuration
         List<TrackRecCellConfigDto> thirdScreenConfig = new ArrayList<>(4);
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.ELEVATION_DOWNHILL));
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.ELEVATION_UPHILL));
-        thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackStatTypeEnum.SPEED_AVG_MOVE));
+        thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackStatTypeEnum.PACE));
         thirdScreenConfig.add(new TrackRecCellConfigDto((byte) 3, TrackStatTypeEnum.BLANK));
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C2, thirdScreenConfig));
 
         // Init fourth screen with R2C2 configuration
         List<TrackRecCellConfigDto> fourthScreenConfig = new ArrayList<>(4);
-        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.SPEED));
-        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.BLANK));
-        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackStatTypeEnum.BLANK));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 0, TrackStatTypeEnum.ENERGY));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 1, TrackStatTypeEnum.ALTITUDE));
+        fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 2, TrackStatTypeEnum.HEART_RATE));
         fourthScreenConfig.add(new TrackRecCellConfigDto((byte) 3, TrackStatTypeEnum.BLANK));
         cont.screens.add(new TrackRecScreenConfigDto(TrackStatsViewScreenType.STAT_SCREEN_R2_C2, fourthScreenConfig));
 

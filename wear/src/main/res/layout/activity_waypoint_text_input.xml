@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/base_light_primary"
+    android:layout_gravity="center"
     android:padding="@dimen/component_padding">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <LinearLayout
             android:id="@+id/ll_input"
@@ -34,7 +36,7 @@
             <Button
                 android:id="@+id/btn_ok"
                 style="@style/BtnWaypointNameSelect"
-                android:drawableStart="@drawable/ic_cc_checkmark"
+                android:drawableStart="@drawable/ic_cc_checkmark_black"
                 android:text="@string/wp_name_default" />
 
             <Button
@@ -48,6 +50,14 @@
                 style="@style/BtnWaypointNameSelect"
                 android:drawableStart="@drawable/ic_microphone"
                 android:text="@string/wp_name_speech" />
+
+            <!-- this 1 by 1 px sized EditText is required in the visible part of the activity layout
+                 for soft keyboard to show and work correctly -->
+            <EditText
+                android:id="@+id/edit_text"
+                android:layout_width="1px"
+                android:layout_height="1px"
+                android:visibility="invisible" />
         </LinearLayout>
     </ScrollView>
 </android.support.wear.widget.BoxInsetLayout>

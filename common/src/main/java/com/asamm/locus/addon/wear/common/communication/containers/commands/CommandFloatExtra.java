@@ -58,4 +58,8 @@ public class CommandFloatExtra extends TimeStampStorable {
     public void setValue(float value) {
         this.value = value;
     }
+
+    public boolean isValid() {
+        return !Float.isNaN(value);
+    }
 }

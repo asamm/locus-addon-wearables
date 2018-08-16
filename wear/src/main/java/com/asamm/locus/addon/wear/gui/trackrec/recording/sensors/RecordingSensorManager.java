@@ -72,20 +72,16 @@ public class RecordingSensorManager {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 if (sensorEvent.values != null)
-                    // TODO cejnar accuracy check
-                    //SensorManager.UNRELIABLE
-                    if (sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_NO_CONTACT) {
+                    if (sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
                         RecordingSensorStore.hrm.setValue(sensorEvent.values[0]);
                     }
-                Logger.logD("HRM", "Measured value " + sensorEvent.values[0]);
-                Logger.logD("HRM", "Measured accurayy " + sensorEvent.accuracy);
+//                Logger.logD("HRM", sensorEvent.accuracy + ":" + sensorEvent.values[0]);
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
             }
         };
-        Logger.logD("HR", "Registering HR sensor");
         sensorManager.registerListener(mSensorEventListener, hrm, SensorManager.SENSOR_DELAY_NORMAL);
         return true;
     }

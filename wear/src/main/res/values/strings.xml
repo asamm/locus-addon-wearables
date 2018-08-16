@@ -78,7 +78,7 @@
     <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
     <string name="settings_hrm">Monitor heart rate when recording track?</string>
     <!-- Header for statistics dashboard selection list screen. The header should be short. -->
-    <string name="title_activity_stats_select_list">Select:</string>
+    <string name="title_activity_stats_select_list">Select</string>
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Leave it as is</string>
     <!-- Option to type in a point name when creating new waypoint -->

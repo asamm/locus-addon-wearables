@@ -146,10 +146,8 @@ public class TrackRecordingService extends Service {
                             return;
                         }
                         HrmValue hrm = RecordingSensorStore.hrm;
-                        if (hrm.isValid()) {
-                            WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,
-                                    new CommandFloatExtra(hrm.getValue()));
-                        }
+                        WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,
+                                new CommandFloatExtra(hrm.isValid() ? hrm.getValue() : Float.NaN));
                         handler.postDelayed(this, 3000);
                     }
                 };

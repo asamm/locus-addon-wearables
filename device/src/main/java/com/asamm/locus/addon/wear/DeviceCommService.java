@@ -232,22 +232,20 @@ public class DeviceCommService extends LocusWearCommService  {
             }
             break;
             case PUT_HEART_RATE: {
-                double hrValue = ((CommandFloatExtra) params).getValue();
-                Intent intent = new Intent();
-                intent.setAction("com.asamm.locus.DATA_TASK");
-                intent.putExtra("tasks","{ heart_rate: { data:"+hrValue+" } }");
-                c.sendBroadcast(intent);
-
-
-
-
-                Long lastHr = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
+                CommandFloatExtra hrValue = ((CommandFloatExtra) params);
+                if (hrValue.isValid()) {
+                    Intent intent = new Intent();
+                    intent.setAction("com.asamm.locus.DATA_TASK");
+                    intent.putExtra("tasks", "{ heart_rate: { data:" + hrValue.getValue() + " } }");
+                    c.sendBroadcast(intent);
+                }
+                Long lastDevKeepAlive = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 UpdateContainer lastUpdate = mLastUpdate;
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording()) {
                     Logger.logD(TAG, "SENDING STOP_WATCH_TRACK_REC_SERVICE");
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE);
                     pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
-                } else if (currentTime - lastHr > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS ){
+                } else if (currentTime - lastDevKeepAlive > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS ){
                     sendCommand(DataPath.DEVICE_KEEP_ALIVE);
                     pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 }

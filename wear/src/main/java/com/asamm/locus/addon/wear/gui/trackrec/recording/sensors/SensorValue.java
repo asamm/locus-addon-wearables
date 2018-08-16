@@ -9,7 +9,7 @@ public abstract class SensorValue {
     /**
      * timestamp of last change of this data
      */
-    protected long timestamp;
+    volatile protected long timestamp;
 
     public long getTimestamp() {
         return timestamp;

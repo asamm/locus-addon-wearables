@@ -59,7 +59,6 @@
                 android:background="@null"
                 android:drawableStart="@drawable/ic_settings"
                 android:drawablePadding="@dimen/component_padding"
-                android:drawableTint="@color/base_light_primary"
                 android:gravity="center"
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:text="@string/settings"
