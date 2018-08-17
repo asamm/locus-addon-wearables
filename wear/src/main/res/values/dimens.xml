@@ -3,6 +3,7 @@
 
     <dimen name="text_size_app_bar">20sp</dimen>
 
+    <dimen name="text_size_enormous">30sp</dimen>
     <dimen name="text_size_massive">24sp</dimen>
     <dimen name="text_size_huge">22sp</dimen>
     <dimen name="text_size_big">18sp</dimen>
@@ -26,6 +27,12 @@
     <dimen name="inner_frame_layout_padding">5dp</dimen>
     <dimen name="outer_frame_layout_padding">10dp</dimen>
     <dimen name="margin_huge">20dp</dimen>
+    <dimen name="component_padding">16dp</dimen>
+    <dimen name="component_padding_half">8dp</dimen>
+    <dimen name="component_padding_quarter">4dp</dimen>
+    <dimen name="stat_icon_height">24dp</dimen>
+    <dimen name="list_select_icon_height">32dp</dimen>
+
 
     <item name="map_fab_scale" format="float" type="dimen">0.8</item>
 </resources>

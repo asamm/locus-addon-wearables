@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        style="@style/SeparatorHorizontal.WithPadding"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout
+        android:id="@+id/track_stats_top"
+        style="@style/trackStatLayoutStyle"
+        app:layout_constraintBottom_toTopOf="@id/track_stats_bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+        app:positionTop="true">
+
+    </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
+
+    <com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout
+        android:id="@+id/track_stats_bottom"
+        style="@style/trackStatLayoutStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/track_stats_top"
+        android:gravity="center"
+        app:positionTop="false">
+
+    </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
+
+</android.support.constraint.ConstraintLayout>

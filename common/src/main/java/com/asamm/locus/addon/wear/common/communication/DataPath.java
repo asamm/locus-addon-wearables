@@ -3,9 +3,11 @@ package com.asamm.locus.addon.wear.common.communication;
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand;
+import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandStringExtra;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue;
@@ -31,6 +33,7 @@ public enum DataPath {
 	PUT_TRACK_REC_STATE_CHANGE(TrackRecordingStateChangeValue.class, (byte) 6),
 	GET_PROFILE_ICON(ProfileIconGetCommand.class, (byte) 7),
 	PUT_PROFILE_ICON(TrackProfileIconValue.class, (byte) 8),
+	@Deprecated // can be removed in future versions
 	GET_ADD_WAYPOINT(EmptyCommand.class, (byte) 9),
 	PUT_ADD_WAYPOINT(EmptyCommand.class, (byte) 10),
 	GET_PERIODIC_DATA(PeriodicCommand.class, (byte) 11),
@@ -40,7 +43,15 @@ public enum DataPath {
 	 * Fake communication data path, used for signalling activity about ON_CONNECTED event inside
 	 * strictly the application. Should not be used over network.
 	 */
-	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14);
+	PUT_ON_CONNECTED_EVENT(EmptyCommand.class, (byte) 14),
+	POST_ADD_WAYPOINT(CommandStringExtra.class, (byte)15),
+	PUT_HEART_RATE(CommandFloatExtra.class, (byte) 16),
+	/** Sent if track recording end detected but device is receiving sensor data
+	 * from watch track recording service */
+	STOP_WATCH_TRACK_REC_SERVICE(EmptyCommand.class, (byte) 17),
+    /** Special keep alive data packet sent to notify the watch running foreground track rec service
+     * that the phone app is still alive and connected .*/
+    DEVICE_KEEP_ALIVE(EmptyCommand.class, (byte) 18);
 
 	public static final String BASE_PATH = "/locus/wear";
 

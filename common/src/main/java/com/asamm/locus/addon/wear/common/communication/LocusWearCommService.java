@@ -20,6 +20,7 @@ import com.google.android.gms.wearable.Wearable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -50,6 +51,12 @@ public class LocusWearCommService implements
 	 * List of unsent data consisting of pairs of <PATH, DATA>
 	 */
 	private ConcurrentLinkedQueue<Pair<DataPath, TimeStampStorable>> mUnsentData;
+
+	/**
+	 * This map can be used by the inheriting class to store and read information (depending on context)
+	 * about last time of receive or send event of selected Data type
+	 */
+	private final HashMap<DataPath, Long> mLastDataTransmitTime = new HashMap<>();
 
 	protected LocusWearCommService(Context context) {
 		this.context = context;
@@ -111,15 +118,16 @@ public class LocusWearCommService implements
 		}
 	}
 
-	public void sendMessage(DataPath path, TimeStampStorable data) {
-		Logger.logD(TAG, "Sending message "+path.getPath());
-		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
-
-		// You can add success and/or failure listeners,
-		// Or you can call Tasks.await() and catch ExecutionException
-		//sendTask.addOnSuccessListener(...);
-		//sendTask.addOnFailureListener(...);
-	}
+	// message api not used currently
+//	public void sendMessage(DataPath path, TimeStampStorable data) {
+//		Logger.logD(TAG, "Sending message "+path.getPath());
+//		Wearable.MessageApi.sendMessage(mGoogleApiClient, mNodeId, path.getPath(), data.getAsBytes());
+//
+//		// You can add success and/or failure listeners,
+//		// Or you can call Tasks.await() and catch ExecutionException
+//		//sendTask.addOnSuccessListener(...);
+//		//sendTask.addOnFailureListener(...);
+//	}
 
 	/**
 	 * Sends payload, should be only called from this class and its subclasses
@@ -200,5 +208,23 @@ public class LocusWearCommService implements
 
 	public void setNodeId(String nodeId) {
 		mNodeId = nodeId;
+	}
+
+	/**
+	 * Sets NOW as last trasmit time for data of type [dataPath]
+	 * @param dataPath
+	 */
+	public void pushLastTransmitTimeFor(DataPath dataPath){
+		mLastDataTransmitTime.put(dataPath, System.currentTimeMillis());
+	}
+
+	/**
+	 * @param dataPath
+	 * @return last transmit time for the given data type. Will result in 0L if
+	 * no transmit time was given yet for this data type.
+	 */
+	public long getLastTransmitTimeFor(DataPath dataPath){
+		Long result = mLastDataTransmitTime.get(dataPath);
+		return result != null ? result : 0L;
 	}
 }

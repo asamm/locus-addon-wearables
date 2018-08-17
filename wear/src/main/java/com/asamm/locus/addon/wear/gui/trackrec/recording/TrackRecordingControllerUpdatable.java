@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear.gui.trackrec.recording;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.ViewGroup;
 
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
@@ -41,4 +42,10 @@ public interface TrackRecordingControllerUpdatable {
 	 * @param isAmbient
 	 */
 	void setAmbient(boolean isAmbient);
+
+	/** @return idx/position of the screen represented by this controller */
+	int getControllerScreenIdx();
+
+	/** force refresh statistics configuration after it has changed */
+	void refreshStatisticsConfiguration(Context ctx);
 }

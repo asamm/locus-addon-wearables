@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.2] (BETA) - 2018-08-17
+### Added
+- Activity for naming new waypoint using speech/keyboard
+- New type of track rec values/statistic
+- Configurable track rec dashboard
+- Support for HR measurement and synchronization
+
 ## [1.1.1] - 2018-03-22
 ### Fixed
 - crashes on Android Wear 1.x due to NPE when checking getIntent().getCategories() after app startup.

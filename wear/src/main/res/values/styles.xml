@@ -26,8 +26,21 @@
     <style name="trackStatLayoutStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:padding">@dimen/inner_frame_layout_padding</item>
+        <item name="android:padding">@dimen/component_padding_quarter</item>
     </style>
+
+    <style name="TvCaption">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">start</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+    <style name="TvCaption.Light">
+        <item name="android:textColor">@color/base_primary</item>
+    </style>
+
     <style name="statText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -35,6 +48,10 @@
         <item name="android:textSize">23sp</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:maxLines">1</item>
+    </style>
+    <style name="statText.Big">
+        <item name="android:textSize">@dimen/text_size_enormous</item>
     </style>
     <style name="statDescription">
         <item name="android:layout_width">0dp</item>
@@ -50,7 +67,7 @@
 
     <style name="statIcon">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_height">@dimen/stat_icon_height</item>
         <item name="android:paddingBottom">1dp</item>
         <item name="android:layout_marginTop">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>
@@ -113,6 +130,19 @@
         <item name="android:scaleType">fitStart</item>
     </style>
 
+    <style name="BtnWaypointNameSelect" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">128dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:drawablePadding">@dimen/component_padding_half</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:background">@color/base_light_primary</item>
+        <item name="android:textColor">@color/base_dark_primary</item>
+        <item name="android:drawableTint">@color/base_primary</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
     <!-- *************************************************** -->
     <!-- LIST ITEMS -->
     <!-- *************************************************** -->
@@ -123,7 +153,7 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:gravity">center_vertical|left</item>
-        <item name="android:textSize">@dimen/text_size_massive</item>
+        <item name="android:textSize">@dimen/text_size_huge</item>
     </style>
 
     <style name="LocusWearBasicButton" parent="@style/Widget.AppCompat.Button">

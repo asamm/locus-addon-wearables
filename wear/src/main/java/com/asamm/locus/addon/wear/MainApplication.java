@@ -1,13 +1,15 @@
 package com.asamm.locus.addon.wear;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
@@ -26,7 +28,6 @@ import com.asamm.locus.addon.wear.gui.MapActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.DataItem;
 
 import java.util.List;
@@ -49,17 +50,20 @@ public class MainApplication extends Application implements Application.Activity
 	// timer for termination
 	private static Timer mTimerTerminate;
 
-	private WatchDog mWatchDog;
-
 	// tag for logger
 	private static final String TAG = MainApplication.class.getSimpleName();
 
+	public static volatile Context applicationContext = null;
+
+	@SuppressLint("LogNotTimber")
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
+		applicationContext = getApplicationContext();
 		// set logger
 		Logger.registerLogger(new Logger.ILogger() {
+
 			@Override
 			public void logI(String tag, String msg) {
 				Log.i(tag, msg);
@@ -100,13 +104,8 @@ public class MainApplication extends Application implements Application.Activity
 	public void onDestroy() {
 		Logger.logE(TAG, "destroyInstance()");
 		// destroy instance of communication class
-		synchronized (this) {
-			if (mWatchDog != null) {
-				mWatchDog.destroy();
-			}
-			mWatchDog = null;
-		}
-		WearCommService.destroyInstance();
+		WatchDog.getInstance().setmAppFailCallback(null);
+		applicationContext = null;
 	}
 
 	@Override
@@ -123,18 +122,14 @@ public class MainApplication extends Application implements Application.Activity
 		if (!(activity instanceof LocusWearActivity)) {
 			return;
 		}
-		if (mWatchDog == null) {
-			synchronized (this) {
-				if (mWatchDog == null) {
-					mWatchDog = new WatchDog(this::doApplicationFail);
-				}
-			}
-		}
+        //noinspection ResultOfMethodCallIgnored
+        WatchDog.getInstance().setmAppFailCallback(this::doApplicationFail);
 		reconnectIfNeeded();
 	}
 
 	@Override
 	public void onActivityResumed(Activity activity) {
+		applicationContext = getApplicationContext();
 		// set current activity
 		LocusWearActivity oldAct = mCurrentActivity;
 		if (oldAct == null) {
@@ -152,9 +147,6 @@ public class MainApplication extends Application implements Application.Activity
 
 	@Override
 	public void onActivityPaused(Activity activity) {
-		if (!(activity instanceof LocusWearActivity)) {
-			return;
-		}
 	}
 
 	@Override
@@ -192,7 +184,6 @@ public class MainApplication extends Application implements Application.Activity
 	public void handleData(DataPath p, TimeStampStorable value) {
 		final LocusWearActivity currentActivity = mCurrentActivity;
 		if (currentActivity != null && p != null) {
-
 				switch (p) {
 					case PUT_HAND_SHAKE:
 						final HandShakeValue handShakeValue = (HandShakeValue) value;
@@ -228,10 +219,15 @@ public class MainApplication extends Application implements Application.Activity
 					default:
 						break;
 				}
-				if (mWatchDog != null) {
-					mWatchDog.onNewData(p, value);
+				WatchDog wd = WatchDog.getInstance();
+				if (wd != null) {
+					wd.onNewData(p, value);
 				}
 				currentActivity.consumeNewData(p, value);
+		}
+		// special activity/context free requests handling
+		if (p != null) {
+			handleActivityFreeCommRequests(this, p, value);
 		}
 	}
 
@@ -307,8 +303,9 @@ public class MainApplication extends Application implements Application.Activity
 		}
 		LocusWearActivity previous = mCurrentActivity;
 		mCurrentActivity = act;
-		if (mWatchDog != null) {
-			mWatchDog.onCurrentActivityChanged(previous == null ? null : previous.getClass(),
+		WatchDog wd = WatchDog.getInstance();
+		if (wd != null) {
+			wd.onCurrentActivityChanged(previous == null ? null : previous.getClass(),
 					mCurrentActivity == null ? null : mCurrentActivity.getClass());
 		}
 	}
@@ -369,10 +366,11 @@ public class MainApplication extends Application implements Application.Activity
 	}
 
 	public void doApplicationFail(AppFailType reason) {
-		Intent i = new Intent(this, AppFailActivity.class);
+		Context ctx = this;
+		Intent i = new Intent(ctx, AppFailActivity.class);
 		i.putExtra(AppFailActivity.ARG_ERROR_TYPE, reason.name());
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		startActivity(i);
+		ctx.startActivity(i);
 	}
 
 	public void sendDataWithWatchDog(DataPayload<? extends TimeStampStorable> request,
@@ -391,7 +389,7 @@ public class MainApplication extends Application implements Application.Activity
 												  DataPath expectedResponse, long timeoutToFailMs,
 												  WatchDogPredicate<? extends TimeStampStorable> responsePredicate) {
 		LocusWearActivity act = mCurrentActivity;
-		WatchDog wd = mWatchDog;
+		WatchDog wd = WatchDog.getInstance();
 		if (wd != null && act != null) {
 			wd.startWatchingWithCondition(act.getClass(), request,
 					expectedResponse, timeoutToFailMs, responsePredicate);
@@ -402,9 +400,26 @@ public class MainApplication extends Application implements Application.Activity
 	public void addWatchDog(DataPayload<? extends TimeStampStorable> request,
 							DataPath expectedResponse, long timeoutToFailMs) {
 		LocusWearActivity act = mCurrentActivity;
-		WatchDog wd = mWatchDog;
+		WatchDog wd = WatchDog.getInstance();
 		if (wd != null && act != null) {
 			wd.startWatching(act.getClass(), request, expectedResponse, timeoutToFailMs);
+		}
+	}
+
+	/**
+	 * This method contains some logic to handle requests that are not dependent
+	 * on specific activity context.
+	 * The method is especially used to handle new communication problems and lifecycle handling
+	 * that arised as a result of standalone foreground HRM/track rec service which is quite
+	 * independent from the rest of the application.
+	 */
+	public static void handleActivityFreeCommRequests(Context ctx, DataPath p, TimeStampStorable value) {
+		if (p == DataPath.DEVICE_KEEP_ALIVE) {
+			WearCommService.getInstance().pushLastTransmitTimeFor(p);
+		} else if (p == DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
+			Intent intent = new Intent(ctx, TrackRecordingService.class);
+			intent.setAction(TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE);
+			ctx.startService(intent);
 		}
 	}
 }

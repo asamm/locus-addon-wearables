@@ -1,8 +1,13 @@
 package com.asamm.locus.addon.wear.communication;
 
+import android.app.Application;
+import android.content.Intent;
+
 import com.asamm.locus.addon.wear.MainApplication;
+import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable;
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.MessageEvent;
@@ -26,7 +31,17 @@ public class WearListenerService extends WearableListenerService {
 
 		for (DataEvent event : dataEventBuffer) {
 			if (event.getType() == DataEvent.TYPE_CHANGED) {
-				((MainApplication) getApplication()).handleDataEvent(event.getDataItem());
+				Application a = getApplication();
+				if (a == null) {
+					Logger.logW(TAG, "Received data but application is null");
+					DataPath p = DataPath.valueOf(event.getDataItem());
+					if (p != null) {
+						TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, event.getDataItem());
+						MainApplication.handleActivityFreeCommRequests(this, p, value);
+					}
+				} else {
+					((MainApplication) getApplication()).handleDataEvent(event.getDataItem());
+				}
 			} else if (event.getType() == DataEvent.TYPE_DELETED) {
 				// DataItem deleted
 			}

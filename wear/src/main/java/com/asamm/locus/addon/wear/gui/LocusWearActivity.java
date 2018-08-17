@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.asamm.locus.addon.wear.AppPreferencesManager;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -22,7 +22,6 @@ import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
 import com.asamm.locus.addon.wear.gui.error.AppFailType;
 import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.profiles.ProfileListActivity;
 import com.google.android.gms.wearable.Node;
 
 import java.text.DateFormat;
@@ -48,6 +47,8 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private TextView mTvNavDrawerTime;
 	private Handler mNavDrawerTimeHandler;
 	private DateFormat mDateFormat;
+	/** Can be set by inheriting activity to skip drawer peek behavior on next resume */
+	private boolean ignoreNextDrawerPeek = false;
 	private static final int HANDSHAKE_TIMEOUT_MS = 8000;
 	private static final int HANDSHAKE_TICK_MS = 400;
 
@@ -150,9 +151,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 		super.onCreate(savedInstanceState);
 		Class<? extends LocusWearActivity> c = MainApplication.getLastAppTask(this);
 		// dispatch to correct activity - if activities are different, then application was restored
-		// do not apply for ProfileListActivity which is not persisted when opened
+		// do not apply for child activities, which are not persisted when opened
 		if (!c.equals(getClass())
-				&& !getClass().equals(ProfileListActivity.class)) {
+				//&& !getClass().equals(ProfileListActivity.class)) {
+				&& !isChildLocusWearActivity()) {
 			Intent i = new Intent(this, c);
 			startActivity(i);
 			finish();
@@ -185,9 +187,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 		if (mDrawer != null && AppPreferencesManager.isFirstAppStart(this)) {
 			AppPreferencesManager.persistFirstAppStart(this);
 			new Handler().postDelayed(() -> mDrawer.getController().openDrawer(), 800);
-		} else if (mDrawer != null) {
+		} else if (mDrawer != null && !ignoreNextDrawerPeek) {
 			new Handler().postDelayed(() -> mDrawer.getController().peekDrawer(), 800);
 		}
+		ignoreNextDrawerPeek = false;
 	}
 
 	@Override
@@ -370,6 +373,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 			case R.id.navigation_drawer_item_track_rec:
 				activityToStart = TrackRecordActivity.class;
 				break;
+			case R.id.btn_settings:
+				activityToStart = MainSettingsActivity.class;
+				break;
 			default:
 				activityToStart = null;
 				break;
@@ -455,7 +461,11 @@ public abstract class LocusWearActivity extends WearableActivity {
 	}
 
 	public abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
+
 	protected void enableCustomRotatryActions() {
 		getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
+	}
+	protected void setIgnoreNextDrawerPeek() {
+		ignoreNextDrawerPeek = true;
 	}
 }

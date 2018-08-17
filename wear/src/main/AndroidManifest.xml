@@ -3,6 +3,8 @@
     package="com.asamm.locus.addon.wear">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature android:name="android.hardware.type.watch" />
 
@@ -45,13 +47,18 @@
         </activity>
         <activity
             android:name=".gui.MapActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
         <activity
             android:name=".gui.trackrec.profiles.ProfileListActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
         <activity
             android:name=".gui.error.AppFailActivity"
-            android:launchMode="singleInstance"></activity>
+            android:launchMode="singleInstance" />
+        <activity android:name=".gui.custom.WaypointInputTextActivity"/>
+        <activity android:name=".gui.trackrec.stats.view.TrackStatsSelectListActivity" />
+        <activity android:name=".gui.MainSettingsActivity" />
+        <service android:name=".application.TrackRecordingService" android:exported="false"/>
+
     </application>
 
 </manifest>

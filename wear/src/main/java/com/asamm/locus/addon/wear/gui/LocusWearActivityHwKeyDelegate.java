@@ -7,7 +7,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.asamm.locus.addon.wear.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
@@ -74,7 +74,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	 * Delegate facotry. If Hw button support is disabled, returns dummy delegate with no sideeffects
 	 */
 	class Factory {
-		static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
+		public static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
 			if (AppPreferencesManager.isUseHwButtons(ctx)) {
 				return new LocusWearActivityHwKeyDelegateImpl(ctx);
 			} else {
