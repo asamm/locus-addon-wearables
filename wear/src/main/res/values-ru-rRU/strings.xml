@@ -17,18 +17,73 @@
   <string name="toast_err_device_not_supported">Запрос не прошел, установите с вашего телефона.</string>
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Продолжите установку на вашем телефоне...</string>
-  <!-- UI Label elevation downhill -->
-  <string name="stat_elevation_down">Высота (спуск)</string>
-  <!-- UI Label elevation uphill -->
-  <string name="stat_elevation_up">Высота (подъем)</string>
+  <!-- UI Label current altitude -->
+  <string name="stat_altitude">Высота</string>
+  <!-- UI Label Altitude minimal -->
+  <string name="stat_altitude_min">Мин. высота</string>
+  <!-- UI Label Altitude maximal -->
+  <string name="stat_altitude_max">Макс. высота</string>
+  <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <string name="stat_battery_level">Уровень заряда</string>
+  <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <string name="stat_blank_info_text">Долг. наж. для изменения</string>
+  <!-- UI Label average cadence -->
+  <string name="stat_cadence_avg">Каденс (средний)</string>
+  <!-- UI Label maximal cadence -->
+  <string name="stat_cadence_max">Каденс (макс.)</string>
+  <!-- UI Label Current time -->
+  <string name="stat_current_time">Текущее время</string>
+  <!-- UI Label Distance downhill -->
+  <string name="stat_distance_down">Расстояние (спуск)</string>
+  <!-- UI Label Distance uphill -->
+  <string name="stat_distance_up">Расстояние (подъем)</string>
+  <!-- UI Label elevation loss -->
+  <string name="stat_elevation_down">Потеря высоты</string>
+  <!-- UI Label elevation gain -->
+  <string name="stat_elevation_up">Набор высоты</string>
+  <!-- UI Label Energy -->
+  <string name="stat_energy">Энергия</string>
+  <!-- UI Label heart rate (current value) -->
+  <string name="stat_hrm">ЧСС</string>
+  <!-- UI Label heart rate average -->
+  <string name="stat_hrm_avg">ЧСС (средняя)</string>
+  <!-- UI Label maximal heart rate -->
+  <string name="stat_hrm_max">ЧСС (макс.)</string>
+  <!-- UI Label pace -->
+  <string name="stat_pace">Темп</string>
+  <!-- UI Label track recording time - movement only -->
+  <string name="stat_track_time_move">Время трека (движение)</string>
+  <!-- UI Label Average speed -->
+  <string name="stat_speed_avg">Средняя скорость</string>
+  <!-- UI Label maximal speed -->
+  <string name="stat_speed_max">Макс. скорость</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Скорость</string>
   <!-- UI Label Average moving speed -->
   <string name="stat_speed_avg_moving">Средняя скорость движения</string>
   <!-- UI Label distance -->
-  <string name="stat_distance">Дистанция</string>
+  <string name="stat_distance">Расстояние</string>
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">Время трека</string>
+  <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <string name="err_no_hrm_permission">Извините, не могу читать датчики без вашего разрешения.</string>
+  <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <string name="err_hrm_sensor_not_available">ЧСС недоступна на вашем устройстве</string>
+  <!-- Description text for HRM/track rec. service in system notification area -->
+  <string name="hrm_rec_service_desc">Измерение ЧСС при записи трека</string>
+  <!-- Label "Settings"-->
+  <string name="settings">Настройки</string>
+  <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <string name="settings_hrm">Измерять ЧСС при записи трека?</string>
+  <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <!-- Option to leave default waypoint name when creating new waypoint -->
+  <string name="wp_name_default">Оставить as is</string>
+  <!-- Option to type in a point name when creating new waypoint -->
+  <string name="wp_name_keyboard">Тапнуть</string>
+  <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <string name="wp_name_speech">Сказать</string>
+  <!-- Title/header for the dialog with options of how to name a new waypoint -->
+  <string name="wp_name_title">Имя точки?</string>
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Загрузка</string>
   <!-- Ambient mode (UI text) -->
@@ -41,4 +96,5 @@
   <string name="title_activity_profile_list">Профили</string>
   <!-- Error (label/header)-->
   <string name="title_activity_error">Ошибка</string>
+  <!-- NOT YET VALIDATED -->
 </resources>

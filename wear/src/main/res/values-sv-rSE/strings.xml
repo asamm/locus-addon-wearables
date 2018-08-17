@@ -10,8 +10,26 @@
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-  <!-- UI Label elevation downhill -->
-  <!-- UI Label elevation uphill -->
+  <!-- UI Label current altitude -->
+  <!-- UI Label Altitude minimal -->
+  <!-- UI Label Altitude maximal -->
+  <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <!-- UI Label average cadence -->
+  <!-- UI Label maximal cadence -->
+  <!-- UI Label Current time -->
+  <!-- UI Label Distance downhill -->
+  <!-- UI Label Distance uphill -->
+  <!-- UI Label elevation loss -->
+  <!-- UI Label elevation gain -->
+  <!-- UI Label Energy -->
+  <!-- UI Label heart rate (current value) -->
+  <!-- UI Label heart rate average -->
+  <!-- UI Label maximal heart rate -->
+  <!-- UI Label pace -->
+  <!-- UI Label track recording time - movement only -->
+  <!-- UI Label Average speed -->
+  <!-- UI Label maximal speed -->
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Hastighet</string>
   <!-- UI Label Average moving speed -->
@@ -20,6 +38,16 @@
   <string name="stat_distance">Avstånd</string>
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">Tid</string>
+  <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <!-- Description text for HRM/track rec. service in system notification area -->
+  <!-- Label "Settings"-->
+  <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <!-- Option to leave default waypoint name when creating new waypoint -->
+  <!-- Option to type in a point name when creating new waypoint -->
+  <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <!-- Title/header for the dialog with options of how to name a new waypoint -->
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Laddar</string>
   <!-- Ambient mode (UI text) -->
@@ -32,4 +60,5 @@
   <string name="title_activity_profile_list">Profiler</string>
   <!-- Error (label/header)-->
   <string name="title_activity_error">Fel</string>
+  <!-- NOT YET VALIDATED -->
 </resources>

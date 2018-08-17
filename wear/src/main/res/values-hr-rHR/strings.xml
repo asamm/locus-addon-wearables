@@ -4,23 +4,58 @@
   <!-- Toast message shown after waypoint was added during track recording -->
   <string name="waypoint_added">Međutočke dodao</string>
   <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
-  <string name="err_locus_version_not_supported">Locus karte u vaš telefon je zastario ili ih nema. Ažuriraj ili instaliraj ga.</string>
+  <string name="err_locus_version_not_supported">Aplikacija Locus Map u vašem telefonu je zastarjela ili ne postoji. Ažurirajte je ili instalirajte.</string>
   <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-  <!-- UI Label elevation downhill -->
-  <!-- UI Label elevation uphill -->
+  <!-- UI Label current altitude -->
+  <!-- UI Label Altitude minimal -->
+  <!-- UI Label Altitude maximal -->
+  <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <!-- UI Label average cadence -->
+  <!-- UI Label maximal cadence -->
+  <!-- UI Label Current time -->
+  <!-- UI Label Distance downhill -->
+  <!-- UI Label Distance uphill -->
+  <!-- UI Label elevation loss -->
+  <!-- UI Label elevation gain -->
+  <!-- UI Label Energy -->
+  <!-- UI Label heart rate (current value) -->
+  <!-- UI Label heart rate average -->
+  <!-- UI Label maximal heart rate -->
+  <!-- UI Label pace -->
+  <!-- UI Label track recording time - movement only -->
+  <!-- UI Label Average speed -->
+  <!-- UI Label maximal speed -->
   <!-- UI Label speed (current) -->
+  <string name="stat_speed">Brzina</string>
   <!-- UI Label Average moving speed -->
+  <string name="stat_speed_avg_moving">Prosječna brzina kretanja</string>
   <!-- UI Label distance -->
+  <string name="stat_distance">Udaljenost</string>
   <!-- UI Label track recording time total -->
+  <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <!-- Description text for HRM/track rec. service in system notification area -->
+  <!-- Label "Settings"-->
+  <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <!-- Option to leave default waypoint name when creating new waypoint -->
+  <!-- Option to type in a point name when creating new waypoint -->
+  <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <!-- Title/header for the dialog with options of how to name a new waypoint -->
   <!-- Loading (placeholder text) -->
+  <string name="loading_profiles">Učitavanje</string>
   <!-- Ambient mode (UI text) -->
   <!-- Install button text -->
   <!-- Screen header for track recording screen, should be reasonably short -->
+  <string name="title_activity_track_record">Snimanje traga</string>
   <!-- Screen header for profile list screen, should be short -->
   <!-- Error (label/header)-->
+  <string name="title_activity_error">Greška</string>
+  <!-- NOT YET VALIDATED -->
 </resources>
