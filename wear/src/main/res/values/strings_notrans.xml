@@ -4,4 +4,5 @@
     <string translatable="false" name="app_name">Locus Map</string>
     <string translatable="false" name="empty_string"></string>
     <string translatable="false" name="error_inflating_stats_screen">Error! Incompatible statistics screen configuration!</string>
+    <string translatable="false" name="hrm_debug_title">HRM (debug only)</string>
 </resources>

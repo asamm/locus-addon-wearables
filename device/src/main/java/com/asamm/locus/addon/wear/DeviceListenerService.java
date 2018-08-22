@@ -78,7 +78,7 @@ public class DeviceListenerService extends WearableListenerService {
 	public void onDataChanged(DataEventBuffer dataEventBuffer) {
 		for (DataEvent event : dataEventBuffer) {
 			if (event.getType() == DataEvent.TYPE_CHANGED) {
-				Logger.logD(TAG, "Received data changed: " + event.getDataItem().getUri().getPath());
+//				Logger.logD(TAG, "Received data changed: " + event.getDataItem().getUri().getPath());
 				handleDataChange(dataEventConsumer, event);
 			} else if (event.getType() == DataEvent.TYPE_DELETED) {
 				// DataItem deleted
@@ -90,7 +90,7 @@ public class DeviceListenerService extends WearableListenerService {
 	public void onMessageReceived(MessageEvent messageEvent) {
 		DeviceCommService.getInstance(this).setNodeId(messageEvent.getSourceNodeId());
 		DataPath p = DataPath.fromPath(messageEvent.getPath());
-		Logger.logD(TAG, "Received message " + p);
+//		Logger.logD(TAG, "Received message " + p);
 		if (p == null)
 			return;
 		try {

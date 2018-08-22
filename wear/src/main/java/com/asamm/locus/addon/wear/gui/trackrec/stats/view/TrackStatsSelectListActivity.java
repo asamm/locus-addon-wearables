@@ -18,7 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.R;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
@@ -26,6 +28,9 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatTypeEnum;
 import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import kotlin.Unit;
 
@@ -102,8 +107,18 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
 
     }
 
+    private TrackStatTypeEnum[] getSelectionModel() {
+        TrackStatTypeEnum[] model = TrackStatTypeEnum.VALUES_FOR_SELECTIONS;
+        if (AppPreferencesManager.isDebug(this)) {
+            ArrayList<TrackStatTypeEnum> list = new ArrayList<>(Arrays.asList(model));
+            list.add(TrackStatTypeEnum.HRM_DEBUG);
+            TrackStatTypeEnum[] tmparr = new TrackStatTypeEnum[list.size()];
+            model = list.toArray(tmparr);
+        }
+        return model;
+    }
     private class StatsTypeListAdapter extends RecyclerView.Adapter<StatsTypeListAdapter.ViewHolder> {
-        private TrackStatTypeEnum[] mModel = TrackStatTypeEnum.VALUES_FOR_SELECTIONS;
+        private TrackStatTypeEnum[] mModel = getSelectionModel();
 
         private void onItemSelected(TrackStatTypeEnum selectedType) {
             Intent resultIntent = new Intent();

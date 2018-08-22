@@ -15,8 +15,9 @@ import static android.content.Context.BATTERY_SERVICE;
  * Copyright (C) 2018
  */
 public class RecordingSensorStore {
-    public static HrmValue hrm = new HrmValue();
-    private static BatteryValue battery = new BatteryValue();
+    public static volatile HrmDebugValue hrmDebug = new HrmDebugValue();
+    public static volatile HrmValue hrm = new HrmValue();
+    private static volatile BatteryValue battery = new BatteryValue();
 
     public static BatteryValue getBatteryValue() {
         if (!battery.isValid() || System.currentTimeMillis() - battery.timestamp > 30_000) {

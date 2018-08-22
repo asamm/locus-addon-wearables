@@ -102,7 +102,7 @@ public class MainApplication extends Application implements Application.Activity
 	 * Destroy instance of this application.
 	 */
 	public void onDestroy() {
-		Logger.logE(TAG, "destroyInstance()");
+		Logger.logD(TAG, "destroyInstance()");
 		// destroy instance of communication class
 		WatchDog.getInstance().setmAppFailCallback(null);
 		applicationContext = null;
@@ -236,11 +236,11 @@ public class MainApplication extends Application implements Application.Activity
 		if (p != null) {
 			TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
 			handleData(p, value);
-			Logger.logD(TAG, "Received " + p);
-			} else {
-				Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
-			}
+//			Logger.logD(TAG, "Received " + p);
+		} else {
+			Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
 		}
+	}
 
 	public LocusWearActivity getCurrentActivity() {
 		return mCurrentActivity;

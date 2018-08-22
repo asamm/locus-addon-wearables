@@ -4,6 +4,8 @@ import android.text.Html;
 
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.common.utils.Pair;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmDebugValue;
+import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmValue;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.utils.UtilsFormatWear;
 
@@ -203,6 +205,21 @@ public interface TrackStatConsumable {
                 boolean isValid = RecordingSensorStore.getBatteryValue().isValid();
                 String value = isValid ? String.valueOf(RecordingSensorStore.getBatteryValue().getValue()) : "???";
                 return new ValueUnitContainer(value, isValid ? "%" : "");
+            };
+        }
+
+        public static TrackStatConsumable createHrmDebugConsumable() {
+            return (rec) -> {
+                HrmDebugValue dbgVal = RecordingSensorStore.hrmDebug;
+                float tmpDbgVal = dbgVal.getHrmValue();
+                HrmValue val = RecordingSensorStore.hrm;
+                float tmpVal = val.getValue();
+                long timeDiff = (System.currentTimeMillis() - dbgVal.getTimestamp() + 500) / 1000;
+                String value = "";
+                String unit = dbgVal.getHrmAccuracy()+ ":"
+                        + (Float.isNaN(tmpDbgVal) ? "N" : (int)tmpDbgVal)+ ":" +timeDiff;
+                unit = unit + "/" + (Float.isNaN(tmpVal) ? "N" : (int)tmpVal)+ ":" + ((System.currentTimeMillis() - val.getTimestamp() + 500) / 1000);
+                return new ValueUnitContainer(value, unit);
             };
         }
 

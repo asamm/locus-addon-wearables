@@ -136,7 +136,7 @@ public class LocusWearCommService implements
 	 * @param data
 	 */
 	protected void sendDataItemWithoutConnectionCheck(DataPath path, TimeStampStorable data) {
-		Logger.logD(getClass().getSimpleName(), "Sending " + path);
+//		Logger.logD(getClass().getSimpleName(), "Sending " + path);
 
 		PutDataRequest request = PutDataRequest.create(path.getPath());
 		final byte[] dataToSend = data.getAsBytes();

@@ -71,18 +71,21 @@ public class RecordingSensorManager {
         mSensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if (sensorEvent.values != null)
+                if (sensorEvent.values != null && sensorEvent.values.length > 0) {
                     if (sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_ACCURACY_LOW) {
                         RecordingSensorStore.hrm.setValue(sensorEvent.values[0]);
                     }
-//                Logger.logD("HRM", sensorEvent.accuracy + ":" + sensorEvent.values[0]);
+                    RecordingSensorStore.hrmDebug.setValue(sensorEvent.values[0], sensorEvent.accuracy);
+                } else {
+                    RecordingSensorStore.hrmDebug.setValue(0, -3);
+                }
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
             }
         };
-        sensorManager.registerListener(mSensorEventListener, hrm, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(mSensorEventListener, hrm, 1_400_000);
         return true;
     }
 
@@ -94,6 +97,7 @@ public class RecordingSensorManager {
         if (sensorManager == null) { // should not happen
             Logger.logE(TAG, "Failed to get sensorManager in stopHrSensor(). ");
         } else {
+            Logger.logD(TAG, "Removing HRM listener");
             sensorManager.unregisterListener(mSensorEventListener);
         }
     }

@@ -47,6 +47,7 @@ public class AppPreferencesManager {
     private static final String PREF_STAT_CONFIG = "PREF_STAT_CFG";
 
     private static final String PREF_USE_HRM = "PREF_USE_HRM";
+    private static final String PREF_BOOL_IS_DEBUG = "PREF_BOOL_IS_DEBUG";
 
     public static void persistLastRecState(Context ctx, TrackRecordingValue trackRec) {
         if (trackRec == null || !trackRec.isInfoAvailable()) {
@@ -226,7 +227,6 @@ public class AppPreferencesManager {
                 e.printStackTrace();
                 return null;
             }
-
         }
     }
 
@@ -244,7 +244,18 @@ public class AppPreferencesManager {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         int featureConfigID = prefs.getInt(PREF_USE_HRM, FeatureConfigEnum.NO_PERMISSION.getId());
         return FeatureConfigEnum.getById(featureConfigID);
+    }
+    @SuppressLint("ApplySharedPref")
+    public static void persistIsDebug(Context ctx, boolean isDebug) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit()
+                .putBoolean(PREF_BOOL_IS_DEBUG, isDebug)
+                .apply();
+    }
 
+    public static boolean isDebug(Context ctx) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        boolean isDebug = prefs.getBoolean(PREF_BOOL_IS_DEBUG, false);
+        return isDebug;
     }
 
 }

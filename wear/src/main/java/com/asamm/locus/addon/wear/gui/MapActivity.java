@@ -35,6 +35,7 @@ import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
+import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
@@ -115,7 +116,6 @@ public class MapActivity extends LocusWearActivity {
 			mMapView.setTranslationX(-mStatus.mMapOffsetX + mLastRenderedOffsetX);
 			mMapView.setTranslationY(-mStatus.mMapOffsetY + mLastRenderedOffsetY);
 			if (isLast) {
-				Logger.logD(TAG, "fling cancel");
 				cancelFling();
 				mPanHandler.removeCallbacksAndMessages(null);
 				mPanHandler.postDelayed(mPanRunnable, 0);
@@ -606,6 +606,8 @@ public class MapActivity extends LocusWearActivity {
 		if (delegate.getNumMultifunctionButtons() < 2) {
 			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
 		} else {
+			delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_3_LONG_PRESS,
+					() -> startLocusWearActivity(TrackRecordActivity.class));
 			delegate.registerHwButtonListener(upPrimaryBtn, zoomInAction);
 			delegate.registerHwButtonListener(downBtn, zoomOutAction);
 			delegate.registerHwButtonListener(secondaryActionBtn, centerAction);

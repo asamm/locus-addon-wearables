@@ -149,7 +149,7 @@ public class DeviceCommService extends LocusWearCommService  {
         if (System.currentTimeMillis() - mLastReceivedTime > 15_000) {
             destroyInstance(context);
         } else {
-            Logger.logD(TAG, "onUpdate(" + update + ")");
+//            Logger.logD(TAG, "onUpdate(" + update + ")");
             mLastUpdate = update;
             mLastPeriodicUpdateReceivedMilis = System.currentTimeMillis();
         }
@@ -242,7 +242,7 @@ public class DeviceCommService extends LocusWearCommService  {
                 Long lastDevKeepAlive = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 UpdateContainer lastUpdate = mLastUpdate;
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording()) {
-                    Logger.logD(TAG, "SENDING STOP_WATCH_TRACK_REC_SERVICE");
+                    Logger.logD(TAG, "sending STOP_WATCH_TRACK_REC_SERVICE");
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE);
                     pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 } else if (currentTime - lastDevKeepAlive > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS ){
@@ -258,7 +258,7 @@ public class DeviceCommService extends LocusWearCommService  {
     }
 
     void onDataChanged(Context c, DataEvent newData) {
-        Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
+//        Logger.logD(TAG, "received " + newData.getDataItem().getUri().getPath());
         DataItem item = newData.getDataItem();
         DataPath path = DataPath.valueOf(item);
         TimeStampStorable params = createStorableForPath(path, item);

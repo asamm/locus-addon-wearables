@@ -36,6 +36,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
+import com.asamm.locus.addon.wear.gui.MapActivity;
 import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
 import com.asamm.locus.addon.wear.gui.custom.WaypointInputTextActivity;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
@@ -562,6 +563,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN);
         HwButtonActionDescEnum secondaryActionBtn =
                 delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
+
+        delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_3_LONG_PRESS, () -> startLocusWearActivity(MapActivity.class));
 
         delegate.registerHwButtonListener(upPrimaryBtn, () -> {
             if (isRecScreenVisible()) {

@@ -66,7 +66,9 @@ public enum TrackStatTypeEnum implements TrackStatConsumable {
 	CURRENT_TIME((byte) 21, R.string.stat_current_time, R.drawable.ic_symbol_time,
 			TrackStatConsumable.TscFactory.createCurrentTimeConsumable()),
 	BATTERY((byte) 23, R.string.stat_battery_level, R.drawable.ic_symbol_battery,
-			TrackStatConsumable.TscFactory.createBatteryConsumable());
+			TrackStatConsumable.TscFactory.createBatteryConsumable()),
+	HRM_DEBUG((byte) 24, R.string.hrm_debug_title, R.drawable.ic_symbol_heart,
+			TrackStatConsumable.TscFactory.createHrmDebugConsumable());
 
 	private final byte id;
 	private final int mIconId;

@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
@@ -60,7 +61,9 @@ public abstract class LocusWearActivity extends WearableActivity {
 	/**
 	 * activated on start for monitoring initial handshake exchange
 	 */
-	protected CountDownTimer mConnectionFailedTimer;
+	private CountDownTimer mConnectionFailedTimer;
+	private final Object connectionTimerLock = new Object();
+
 	/**
 	 * only used on start in connection failed timer to monitor initial handshake request
 	 */
@@ -74,6 +77,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	private volatile AtomicBoolean mHandshakeSent = new AtomicBoolean(false);
 	private volatile AtomicBoolean mHandshakeRetrySent = new AtomicBoolean(false);
 
+	private byte dbgClickCounter = 0;
 	/**
 	 * flag specifying if mobile phone is connected
 	 */
@@ -281,21 +285,22 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * Called after successful initial communication of the activity
 	 */
 	protected void onHandShakeFinished() {
-
 	}
 
 	protected void startConnectionFailTimer() {
-		synchronized (this) {
-			if (mConnectionFailedTimer != null
-					|| mState == WearActivityState.ON_STOP
-					|| mState == WearActivityState.ON_DESTROY)
+		if (mConnectionFailedTimer != null || mState == WearActivityState.ON_STOP || mState == WearActivityState.ON_DESTROY)
+			return;
+
+		ticks = 0;
+		mIsHandShakeReceived = false;
+		mIsInitialRequestReceived = false;
+		mGetConnectedNodesSent.set(false);
+		mHandshakeSent.set(false);
+		mHandshakeRetrySent.set(false);
+
+		synchronized (connectionTimerLock) {
+			if (mConnectionFailedTimer != null || mState == WearActivityState.ON_STOP || mState == WearActivityState.ON_DESTROY)
 				return;
-			ticks = 0;
-			mIsHandShakeReceived = false;
-			mIsInitialRequestReceived = false;
-			mGetConnectedNodesSent.set(false);
-			mHandshakeSent.set(false);
-			mHandshakeRetrySent.set(false);
 
 			mConnectionFailedTimer = new CountDownTimer(HANDSHAKE_TIMEOUT_MS, HANDSHAKE_TICK_MS) {
 				@Override
@@ -317,7 +322,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 	}
 
 	protected void cancelConnectionFailedTimer() {
-		synchronized (this) {
+		synchronized (connectionTimerLock) {
 			if (mConnectionFailedTimer != null) {
 				mConnectionFailedTimer.cancel();
 				mConnectionFailedTimer = null;   // and canceling and nulling timer
@@ -345,6 +350,17 @@ public abstract class LocusWearActivity extends WearableActivity {
 		mDrawer = findViewById(R.id.navigation_drawer);
 		mDrawerCloseArrowImg = findViewById(R.id.imageViewDrawerOpened);
 		mTvNavDrawerTime = findViewById(R.id.navDrawerTvTime);
+		if (mTvNavDrawerTime != null) {
+			mTvNavDrawerTime.setOnClickListener(view -> {
+ 				dbgClickCounter++;
+ 				if (dbgClickCounter == 6) {
+ 					dbgClickCounter = 0;
+ 					boolean isDebug = AppPreferencesManager.isDebug(this);
+ 					AppPreferencesManager.persistIsDebug(this, !isDebug);
+					Toast.makeText(this, "Debug mode " + (isDebug? "disabled" : "enabled"), Toast.LENGTH_LONG).show();
+				}
+            });
+		}
 		mDateFormat = android.text.format.DateFormat.getTimeFormat(getApplicationContext());
 	}
 
@@ -380,6 +396,10 @@ public abstract class LocusWearActivity extends WearableActivity {
 				activityToStart = null;
 				break;
 		}
+		startLocusWearActivity(activityToStart);
+	}
+
+	protected void startLocusWearActivity(Class<? extends LocusWearActivity> activityToStart) {
 		if (mDrawer != null) {
 			mDrawer.getController().closeDrawer();
 		}
@@ -438,6 +458,14 @@ public abstract class LocusWearActivity extends WearableActivity {
 	}
 
 	/**
+	 * This function can be overriden in inheriting activities and is called during each on resume.
+	 * Activity that wishes to use custom HW button handling should register appropriate listeners
+	 * in the provided [delegate]
+	 * @param delegate
+	 */
+	protected abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
+
+	/**
 	 * @return whether this activity is allowed to run on top of other locus wear activity
 	 * (ie. doesn't call finish() on previous activity after this activity is resumed)
 	 */
@@ -459,8 +487,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		return getHwKeyDelegate().onKeyUp(keyCode, event) ? true : super.onKeyUp(keyCode, event);
 	}
-
-	public abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
 
 	protected void enableCustomRotatryActions() {
 		getHwKeyDelegate().registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());

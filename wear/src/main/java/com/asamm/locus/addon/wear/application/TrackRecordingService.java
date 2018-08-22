@@ -26,6 +26,8 @@ import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmValue;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
 
+import java.text.SimpleDateFormat;
+
 import locus.api.utils.Logger;
 
 import static com.asamm.locus.addon.wear.common.communication.DataPath.DEVICE_KEEP_ALIVE;
@@ -66,7 +68,6 @@ public class TrackRecordingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Logger.logD(TAG, "Service running");
         if (intent != null) {
             String action = intent.getAction();
             switch (action) {
@@ -127,7 +128,7 @@ public class TrackRecordingService extends Service {
         WearCommService.getInstance().pushLastTransmitTimeFor(DEVICE_KEEP_ALIVE);
 
         if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
-            Logger.logW(TAG, "checkAndRequestBodySensorPermission() failed during serivce start.");
+            Logger.logW(TAG, "checkAndRequestBodySensorPermission() failed during service start.");
             stopForegroundService();
             return;
         }
@@ -148,6 +149,8 @@ public class TrackRecordingService extends Service {
                         HrmValue hrm = RecordingSensorStore.hrm;
                         WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,
                                 new CommandFloatExtra(hrm.isValid() ? hrm.getValue() : Float.NaN));
+
+//                        Logger.logD(TAG, "Sending HRM, value " + hrm.getValue() + " timestamp " + new SimpleDateFormat("hh:mm:ss").format(hrm.getTimestamp()));
                         handler.postDelayed(this, 3000);
                     }
                 };

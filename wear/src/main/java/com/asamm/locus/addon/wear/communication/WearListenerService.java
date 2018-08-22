@@ -51,7 +51,7 @@ public class WearListenerService extends WearableListenerService {
 	public void onMessageReceived(MessageEvent messageEvent) {
 
 		DataPath p = DataPath.fromPath(messageEvent.getPath());
-		Logger.logD(TAG, "Received message " + p);
+//		Logger.logD(TAG, "Received message " + p);
 		if (p == null)
 			return;
 		try {

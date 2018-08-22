@@ -79,7 +79,6 @@ public class WaypointInputTextActivity extends LocusWearActivity {
         });
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         int numInputMethods = imm.getEnabledInputMethodList().size();
-        Logger.logD("KEYBOARD", "num input methods: "+numInputMethods);
         if ( numInputMethods == 0) {
             btnKeyboard.setVisibility(View.GONE);
             editText.setVisibility(View.GONE);

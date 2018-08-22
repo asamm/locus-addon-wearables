@@ -59,7 +59,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	 * @param adAction
 	 * @return
 	 */
-	HwButtonActionDescEnum getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum adAction);
+	public HwButtonActionDescEnum getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum adAction);
 
 	boolean useHwButtons();
 
@@ -71,7 +71,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	int getNumMultifunctionButtons();
 
 	/**
-	 * Delegate facotry. If Hw button support is disabled, returns dummy delegate with no sideeffects
+	 * Delegate factory. If Hw button support is disabled, returns dummy delegate with no sideeffects
 	 */
 	class Factory {
 		public static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
@@ -162,7 +162,7 @@ public interface LocusWearActivityHwKeyDelegate {
 			int idx = hwKeyCodes.indexOf(keyCode);
 			if (idx >= 0) {
 				HwButtonAction action = mHwButtonActions.get(longPressMapping[idx]);
-				Logger.logD("LocusWearActivityHwKeyDelegate", "long press " + longPressMapping[idx]);
+//				Logger.logD("LocusWearActivityHwKeyDelegate", "long press " + longPressMapping[idx]);
 				if (action != null) action.doButtonAction();
 				return action != null;
 			}
@@ -174,7 +174,7 @@ public interface LocusWearActivityHwKeyDelegate {
 			int idx = hwKeyCodes.indexOf(keyCode);
 			if (idx >= 0 && (event.getFlags() & KeyEvent.FLAG_CANCELED_LONG_PRESS) == 0) {
 				HwButtonAction action = mHwButtonActions.get(shortPressMapping[idx]);
-				Logger.logD("LocusWearActivityHwKeyDelegate", "short press " + shortPressMapping[idx]);
+//				Logger.logD("LocusWearActivityHwKeyDelegate", "short press " + shortPressMapping[idx]);
 				if (action != null) action.doButtonAction();
 				return action != null;
 			}
@@ -202,7 +202,6 @@ public interface LocusWearActivityHwKeyDelegate {
 						mRotaryAccumulator %= triggerLimit;
 						if (action != null) action.doButtonAction();
 					}
-					Logger.logD("LocusWearActivityHwKeyDelegate", "ROTARY RAW " + (-mRotaryAccumulator));
 					return true;
 				}
 
