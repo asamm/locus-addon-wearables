@@ -18,25 +18,45 @@
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">繼續安裝到您的手機...</string>
   <!-- UI Label current altitude -->
+  <string name="stat_altitude">高度</string>
   <!-- UI Label Altitude minimal -->
+  <string name="stat_altitude_min">最低高度</string>
   <!-- UI Label Altitude maximal -->
+  <string name="stat_altitude_max">最高高度</string>
   <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <string name="stat_battery_level">電池電量</string>
   <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <string name="stat_blank_info_text">長按編輯</string>
   <!-- UI Label average cadence -->
+  <string name="stat_cadence_avg">踏頻 (平均)</string>
   <!-- UI Label maximal cadence -->
+  <string name="stat_cadence_max">踏頻 (最大)</string>
   <!-- UI Label Current time -->
+  <string name="stat_current_time">目前時間</string>
   <!-- UI Label Distance downhill -->
+  <string name="stat_distance_down">距離 (下坡)</string>
   <!-- UI Label Distance uphill -->
+  <string name="stat_distance_up">距離 (上坡)</string>
   <!-- UI Label elevation loss -->
+  <string name="stat_elevation_down">海拔損耗</string>
   <!-- UI Label elevation gain -->
+  <string name="stat_elevation_up">海拔增益</string>
   <!-- UI Label Energy -->
+  <string name="stat_energy">電量</string>
   <!-- UI Label heart rate (current value) -->
+  <string name="stat_hrm">心率</string>
   <!-- UI Label heart rate average -->
+  <string name="stat_hrm_avg">心率(平均)</string>
   <!-- UI Label maximal heart rate -->
+  <string name="stat_hrm_max">心率(最大)</string>
   <!-- UI Label pace -->
+  <string name="stat_pace">配速</string>
   <!-- UI Label track recording time - movement only -->
+  <string name="stat_track_time_move">跟蹤時間 (移動)</string>
   <!-- UI Label Average speed -->
+  <string name="stat_speed_avg">平均速度</string>
   <!-- UI Label maximal speed -->
+  <string name="stat_speed_max">最快速度</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">速度</string>
   <!-- UI Label Average moving speed -->
@@ -46,15 +66,25 @@
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">航跡時間</string>
   <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <string name="err_no_hrm_permission">抱歉，未經您的許可無法讀取人體傳感器。</string>
   <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <string name="err_hrm_sensor_not_available">您的設備無法使用心率感測器</string>
   <!-- Description text for HRM/track rec. service in system notification area -->
+  <string name="hrm_rec_service_desc">由於追蹤記錄中，心率感測器已啟動</string>
   <!-- Label "Settings"-->
+  <string name="settings">設置</string>
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <string name="settings_hrm">記錄跟蹤時監控心率？</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">選項</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
+  <string name="wp_name_default">保留原樣</string>
   <!-- Option to type in a point name when creating new waypoint -->
+  <string name="wp_name_keyboard">點擊它</string>
   <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <string name="wp_name_speech">語音輸入</string>
   <!-- Title/header for the dialog with options of how to name a new waypoint -->
+  <string name="wp_name_title">航點名稱？</string>
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">載入中</string>
   <!-- Ambient mode (UI text) -->

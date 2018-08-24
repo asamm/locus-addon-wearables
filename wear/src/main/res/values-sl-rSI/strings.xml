@@ -76,6 +76,7 @@
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
   <string name="settings_hrm">Meri srčni utrip med snemanjem sledi?</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">Možnosti</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
   <string name="wp_name_default">Obdrži privzeto</string>
   <!-- Option to type in a point name when creating new waypoint -->

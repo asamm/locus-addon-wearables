@@ -18,25 +18,45 @@
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Συνεχίστε την εγκατάσταση στο τηλέφωνό σας...</string>
   <!-- UI Label current altitude -->
+  <string name="stat_altitude">Υψόμετρο</string>
   <!-- UI Label Altitude minimal -->
+  <string name="stat_altitude_min">Ελάχιστο υψόμετρο</string>
   <!-- UI Label Altitude maximal -->
+  <string name="stat_altitude_max">Μέγιστο υψόμετρο</string>
   <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <string name="stat_battery_level">Επίπεδο μπαταρίας</string>
   <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <string name="stat_blank_info_text">Παρατεταμένο πάτημα για επεξεργασία</string>
   <!-- UI Label average cadence -->
+  <string name="stat_cadence_avg">Ρυθμός (μέσος όρος)</string>
   <!-- UI Label maximal cadence -->
+  <string name="stat_cadence_max">Ρυθμός (μέγιστος)</string>
   <!-- UI Label Current time -->
+  <string name="stat_current_time">Τρέχουσα ώρα</string>
   <!-- UI Label Distance downhill -->
+  <string name="stat_distance_down">Απόσταση (κατωφέρεια)</string>
   <!-- UI Label Distance uphill -->
+  <string name="stat_distance_up">Απόσταση (ανηφορικά)</string>
   <!-- UI Label elevation loss -->
+  <string name="stat_elevation_down">Απώλεια υψομέτρου</string>
   <!-- UI Label elevation gain -->
+  <string name="stat_elevation_up">Κέρδος ανύψωσης</string>
   <!-- UI Label Energy -->
+  <string name="stat_energy">Ενέργεια</string>
   <!-- UI Label heart rate (current value) -->
+  <string name="stat_hrm">Καρδιακός ρυθμός</string>
   <!-- UI Label heart rate average -->
+  <string name="stat_hrm_avg">Καρδιακός ρυθμός (μέση)</string>
   <!-- UI Label maximal heart rate -->
+  <string name="stat_hrm_max">Καρδιακός ρυθμός (μεγ.)</string>
   <!-- UI Label pace -->
+  <string name="stat_pace">Βήμα</string>
   <!-- UI Label track recording time - movement only -->
+  <string name="stat_track_time_move">Χρόνος διαδρομής (Κίνηση)</string>
   <!-- UI Label Average speed -->
+  <string name="stat_speed_avg">Μέση ταχύτητα</string>
   <!-- UI Label maximal speed -->
+  <string name="stat_speed_max">Μέγιστη ταχύτητα</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Ταχύτητα</string>
   <!-- UI Label Average moving speed -->
@@ -46,15 +66,25 @@
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">Χρόνος ίχνους</string>
   <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <string name="err_no_hrm_permission">Συγνώμη, αδύνατο το διάβασμα των αισθητήρων σώματος χωρίς την άδειά σας.</string>
   <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <string name="err_hrm_sensor_not_available">Το HRM δεν είναι διαθέσιμο στη συσκευή σας</string>
   <!-- Description text for HRM/track rec. service in system notification area -->
+  <string name="hrm_rec_service_desc">Το HRM είναι ενεργό λόγω της καταγραφής του ίχνους</string>
   <!-- Label "Settings"-->
+  <string name="settings">Ρυθμίσεις</string>
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <string name="settings_hrm">Παρακολούθηση του καρδιακού ρυθμού κατά την εγγραφή ίχνους;</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">Επιλογές</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
+  <string name="wp_name_default">Αφήστε το όπως είναι</string>
   <!-- Option to type in a point name when creating new waypoint -->
+  <string name="wp_name_keyboard">Πατήστε το</string>
   <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <string name="wp_name_speech">Πείτε το</string>
   <!-- Title/header for the dialog with options of how to name a new waypoint -->
+  <string name="wp_name_title">Όνομα του σημείου;</string>
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Φόρτωση</string>
   <!-- Ambient mode (UI text) -->

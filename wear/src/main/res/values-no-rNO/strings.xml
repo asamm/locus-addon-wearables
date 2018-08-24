@@ -76,6 +76,7 @@
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
   <string name="settings_hrm">Overvåke puls under sporopptak?</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">Valg</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
   <string name="wp_name_default">La det være som det er</string>
   <!-- Option to type in a point name when creating new waypoint -->

@@ -28,6 +28,10 @@ public class HrmValue extends SensorValue{
 
     @Override
     public boolean isValid() {
-        return value >= 25 && value <= 250 && System.currentTimeMillis() - timestamp < VALUE_TIMEOUT_MS ;
+        return isValidHrm(value) && System.currentTimeMillis() - timestamp < VALUE_TIMEOUT_MS ;
+    }
+
+    public static boolean isValidHrm(float value) {
+        return value >= 25 && value <= 250;
     }
 }

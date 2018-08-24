@@ -18,25 +18,45 @@
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <string name="continue_installation">Procéder à l’installation sur votre téléphone...</string>
   <!-- UI Label current altitude -->
+  <string name="stat_altitude">Altitude</string>
   <!-- UI Label Altitude minimal -->
+  <string name="stat_altitude_min">Altitude min.</string>
   <!-- UI Label Altitude maximal -->
+  <string name="stat_altitude_max">Altitude max.</string>
   <!-- UI Label Battery level (remaining battery charge in percent) -->
+  <string name="stat_battery_level">Niveau de batterie</string>
   <!-- info text displayed in dashboard cell if its content is empty (no value selected to display yet) -->
+  <string name="stat_blank_info_text">Appui long pour modifier</string>
   <!-- UI Label average cadence -->
+  <string name="stat_cadence_avg">Cadence (moy.)</string>
   <!-- UI Label maximal cadence -->
+  <string name="stat_cadence_max">Cadence (max.)</string>
   <!-- UI Label Current time -->
+  <string name="stat_current_time">Heure actuelle</string>
   <!-- UI Label Distance downhill -->
+  <string name="stat_distance_down">Distance (descente)</string>
   <!-- UI Label Distance uphill -->
+  <string name="stat_distance_up">Distance (Montée)</string>
   <!-- UI Label elevation loss -->
+  <string name="stat_elevation_down">Perte d’altitude</string>
   <!-- UI Label elevation gain -->
+  <string name="stat_elevation_up">Gain d’altitude</string>
   <!-- UI Label Energy -->
+  <string name="stat_energy">Énergie</string>
   <!-- UI Label heart rate (current value) -->
+  <string name="stat_hrm">Fréquence cardiaque</string>
   <!-- UI Label heart rate average -->
+  <string name="stat_hrm_avg">Fréquence cardiaque (moy.)</string>
   <!-- UI Label maximal heart rate -->
+  <string name="stat_hrm_max">Fréquence cardiaque (max.)</string>
   <!-- UI Label pace -->
+  <string name="stat_pace">Rythme</string>
   <!-- UI Label track recording time - movement only -->
+  <string name="stat_track_time_move">Durée du parcours (en mouvement)</string>
   <!-- UI Label Average speed -->
+  <string name="stat_speed_avg">Vitesse moy.</string>
   <!-- UI Label maximal speed -->
+  <string name="stat_speed_max">Vitesse max.</string>
   <!-- UI Label speed (current) -->
   <string name="stat_speed">Vitesse</string>
   <!-- UI Label Average moving speed -->
@@ -46,15 +66,25 @@
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">Durée du parcours</string>
   <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <string name="err_no_hrm_permission">Désolé, impossible de lire les capteurs corporels sans votre permission.</string>
   <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <string name="err_hrm_sensor_not_available">Cardiofréquencemètre non disponible sur votre appareil</string>
   <!-- Description text for HRM/track rec. service in system notification area -->
+  <string name="hrm_rec_service_desc">Cardiofréquencemètre actif pour l\'enregistrement de parcours</string>
   <!-- Label "Settings"-->
+  <string name="settings">Réglages</string>
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <string name="settings_hrm">Surveiller la fréquence cardiaque lors de l’enregistrement de parcours ?</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">Options</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
+  <string name="wp_name_default">Laisser le tel quel</string>
   <!-- Option to type in a point name when creating new waypoint -->
+  <string name="wp_name_keyboard">Saisissez le</string>
   <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <string name="wp_name_speech">Enoncez le</string>
   <!-- Title/header for the dialog with options of how to name a new waypoint -->
+  <string name="wp_name_title">Nommer le waypoint ?</string>
   <!-- Loading (placeholder text) -->
   <string name="loading_profiles">Chargement</string>
   <!-- Ambient mode (UI text) -->

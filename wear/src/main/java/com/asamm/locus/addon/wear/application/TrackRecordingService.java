@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -44,6 +45,9 @@ public class TrackRecordingService extends Service {
     public static final String ACTION_START_FOREGROUND_SERVICE = "ACTION_START_FOREGROUND_SERVICE";
     public static final String ACTION_STOP_FOREGROUND_SERVICE = "ACTION_STOP_FOREGROUND_SERVICE";
     private static final long DEVICE_KEEP_ALIVE_TIMEOUT_MS = 20 * 60_000;
+
+    // number of HR sensor restarts in case it is not measuring.
+    private int numHrRestarts = 0;
 
     private static TrackRecordingService instance = null;
 
@@ -118,9 +122,8 @@ public class TrackRecordingService extends Service {
 
 
         // Start foreground service.
-        startForeground(1, notification);
-
-        afterStart();
+        startForeground(3456, notification);
+        new Handler(getMainLooper()).postDelayed(() ->{afterStart();}, 1000);
     }
 
     private void afterStart() {
@@ -134,19 +137,32 @@ public class TrackRecordingService extends Service {
         }
         FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
         if (hrmConfig == FeatureConfigEnum.ENABLED) {
-            if (mSensors.startHrSensor(this)) {
-                final Handler handler = new Handler();
+            if (mSensors.startHrSensor(this, false)) {
+                final Handler handler = new Handler(getMainLooper());
                 Runnable sendHrmUpdate = new Runnable() {
                     @Override
                     public void run() {
                         if (mSensors == null)
                             return;
-                        if (System.currentTimeMillis() - WearCommService.getInstance().getLastTransmitTimeFor(DEVICE_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
+
+                        final long currentTime = System.currentTimeMillis();
+                        if (currentTime - WearCommService.getInstance().getLastTransmitTimeFor(DEVICE_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
                             Logger.logW(TAG, "DEVICE_KEEP_ALIVE has not come in time, terminating HRM service.");
                             stopForegroundService();
                             return;
                         }
                         HrmValue hrm = RecordingSensorStore.hrm;
+                        boolean isValid = hrm.isValid();
+                        if (!isValid && currentTime - hrm.getTimestamp() > (numHrRestarts + 1) * 90_000) {
+                            mSensors.stopHrSensor(TrackRecordingService.this);
+                            new Handler(getMainLooper()).postDelayed(() -> {
+                                mSensors.startHrSensor(TrackRecordingService.this, true);
+                                numHrRestarts++;
+                                Logger.logW(TAG, "HR sensor restarted. Attempt: " + numHrRestarts);
+                            }, 500);
+                        }
+
+
                         WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,
                                 new CommandFloatExtra(hrm.isValid() ? hrm.getValue() : Float.NaN));
 
@@ -154,7 +170,7 @@ public class TrackRecordingService extends Service {
                         handler.postDelayed(this, 3000);
                     }
                 };
-                handler.postDelayed(sendHrmUpdate, 3000);
+                handler.postDelayed(sendHrmUpdate, 2000);
             }
         }
     }

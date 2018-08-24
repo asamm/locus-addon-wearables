@@ -66,16 +66,23 @@
   <!-- UI Label track recording time total -->
   <string name="stat_track_time">Tracktijd</string>
   <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+  <string name="err_no_hrm_permission">Sorry, kan lichaams-sensoren niet lezen zonder uw toestemming.</string>
   <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+  <string name="err_hrm_sensor_not_available">HRM niet beschikbaar op uw apparaat</string>
   <!-- Description text for HRM/track rec. service in system notification area -->
+  <string name="hrm_rec_service_desc">HRM actief als gevolg van opname van track</string>
   <!-- Label "Settings"-->
   <string name="settings">Instellingen</string>
   <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+  <string name="settings_hrm">Monitor hartslag bij het opnemen van track?</string>
   <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+  <string name="title_activity_stats_select_list">Opties</string>
   <!-- Option to leave default waypoint name when creating new waypoint -->
   <string name="wp_name_default">Zo laten</string>
   <!-- Option to type in a point name when creating new waypoint -->
+  <string name="wp_name_keyboard">Type naam in</string>
   <!-- Option to enter a point name using speech recognition when creating new waypoint -->
+  <string name="wp_name_speech">Spreek naam in</string>
   <!-- Title/header for the dialog with options of how to name a new waypoint -->
   <string name="wp_name_title">Naam waypoint?</string>
   <!-- Loading (placeholder text) -->
