@@ -142,7 +142,8 @@ public class TrackRecordingService extends Service {
                 Runnable sendHrmUpdate = new Runnable() {
                     @Override
                     public void run() {
-                        if (mSensors == null)
+                        RecordingSensorManager sensors = mSensors;
+                        if (sensors == null)
                             return;
 
                         final long currentTime = System.currentTimeMillis();
@@ -154,23 +155,25 @@ public class TrackRecordingService extends Service {
                         HrmValue hrm = RecordingSensorStore.hrm;
                         boolean isValid = hrm.isValid();
                         if (!isValid && currentTime - hrm.getTimestamp() > (numHrRestarts + 1) * 90_000) {
-                            mSensors.stopHrSensor(TrackRecordingService.this);
+                            sensors.stopHrSensor(TrackRecordingService.this);
                             new Handler(getMainLooper()).postDelayed(() -> {
-                                mSensors.startHrSensor(TrackRecordingService.this, true);
+                                sensors.startHrSensor(TrackRecordingService.this, true);
                                 numHrRestarts++;
                                 Logger.logW(TAG, "HR sensor restarted. Attempt: " + numHrRestarts);
                             }, 500);
                         }
 
-
+                        RecordingSensorStore.hrmDebug.setSendTimestamp(currentTime);
                         WearCommService.getInstance().sendDataItem(PUT_HEART_RATE,
                                 new CommandFloatExtra(hrm.isValid() ? hrm.getValue() : Float.NaN));
 
 //                        Logger.logD(TAG, "Sending HRM, value " + hrm.getValue() + " timestamp " + new SimpleDateFormat("hh:mm:ss").format(hrm.getTimestamp()));
-                        handler.postDelayed(this, 3000);
+                        handler.postDelayed(this, 2200);
                     }
                 };
                 handler.postDelayed(sendHrmUpdate, 2000);
+            } else {
+                stopForegroundService();
             }
         }
     }

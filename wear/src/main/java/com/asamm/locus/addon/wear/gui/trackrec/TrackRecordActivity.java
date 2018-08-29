@@ -564,7 +564,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         HwButtonActionDescEnum secondaryActionBtn =
                 delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY);
 
-        delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_3_LONG_PRESS, () -> startLocusWearActivity(MapActivity.class));
+        delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_2_LONG_PRESS, () -> startLocusWearActivity(MapActivity.class));
 
         delegate.registerHwButtonListener(upPrimaryBtn, () -> {
             if (isRecScreenVisible()) {

@@ -606,7 +606,7 @@ public class MapActivity extends LocusWearActivity {
 		if (delegate.getNumMultifunctionButtons() < 2) {
 			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
 		} else {
-			delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_3_LONG_PRESS,
+			delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_2_LONG_PRESS,
 					() -> startLocusWearActivity(TrackRecordActivity.class));
 			delegate.registerHwButtonListener(upPrimaryBtn, zoomInAction);
 			delegate.registerHwButtonListener(downBtn, zoomOutAction);

@@ -219,6 +219,7 @@ public interface TrackStatConsumable {
                 String unit = dbgVal.getHrmAccuracy()+ ":"
                         + (Float.isNaN(tmpDbgVal) ? "N" : (int)tmpDbgVal)+ ":" +timeDiff;
                 unit = unit + "/" + (Float.isNaN(tmpVal) ? "N" : (int)tmpVal)+ ":" + ((System.currentTimeMillis() - val.getTimestamp() + 500) / 1000);
+                unit = unit + ":" + ((System.currentTimeMillis() - dbgVal.getSendTimestamp() + 500) / 1000);
                 return new ValueUnitContainer(value, unit);
             };
         }

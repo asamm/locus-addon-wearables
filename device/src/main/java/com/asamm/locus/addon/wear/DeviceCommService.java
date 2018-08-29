@@ -232,12 +232,17 @@ public class DeviceCommService extends LocusWearCommService  {
             }
             break;
             case PUT_HEART_RATE: {
+                final String tag = "Wear HRM";
                 CommandFloatExtra hrValue = ((CommandFloatExtra) params);
                 if (hrValue.isValid()) {
                     Intent intent = new Intent();
                     intent.setAction("com.asamm.locus.DATA_TASK");
-                    intent.putExtra("tasks", "{ heart_rate: { data:" + hrValue.getValue() + " } }");
+                    String hrmData = "{heart_rate:{data:" + hrValue.getValue() + "}}";
+                    intent.putExtra("tasks", hrmData);
                     c.sendBroadcast(intent);
+                    sendLocusMapLogD(tag, hrmData);
+                } else {
+                    sendLocusMapLogD(tag, "Ignored, invalid data: "+ hrValue.getValue());
                 }
                 Long lastDevKeepAlive = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE);
                 UpdateContainer lastUpdate = mLastUpdate;
@@ -255,6 +260,17 @@ public class DeviceCommService extends LocusWearCommService  {
                 // ignore
                 break;
         }
+    }
+
+    private void sendLocusMapLogD(String tag, String text) {
+        Intent intent = new Intent();
+        intent.setAction("com.asamm.locus.DATA_TASK");
+        intent.putExtra("tasks"," {log:{" +
+                "type:\"d\"," +
+                "tag: \"" + tag + "\"," +
+                "value: \"" + text + "\"}" +
+                "}");
+        context.sendBroadcast(intent);
     }
 
     void onDataChanged(Context c, DataEvent newData) {

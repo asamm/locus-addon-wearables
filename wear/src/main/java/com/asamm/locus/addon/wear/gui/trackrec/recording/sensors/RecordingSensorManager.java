@@ -76,6 +76,8 @@ public class RecordingSensorManager {
                     float val = sensorEvent.values[0];
                     if (HrmValue.isValidHrm(val) && sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_UNRELIABLE) {
                         RecordingSensorStore.hrm.setValue(val);
+                    } else {
+                        RecordingSensorStore.hrm.setValue(0);
                     }
                     RecordingSensorStore.hrmDebug.setValue(val, sensorEvent.accuracy);
                 } else {

@@ -10,6 +10,7 @@ public class HrmDebugValue extends SensorValue{
     /** HRM value in BPM */
     volatile private float value;
     volatile private int accuracy;
+    volatile private long sendTimestamp;
 
 
     public HrmDebugValue() {
@@ -29,6 +30,14 @@ public class HrmDebugValue extends SensorValue{
         timestamp = System.currentTimeMillis();
         this.value = value;
         this.accuracy = accuracy;
+    }
+
+    public long getSendTimestamp() {
+        return sendTimestamp;
+    }
+
+    public void setSendTimestamp(long sendTimestamp) {
+        this.sendTimestamp = sendTimestamp;
     }
 
     @Override
