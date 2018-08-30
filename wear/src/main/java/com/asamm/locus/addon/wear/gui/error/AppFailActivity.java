@@ -65,6 +65,17 @@ public class AppFailActivity extends WearableActivity {
 		int phoneDeviceType = PhoneDeviceType.getPhoneDeviceType(getApplicationContext());
 		// Only target AW2.0+ since AW 1.x user should not see this at all and should reinstall manually
 		if (Build.VERSION.SDK_INT >= 25 && phoneDeviceType == PhoneDeviceType.DEVICE_TYPE_ANDROID) {
+
+			if (isWatchAppOutdated()) {
+				final String appPackageName = getPackageName();
+				try {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+				} catch (android.content.ActivityNotFoundException e) {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+				}
+				finish();
+				return;
+			}
 			// Create Remote Intent to open Play Store listing of app on remote device.
 			Intent intentAndroid = new Intent(Intent.ACTION_VIEW)
 					.addCategory(Intent.CATEGORY_BROWSABLE)
@@ -107,7 +118,6 @@ public class AppFailActivity extends WearableActivity {
 				refresh();
 			});
 		}
-
 	}
 
 	public void onRetryClicked(View v) {
@@ -117,12 +127,22 @@ public class AppFailActivity extends WearableActivity {
 		finish();
 	}
 
-	private boolean isNotInstalledError() {
-		return (mFailType == AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE);
+	private boolean isDeviceAppNotInstalled() {
+		return mFailType == AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE;
 	}
 
+	private boolean isDeviceAppOutdated() {
+		return mFailType == AppFailType.CONNECTION_ERROR_DEVICE_APP_OUTDATED;
+	}
+
+	private boolean isWatchAppOutdated() {
+		return mFailType == AppFailType.CONNECTION_ERROR_WATCH_APP_OUTDATED;
+	}
+
+
 	private void refresh() {
-		if (isNotInstalledError()) {
+		if (isDeviceAppNotInstalled() || isDeviceAppOutdated() || isWatchAppOutdated()) {
+		    mInstallButton.setText(getText(isDeviceAppNotInstalled() ? R.string.install : R.string.update));
 			mInstallButton.setVisibility(mInstallReqResultReceived ? View.GONE : View.VISIBLE);
 			mRetryButton.setVisibility(!mInstallReqResultReceived ? View.GONE : View.VISIBLE);
 		}

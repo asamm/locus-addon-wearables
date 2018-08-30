@@ -11,8 +11,9 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class HandShakeValue extends TimeStampStorable {
-	int mLocusVersion;
-	byte mStatusFlag;
+	private int mLocusVersion;
+	private int mAddOnVersion;
+	private byte mStatusFlag;
 
 	private static final byte STATUS_LOCUS_RUNNING = 0b1;
 	private static final byte STATUS_PERIODIC_UPDATES = 0b10;
@@ -25,22 +26,24 @@ public class HandShakeValue extends TimeStampStorable {
 		super(data);
 	}
 
-	public HandShakeValue(int locusVersion, boolean locusRunning, boolean periodicUpdatesEnabled) {
+	public HandShakeValue(int locusVersion, int addonVersion, boolean locusRunning, boolean periodicUpdatesEnabled) {
 		this();
 		mLocusVersion = locusVersion;
+		mAddOnVersion = addonVersion;
 		setLocusRunning(locusRunning);
 		setPeriodicUpdates(periodicUpdatesEnabled);
 	}
 
 	@Override
 	protected int getVersion() {
-		return 0;
+		return 1;
 	}
 
 	@Override
 	public void reset() {
 		super.reset();
 		mLocusVersion = -1;
+		mAddOnVersion = -1;
 		mStatusFlag = 0;
 	}
 
@@ -49,6 +52,9 @@ public class HandShakeValue extends TimeStampStorable {
 		super.readObject(version, dr);
 		mLocusVersion = dr.readInt();
 		mStatusFlag = dr.readBytes(1)[0];
+		if (version >= 1) {
+			mAddOnVersion = dr.readInt();
+		}
 	}
 
 	@Override
@@ -56,7 +62,7 @@ public class HandShakeValue extends TimeStampStorable {
 		super.writeObject(dw);
 		dw.writeInt(mLocusVersion);
 		dw.write(mStatusFlag);
-		int i = 0;
+		dw.writeInt(mAddOnVersion);
 	}
 
 	public int getmLocusVersion() {
@@ -91,4 +97,7 @@ public class HandShakeValue extends TimeStampStorable {
 		return mLocusVersion < 0;
 	}
 
+	public int getmAddOnVersion() {
+		return mAddOnVersion;
+	}
 }

@@ -7,8 +7,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
@@ -16,8 +16,6 @@ import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectAction
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import locus.api.utils.Logger;
 
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_LONG_PRESS;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_PRESS;
@@ -61,7 +59,12 @@ public interface LocusWearActivityHwKeyDelegate {
 	 */
 	public HwButtonActionDescEnum getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum adAction);
 
-	boolean useHwButtons();
+	boolean isUseHwButtons();
+
+	/**
+	 * Currently only used to temporarily disable  delegate right before screen switch.
+	 */
+	public void setUseHwButtons(boolean enabled);
 
 	void registerDefaultRotaryMotionListener(View rootView);
 
@@ -111,8 +114,12 @@ public interface LocusWearActivityHwKeyDelegate {
 					}
 
 					@Override
-					public boolean useHwButtons() {
+					public boolean isUseHwButtons() {
 						return false;
+					}
+
+					@Override
+					public void setUseHwButtons(boolean enabled) {
 					}
 
 					@Override
@@ -141,6 +148,10 @@ public interface LocusWearActivityHwKeyDelegate {
 		private int mNumMultifunctionButtons = 0;
 		private Double mRotaryAccumulator = 0.0;
 		private final int mScreenHeight;
+		// used only to temporarily disable while switching screens
+		private boolean mUseHwButtons = true;
+		// used to avoid fake short press detections when holding down a button and switching screens
+		private boolean firstKeyDownReceived = false;
 
 		private LocusWearActivityHwKeyDelegateImpl(LocusWearActivity ctx) {
 			this.mContext = ctx;
@@ -151,6 +162,7 @@ public interface LocusWearActivityHwKeyDelegate {
 		@Override
 		public boolean onKeyDown(int keyCode, KeyEvent event) {
 			if (hwKeyCodes.contains(keyCode)) {
+				firstKeyDownReceived = true;
 				event.startTracking();
 				return true;
 			}
@@ -172,7 +184,8 @@ public interface LocusWearActivityHwKeyDelegate {
 		@Override
 		public boolean onKeyUp(int keyCode, KeyEvent event) {
 			int idx = hwKeyCodes.indexOf(keyCode);
-			if (idx >= 0 && (event.getFlags() & KeyEvent.FLAG_CANCELED_LONG_PRESS) == 0) {
+			if (isUseHwButtons() && firstKeyDownReceived &&
+					idx >= 0 && (event.getFlags() & KeyEvent.FLAG_CANCELED_LONG_PRESS) == 0) {
 				HwButtonAction action = mHwButtonActions.get(shortPressMapping[idx]);
 //				Logger.logD("LocusWearActivityHwKeyDelegate", "short press " + shortPressMapping[idx]);
 				if (action != null) action.doButtonAction();
@@ -215,8 +228,13 @@ public interface LocusWearActivityHwKeyDelegate {
 		}
 
 		@Override
-		public boolean useHwButtons() {
-			return true;
+		public boolean isUseHwButtons() {
+			return mUseHwButtons;
+		}
+
+		@Override
+		public void setUseHwButtons(boolean enabled) {
+			mUseHwButtons = enabled;
 		}
 
 		/**

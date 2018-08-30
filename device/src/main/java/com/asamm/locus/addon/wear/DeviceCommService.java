@@ -40,6 +40,8 @@ import locus.api.objects.extra.Location;
 import locus.api.objects.extra.TrackStats;
 import locus.api.utils.Logger;
 
+import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
+
 /**
  * Singleton class for handling communication between this application and the watch.
  * Created by Milan Cejnar on 08.11.2017.
@@ -176,6 +178,10 @@ public class DeviceCommService extends LocusWearCommService  {
                 Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException");
             }
         }
+        // TODO cejnar remove all sendLocusMapLogD() calls
+        if (path != PUT_HEART_RATE) {
+            sendLocusMapLogD("Wear", "Received "+path);
+        }
 
         switch (path) {
             case GET_HAND_SHAKE:
@@ -239,7 +245,9 @@ public class DeviceCommService extends LocusWearCommService  {
                     intent.setAction("com.asamm.locus.DATA_TASK");
                     String hrmData = "{heart_rate:{data:" + hrValue.getValue() + "}}";
                     intent.putExtra("tasks", hrmData);
-                    c.sendBroadcast(intent);
+                    sendBroadcast(c, intent);
+
+                    // TODO cejnar remove logging
                     sendLocusMapLogD(tag, hrmData);
                 } else {
                     sendLocusMapLogD(tag, "Ignored, invalid data: "+ hrValue.getValue());
@@ -262,6 +270,22 @@ public class DeviceCommService extends LocusWearCommService  {
         }
     }
 
+    private void sendBroadcast(Context c, Intent i) {
+        LocusUtils.LocusVersion tmpLv = getLocusVersion(c);
+        if (tmpLv != null) {
+            LocusUtils.sendBroadcast(c, i, tmpLv);
+        } else {
+            Logger.logE(TAG, "Cannot send broadcast, LocusVersion is null.");
+        }
+    }
+
+    private LocusUtils.LocusVersion getLocusVersion(Context c) {
+        if (lv == null) {
+            lv = LocusUtils.getActiveVersion(c);
+        }
+        return lv;
+    }
+
     private void sendLocusMapLogD(String tag, String text) {
         Intent intent = new Intent();
         intent.setAction("com.asamm.locus.DATA_TASK");
@@ -270,7 +294,7 @@ public class DeviceCommService extends LocusWearCommService  {
                 "tag: \"" + tag + "\"," +
                 "value: \"" + text + "\"}" +
                 "}");
-        context.sendBroadcast(intent);
+        sendBroadcast(context, intent);
     }
 
     void onDataChanged(Context c, DataEvent newData) {
@@ -519,6 +543,7 @@ public class DeviceCommService extends LocusWearCommService  {
         HandShakeValue value = lv == null ?
                 new HandShakeValue() :
                 new HandShakeValue(lv.getVersionCode(),
+                        BuildConfig.VERSION_CODE - 1, // - 1 to compensate for device suffix
                         locusInfo != null && locusInfo.isRunning(),
                         locusInfo != null && locusInfo.isPeriodicUpdatesEnabled());
         return value;

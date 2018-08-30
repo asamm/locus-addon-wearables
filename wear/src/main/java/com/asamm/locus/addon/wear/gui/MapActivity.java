@@ -17,10 +17,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
+import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
@@ -607,7 +607,10 @@ public class MapActivity extends LocusWearActivity {
 			delegate.registerHwButtonListener(upPrimaryBtn, centerAction);
 		} else {
 			delegate.registerHwButtonListener(HwButtonActionDescEnum.BTN_2_LONG_PRESS,
-					() -> startLocusWearActivity(TrackRecordActivity.class));
+					() -> {
+						delegate.setUseHwButtons(false);
+						startLocusWearActivity(TrackRecordActivity.class);
+					});
 			delegate.registerHwButtonListener(upPrimaryBtn, zoomInAction);
 			delegate.registerHwButtonListener(downBtn, zoomOutAction);
 			delegate.registerHwButtonListener(secondaryActionBtn, centerAction);

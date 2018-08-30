@@ -256,6 +256,11 @@ public class MainApplication extends Application implements Application.Activity
 			doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION);
 			return false;
 		}
+		if (handShakeValue.getmAddOnVersion() < BuildConfig.VERSION_CODE) {
+			doApplicationFail(AppFailType.CONNECTION_ERROR_DEVICE_APP_OUTDATED);
+		} else if (handShakeValue.getmAddOnVersion() > BuildConfig.VERSION_CODE) {
+			doApplicationFail(AppFailType.CONNECTION_ERROR_WATCH_APP_OUTDATED);
+		}
 
 		if (!handShakeValue.isPeriodicUpdates()) {
 			doApplicationFail(AppFailType.PERIODIC_UPDATES_DISABLED);

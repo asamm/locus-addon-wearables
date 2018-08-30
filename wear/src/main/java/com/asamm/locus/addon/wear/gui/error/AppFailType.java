@@ -22,7 +22,11 @@ public enum AppFailType {
 	/**
 	 * Application is not installed on the device
 	 */
-	CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE(R.string.err_connection_device_app_not_installed);
+	CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE(R.string.err_connection_device_app_not_installed),
+	/** Version of phone addon is older than watch addon */
+	CONNECTION_ERROR_DEVICE_APP_OUTDATED(R.string.err_connection_device_app_outdated),
+	/** Version of phone addon is newer than watch addon */
+	CONNECTION_ERROR_WATCH_APP_OUTDATED(R.string.err_connection_watch_app_outdated);
 
 
 	private final int mErrorMsgId;
