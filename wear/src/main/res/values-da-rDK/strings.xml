@@ -7,6 +7,8 @@
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
   <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
+  <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the phone is out of date. -->
+  <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the watch is out of date. -->
   <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
   <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
   <!-- UI Label current altitude -->
@@ -50,6 +52,7 @@
   <!-- Ambient mode (UI text) -->
   <!-- Install button text -->
   <string name="install">Installer</string>
+  <!-- Update button text -->
   <!-- Screen header for track recording screen, should be reasonably short -->
   <!-- Screen header for profile list screen, should be short -->
   <string name="title_activity_profile_list">Profiler</string>
