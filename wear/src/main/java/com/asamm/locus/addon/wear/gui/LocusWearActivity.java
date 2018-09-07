@@ -41,6 +41,8 @@ import locus.api.utils.Logger;
 public abstract class LocusWearActivity extends WearableActivity {
 
 	private static final String TAG = "LocusWearActivity";
+	private static final boolean IS_DEBUG_MODE_ENABLED = false;
+
 	public WearActivityState mState = WearActivityState.ON_CREATE;
 
 	protected MainNavigationDrawer mDrawer;
@@ -350,7 +352,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		mDrawer = findViewById(R.id.navigation_drawer);
 		mDrawerCloseArrowImg = findViewById(R.id.imageViewDrawerOpened);
 		mTvNavDrawerTime = findViewById(R.id.navDrawerTvTime);
-		if (mTvNavDrawerTime != null) {
+		if (mTvNavDrawerTime != null && IS_DEBUG_MODE_ENABLED) {
 			mTvNavDrawerTime.setOnClickListener(view -> {
  				dbgClickCounter++;
  				if (dbgClickCounter == 6) {

@@ -93,6 +93,7 @@
   <!-- Install button text -->
   <string name="install">Installeer</string>
   <!-- Update button text -->
+  <string name="update">Update</string>
   <!-- Screen header for track recording screen, should be reasonably short -->
   <string name="title_activity_track_record">Trackopname</string>
   <!-- Screen header for profile list screen, should be short -->

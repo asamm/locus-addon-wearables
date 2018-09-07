@@ -178,7 +178,7 @@ public class DeviceCommService extends LocusWearCommService  {
                 Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException");
             }
         }
-        // TODO cejnar remove all sendLocusMapLogD() calls
+
         if (path != PUT_HEART_RATE) {
             sendLocusMapLogD("Wear", "Received "+path);
         }
@@ -247,7 +247,6 @@ public class DeviceCommService extends LocusWearCommService  {
                     intent.putExtra("tasks", hrmData);
                     sendBroadcast(c, intent);
 
-                    // TODO cejnar remove logging
                     sendLocusMapLogD(tag, hrmData);
                 } else {
                     sendLocusMapLogD(tag, "Ignored, invalid data: "+ hrValue.getValue());
@@ -287,14 +286,16 @@ public class DeviceCommService extends LocusWearCommService  {
     }
 
     private void sendLocusMapLogD(String tag, String text) {
-        Intent intent = new Intent();
-        intent.setAction("com.asamm.locus.DATA_TASK");
-        intent.putExtra("tasks"," {log:{" +
-                "type:\"d\"," +
-                "tag: \"" + tag + "\"," +
-                "value: \"" + text + "\"}" +
-                "}");
-        sendBroadcast(context, intent);
+        // commented out for production release
+
+        //        Intent intent = new Intent();
+        //        intent.setAction("com.asamm.locus.DATA_TASK");
+        //        intent.putExtra("tasks"," {log:{" +
+        //                "type:\"d\"," +
+        //                "tag: \"" + tag + "\"," +
+        //                "value: \"" + text + "\"}" +
+        //                "}");
+        //        sendBroadcast(context, intent);
     }
 
     void onDataChanged(Context c, DataEvent newData) {
