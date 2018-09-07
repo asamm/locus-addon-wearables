@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.6] - 2018-09-07
+### Added
+- possibility to switch screens by 2nd user HW button long press
+
+### Fixed
+- Various small bug fixes and improvements done on version 1.1.2 (through 1.1.5), mainly HRM debugging and fixing. The core functionality is the same as in 1.1.2.
+
 ## [1.1.2] (BETA) - 2018-08-17
 ### Added
 - Activity for naming new waypoint using speech/keyboard
