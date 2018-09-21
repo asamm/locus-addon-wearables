@@ -94,7 +94,7 @@ public class TrackRecordingService extends Service {
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel(DEFAULT_CHANNEL_ID, getString(R.string.app_name),
                 NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription("Channel description");
+        channel.setDescription("");
         notificationManager.createNotificationChannel(channel);
     }
 

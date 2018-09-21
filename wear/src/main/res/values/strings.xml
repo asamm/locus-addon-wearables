@@ -86,7 +86,7 @@
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Leave it as is</string>
     <!-- Option to type in a point name when creating new waypoint -->
-    <string name="wp_name_keyboard">Tap it</string>
+    <string name="wp_name_keyboard">Type it</string>
     <!-- Option to enter a point name using speech recognition when creating new waypoint -->
     <string name="wp_name_speech">Say it</string>
     <!-- Title/header for the dialog with options of how to name a new waypoint -->
