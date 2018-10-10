@@ -51,7 +51,9 @@ public class TrackRecordingService extends Service {
 
     private static TrackRecordingService instance = null;
 
-    private RecordingSensorManager mSensors = new RecordingSensorManager();
+    private WakeLockManager wakeLockManager;
+
+    private RecordingSensorManager mSensors;
 
 
     public static boolean isRunning() {
@@ -68,6 +70,7 @@ public class TrackRecordingService extends Service {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        mSensors = new RecordingSensorManager();
     }
 
     @Override
@@ -123,10 +126,22 @@ public class TrackRecordingService extends Service {
 
         // Start foreground service.
         startForeground(3456, notification);
-        new Handler(getMainLooper()).postDelayed(() ->{afterStart();}, 1000);
+
+        if (wakeLockManager == null) {
+            wakeLockManager = new WakeLockManager(TAG);
+            // acquire wakelock
+            wakeLockManager.acquireWakeLock(this);
+        }
+
+        new Handler(getMainLooper()).postDelayed(this::afterStart, 1000);
     }
 
     private void afterStart() {
+        final RecordingSensorManager rsm = mSensors;
+        if (rsm == null) {
+            Logger.logE(TAG,"Could not finish TrackRecordingService#afterStart() call. Seems the service was destroyed right after the start.");
+            return;
+        }
         // fake push first device keep alive, real ones start to come in a while
         WearCommService.getInstance().pushLastTransmitTimeFor(DEVICE_KEEP_ALIVE);
 
@@ -137,12 +152,12 @@ public class TrackRecordingService extends Service {
         }
         FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
         if (hrmConfig == FeatureConfigEnum.ENABLED) {
-            if (mSensors.startHrSensor(this, false)) {
+            if (rsm.startHrSensor(this, false)) {
                 final Handler handler = new Handler(getMainLooper());
                 Runnable sendHrmUpdate = new Runnable() {
                     @Override
                     public void run() {
-                        RecordingSensorManager sensors = mSensors;
+                        RecordingSensorManager sensors = rsm;
                         if (sensors == null)
                             return;
 
@@ -196,6 +211,11 @@ public class TrackRecordingService extends Service {
             mSensors.destroy(this);
             mSensors = null;
         }
+        if (wakeLockManager != null) {
+            wakeLockManager.releaseWakeLock();
+            wakeLockManager = null;
+        }
+
         super.onDestroy();
     }
 }

@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear.gui.custom;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.wear.widget.drawer.WearableDrawerLayout;
 import android.util.AttributeSet;
 
@@ -34,16 +35,18 @@ public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 		// Area now seems to work correctly even without enlarging it manually,
 		// possibly fixed in OS update, because last time I check it was quite hard to open up the drawer
 
-		// try to make top navigation drawer trigger area bigger
-//		try {
-//			Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
-//			topDragger.setAccessible(true);
-//			Object topDraggerInstance = topDragger.get(this);
-//			Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
-//			edgeSize.setAccessible(true);
-//			int edgeSizePx = edgeSize.getInt(topDraggerInstance);
-//			edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
-//		} catch (Exception e) {
-//		}
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+			// try to make top navigation drawer trigger area bigger
+			try {
+				Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
+				topDragger.setAccessible(true);
+				Object topDraggerInstance = topDragger.get(this);
+				Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
+				edgeSize.setAccessible(true);
+				int edgeSizePx = edgeSize.getInt(topDraggerInstance);
+				edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
+			} catch (Exception e) {
+			}
+		}
 	}
 }
