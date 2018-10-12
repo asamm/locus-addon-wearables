@@ -359,20 +359,16 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     private volatile Handler mDelayedStartClickHandler;
 
-    private synchronized void startRecording() {
-        sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
-        mStateMachine.transitionTo(REC_WAITING);
-        mImgStartRecording.setEnabled(true);
-        startTrackRecService();
-    }
-
     public void handleStartClick(final View v) {
         if (isIdleScreenAlive()) {
             mImgStartRecording.setEnabled(false);
         }
         synchronized (this) {
             if (mStateMachine.getCurrentState() == IDLE && mProfileSelect.hasProfileList()) {
-                    startRecording();
+                // start recoding
+                sendStateChangeRequest(TrackRecordingStateEnum.RECORDING);
+                mStateMachine.transitionTo(REC_WAITING);
+                mImgStartRecording.setEnabled(true);
             } else {
                 if (mDelayedStartClickHandler == null && isIdleScreenAlive()) {
                     mDelayedStartClickHandler = new Handler();
@@ -462,12 +458,14 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     }
 
+    /** Called when transition back to the start screen from the active tracking screen */
     private void transitionToIdlestate() {
         setIdleScreenEnabled(false);
         mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
         Logger.logD(TAG, "setting idle screen");
     }
 
+    /** Called when NOT_RECORDING state is confirmed */
     private void enableIdleScreen() {
         stopTrackRecService();
         setIdleScreenEnabled(true);
@@ -475,13 +473,14 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         Logger.logD(TAG, "Enabling idle screen");
     }
 
+    /** Called when transitioning from start screen to recording screen */
     private void transitionToRecState() {
-        startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
         Logger.logD(TAG, "setting rec screen");
     }
 
+    /** Called when new recording or paused state is confirmed by the first data */
     private void enableRecScreen() {
         startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
@@ -491,10 +490,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     private void transitionToPauseState() {
         transitionToRecState();
-    }
-
-    private void enablePausedScreen() {
-        enableRecScreen();
     }
 
     @Override
@@ -526,7 +521,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         mCircularProgress.stopTimer();
         sendStateChangeRequest(TrackRecordingStateEnum.NOT_RECORDING);
         mStateMachine.transitionTo(IDLE_WAITING);
-        stopTrackRecService();
     }
 
     private void startTrackRecService() {
@@ -665,7 +659,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                     // transitions to main state from their respecive waiting state
                     mTransitionsFunctions.get(IDLE_WAITING).put(IDLE, TrackRecordActivity.this::enableIdleScreen);
                     mTransitionsFunctions.get(REC_WAITING).put(REC, TrackRecordActivity.this::enableRecScreen);
-                    mTransitionsFunctions.get(PAUSED_WAITING).put(PAUSED, TrackRecordActivity.this::enablePausedScreen);
+                    mTransitionsFunctions.get(PAUSED_WAITING).put(PAUSED, TrackRecordActivity.this::enableRecScreen);
                 }
 
                 @Override

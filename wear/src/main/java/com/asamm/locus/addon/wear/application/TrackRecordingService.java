@@ -105,9 +105,10 @@ public class TrackRecordingService extends Service {
     private void startInForeground() {
         Logger.logD(TAG, "Start foreground service.");
 
+        instance = this;
+
         // Create notification default intent.
         Intent intent = new Intent(this, TrackRecordActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         initChannels(this);
@@ -157,7 +158,7 @@ public class TrackRecordingService extends Service {
                 Runnable sendHrmUpdate = new Runnable() {
                     @Override
                     public void run() {
-                        RecordingSensorManager sensors = rsm;
+                        RecordingSensorManager sensors = mSensors;
                         if (sensors == null)
                             return;
 
@@ -183,7 +184,7 @@ public class TrackRecordingService extends Service {
                                 new CommandFloatExtra(hrm.isValid() ? hrm.getValue() : Float.NaN));
 
 //                        Logger.logD(TAG, "Sending HRM, value " + hrm.getValue() + " timestamp " + new SimpleDateFormat("hh:mm:ss").format(hrm.getTimestamp()));
-                        handler.postDelayed(this, 2200);
+                        handler.postDelayed(this, 2000);
                     }
                 };
                 handler.postDelayed(sendHrmUpdate, 2000);

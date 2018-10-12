@@ -52,8 +52,7 @@ public class RecordingSensorManager {
 
     public boolean startHrSensor(Context ctx, boolean isRestart) {
         // No permission/sensor not available or HR already running
-        if (AppPreferencesManager.getHrmFeatureConfig(ctx) != FeatureConfigEnum.ENABLED
-                || mSensorEventListener != null)
+        if (AppPreferencesManager.getHrmFeatureConfig(ctx) != FeatureConfigEnum.ENABLED)
             return false;
 
         Sensor hrm = null;
@@ -68,28 +67,34 @@ public class RecordingSensorManager {
             return false;
         }
 
-        mSensorEventListener = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                if (sensorEvent.sensor.getType() == Sensor.TYPE_HEART_RATE &&
-                        sensorEvent.values != null && sensorEvent.values.length > 0) {
-                    float val = sensorEvent.values[0];
-                    if (HrmValue.isValidHrm(val) && sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_UNRELIABLE) {
-                        RecordingSensorStore.hrm.setValue(val);
+        synchronized (this) {
+            if (mSensorEventListener != null) {
+                Logger.logD(TAG, "mSensorEventListener already registered");
+                return true;
+            }
+            mSensorEventListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent sensorEvent) {
+                    if (sensorEvent.sensor.getType() == Sensor.TYPE_HEART_RATE &&
+                            sensorEvent.values != null && sensorEvent.values.length > 0) {
+                        float val = sensorEvent.values[0];
+                        if (HrmValue.isValidHrm(val) && sensorEvent.accuracy >= SensorManager.SENSOR_STATUS_UNRELIABLE) {
+                            RecordingSensorStore.hrm.setValue(val);
+                        } else {
+                            RecordingSensorStore.hrm.setValue(0);
+                        }
+                        RecordingSensorStore.hrmDebug.setValue(val, sensorEvent.accuracy);
                     } else {
-                        RecordingSensorStore.hrm.setValue(0);
+                        RecordingSensorStore.hrmDebug.setValue(0, -3);
                     }
-                    RecordingSensorStore.hrmDebug.setValue(val, sensorEvent.accuracy);
-                } else {
-                    RecordingSensorStore.hrmDebug.setValue(0, -3);
                 }
-            }
 
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
-            }
-        };
-        sensorManager.registerListener(mSensorEventListener, hrm, isRestart ? SensorManager.SENSOR_DELAY_NORMAL : 1_400_000);
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int i) {
+                }
+            };
+            sensorManager.registerListener(mSensorEventListener, hrm, isRestart ? SensorManager.SENSOR_DELAY_NORMAL : 1_400_000);
+        }
         return true;
     }
 
@@ -102,8 +107,12 @@ public class RecordingSensorManager {
             Logger.logE(TAG, "Failed to get sensorManager in stopHrSensor(). ");
         } else {
             Logger.logD(TAG, "Removing HRM listener");
-            sensorManager.unregisterListener(mSensorEventListener);
-            mSensorEventListener = null;
+            synchronized (this) {
+                if (mSensorEventListener != null) {
+                    sensorManager.unregisterListener(mSensorEventListener);
+                    mSensorEventListener = null;
+                }
+            }
         }
     }
 
