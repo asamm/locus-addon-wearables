@@ -256,7 +256,9 @@ public class MainApplication extends Application implements Application.Activity
 			doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION);
 			return false;
 		}
-		if (handShakeValue.getmAddOnVersion() < BuildConfig.VERSION_CODE) {
+		// TODO cejnar check required version codes before release
+		int requiredAddonVersionLowerBound = 1010060; //BuildConfig.VERSION_CODE
+		if (handShakeValue.getmAddOnVersion() < requiredAddonVersionLowerBound) {
 			doApplicationFail(AppFailType.CONNECTION_ERROR_DEVICE_APP_OUTDATED);
 		} else if (handShakeValue.getmAddOnVersion() > BuildConfig.VERSION_CODE) {
 			doApplicationFail(AppFailType.CONNECTION_ERROR_WATCH_APP_OUTDATED);

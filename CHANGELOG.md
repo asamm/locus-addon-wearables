@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [1.1.7] - 2018-10-12
+### Fixed
+- navigation drawer activation area for enlarged for older SDKs
+- added wake lock in track recording service
+- fixed some issues during track recording service starting (multiple alterating start/stop calls, possible NPE)
+
 ## [1.1.6] - 2018-09-07
 ### Added
 - possibility to switch screens by 2nd user HW button long press
