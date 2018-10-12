@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 
 public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 
-	private static final float NAV_DRAWER_PULL_DOWN_AREA_SCALE = 1.05f;
+	private static final float NAV_DRAWER_PULL_DOWN_AREA_SCALE = 1.2f;
 
 	public CustomWearableDrawerLayout(Context context) {
 		this(context, null);
