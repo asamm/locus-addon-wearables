@@ -34,6 +34,6 @@ After importing the project, go to run configurations - launch options - launch 
 
 ### Wear
 - You can debug on both real device (over WiFi or BT) or using the Emulator paired with a phone. Follow the instructions [here](https://developer.android.com/training/wearables/apps/debugging)
-- When pairing emulator for debug with the phone follow [these instructions(https://developer.android.com/training/wearables/apps/creating)
+- When pairing emulator for debug with the phone follow [these instructions](https://developer.android.com/training/wearables/apps/creating)
    - Mainly apart from enabling developer options and ADB debugging on both the phone and the emulated watch, you must also call ```adb -d forward tcp:5601 tcp:5601``` from the computer console to properly forward adb commands. Call this once command before pairing the watch with the phone or before debugging.
    - Also in the Wear OS app on the phone there are no watches visible when connecting new watch. Tap menu icon in the top right and select "Pair with an emulator" option.
