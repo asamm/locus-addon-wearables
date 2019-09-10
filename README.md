@@ -26,3 +26,14 @@ Requires Google Play Services and Locus Map to work. Paired mobile phone require
 - open gradle project with Android Studio
 - setup global gradle properties, mainly debug keystore - please refer to [Locus API, using global parameters.](https://github.com/asamm/locus-api/wiki/Adding-Locus-API-to-project#using-global-parameters)
 - run device and wear modules
+
+## Debugging 
+
+### Device part
+After importing the project, go to run configurations - launch options - launch - select "Nothing". Since device part has no UI, AS will not be able to run the project saying "Default Activity not found" until Launch: Nothing is selected
+
+### Wear
+- You can debug on both real device (over WiFi or BT) or using the Emulator paired with a phone. Follow the instructions [here](https://developer.android.com/training/wearables/apps/debugging)
+- When pairing emulator for debug with the phone follow [these instructions(https://developer.android.com/training/wearables/apps/creating)
+   - Mainly apart from enabling developer options and ADB debugging on both the phone and the emulated watch, you must also call ```adb -d forward tcp:5601 tcp:5601``` from the computer console to properly forward adb commands. Call this once command before pairing the watch with the phone or before debugging.
+   - Also in the Wear OS app on the phone there are no watches visible when connecting new watch. Tap menu icon in the top right and select "Pair with an emulator" option.
