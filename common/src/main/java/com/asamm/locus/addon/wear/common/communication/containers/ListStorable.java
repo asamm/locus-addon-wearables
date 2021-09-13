@@ -15,62 +15,57 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public abstract class ListStorable<T extends Storable> extends TimeStampStorable {
-	private List<T> mStorables;
 
-	public ListStorable() {
-		super();
-	}
+    private List<T> mStorables = null;
 
-	public ListStorable(byte[] data) throws IOException {
-		super(data);
-	}
+    public ListStorable() {
+        super();
+    }
 
-	public abstract Class<T> getClazz();
+    public ListStorable(byte[] data) throws IOException {
+        super(data);
+    }
 
-	@Override
-	public void reset() {
-		super.reset();
-		mStorables = null;
-	}
+    public abstract Class<T> getClazz();
 
-	@Override
-	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
-		super.readObject(version, dr);
-		// read track record profiles
-		if (dr.readBoolean()) {
-			//noinspection unchecked
-			mStorables = (List<T>)
-					dr.readListStorable(getClazz());
-		}
-	}
+    @Override
+    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+        super.readObject(version, dr);
+        // read track record profiles
+        if (dr.readBoolean()) {
+            //noinspection unchecked
+            mStorables = (List<T>)
+                    dr.readListStorable(getClazz());
+        }
+    }
 
-	@Override
-	protected void writeObject(DataWriterBigEndian dw) throws IOException {
-		super.writeObject(dw);
-		// write track record profiles
-		if (mStorables != null) {
-			dw.writeBoolean(true);
-			dw.writeListStorable(mStorables);
-		} else {
-			dw.writeBoolean(false);
-		}
-	}
+    @Override
+    protected void writeObject(DataWriterBigEndian dw) throws IOException {
+        super.writeObject(dw);
+        // write track record profiles
+        if (mStorables != null) {
+            dw.writeBoolean(true);
+            dw.writeListStorable(mStorables);
+        } else {
+            dw.writeBoolean(false);
+        }
+    }
 
-	@Override
-	protected int getVersion() {
-		return 0;
-	}
+    @Override
+    protected int getVersion() {
+        return 0;
+    }
 
-	public List<T> getStorables() {
-		return mStorables;
-	}
+    public List<T> getStorables() {
+        return mStorables;
+    }
 
-	public void setStorables(List<T> storables) {
-		this.mStorables = storables;
-	}
+    public void setStorables(List<T> storables) {
+        this.mStorables = storables;
+    }
 
 
-	public int getSize() {
-		return (mStorables == null) ? 0 : mStorables.size();
-	}
+    public int getSize() {
+        return (mStorables == null) ? 0 : mStorables.size();
+    }
 }

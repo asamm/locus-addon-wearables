@@ -62,7 +62,7 @@ public class MainApplication extends Application implements Application.Activity
 
 		applicationContext = getApplicationContext();
 		// set logger
-		Logger.registerLogger(new Logger.ILogger() {
+		Logger.INSTANCE.registerLogger(new Logger.ILogger() {
 
 			@Override
 			public void logI(String tag, String msg) {
@@ -91,7 +91,7 @@ public class MainApplication extends Application implements Application.Activity
 		});
 
 		// notify about create of app
-		Logger.logD(TAG, "onCreate()");
+		Logger.INSTANCE.logD(TAG, "onCreate()");
 		registerActivityLifecycleCallbacks(this);
 		setTerminationTimer();
 		mCache = new ApplicationMemoryCache(this);
@@ -102,7 +102,7 @@ public class MainApplication extends Application implements Application.Activity
 	 * Destroy instance of this application.
 	 */
 	public void onDestroy() {
-		Logger.logD(TAG, "destroyInstance()");
+		Logger.INSTANCE.logD(TAG, "destroyInstance()");
 		// destroy instance of communication class
 		WatchDog.getInstance().setmAppFailCallback(null);
 		applicationContext = null;
@@ -113,7 +113,7 @@ public class MainApplication extends Application implements Application.Activity
 		if (!(activity instanceof LocusWearActivity)) {
 			return;
 		}
-		Logger.logD(TAG, "Activity created");
+		Logger.INSTANCE.logD(TAG, "Activity created");
 		reconnectIfNeeded();
 	}
 
@@ -238,7 +238,7 @@ public class MainApplication extends Application implements Application.Activity
 			handleData(p, value);
 //			Logger.logD(TAG, "Received " + p);
 		} else {
-			Logger.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
+			Logger.INSTANCE.logW(TAG, "unknown DataItem path " + dataItem.getUri().getPath());
 		}
 	}
 
@@ -294,7 +294,7 @@ public class MainApplication extends Application implements Application.Activity
 		if (mCurrentActivity != null && act != null && !act.isChildLocusWearActivity()) {
 			mCurrentActivity.finish();
 		}
-		Logger.logD(TAG, "setCurrentActivity(" + act + ")");
+		Logger.INSTANCE.logD(TAG, "setCurrentActivity(" + act + ")");
 
 		// if new activity is registered, end timer
 		if (act != null && mTimerTerminate != null) {
@@ -303,9 +303,9 @@ public class MainApplication extends Application implements Application.Activity
 		}
 		// register activity
 		if (mCurrentActivity == null && act != null) {
-			Logger.logD(TAG, " - application restored");
+			Logger.INSTANCE.logD(TAG, " - application restored");
 		} else if (mCurrentActivity != null && act == null) {
-			Logger.logD(TAG, " - application terminated");
+			Logger.INSTANCE.logD(TAG, " - application terminated");
 			setTerminationTimer();
 		}
 		LocusWearActivity previous = mCurrentActivity;

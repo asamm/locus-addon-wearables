@@ -35,6 +35,7 @@ public class RecordingSensorManager {
     public static boolean checkBodySensorPermission(Context owner) {
         return ContextCompat.checkSelfPermission(owner, Manifest.permission.BODY_SENSORS) == PackageManager.PERMISSION_GRANTED;
     }
+
     public static boolean checkAndRequestBodySensorPermission(Context owner) {
         if (ContextCompat.checkSelfPermission(owner, Manifest.permission.BODY_SENSORS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -62,14 +63,14 @@ public class RecordingSensorManager {
         }
 
         if (hrm == null) { // should not happen
-            Logger.logE(TAG, "Failed to get sensor in startHrSensor(). " +
+            Logger.INSTANCE.logE(TAG, "Failed to get sensor in startHrSensor(). " +
                     "Sensor manager is " + (sensorManager == null ? "" : " not ") + " null.");
             return false;
         }
 
         synchronized (this) {
             if (mSensorEventListener != null) {
-                Logger.logD(TAG, "mSensorEventListener already registered");
+                Logger.INSTANCE.logD(TAG, "mSensorEventListener already registered");
                 return true;
             }
             mSensorEventListener = new SensorEventListener() {
@@ -104,9 +105,9 @@ public class RecordingSensorManager {
 
         SensorManager sensorManager = ((SensorManager) ctx.getSystemService(SENSOR_SERVICE));
         if (sensorManager == null) { // should not happen
-            Logger.logE(TAG, "Failed to get sensorManager in stopHrSensor(). ");
+            Logger.INSTANCE.logE(TAG, "Failed to get sensorManager in stopHrSensor(). ");
         } else {
-            Logger.logD(TAG, "Removing HRM listener");
+            Logger.INSTANCE.logD(TAG, "Removing HRM listener");
             synchronized (this) {
                 if (mSensorEventListener != null) {
                     sensorManager.unregisterListener(mSensorEventListener);
@@ -116,11 +117,13 @@ public class RecordingSensorManager {
         }
     }
 
-    /** Should only be called if app has permission to read body sensors */
-    public static FeatureConfigEnum recheckSensorAvailability(Context ctx){
+    /**
+     * Should only be called if app has permission to read body sensors
+     */
+    public static FeatureConfigEnum recheckSensorAvailability(Context ctx) {
         FeatureConfigEnum currentState = AppPreferencesManager.getHrmFeatureConfig(ctx);
         if (currentState != FeatureConfigEnum.NOT_AVAILABLE) {
-            Logger.logW(TAG, "recheckSensorAvailability() called with state  FeatureConfigEnum.NOT_AVAILABLE ");
+            Logger.INSTANCE.logW(TAG, "recheckSensorAvailability() called with state  FeatureConfigEnum.NOT_AVAILABLE ");
             return currentState; // Other state than not available, do not check, should have not been called at all.
         }
         try {
@@ -136,10 +139,11 @@ public class RecordingSensorManager {
             }
             return hrmConfig;
         } catch (Exception e) {
-            Logger.logE(TAG, "Error in recheckSensorAvailability(), e");
+            Logger.INSTANCE.logE(TAG, "Error in recheckSensorAvailability(), e");
             return FeatureConfigEnum.NOT_AVAILABLE;
         }
     }
+
     public static FeatureConfigEnum handlePermissionResult(LocusWearActivity owner, int requestCode, String[] permissions, int[] grantResults) {
         final FeatureConfigEnum hrmConfig;
         if (requestCode == HR_REQUEST_CODE) {

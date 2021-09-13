@@ -21,8 +21,8 @@ import locus.api.utils.DataWriterBigEndian;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class TrackRecScreenConfigDto extends Storable {
 
-    private List<TrackRecCellConfigDto> cellConfigs;
-    private TrackStatsViewScreenType screenType;
+    private List<TrackRecCellConfigDto> cellConfigs = new ArrayList<>(4);
+    private TrackStatsViewScreenType screenType = TrackStatsViewScreenType.STAT_SCREEN_BLANK;
 
     public TrackRecScreenConfigDto() {
         super();
@@ -35,7 +35,8 @@ public class TrackRecScreenConfigDto extends Storable {
     }
 
     public TrackRecScreenConfigDto(byte[] data) throws IOException {
-        super(data);
+        super();
+        read(data);
     }
 
     public TrackStatsViewScreenType getScreenType() {
@@ -59,12 +60,6 @@ public class TrackRecScreenConfigDto extends Storable {
     @Override
     protected int getVersion() {
         return 0;
-    }
-
-    @Override
-    public void reset() {
-        screenType = TrackStatsViewScreenType.STAT_SCREEN_BLANK;
-        cellConfigs = new ArrayList<>(4);
     }
 
     @Override

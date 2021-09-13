@@ -1,0 +1,6 @@
+1. Download and setup Wear project from GitHub
+2. Install Android Wear app on mobile device (phone/tablet)
+3. create and start emulator of watches with latest SDK
+4. in command line console, write 'adb -d forward tcp:5601 tcp:5601'
+5. in Android Wear app, pair device with emulator (usually fight with top menu "pair with emulator"
+6. install add-on on watches and on device

@@ -39,8 +39,8 @@ import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 
 import locus.api.android.features.periodicUpdates.UpdateContainer;
 import locus.api.android.utils.UtilsFormat;
-import locus.api.objects.enums.PointRteAction;
 import locus.api.objects.extra.Location;
+import locus.api.objects.extra.PointRteAction;
 import locus.api.utils.Logger;
 
 /**
@@ -141,7 +141,7 @@ public class MapActivity extends LocusWearActivity {
 						appCache.getScreenHeight(),
 						mStatus.mMapOffsetX, mStatus.mMapOffsetY, mDensityDpi, mStatus.isAutoRotateEnabled(),
 						mStatus.getLastBearing(), mDiagonal,
-						mLastMapLocation.latitude, mLastMapLocation.longitude);
+						mLastMapLocation.getLatitude(), mLastMapLocation.getLongitude());
 
 		return new DataPayload<>(DataPath.GET_PERIODIC_DATA,
 				new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_MAP,
@@ -172,7 +172,7 @@ public class MapActivity extends LocusWearActivity {
 		TypedValue typedFabScale = new TypedValue();
 		getResources().getValue(R.dimen.map_fab_scale, typedFabScale, true);
 		mDefaultFabScale = typedFabScale.getFloat();
-		mDensityDpi = getResources().getDisplayMetrics().densityDpi;
+		mDensityDpi = getResources().getDisplayMetrics().densityDpi / 2;
 
 		int w = appCache.getScreenWidth();
 		int h = appCache.getScreenHeight();
@@ -327,7 +327,7 @@ public class MapActivity extends LocusWearActivity {
 				mIsScaled = false;
 			}
 		} else {
-			Logger.logE(TAG, (data == null ? "data" : data.getLoadedMap() == null ?
+			Logger.INSTANCE.logE(TAG, (data == null ? "data" : data.getLoadedMap() == null ?
 					"data.loadedMap" : "data.loadedMap.image") + " is null.");
 		}
 	}
@@ -359,9 +359,9 @@ public class MapActivity extends LocusWearActivity {
 			}
 			// action for next point
 			setNavImageForAction(mIvNavPanelTop, data.getNavPointAction2Id());
-			mTvNavPanelDistValue.setText(UtilsFormat.formatDistance(
+			mTvNavPanelDistValue.setText(UtilsFormat.INSTANCE.formatDistance(
 					data.getUnitsFormatLength(), data.getNavPoint1Dist(), true));
-			mTvNavPanelDistUnits.setText(UtilsFormat.formatDistanceUnits(
+			mTvNavPanelDistUnits.setText(UtilsFormat.INSTANCE.formatDistanceUnits(
 					data.getUnitsFormatLength(), data.getNavPoint1Dist()));
 		} else {
 			mIvNavPanelTop.setVisibility(View.INVISIBLE);
@@ -371,7 +371,7 @@ public class MapActivity extends LocusWearActivity {
 	}
 
 	private void setNavImageForAction(ImageView view, int pointRteActionId) {
-		PointRteAction action = PointRteAction.getActionById(pointRteActionId);
+		PointRteAction action = PointRteAction.Companion.getActionById(pointRteActionId);
 		int img = NavHelper.getNavPointImageRes(action);
 		if (!Integer.valueOf(img).equals(view.getTag())) {
 			view.setImageResource(img);

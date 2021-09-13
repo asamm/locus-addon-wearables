@@ -11,9 +11,10 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class HandShakeValue extends TimeStampStorable {
-	private int mLocusVersion;
-	private int mAddOnVersion;
-	private byte mStatusFlag;
+
+	private int mLocusVersion = -1;
+	private int mAddOnVersion = -1;
+	private byte mStatusFlag = 0;
 
 	private static final byte STATUS_LOCUS_RUNNING = 0b1;
 	private static final byte STATUS_PERIODIC_UPDATES = 0b10;
@@ -37,14 +38,6 @@ public class HandShakeValue extends TimeStampStorable {
 	@Override
 	protected int getVersion() {
 		return 1;
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		mLocusVersion = -1;
-		mAddOnVersion = -1;
-		mStatusFlag = 0;
 	}
 
 	@Override

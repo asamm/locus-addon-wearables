@@ -5,7 +5,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 
 import java.io.IOException;
 
-import locus.api.android.ActionTools;
+import locus.api.android.objects.TrackRecordProfileSimple;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
 
@@ -15,117 +15,106 @@ import locus.api.utils.DataWriterBigEndian;
  */
 public class TrackProfileInfoValue extends TimeStampStorable {
 
-	// tag for logger
-	private static final String TAG = TrackProfileInfoValue.class.getSimpleName();
+    private long mId = 0L;
+    private String mName = "";
+    // Always empty in this version
+    private String mDesc = "";
 
-	private long mId;
-	private String mName;
-	private String mDesc; // Always empty in this version
+    /**
+     * Base constructor mainly for a Storable class.
+     */
+    @SuppressWarnings("unused")
+    public TrackProfileInfoValue() {
+        super();
+    }
 
-	/**
-	 * Base constructor mainly for a Storable class.
-	 */
-	@SuppressWarnings("unused")
-	public TrackProfileInfoValue() {
-		super();
-	}
+    public TrackProfileInfoValue(long id, String name) {
+        this();
+        mId = id;
+        mName = name;
+    }
 
-	public TrackProfileInfoValue(long id, String name) {
-		this();
-		mId = id;
-		mName = name;
-	}
+    public TrackProfileInfoValue(TrackRecordProfileSimple simpleProfile) {
+        this();
+        mId = simpleProfile.getId();
+        mName = simpleProfile.getName();
+        //mDesc = simpleProfile.getDesc(); // not used in this version
+    }
 
-	public TrackProfileInfoValue(ActionTools.TrackRecordProfileSimple simpleProfile) {
-		this();
-		mId = simpleProfile.getId();
-		mName = simpleProfile.getName();
-		//mDesc = simpleProfile.getDesc(); // not used in this version
-	}
-
-	/**
-	 * Constructor based on raw byte array.
-	 *
-	 * @param data packed data
-	 * @throws IOException
-	 */
-	public TrackProfileInfoValue(byte[] data) throws IOException {
-		super(data);
-	}
+    /**
+     * Constructor based on raw byte array.
+     *
+     * @param data packed data
+     * @throws IOException
+     */
+    public TrackProfileInfoValue(byte[] data) throws IOException {
+        super(data);
+    }
 
 
-	/**************************************************/
-	// STORABLE PART
+    //*************************************************
+    // STORABLE PART
+    //*************************************************
 
-	/**************************************************/
+    @Override
+    protected int getVersion() {
+        return 0;
+    }
 
-	@Override
-	protected int getVersion() {
-		return 0;
-	}
+    @Override
+    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+        super.readObject(version, dr);
+        mId = dr.readLong();
+        mName = dr.readString();
+    }
 
-	@Override
-	public void reset() {
-		super.reset();
-		mId = 0L;
-		mName = "";
-		mDesc = "";
-	}
+    @Override
+    protected void writeObject(DataWriterBigEndian dw) throws IOException {
+        super.writeObject(dw);
+        dw.writeLong(mId);
+        dw.writeString(mName);
+    }
 
-	@Override
-	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
-		super.readObject(version, dr);
-		mId = dr.readLong();
-		mName = dr.readString();
-	}
+    public long getId() {
+        return mId;
+    }
 
-	@Override
-	protected void writeObject(DataWriterBigEndian dw) throws IOException {
-		super.writeObject(dw);
-		dw.writeLong(mId);
-		dw.writeString(mName);
-	}
+    public String getName() {
+        return mName;
+    }
 
-	public long getId() {
-		return mId;
-	}
+    public String getDesc() {
+        return mDesc;
+    }
 
-	public String getName() {
-		return mName;
-	}
+    public static class ValueList extends ListStorable<TrackProfileInfoValue> {
+        public ValueList() {
+            super();
+        }
 
-	public String getDesc() {
-		return mDesc;
-	}
+        public ValueList(byte[] data) throws IOException {
+            super(data);
+        }
 
-	public static class ValueList extends ListStorable<TrackProfileInfoValue> {
-		public ValueList() {
-			super();
-		}
+        @Override
+        public Class<TrackProfileInfoValue> getClazz() {
+            return TrackProfileInfoValue.class;
+        }
+    }
 
-		public ValueList(byte[] data) throws IOException {
-			super(data);
-		}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-		@Override
-		public Class<TrackProfileInfoValue> getClazz() {
-			return TrackProfileInfoValue.class;
-		}
-	}
+        TrackProfileInfoValue that = (TrackProfileInfoValue) o;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+        if (mId != that.mId) return false;
+        return mName != null ? mName.equals(that.mName) : that.mName == null;
+    }
 
-		TrackProfileInfoValue that = (TrackProfileInfoValue) o;
-
-		if (mId != that.mId) return false;
-		return mName != null ? mName.equals(that.mName) : that.mName == null;
-	}
-
-	@Override
-	public int hashCode() {
-		return (int) (mId ^ (mId >>> 32));
-	}
+    @Override
+    public int hashCode() {
+        return (int) (mId ^ (mId >>> 32));
+    }
 }

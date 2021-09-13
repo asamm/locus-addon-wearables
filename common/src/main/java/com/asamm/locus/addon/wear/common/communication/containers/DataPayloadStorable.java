@@ -1,5 +1,7 @@
 package com.asamm.locus.addon.wear.common.communication.containers;
 
+import android.support.annotation.NonNull;
+
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 
 import java.io.IOException;
@@ -15,8 +17,9 @@ import locus.api.utils.DataWriterBigEndian;
  */
 
 public class DataPayloadStorable extends Storable {
-	private DataPath mDataPath;
-	private Storable mStorable;
+
+	private DataPath mDataPath = null;
+	private Storable mStorable = null;
 
 	public DataPayloadStorable(DataPath path, Storable data) {
 		super();
@@ -24,18 +27,13 @@ public class DataPayloadStorable extends Storable {
 		this.mStorable = data;
 	}
 	public DataPayloadStorable(byte[] data) throws IOException{
-		super(data);
+		super();
+		read(data);
 	}
 
 	@Override
 	protected int getVersion() {
 		return 0;
-	}
-
-	@Override
-	public void reset() {
-		mDataPath = null;
-		mStorable = null;
 	}
 
 	@Override
@@ -46,13 +44,12 @@ public class DataPayloadStorable extends Storable {
 			try {
 				mStorable = dr.readStorable(mDataPath.getContainerClass());
 			} catch (Exception e) {
-				reset();
 				e.printStackTrace();
 			}
 	}
 
 	@Override
-	protected void writeObject(DataWriterBigEndian dw) throws IOException {
+	protected void writeObject(@NonNull DataWriterBigEndian dw) throws IOException {
 		if (isValid()) {
 			dw.write(mDataPath.getId());
 			dw.writeStorable(mStorable);

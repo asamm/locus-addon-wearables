@@ -84,7 +84,7 @@ public class ProfileListActivity extends LocusWearActivity {
 			try {
 				mProfiles = new TrackProfileInfoValue.ValueList(arr);
 			} catch (IOException e) {
-				Logger.logE(TAG, "profile info constructor failed", e);
+				Logger.INSTANCE.logE(TAG, "profile info constructor failed", e);
 				finish();
 			}
 		}
@@ -202,7 +202,7 @@ public class ProfileListActivity extends LocusWearActivity {
 			};
 			holder.mTextViewName.setText(value.mProfileInfo.getName());
 			if (value.mProfileIcon != null && value.mProfileIcon.getIcon() != null) {
-				holder.mIcon.setImageBitmap(UtilsBitmap.getBitmap(value.mProfileIcon.getIcon()));
+				holder.mIcon.setImageBitmap(UtilsBitmap.INSTANCE.getBitmap(value.mProfileIcon.getIcon()));
 			}
 			holder.mTextViewName.setOnClickListener(clickHandler);
 			holder.mIcon.setOnClickListener(clickHandler);

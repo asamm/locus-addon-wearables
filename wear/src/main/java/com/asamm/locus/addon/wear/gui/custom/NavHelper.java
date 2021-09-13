@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.gui.custom;
 
 import com.asamm.locus.addon.wear.R;
 
-import locus.api.objects.enums.PointRteAction;
+import locus.api.objects.extra.PointRteAction;
 
 /**
  * Helper for translating PointRteAction to id of drawable with graphical

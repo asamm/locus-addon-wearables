@@ -45,7 +45,7 @@ public class TrackRecordActivityConfiguration {
             config.screens.get(screenIdx).setCellTypeAtIdx(cellIdx, newStat);
             AppPreferencesManager.persistStatsScreenConfiguration(ctx, this);
         } else {
-            Logger.logE(TAG, "invalid TrackStat cell index ("+screenIdx + ", "+cellIdx+")");
+            Logger.INSTANCE.logE(TAG, "invalid TrackStat cell index (" + screenIdx + ", " + cellIdx + ")");
         }
     }
 
@@ -66,7 +66,9 @@ public class TrackRecordActivityConfiguration {
         return INSTANCE;
     }
 
-    public int getScreenCount(){ return config.getScreenCount();}
+    public int getScreenCount() {
+        return config.getScreenCount();
+    }
 
     public byte[] getAsBytes() {
         return config.getAsBytes();
@@ -111,14 +113,15 @@ public class TrackRecordActivityConfiguration {
     @SuppressWarnings("WeakerAccess")
     public static class CfgContainer extends Storable {
 
-        private ArrayList<TrackRecScreenConfigDto> screens;
+        private ArrayList<TrackRecScreenConfigDto> screens = new ArrayList<>(4);
 
         public CfgContainer() {
             super();
         }
 
         public CfgContainer(byte[] data) throws IOException {
-            super(data);
+            super();
+            read(data);
         }
 
         private int getScreenCount() {
@@ -128,11 +131,6 @@ public class TrackRecordActivityConfiguration {
         @Override
         protected int getVersion() {
             return 0;
-        }
-
-        @Override
-        public void reset() {
-            screens = new ArrayList<>(4);
         }
 
         @Override

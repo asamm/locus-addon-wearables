@@ -250,7 +250,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		// in approx. half of timeout resent requests one more time
 		if (ticks == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
 				&& !mHandshakeRetrySent.getAndSet(true)) {
-			Logger.logD(TAG, "Attempting second handshake");
+			Logger.INSTANCE.logD(TAG, "Attempting second handshake");
 			if (!mIsHandShakeReceived) {
 				wcs.sendCommand(DataPath.GET_HAND_SHAKE);
 			}
@@ -313,7 +313,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 				@Override
 				public void onFinish() {
-					Logger.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
+					Logger.INSTANCE.logE(LocusWearActivity.this.getClass().getSimpleName(), "Connection Failed!");
 					cancelConnectionFailedTimer();
 					/* Could not establish handshake connection */
 					((MainApplication) getApplication()).doApplicationFail(AppFailType.CONNECTION_FAILED);
@@ -373,7 +373,7 @@ public abstract class LocusWearActivity extends WearableActivity {
 		ON_RESUME,
 		ON_PAUSE,
 		ON_STOP,
-		ON_DESTROY;
+		ON_DESTROY
 
 	}
 

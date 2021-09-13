@@ -34,7 +34,7 @@ public class AppStorageManager {
 		try (FileOutputStream fos = new FileOutputStream(new File(ctx.getCacheDir(), ICON_PREFIX + value.getId()))){
 			fos.write(value.getIcon());
 		} catch (IOException e) {
-			Logger.logE(TAG, "Cache write failed", e);
+			Logger.INSTANCE.logE(TAG, "Cache write failed", e);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class AppStorageManager {
 				}
 				return new TrackProfileIconValue(profileId, baos.toByteArray());
 			} catch (IOException e) {
-				Logger.logE(TAG, "Cache write failed", e);
+				Logger.INSTANCE.logE(TAG, "Cache write failed", e);
 			}
 		}
 		return null;

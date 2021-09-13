@@ -15,7 +15,6 @@ import java.util.Date;
 import locus.api.android.utils.UtilsFormat;
 
 import static com.asamm.locus.addon.wear.utils.UtilsFormatWear.formatTime;
-import static locus.api.android.utils.UtilsFormat.formatDouble;
 
 /**
  * Interface which takes in Recording value and units settings
@@ -29,7 +28,9 @@ import static locus.api.android.utils.UtilsFormat.formatDouble;
 public interface TrackStatConsumable {
     ValueUnitContainer consumeAndFormat(TrackRecordingValue rec);
 
-    /** Value container used as a result value container for statistics dashboard */
+    /**
+     * Value container used as a result value container for statistics dashboard
+     */
     class ValueUnitContainer {
         private final Pair<String, CharSequence> mValUnitPair;
 
@@ -50,9 +51,12 @@ public interface TrackStatConsumable {
         }
     }
 
-    /** Factory for different strategies how to get result value and unit for various statistics */
+    /**
+     * Factory for different strategies how to get result value and unit for various statistics
+     */
     class TscFactory {
-        public static enum TrackStatConsumableModifierEnum {
+
+        public enum TrackStatConsumableModifierEnum {
             CURRENT, AVG, MAX, MIN
         }
 
@@ -99,6 +103,7 @@ public interface TrackStatConsumable {
         public static TrackStatConsumable createDistanceUphillConsumable() {
             return (rec) -> createDistanceConsumable(rec, () -> rec.getTrackRecStats().getElePositiveDistance());
         }
+
         public static TrackStatConsumable createDistanceDownhillConsumable() {
             return (rec) -> createDistanceConsumable(rec, () -> rec.getTrackRecStats().getEleNegativeDistance());
         }
@@ -106,19 +111,19 @@ public interface TrackStatConsumable {
         public static TrackStatConsumable createElevationUpConsumable() {
             return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
                     new ValueUnitContainer(
-                            UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+                            UtilsFormat.INSTANCE.formatAltitude(rec.getUnitsFormatAltitude(),
                                     rec.getTrackRecStats().getElePositiveHeight(),
                                     false),
-                            UtilsFormat.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
+                            UtilsFormat.INSTANCE.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
         }
 
         public static TrackStatConsumable createElevationDownConsumable() {
             return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
                     new ValueUnitContainer(
-                            UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+                            UtilsFormat.INSTANCE.formatAltitude(rec.getUnitsFormatAltitude(),
                                     rec.getTrackRecStats().getEleNegativeHeight(),
                                     false),
-                            UtilsFormat.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
+                            UtilsFormat.INSTANCE.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
         }
 
         public static TrackStatConsumable createAltitudeConsumable(TrackStatConsumableModifierEnum type) {
@@ -138,9 +143,9 @@ public interface TrackStatConsumable {
                         break;
                 }
                 return new ValueUnitContainer(
-                        UtilsFormat.formatAltitude(rec.getUnitsFormatAltitude(),
+                        UtilsFormat.INSTANCE.formatAltitude(rec.getUnitsFormatAltitude(),
                                 altitude, false),
-                        UtilsFormat.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
+                        UtilsFormat.INSTANCE.formatAltitudeUnits(rec.getUnitsFormatAltitude()));
             };
         }
 
@@ -161,9 +166,9 @@ public interface TrackStatConsumable {
         public static TrackStatConsumable createEnergyConsumable() {
             return (rec) -> (isInvalidInput(rec)) ? ValueUnitContainer.empty() :
                     new ValueUnitContainer(
-                            UtilsFormat.formatEnergy(rec.getUnitsFormatEnergy(),
+                            UtilsFormat.INSTANCE.formatEnergy(rec.getUnitsFormatEnergy(),
                                     rec.getTrackRecStats().getEnergy(), false),
-                            UtilsFormat.formatEnergyUnit(rec.getUnitsFormatEnergy()));
+                            UtilsFormat.INSTANCE.formatEnergyUnit(rec.getUnitsFormatEnergy()));
         }
 
         private static CharSequence getCadenceUnit() {
@@ -216,9 +221,9 @@ public interface TrackStatConsumable {
                 float tmpVal = val.getValue();
                 long timeDiff = (System.currentTimeMillis() - dbgVal.getTimestamp() + 500) / 1000;
                 String value = "";
-                String unit = dbgVal.getHrmAccuracy()+ ":"
-                        + (Float.isNaN(tmpDbgVal) ? "N" : (int)tmpDbgVal)+ ":" +timeDiff;
-                unit = unit + "/" + (Float.isNaN(tmpVal) ? "N" : (int)tmpVal)+ ":" + ((System.currentTimeMillis() - val.getTimestamp() + 500) / 1000);
+                String unit = dbgVal.getHrmAccuracy() + ":"
+                        + (Float.isNaN(tmpDbgVal) ? "N" : (int) tmpDbgVal) + ":" + timeDiff;
+                unit = unit + "/" + (Float.isNaN(tmpVal) ? "N" : (int) tmpVal) + ":" + ((System.currentTimeMillis() - val.getTimestamp() + 500) / 1000);
                 unit = unit + ":" + ((System.currentTimeMillis() - dbgVal.getSendTimestamp() + 500) / 1000);
                 return new ValueUnitContainer(value, unit);
             };
@@ -228,26 +233,29 @@ public interface TrackStatConsumable {
             return (stats) -> ValueUnitContainer.empty();
         }
 
-        /** Interface is used to provide lazy loaded floats which are safely available only after
-         * their parents container null checks */
+        /**
+         * Interface is used to provide lazy loaded floats which are safely available only after
+         * their parents container null checks
+         */
         @FunctionalInterface
         private interface FloatProducer {
             float produce();
         }
+
         private static ValueUnitContainer createSpeedConsumable(TrackRecordingValue rec, FloatProducer speedProducer) {
             if (isInvalidInput(rec)) return ValueUnitContainer.empty();
             return new ValueUnitContainer(
-                    UtilsFormat.formatSpeed(rec.getUnitsFormatSpeed(), speedProducer.produce(), true),
-                    UtilsFormat.formatSpeedUnits(rec.getUnitsFormatSpeed()));
+                    UtilsFormat.INSTANCE.formatSpeed(rec.getUnitsFormatSpeed(), speedProducer.produce(), true),
+                    UtilsFormat.INSTANCE.formatSpeedUnits(rec.getUnitsFormatSpeed()));
         }
 
         private static ValueUnitContainer createDistanceConsumable(TrackRecordingValue rec, FloatProducer distanceProducer) {
             if (isInvalidInput(rec)) return ValueUnitContainer.empty();
             float distance = distanceProducer.produce();
             return new ValueUnitContainer(
-                    UtilsFormat.formatDistance(rec.getUnitsFormatLength(),
+                    UtilsFormat.INSTANCE.formatDistance(rec.getUnitsFormatLength(),
                             distance, true),
-                    UtilsFormat.formatDistanceUnits(rec.getUnitsFormatLength(), distance));
+                    UtilsFormat.INSTANCE.formatDistanceUnits(rec.getUnitsFormatLength(), distance));
         }
     }
 }

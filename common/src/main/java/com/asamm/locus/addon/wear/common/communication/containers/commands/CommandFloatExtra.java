@@ -13,7 +13,8 @@ import locus.api.utils.DataWriterBigEndian;
  * Copyright (C) 2018
  */
 public class CommandFloatExtra extends TimeStampStorable {
-    private float value;
+
+    private float value = Float.NaN;
 
     public CommandFloatExtra() {
         super();
@@ -31,12 +32,6 @@ public class CommandFloatExtra extends TimeStampStorable {
     @Override
     protected int getVersion() {
         return 0;
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        value = Float.NaN;
     }
 
     @Override

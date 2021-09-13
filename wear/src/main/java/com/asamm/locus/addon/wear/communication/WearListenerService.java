@@ -33,7 +33,7 @@ public class WearListenerService extends WearableListenerService {
 			if (event.getType() == DataEvent.TYPE_CHANGED) {
 				Application a = getApplication();
 				if (a == null) {
-					Logger.logW(TAG, "Received data but application is null");
+					Logger.INSTANCE.logW(TAG, "Received data but application is null");
 					DataPath p = DataPath.valueOf(event.getDataItem());
 					if (p != null) {
 						TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, event.getDataItem());

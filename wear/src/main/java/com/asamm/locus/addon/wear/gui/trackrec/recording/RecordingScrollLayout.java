@@ -185,7 +185,7 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
                     return true;
                 }
             } catch (Exception e) {
-                Logger.logE(TAG, "There was an error processing the Fling event.", e);
+                Logger.INSTANCE.logE(TAG, "There was an error processing the Fling event.", e);
             }
             return false;
         }

@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -26,8 +25,6 @@ import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmValue;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
-
-import java.text.SimpleDateFormat;
 
 import locus.api.utils.Logger;
 
@@ -103,7 +100,7 @@ public class TrackRecordingService extends Service {
 
     /* Used to build and start foreground service. */
     private void startInForeground() {
-        Logger.logD(TAG, "Start foreground service.");
+        Logger.INSTANCE.logD(TAG, "Start foreground service.");
 
         instance = this;
 
@@ -140,14 +137,14 @@ public class TrackRecordingService extends Service {
     private void afterStart() {
         final RecordingSensorManager rsm = mSensors;
         if (rsm == null) {
-            Logger.logE(TAG,"Could not finish TrackRecordingService#afterStart() call. Seems the service was destroyed right after the start.");
+            Logger.INSTANCE.logE(TAG, "Could not finish TrackRecordingService#afterStart() call. Seems the service was destroyed right after the start.");
             return;
         }
         // fake push first device keep alive, real ones start to come in a while
         WearCommService.getInstance().pushLastTransmitTimeFor(DEVICE_KEEP_ALIVE);
 
         if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
-            Logger.logW(TAG, "checkAndRequestBodySensorPermission() failed during service start.");
+            Logger.INSTANCE.logW(TAG, "checkAndRequestBodySensorPermission() failed during service start.");
             stopForegroundService();
             return;
         }
@@ -164,7 +161,7 @@ public class TrackRecordingService extends Service {
 
                         final long currentTime = System.currentTimeMillis();
                         if (currentTime - WearCommService.getInstance().getLastTransmitTimeFor(DEVICE_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
-                            Logger.logW(TAG, "DEVICE_KEEP_ALIVE has not come in time, terminating HRM service.");
+                            Logger.INSTANCE.logW(TAG, "DEVICE_KEEP_ALIVE has not come in time, terminating HRM service.");
                             stopForegroundService();
                             return;
                         }
@@ -175,7 +172,7 @@ public class TrackRecordingService extends Service {
                             new Handler(getMainLooper()).postDelayed(() -> {
                                 sensors.startHrSensor(TrackRecordingService.this, true);
                                 numHrRestarts++;
-                                Logger.logW(TAG, "HR sensor restarted. Attempt: " + numHrRestarts);
+                                Logger.INSTANCE.logW(TAG, "HR sensor restarted. Attempt: " + numHrRestarts);
                             }, 500);
                         }
 
@@ -195,7 +192,7 @@ public class TrackRecordingService extends Service {
     }
 
     private void stopForegroundService() {
-        Logger.logD(TAG, "Stop foreground service.");
+        Logger.INSTANCE.logD(TAG, "Stop foreground service.");
 
         // Stop foreground service and remove the notification.
         stopForeground(true);

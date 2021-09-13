@@ -13,7 +13,8 @@ import locus.api.utils.DataWriterBigEndian;
  * Copyright (C) 2018
  */
 public class CommandStringExtra extends TimeStampStorable {
-    private String value;
+
+    private String value = "";
 
     public CommandStringExtra() {
         super();
@@ -31,12 +32,6 @@ public class CommandStringExtra extends TimeStampStorable {
     @Override
     protected int getVersion() {
         return 0;
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        value = "";
     }
 
     @Override

@@ -198,7 +198,7 @@ public class LocusWearCommService implements
 				return (E) clazz.getConstructor(byte[].class).newInstance(baos.toByteArray());
 			}
 		} catch (Exception e) {
-			Logger.logE("DataPath", "Constructor failed for " + p.name(), e);
+			Logger.INSTANCE.logE("DataPath", "Constructor failed for " + p.name(), e);
 			return null;
 		}
 	}

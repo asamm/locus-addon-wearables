@@ -15,7 +15,7 @@ import locus.api.utils.DataWriterBigEndian;
 
 public class ProfileIconGetCommand extends TimeStampStorable {
 
-	private long mProfileId;
+	private long mProfileId = -1;
 
 	public ProfileIconGetCommand() {
 		super();
@@ -33,12 +33,6 @@ public class ProfileIconGetCommand extends TimeStampStorable {
 	@Override
 	protected int getVersion() {
 		return 0;
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		mProfileId = -1;
 	}
 
 	@Override

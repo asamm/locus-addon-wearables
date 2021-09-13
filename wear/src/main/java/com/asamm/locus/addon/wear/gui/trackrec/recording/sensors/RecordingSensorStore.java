@@ -30,7 +30,7 @@ public class RecordingSensorStore {
                 }
 
             } catch (Exception e) {
-                Logger.logE("RecordingSensorStore", "Battery level read failed", e);
+                Logger.INSTANCE.logE("RecordingSensorStore", "Battery level read failed", e);
                 battery.setValue(BatteryValue.INVALID_VALUE);
             }
         }

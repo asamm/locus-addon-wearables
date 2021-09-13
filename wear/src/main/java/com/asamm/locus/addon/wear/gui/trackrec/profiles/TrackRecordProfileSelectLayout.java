@@ -74,7 +74,7 @@ public class TrackRecordProfileSelectLayout extends ConstraintLayout {
 		}
 		mbtnOpenProfile.setText(mProfile == null ? "" : mProfile.getName());
 		if (mIcon != null) {
-			Drawable icon = new BitmapDrawable(getResources(), UtilsBitmap.getBitmap(mIcon.getIcon()));
+			Drawable icon = new BitmapDrawable(getResources(), UtilsBitmap.INSTANCE.getBitmap(mIcon.getIcon()));
 			float density = getContext().getResources().getDisplayMetrics().density;
 			int dp28 = (int) (28 * density + 0.5f);
 			icon.setBounds(0, 0, dp28, dp28);

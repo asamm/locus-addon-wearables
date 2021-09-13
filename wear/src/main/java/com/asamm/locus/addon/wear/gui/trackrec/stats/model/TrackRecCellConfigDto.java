@@ -18,8 +18,8 @@ public class TrackRecCellConfigDto extends Storable {
     /**
      * position(cell) index marking the position at the given statistics screen
      */
-    private byte positionIdx;
-    private TrackStatTypeEnum contentType;
+    private byte positionIdx = 0;
+    private TrackStatTypeEnum contentType = TrackStatTypeEnum.BLANK;
 
     public TrackRecCellConfigDto(byte positionIdx, TrackStatTypeEnum contentType) {
         this();
@@ -32,7 +32,8 @@ public class TrackRecCellConfigDto extends Storable {
     }
 
     public TrackRecCellConfigDto(byte[] data) throws IOException {
-        super(data);
+        super();
+        read(data);
     }
 
     public byte getPositionIdx() {
@@ -53,20 +54,14 @@ public class TrackRecCellConfigDto extends Storable {
     }
 
     @Override
-    public void reset() {
-        positionIdx = 0;
-        contentType = TrackStatTypeEnum.BLANK;
-    }
-
-    @Override
-    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+    protected void readObject(int version, DataReaderBigEndian dr) {
         byte[] bytes = dr.readBytes(2);
         positionIdx = bytes[0];
         contentType = TrackStatTypeEnum.getById(bytes[1]);
     }
 
     @Override
-    protected void writeObject(DataWriterBigEndian dw) throws IOException {
+    protected void writeObject(DataWriterBigEndian dw) {
         dw.write(positionIdx);
         dw.write(contentType.getId());
     }

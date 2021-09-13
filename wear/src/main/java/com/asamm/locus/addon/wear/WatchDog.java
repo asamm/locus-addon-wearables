@@ -58,11 +58,11 @@ public class WatchDog {
         mAppFailCallback = null;
         mWatchedActivities = new HashMap<>(5);
         startWdTimer();
-        Logger.logW(TAG, "Starting watchdog");
+        Logger.INSTANCE.logW(TAG, "Starting watchdog");
     }
 
     void destroy() {
-        Logger.logW(TAG, "Terminating watchdog");
+        Logger.INSTANCE.logW(TAG, "Terminating watchdog");
         mAppFailCallback = null;
         synchronized (WATCHDOG_LOCK) {
             if (mWdTimer != null) {
@@ -130,7 +130,7 @@ public class WatchDog {
     private void doTimerTick() {
         // seems both trackrec service and main application were killed. Destroy watchdog immediately
         if (MainApplication.applicationContext == null && !TrackRecordingService.isRunning()) {
-            Logger.logW(TAG, "Application termination detected");
+            Logger.INSTANCE.logW(TAG, "Application termination detected");
             destroy();
             return;
         }
@@ -172,11 +172,11 @@ public class WatchDog {
         }
         AppFailCallback onFail = mAppFailCallback;
         if (failed && onFail != null) {
-            Logger.logD(TAG, "Watchdog fail event");
+            Logger.INSTANCE.logD(TAG, "Watchdog fail event");
             onFail.onAppFail(AppFailType.CONNECTION_FAILED);
         } else if (reqsToResend != null) {
             for (DataPayload p : reqsToResend) {
-                Logger.logD(TAG, "Watchdog retry request " + p.getPath());
+                Logger.INSTANCE.logD(TAG, "Watchdog retry request " + p.getPath());
                 WearCommService.getInstance().sendDataItem(p.getPath(), p.getStorable());
             }
         }

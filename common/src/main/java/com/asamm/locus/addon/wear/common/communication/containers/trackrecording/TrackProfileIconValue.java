@@ -5,7 +5,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 
 import java.io.IOException;
 
-import locus.api.android.ActionTools;
+import locus.api.android.ActionMapTools;
+import locus.api.android.objects.TrackRecordProfileSimple;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
 
@@ -15,11 +16,8 @@ import locus.api.utils.DataWriterBigEndian;
  */
 public class TrackProfileIconValue extends TimeStampStorable {
 
-	// tag for logger
-	private static final String TAG = TrackProfileIconValue.class.getSimpleName();
-
-	private long mId;
-	private byte[] mImg;
+	private long mId = 0;
+	private byte[] mImg = null;
 
 	/**
 	 * Base constructor mainly for a Storable class.
@@ -29,7 +27,7 @@ public class TrackProfileIconValue extends TimeStampStorable {
 		super();
 	}
 
-	public TrackProfileIconValue(ActionTools.TrackRecordProfileSimple simpleProfile) {
+	public TrackProfileIconValue(TrackRecordProfileSimple simpleProfile) {
 		this();
 		mId = simpleProfile.getId();
 		mImg = simpleProfile.getIcon();
@@ -45,50 +43,9 @@ public class TrackProfileIconValue extends TimeStampStorable {
 	 * Constructor based on raw byte array.
 	 *
 	 * @param data packed data
-	 * @throws IOException
 	 */
 	public TrackProfileIconValue(byte[] data) throws IOException {
 		super(data);
-	}
-
-
-	/**************************************************/
-	// STORABLE PART
-
-	/**************************************************/
-
-	@Override
-	protected int getVersion() {
-		return 0;
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		mId = 0L;
-		mImg = null;
-	}
-
-	@Override
-	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
-		super.readObject(version, dr);
-		mId = dr.readLong();
-		int imgSize = dr.readInt();
-		if (imgSize > 0) {
-			mImg = new byte[imgSize];
-			dr.readBytes(mImg);
-		}
-	}
-
-	@Override
-	protected void writeObject(DataWriterBigEndian dw) throws IOException {
-		super.writeObject(dw);
-		dw.writeLong(mId);
-		int imgSize = mImg != null ? mImg.length : 0;
-		dw.writeInt(imgSize);
-		if (imgSize > 0) {
-			dw.write(mImg);
-		}
 	}
 
 	public long getId() {
@@ -115,6 +72,37 @@ public class TrackProfileIconValue extends TimeStampStorable {
 		@Override
 		public Class<TrackProfileIconValue> getClazz() {
 			return TrackProfileIconValue.class;
+		}
+	}
+
+	//*************************************************
+	// STORABLE PART
+	//*************************************************
+
+	@Override
+	protected int getVersion() {
+		return 0;
+	}
+
+	@Override
+	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+		super.readObject(version, dr);
+		mId = dr.readLong();
+		int imgSize = dr.readInt();
+		if (imgSize > 0) {
+			mImg = new byte[imgSize];
+			dr.readBytes(mImg);
+		}
+	}
+
+	@Override
+	protected void writeObject(DataWriterBigEndian dw) throws IOException {
+		super.writeObject(dw);
+		dw.writeLong(mId);
+		int imgSize = mImg != null ? mImg.length : 0;
+		dw.writeInt(imgSize);
+		if (imgSize > 0) {
+			dw.write(mImg);
 		}
 	}
 }

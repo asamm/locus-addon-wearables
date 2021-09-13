@@ -22,15 +22,11 @@ public abstract class TimeStampStorable extends Storable {
 	/**
 	 * cropped 4B timestampt
 	 */
-	private int mIntTimeStamp;
+	private int mIntTimeStamp = (int) System.currentTimeMillis();
 
 	public TimeStampStorable(byte[] byteArray) throws IOException {
-		super(byteArray);
-	}
-
-	@Override
-	public void reset() {
-		mIntTimeStamp = (int) System.currentTimeMillis();
+		super();
+		read(byteArray);
 	}
 
 	@Override

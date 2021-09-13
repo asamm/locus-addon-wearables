@@ -7,13 +7,6 @@ package com.asamm.locus.addon.wear.utils;
 
 import locus.api.android.utils.UtilsFormat;
 
-import static locus.api.android.utils.UtilsFormat.VALUE_UNITS_DISTANCE_IM_F;
-import static locus.api.android.utils.UtilsFormat.VALUE_UNITS_DISTANCE_IM_FM;
-import static locus.api.android.utils.UtilsFormat.VALUE_UNITS_DISTANCE_IM_Y;
-import static locus.api.android.utils.UtilsFormat.VALUE_UNITS_DISTANCE_IM_YM;
-import static locus.api.android.utils.UtilsFormat.VALUE_UNITS_DISTANCE_NA_MNMI;
-import static locus.api.android.utils.UtilsFormat.formatDouble;
-
 /**
  * Only addded to supply some formatting functions from Android or Locus core to
  * stay dependent only on the API
@@ -83,12 +76,12 @@ public class UtilsFormatWear {
     private static <T> T doDistanceUnitFormatting(int distanceFormatType, SupplierCompat<T> formatMetric,
                                                   SupplierCompat<T> formatImperial, SupplierCompat<T> formatNautical) {
         switch (distanceFormatType) {
-            case VALUE_UNITS_DISTANCE_IM_F:
-            case VALUE_UNITS_DISTANCE_IM_FM:
-            case VALUE_UNITS_DISTANCE_IM_Y:
-            case VALUE_UNITS_DISTANCE_IM_YM:
+            case UtilsFormat.VALUE_UNITS_DISTANCE_IM_F:
+            case UtilsFormat.VALUE_UNITS_DISTANCE_IM_FM:
+            case UtilsFormat.VALUE_UNITS_DISTANCE_IM_Y:
+            case UtilsFormat.VALUE_UNITS_DISTANCE_IM_YM:
                 return formatImperial.get();
-            case VALUE_UNITS_DISTANCE_NA_MNMI:
+            case UtilsFormat.VALUE_UNITS_DISTANCE_NA_MNMI:
                 return formatNautical.get();
             default:
                 return formatMetric.get();
@@ -114,35 +107,35 @@ public class UtilsFormatWear {
         if (full) {
             if (withUnits) {
                 return hours + "h:" +
-                        formatDouble(mins, 0, 2) + "m:" +
-                        formatDouble(sec, 0, 2) + "s";
+                        UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + "m:" +
+                        UtilsFormat.INSTANCE.formatDouble(sec, 0, 2) + "s";
             } else {
                 return hours + ":" +
-                        formatDouble(mins, 0, 2) + ":" +
-                        formatDouble(sec, 0, 2);
+                        UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + ":" +
+                        UtilsFormat.INSTANCE.formatDouble(sec, 0, 2);
             }
         } else {
             if (hours == 0) {
                 if (mins == 0) {
                     if (withUnits) {
-                        return "00m:" + formatDouble(sec, 0, 2) + "s";
+                        return "00m:" + UtilsFormat.INSTANCE.formatDouble(sec, 0, 2) + "s";
                     } else {
-                        return "00:" + formatDouble(sec, 0, 2);
+                        return "00:" + UtilsFormat.INSTANCE.formatDouble(sec, 0, 2);
                     }
                 } else {
                     if (withUnits) {
-                        return formatDouble(mins, 0, 2) + "m:" + formatDouble(sec, 0, 2) + "s";
+                        return UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + "m:" + UtilsFormat.INSTANCE.formatDouble(sec, 0, 2) + "s";
                     } else {
-                        return formatDouble(mins, 0, 2) + ":" + formatDouble(sec, 0, 2);
+                        return UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + ":" + UtilsFormat.INSTANCE.formatDouble(sec, 0, 2);
                     }
                 }
             } else {
                 if (withUnits) {
-                    return hours + "h:" + formatDouble(mins, 0, 2) + "m";
+                    return hours + "h:" + UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + "m";
                 } else {
                     return hours + ":" +
-                            formatDouble(mins, 0, 2) + ":" +
-                            formatDouble(sec, 0, 2);
+                            UtilsFormat.INSTANCE.formatDouble(mins, 0, 2) + ":" +
+                            UtilsFormat.INSTANCE.formatDouble(sec, 0, 2);
                 }
             }
         }

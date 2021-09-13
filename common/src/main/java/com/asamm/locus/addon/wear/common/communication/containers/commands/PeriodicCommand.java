@@ -26,9 +26,9 @@ public class PeriodicCommand extends TimeStampStorable {
 	public static final byte IDX_PERIODIC_TRACK_RECORDING = 1;
 	public static final byte IDX_PERIODIC_MAP = 2;
 
-	private byte mPeriodicActivityId;
-	private int mPeriodMs;
-	private TimeStampStorable mExtra;
+	private byte mPeriodicActivityId = IDX_PERIODIC_STOP_ALL;
+	private int mPeriodMs = PERIOD_STOP;
+	private TimeStampStorable mExtra = null;
 
 	public PeriodicCommand() {
 		super();
@@ -73,14 +73,6 @@ public class PeriodicCommand extends TimeStampStorable {
 	}
 
 	@Override
-	public void reset() {
-		super.reset();
-		mPeriodicActivityId = IDX_PERIODIC_STOP_ALL;
-		mPeriodMs = PERIOD_STOP;
-		mExtra = null;
-	}
-
-	@Override
 	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
 		super.readObject(version, dr);
 		mPeriodicActivityId = dr.readBytes(1)[0];
@@ -88,12 +80,12 @@ public class PeriodicCommand extends TimeStampStorable {
 		if (dr.readBoolean()) {
 			try {
 				if (mPeriodicActivityId == IDX_PERIODIC_MAP) {
-					mExtra = (MapPeriodicParams) dr.readStorable(MapPeriodicParams.class);
+					mExtra = dr.readStorable(MapPeriodicParams.class);
 				} else {
-					mExtra = (TimeStampStorable) dr.readStorable(TimeStampStorable.class);
+					mExtra = dr.readStorable(TimeStampStorable.class);
 				}
 			} catch (Exception e) {
-				Logger.logE(TAG, "Failed to instantiate extra data.", e);
+				Logger.INSTANCE.logE(TAG, "Failed to instantiate extra data.", e);
 				mExtra = null;
 			}
 		} else {
