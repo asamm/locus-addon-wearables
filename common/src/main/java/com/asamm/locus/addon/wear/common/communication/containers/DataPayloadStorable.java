@@ -1,6 +1,6 @@
 package com.asamm.locus.addon.wear.common.communication.containers;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 

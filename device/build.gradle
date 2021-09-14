@@ -58,8 +58,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':common')
+    implementation project(":common")
 
     // attach wear container
-    wearApp project(':wear')
+    wearApp project(":wear")
 }

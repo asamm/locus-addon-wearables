@@ -4,7 +4,7 @@
     style="@style/rootActivityStyle"
     android:background="@drawable/map_tile">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -42,7 +42,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_zoom_out"
             style="@style/zoomButton"
             android:onClick="onZoomClicked"
@@ -52,7 +52,7 @@
             app:layout_constraintEnd_toStartOf="@id/x_map_guide_vertical_center"
             app:layout_constraintTop_toTopOf="@+id/x_map_guide_horizontal_zoom_top" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_zoom_in"
             style="@style/zoomButton"
             android:onClick="onZoomClicked"
@@ -61,7 +61,7 @@
             app:fabSize="mini"
             app:layout_constraintStart_toEndOf="@id/x_map_guide_vertical_center"
             app:layout_constraintTop_toTopOf="@+id/x_map_guide_horizontal_zoom_top" />
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_rot_and_pan"
             style="@style/zoomButton"
             android:onClick="onCenterRotateButtonClicked"
@@ -156,35 +156,35 @@
 
         </LinearLayout>
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/x_map_guide_horizontal_zoom_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.00" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/x_map_guide_nav_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.27" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/x_map_guide_vertical_center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.50" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/x_map_guide_zoom_area_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.20" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include layout="@layout/include_navigation_drawer" />
 

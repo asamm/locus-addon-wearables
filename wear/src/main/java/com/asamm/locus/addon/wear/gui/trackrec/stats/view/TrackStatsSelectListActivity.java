@@ -8,9 +8,9 @@ package com.asamm.locus.addon.wear.gui.trackrec.stats.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.wear.widget.WearableLinearLayoutManager;
-import android.support.wear.widget.WearableRecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.widget.WearableLinearLayoutManager;
+import androidx.wear.widget.WearableRecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.asamm.locus.addon.wear.AppStorageManager;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.application.AppPreferencesManager;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -31,8 +30,6 @@ import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackStatViewId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import kotlin.Unit;
 
 /**
  * Activity containing single recycler view for choosing recording profile.

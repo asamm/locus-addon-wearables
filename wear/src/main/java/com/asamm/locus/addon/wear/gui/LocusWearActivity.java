@@ -100,8 +100,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	/**
 	 * Expected type of response for initialCommand
-	 *
-	 * @return
 	 */
 	protected abstract DataPath getInitialCommandResponseType();
 
@@ -114,9 +112,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	/**
 	 * Consumes new data coming from WearListenerService
-	 *
-	 * @param path
-	 * @param data
 	 */
 	public void consumeNewData(DataPath path, TimeStampStorable data) {
 		if (mConnectionFailedTimer != null) {
@@ -379,8 +374,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 
 	/**
 	 * Handling of item click in main menu/navigation drawer
-	 *
-	 * @param v
 	 */
 	public void handleNavigationDrawerItemClicked(View v) {
 		final Class<? extends LocusWearActivity> activityToStart;
@@ -463,7 +456,6 @@ public abstract class LocusWearActivity extends WearableActivity {
 	 * This function can be overriden in inheriting activities and is called during each on resume.
 	 * Activity that wishes to use custom HW button handling should register appropriate listeners
 	 * in the provided [delegate]
-	 * @param delegate
 	 */
 	protected abstract void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate);
 

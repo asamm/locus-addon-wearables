@@ -55,10 +55,13 @@
         <activity
             android:name=".gui.error.AppFailActivity"
             android:launchMode="singleInstance" />
-        <activity android:name=".gui.custom.WaypointInputTextActivity"/>
+        <activity android:name=".gui.custom.WaypointInputTextActivity" />
         <activity android:name=".gui.trackrec.stats.view.TrackStatsSelectListActivity" />
         <activity android:name=".gui.MainSettingsActivity" />
-        <service android:name=".application.TrackRecordingService" android:exported="false"/>
+
+        <service
+            android:name=".application.TrackRecordingService"
+            android:exported="false" />
 
     </application>
 

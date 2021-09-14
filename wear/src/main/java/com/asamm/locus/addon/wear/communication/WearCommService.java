@@ -1,8 +1,8 @@
 package com.asamm.locus.addon.wear.communication;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.WatchDog;
@@ -64,9 +64,9 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 
 	@Override
 	protected void destroy() {
-		if ((mGoogleApiClient != null) && mGoogleApiClient.isConnected()) {
+		if ((googleApiClient != null) && googleApiClient.isConnected()) {
 			Wearable.CapabilityApi.removeCapabilityListener(
-					mGoogleApiClient,
+					googleApiClient,
 					this,
 					CAPABILITY_PHONE_APP);
 		}
@@ -85,7 +85,7 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 		super.onConnected(bundle);
 		// Set up listeners for capability changes (install/uninstall of remote app).
 		Wearable.CapabilityApi.addCapabilityListener(
-				mGoogleApiClient,
+				googleApiClient,
 				this,
 				CAPABILITY_PHONE_APP);
 
@@ -115,7 +115,7 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 
 
 	public void getConnectedNodes(ResultCallback<NodeApi.GetConnectedNodesResult> resultCallback) {
-		Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).setResultCallback(resultCallback, 1000, TimeUnit.MILLISECONDS);
+		Wearable.NodeApi.getConnectedNodes(googleApiClient).setResultCallback(resultCallback, 1000, TimeUnit.MILLISECONDS);
 	}
 
 
@@ -164,7 +164,7 @@ public class WearCommService extends LocusWearCommService implements CapabilityA
 	private void checkIfPhoneHasApp() {
 		PendingResult<CapabilityApi.GetCapabilityResult> pendingResult =
 				Wearable.CapabilityApi.getCapability(
-						mGoogleApiClient,
+						googleApiClient,
 						CAPABILITY_PHONE_APP,
 						CapabilityApi.FILTER_ALL);
 

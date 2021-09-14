@@ -2,8 +2,8 @@ package com.asamm.locus.addon.wear.gui.custom;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.v4.widget.DrawerLayout;
-import android.support.wear.widget.drawer.WearableDrawerView;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.wear.widget.drawer.WearableDrawerView;
 import android.util.AttributeSet;
 
 /**
