@@ -24,10 +24,6 @@ public class TrackRecordingStateChangeValue extends TimeStampStorable {
         super();
     }
 
-    public TrackRecordingStateChangeValue(byte[] arr) throws IOException {
-        super(arr);
-    }
-
     public TrackRecordingStateChangeValue(TrackRecordingStateEnum state,
                                           String profileName) {
         super();

@@ -37,18 +37,18 @@ import kotlin.math.sin
  * Created by Milan Cejnar on 08.11.2017.
  * Asamm Software, s.r.o.
  */
-class DeviceCommService private constructor(ctx: Context) 
+class DeviceCommService private constructor(ctx: Context)
     : LocusWearCommService(ctx) {
-    
+
     @Volatile
-    private var mAboutToBeDestroyed = false
+    private var aboutToBeDestroyed = false
 
     // Last received update from Locus
     @Volatile
-    private var mLastUpdate: UpdateContainer? = null
+    private var lastUpdateContainer: UpdateContainer? = null
 
     @Volatile
-    private var mLastPeriodicUpdateReceivedMilis = 0L
+    private var lastUpdateContainerReceived = 0L
 
     // time for periodic data transmission to wear device
     private var mPeriodicDataTimer: PeriodicDataTimer? = null
@@ -58,7 +58,7 @@ class DeviceCommService private constructor(ctx: Context)
      * Marks last time that data was received from the watch
      */
     @Volatile
-    private var mLastReceivedTime = System.currentTimeMillis()
+    private var lastReceivedTime = System.currentTimeMillis()
 
     /**
      * is updated as side effect of some selected wear requests during handling
@@ -75,17 +75,19 @@ class DeviceCommService private constructor(ctx: Context)
             lv = getActiveVersion(ctx)
 
             // start receiver
-            startReceiver()
+            lastUpdateContainerReceived = System.currentTimeMillis()
+            startRefresher()
         } catch (e: RequiredVersionMissingException) {
-            mLastUpdate = null
+            lastUpdateContainer = null
         }
     }
 
     override fun destroy() {
+        Logger.logD(TAG, "destroy()")
         super.destroy()
 
         // stop receiver
-        stopReceiver()
+        stopRefresher()
     }
 
     /**
@@ -94,12 +96,12 @@ class DeviceCommService private constructor(ctx: Context)
      * @param update update container
      */
     fun onUpdate(update: UpdateContainer?) {
-        if (System.currentTimeMillis() - mLastReceivedTime > 15000) {
+        Logger.logD(TAG, "onUpdate($update)")
+        if (System.currentTimeMillis() - lastReceivedTime > 15000) {
             destroyInstance()
         } else {
-//            Logger.logD(TAG, "onUpdate(" + update + ")");
-            mLastUpdate = update
-            mLastPeriodicUpdateReceivedMilis = System.currentTimeMillis()
+            lastUpdateContainer = update
+            lastUpdateContainerReceived = System.currentTimeMillis()
         }
     }
 
@@ -108,28 +110,35 @@ class DeviceCommService private constructor(ctx: Context)
      */
     fun onIncorrectData() {
         Logger.logD(TAG, "onIncorrectData()")
-        mLastUpdate = null
+        lastUpdateContainer = null
     }
 
-    fun onDataReceived(c: Context, path: DataPath, params: TimeStampStorable) {
+    fun onDataReceived(c: Context, path: DataPath, params: TimeStampStorable?) {
+        Logger.logD(TAG, "onDataReceived($c, $path, $params)")
+
+        // check if refresher works and restart if needed
         val currentTime = System.currentTimeMillis()
-        if (currentTime - mLastPeriodicUpdateReceivedMilis > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
+        if (currentTime - lastUpdateContainerReceived > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
             Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.")
             try {
                 // update mLastUpdate manually and refresh mLastPeriodicUpdateReceivedMilis
                 onUpdate(ActionBasics.getUpdateContainer(c, lv!!))
-                startReceiver()
+                startRefresher()
             } catch (e: RequiredVersionMissingException) {
                 Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
             }
         }
+
+        // send logs to Locus Map app logger
         if (path != DataPath.PUT_HEART_RATE) {
             sendLocusMapLogD("Wear", "Received $path")
         }
+
+        // handle data
         when (path) {
             DataPath.GET_HAND_SHAKE -> {
-                val hndshk = loadHandShake(c)
-                sendDataItem(DataPath.PUT_HAND_SHAKE, hndshk)
+                val handShake = loadHandShake(c)
+                sendDataItem(DataPath.PUT_HAND_SHAKE, handShake)
             }
             DataPath.GET_TRACK_REC_PROFILES -> {
                 val profiles = loadTrackRecordProfiles(c)
@@ -188,7 +197,7 @@ class DeviceCommService private constructor(ctx: Context)
                     sendLocusMapLogD(tag, "Ignored, invalid data: " + hrValue.value)
                 }
                 val lastDevKeepAlive = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE)
-                val lastUpdate = mLastUpdate
+                val lastUpdate = lastUpdateContainer
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording) {
                     Logger.logD(TAG, "sending STOP_WATCH_TRACK_REC_SERVICE")
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE)
@@ -235,7 +244,7 @@ class DeviceCommService private constructor(ctx: Context)
     fun onDataChanged(c: Context, newData: DataEvent) {
         val item = newData.dataItem
         val path = DataPath.valueOf(item)
-        val params = createStorableForPath<TimeStampStorable>(path, item)
+        val params: TimeStampStorable? = createStorableForPath(path, item)
         onDataReceived(c, path, params)
     }
 
@@ -259,7 +268,7 @@ class DeviceCommService private constructor(ctx: Context)
         val task: TimerTask? = when (activityId) {
             PeriodicCommand.IDX_PERIODIC_TRACK_RECORDING -> object : TimerTask() {
                 override fun run() {
-                    if (mAboutToBeDestroyed) {
+                    if (aboutToBeDestroyed) {
                         destroyPeriodicDataTimer()
                         return
                     }
@@ -269,7 +278,7 @@ class DeviceCommService private constructor(ctx: Context)
             }
             PeriodicCommand.IDX_PERIODIC_MAP -> object : TimerTask() {
                 override fun run() {
-                    if (mAboutToBeDestroyed) {
+                    if (aboutToBeDestroyed) {
                         destroyPeriodicDataTimer()
                         return
                     }
@@ -280,7 +289,7 @@ class DeviceCommService private constructor(ctx: Context)
         }
         synchronized(TAG) {
             destroyPeriodicDataTimer()
-            if (command.isStopRequest || task == null || mAboutToBeDestroyed) {
+            if (command.isStopRequest || task == null || aboutToBeDestroyed) {
                 return
             }
             mPeriodicDataTimer = PeriodicDataTimer(activityId, periodMs)
@@ -294,7 +303,7 @@ class DeviceCommService private constructor(ctx: Context)
             return
         }
         var zoom = extra.zoom
-        val data = mLastUpdate
+        val data = lastUpdateContainer
         val offsetX = extra.offsetX
         val offsetY = extra.offsetY
         if (zoom == Const.ZOOM_UNKOWN.toInt()) {
@@ -384,8 +393,8 @@ class DeviceCommService private constructor(ctx: Context)
 
     private fun handleRecordingStateChanged(ctx: Context, lv: LocusVersion?, newState: TrackRecordingStateEnum?, profile: String) {
         var currentRecState: TrackRecordingStateEnum? = null
-        if (mLastUpdate != null) {
-            currentRecState = if (mLastUpdate!!.isTrackRecPaused) TrackRecordingStateEnum.PAUSED else if (mLastUpdate!!.isTrackRecRecording) TrackRecordingStateEnum.RECORDING else TrackRecordingStateEnum.NOT_RECORDING
+        if (lastUpdateContainer != null) {
+            currentRecState = if (lastUpdateContainer!!.isTrackRecPaused) TrackRecordingStateEnum.PAUSED else if (lastUpdateContainer!!.isTrackRecRecording) TrackRecordingStateEnum.RECORDING else TrackRecordingStateEnum.NOT_RECORDING
         }
         if (newState != null && currentRecState != newState) {
             try {
@@ -411,19 +420,19 @@ class DeviceCommService private constructor(ctx: Context)
      * Load basic data from current Locus application.
      */
     private fun loadHandShake(ctx: Context): HandShakeValue {
-        var locusInfo: LocusInfo? = null
-
         // check if object exists
+        var locusInfo: LocusInfo? = null
         if (lv != null) {
             // handle info
             locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
         }
 
         // prepare container with data and send it
+        Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
         return if (lv == null) HandShakeValue() else HandShakeValue(lv!!.versionCode,
-                BuildConfig.VERSION_CODE - 1,  // - 1 to compensate for device suffix
-                locusInfo != null && locusInfo.isRunning,
-                locusInfo != null && locusInfo.isPeriodicUpdatesEnabled)
+                // - 1 to compensate for device suffix
+                BuildConfig.VERSION_CODE - 1,
+                locusInfo != null && locusInfo.isRunning)
     }
     /**
      * Load recording profiles data from current Locus application.
@@ -468,16 +477,16 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     private fun loadTrackRecordingValue(ctx: Context): TrackRecordingValue {
-        val infoAvailable = mLastUpdate != null
-        val myLocAvailable = infoAvailable && mLastUpdate!!.locMyLocation != null
-        val myLoc = if (myLocAvailable) mLastUpdate!!.locMyLocation else null
-        val trackRec = infoAvailable && mLastUpdate!!.isTrackRecRecording
-        val trackRecPause = infoAvailable && mLastUpdate!!.isTrackRecPaused
-        val profileName = if (infoAvailable) mLastUpdate!!.trackRecProfileName else ""
+        val infoAvailable = lastUpdateContainer != null
+        val myLocAvailable = infoAvailable && lastUpdateContainer!!.locMyLocation != null
+        val myLoc = if (myLocAvailable) lastUpdateContainer!!.locMyLocation else null
+        val trackRec = infoAvailable && lastUpdateContainer!!.isTrackRecRecording
+        val trackRecPause = infoAvailable && lastUpdateContainer!!.isTrackRecPaused
+        val profileName = if (infoAvailable) lastUpdateContainer!!.trackRecProfileName else ""
         val speed = if (myLocAvailable) myLoc!!.speed else null
         val hrm = if (myLocAvailable) myLoc!!.sensorHeartRate else 0
         val altitude = if (myLocAvailable && myLoc!!.hasAltitude) myLoc.altitude.toFloat() else Float.NaN
-        val stats = if (infoAvailable) mLastUpdate!!.trackRecStats else null
+        val stats = if (infoAvailable) lastUpdateContainer!!.trackRecStats else null
         var locusInfo: LocusInfo? = null
         locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
         return TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
@@ -485,7 +494,7 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     fun doUpdateReceiveTimestamp() {
-        mLastReceivedTime = System.currentTimeMillis()
+        lastReceivedTime = System.currentTimeMillis()
     }
 
     private class PeriodicDataTimer(private val activityId: Byte, private val periodMs: Int) : Timer()
@@ -496,28 +505,33 @@ class DeviceCommService private constructor(ctx: Context)
 
     var refresher: Thread? = null
 
-    private fun startReceiver() {
+    private fun startRefresher() {
+        Logger.logD(TAG, "startRefresher(), " +
+                "aboutToBeDestroyed: $aboutToBeDestroyed")
         // clear current refresher
-        stopReceiver()
+        stopRefresher()
 
         // start new
-        if (!mAboutToBeDestroyed) {
-            refresher = Thread(Refresher()).apply {
-                start()
-            }
+        if (!aboutToBeDestroyed) {
+            refresher = Thread(Refresher())
+            refresher?.start()
         }
     }
 
-    private fun stopReceiver() {
+    private fun stopRefresher() {
+        Logger.logD(TAG, "stopRefresher(), " +
+                "current: ${refresher?.hashCode()}")
         refresher = null
     }
 
     private inner class Refresher : Runnable {
 
         override fun run() {
+            Logger.logD(TAG, "refresher: started: ${Thread.currentThread().hashCode()}")
             while (true) {
                 // stop refresher
-                if (Thread.currentThread() != refresher)  {
+                Thread.sleep(1000)
+                if (Thread.currentThread() != refresher) {
                     break
                 }
 
@@ -573,7 +587,7 @@ class DeviceCommService private constructor(ctx: Context)
         fun destroyInstance() {
             synchronized(TAG) {
                 _instance?.let {
-                    it.mAboutToBeDestroyed = true
+                    it.aboutToBeDestroyed = true
                     it.destroy()
 
                     // disable watch periodic data timer

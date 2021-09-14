@@ -21,10 +21,6 @@ public class ProfileIconGetCommand extends TimeStampStorable {
 		super();
 	}
 
-	public ProfileIconGetCommand(byte[] data) throws IOException {
-		super(data);
-	}
-
 	public ProfileIconGetCommand(long profileId) {
 		this();
 		mProfileId = profileId;

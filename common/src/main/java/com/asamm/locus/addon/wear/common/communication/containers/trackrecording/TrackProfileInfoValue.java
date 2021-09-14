@@ -41,17 +41,6 @@ public class TrackProfileInfoValue extends TimeStampStorable {
         //mDesc = simpleProfile.getDesc(); // not used in this version
     }
 
-    /**
-     * Constructor based on raw byte array.
-     *
-     * @param data packed data
-     * @throws IOException
-     */
-    public TrackProfileInfoValue(byte[] data) throws IOException {
-        super(data);
-    }
-
-
     //*************************************************
     // STORABLE PART
     //*************************************************
@@ -88,12 +77,9 @@ public class TrackProfileInfoValue extends TimeStampStorable {
     }
 
     public static class ValueList extends ListStorable<TrackProfileInfoValue> {
+
         public ValueList() {
             super();
-        }
-
-        public ValueList(byte[] data) throws IOException {
-            super(data);
         }
 
         @Override

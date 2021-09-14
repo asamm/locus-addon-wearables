@@ -82,7 +82,8 @@ public class ProfileListActivity extends LocusWearActivity {
 		byte[] arr = getIntent().getExtras().getByteArray(ARG_PROFILES);
 		if (arr != null && arr.length > 0) {
 			try {
-				mProfiles = new TrackProfileInfoValue.ValueList(arr);
+				mProfiles = new TrackProfileInfoValue.ValueList();
+				mProfiles.read(arr);
 			} catch (IOException e) {
 				Logger.INSTANCE.logE(TAG, "profile info constructor failed", e);
 				finish();

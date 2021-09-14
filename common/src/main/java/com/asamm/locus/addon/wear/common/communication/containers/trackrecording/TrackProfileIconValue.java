@@ -39,15 +39,6 @@ public class TrackProfileIconValue extends TimeStampStorable {
 		this.mImg = img;
 	}
 
-	/**
-	 * Constructor based on raw byte array.
-	 *
-	 * @param data packed data
-	 */
-	public TrackProfileIconValue(byte[] data) throws IOException {
-		super(data);
-	}
-
 	public long getId() {
 		return mId;
 	}
@@ -61,12 +52,9 @@ public class TrackProfileIconValue extends TimeStampStorable {
 	}
 
 	public static class ValueList extends ListStorable<TrackProfileIconValue> {
+
 		public ValueList() {
 			super();
-		}
-
-		public ValueList(byte[] data) throws IOException {
-			super(data);
 		}
 
 		@Override

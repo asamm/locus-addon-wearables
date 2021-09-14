@@ -25,10 +25,6 @@ public class CommandFloatExtra extends TimeStampStorable {
         this.value = value;
     }
 
-    public CommandFloatExtra(byte[] data) throws IOException {
-        super(data);
-    }
-
     @Override
     protected int getVersion() {
         return 0;

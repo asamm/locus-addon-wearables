@@ -17,22 +17,17 @@ public class HandShakeValue extends TimeStampStorable {
 	private byte mStatusFlag = 0;
 
 	private static final byte STATUS_LOCUS_RUNNING = 0b1;
-	private static final byte STATUS_PERIODIC_UPDATES = 0b10;
+	//private static final byte STATUS_PERIODIC_UPDATES = 0b10;
 
 	public HandShakeValue() {
 		super();
 	}
 
-	public HandShakeValue(byte[] data) throws IOException {
-		super(data);
-	}
-
-	public HandShakeValue(int locusVersion, int addonVersion, boolean locusRunning, boolean periodicUpdatesEnabled) {
+	public HandShakeValue(int locusVersion, int addonVersion, boolean locusRunning) {
 		this();
 		mLocusVersion = locusVersion;
 		mAddOnVersion = addonVersion;
 		setLocusRunning(locusRunning);
-		setPeriodicUpdates(periodicUpdatesEnabled);
 	}
 
 	@Override
@@ -68,14 +63,6 @@ public class HandShakeValue extends TimeStampStorable {
 
 	public void setLocusRunning(boolean b) {
 		setFlag(b, STATUS_LOCUS_RUNNING);
-	}
-
-	public boolean isPeriodicUpdates() {
-		return (mStatusFlag & STATUS_PERIODIC_UPDATES) != 0;
-	}
-
-	public void setPeriodicUpdates(boolean b) {
-		setFlag(b, STATUS_PERIODIC_UPDATES);
 	}
 
 	private void setFlag(boolean b, byte flag) {

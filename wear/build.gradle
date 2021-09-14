@@ -1,4 +1,6 @@
+// Android plugin
 apply plugin: 'com.android.application'
+// Kotlin support
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-kapt"
 

@@ -25,10 +25,6 @@ public class CommandStringExtra extends TimeStampStorable {
         this.value = value;
     }
 
-    public CommandStringExtra(byte[] data) throws IOException {
-        super(data);
-    }
-
     @Override
     protected int getVersion() {
         return 0;

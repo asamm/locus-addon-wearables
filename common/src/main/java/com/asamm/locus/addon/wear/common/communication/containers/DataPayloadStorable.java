@@ -37,7 +37,7 @@ public class DataPayloadStorable extends Storable {
 	}
 
 	@Override
-	protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+	protected void readObject(int version, DataReaderBigEndian dr) {
 		byte mDataPathId = dr.readBytes(1)[0];
 		mDataPath = DataPath.valueOf(mDataPathId);
 		if (mDataPath != null)
@@ -69,5 +69,4 @@ public class DataPayloadStorable extends Storable {
 	public <E extends Storable> E getData(Class<E> clazz) {
 		return (E) mStorable;
 	}
-
 }

@@ -51,10 +51,6 @@ public class MapContainer extends TimeStampStorable {
         super();
     }
 
-    public MapContainer(byte[] byteArray) throws IOException {
-        super(byteArray);
-    }
-
     public MapContainer(MapPreviewResult loadedMap, UpdateContainer mLastUpdate, LocusInfo li,
                         int zoom, int offsetX, int offsetY, Location lastLocation, short bearing) {
         this();

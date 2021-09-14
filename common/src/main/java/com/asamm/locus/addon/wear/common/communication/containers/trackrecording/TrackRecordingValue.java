@@ -42,10 +42,6 @@ public class TrackRecordingValue extends TimeStampStorable {
         super();
     }
 
-    public TrackRecordingValue(byte[] arr) throws IOException {
-        super(arr);
-    }
-
     public TrackRecordingValue(boolean infoAvailable, boolean isTrackRecording, boolean isPaused,
                                String trackRecProfileName, TrackStats trackStats, LocusInfo info,
                                ExtendedTrackInfo ext) {

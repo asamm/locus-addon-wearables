@@ -19,14 +19,10 @@ import java.util.concurrent.TimeUnit
  */
 class DeviceListenerService : WearableListenerService() {
 
-    override fun onCreate() {
-        super.onCreate()
-        Logger.logD(TAG, "onCreate()")
-    }
-
     override fun onDataChanged(dataEventBuffer: DataEventBuffer) {
         Logger.logD(TAG, "onDataChanged($dataEventBuffer)")
         for (event in dataEventBuffer) {
+            @Suppress("ControlFlowWithEmptyBody")
             if (event.type == DataEvent.TYPE_CHANGED) {
                 handleDataChange(dataEventConsumer, event)
             } else if (event.type == DataEvent.TYPE_DELETED) {
@@ -112,7 +108,8 @@ class DeviceListenerService : WearableListenerService() {
                         }
                     }, TimeUnit.SECONDS.toMillis(INACTIVITY_TIMEOUT_SECONDS.toLong()))
                 }
-                DeviceCommService.getInstance(this).doUpdateReceiveTimestamp()
+                DeviceCommService.getInstance(this)
+                        .doUpdateReceiveTimestamp()
                 dataConsumer.consume(this, DeviceCommService.getInstance(this), newData)
             }
             else -> {

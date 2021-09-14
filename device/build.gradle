@@ -1,4 +1,7 @@
+// Android plugin
 apply plugin: 'com.android.application'
+// Kotlin support
+apply plugin: "kotlin-android"
 
 android {
     compileSdkVersion Integer.valueOf(PARAM_COMPILE_SDK_VERSION)

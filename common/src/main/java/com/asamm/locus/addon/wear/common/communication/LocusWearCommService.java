@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import locus.api.objects.Storable;
 import locus.api.utils.Logger;
 
 /**
@@ -142,8 +143,7 @@ public class LocusWearCommService implements
         if (path.isUrgent()) {
             request.setUrgent();
         }
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(googleApiClient, request);
+        Wearable.DataApi.putDataItem(googleApiClient, request);
     }
 
     public boolean isConnected() {
@@ -170,9 +170,11 @@ public class LocusWearCommService implements
         }
         try {
             Map<String, DataItemAsset> assets = item.getAssets();
-            DataItemAsset asset = assets == null ? null : assets.get(DataPath.DEFAULT_ASSET_KEY);
+            DataItemAsset asset = assets.get(DataPath.DEFAULT_ASSET_KEY);
             if (asset == null) {
-                return (E) clazz.getConstructor(byte[].class).newInstance(item.getData());
+                Storable storable = clazz.newInstance();
+                storable.read(item.getData());
+                return (E) storable;
             } else {
                 // blocking call - asset receive
                 InputStream assetInputStream = Wearable.DataApi.getFdForAsset(
@@ -183,7 +185,9 @@ public class LocusWearCommService implements
                 while ((nRead = assetInputStream.read(buffer, 0, buffer.length)) != -1) {
                     baos.write(buffer, 0, nRead);
                 }
-                return (E) clazz.getConstructor(byte[].class).newInstance(baos.toByteArray());
+                Storable storable = clazz.newInstance();
+                storable.read(baos.toByteArray());
+                return (E) storable;
             }
         } catch (Exception e) {
             Logger.INSTANCE.logE("DataPath", "Constructor failed for " + p.name(), e);

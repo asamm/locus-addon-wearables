@@ -44,10 +44,6 @@ public class MapPeriodicParams extends TimeStampStorable implements PeriodicComm
         super();
     }
 
-    public MapPeriodicParams(byte[] arr) throws IOException {
-        super(arr);
-    }
-
     public MapPeriodicParams(int mZoom, int mWidth, int mHeight,
                              int offsetX, int offsetY, int densityDpi,
                              boolean isAutoRotate, short bearing, int diagonal,

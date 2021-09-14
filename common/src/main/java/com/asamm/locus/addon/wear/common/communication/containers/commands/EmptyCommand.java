@@ -16,10 +16,6 @@ public class EmptyCommand extends TimeStampStorable {
 		super();
 	}
 
-	public EmptyCommand(byte[] data) throws IOException{
-		super(data);
-	}
-
 	@Override
 	protected int getVersion() {
 		return 0;

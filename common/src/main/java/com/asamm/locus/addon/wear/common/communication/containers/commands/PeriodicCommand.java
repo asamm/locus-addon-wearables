@@ -34,10 +34,6 @@ public class PeriodicCommand extends TimeStampStorable {
 		super();
 	}
 
-	public PeriodicCommand(byte[] arr) throws IOException {
-		super(arr);
-	}
-
 	public PeriodicCommand(byte periodicActivityId, int periodMs) {
 		this(periodicActivityId, periodMs, null);
 	}

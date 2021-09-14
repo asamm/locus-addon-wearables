@@ -8,13 +8,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.wear.widget.CircularProgressLayout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import androidx.wear.widget.CircularProgressLayout;
 
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
@@ -257,7 +258,9 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         if (requestCode == TrackRecordProfileSelectLayout.PICK_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
             byte[] profileBytes = data.getByteArrayExtra(ProfileListActivity.RESULT_PROFILES);
             try {
-                mProfileSelect.setParameters(new TrackProfileInfoValue(profileBytes));
+                TrackProfileInfoValue info = new TrackProfileInfoValue();
+                info.read(profileBytes);
+                mProfileSelect.setParameters(info);
                 AppPreferencesManager.persistLastTrackRecProfile(this, mProfileSelect.getProfile());
             } catch (IOException e) {
                 Logger.INSTANCE.logE("TAG", "empty profile bytes", e);
@@ -458,14 +461,18 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     }
 
-    /** Called when transition back to the start screen from the active tracking screen */
+    /**
+     * Called when transition back to the start screen from the active tracking screen
+     */
     private void transitionToIdlestate() {
         setIdleScreenEnabled(false);
         mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
         Logger.INSTANCE.logD(TAG, "setting idle screen");
     }
 
-    /** Called when NOT_RECORDING state is confirmed */
+    /**
+     * Called when NOT_RECORDING state is confirmed
+     */
     private void enableIdleScreen() {
         stopTrackRecService();
         setIdleScreenEnabled(true);
@@ -473,14 +480,18 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         Logger.INSTANCE.logD(TAG, "Enabling idle screen");
     }
 
-    /** Called when transitioning from start screen to recording screen */
+    /**
+     * Called when transitioning from start screen to recording screen
+     */
     private void transitionToRecState() {
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
         Logger.INSTANCE.logD(TAG, "setting rec screen");
     }
 
-    /** Called when new recording or paused state is confirmed by the first data */
+    /**
+     * Called when new recording or paused state is confirmed by the first data
+     */
     private void enableRecScreen() {
         startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
