@@ -239,7 +239,9 @@ public class MapActivity extends LocusWearActivity {
 			mScrollLock = true;
 		} else if (action == MotionEvent.ACTION_DOWN &&
 				ev.getX() > w / 7 &&
-				ev.getY() > h / 5) {
+				ev.getY() > h / 5 &&
+				ev.getX() < w - w/7 &&
+				ev.getY() < h - h/5) {
 			mScrollLock = false;
 			super.dispatchTouchEvent(ev);
 		}

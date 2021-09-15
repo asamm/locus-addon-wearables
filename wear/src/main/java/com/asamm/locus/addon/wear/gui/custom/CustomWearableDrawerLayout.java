@@ -38,13 +38,13 @@ public class CustomWearableDrawerLayout extends WearableDrawerLayout {
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
 			// try to make top navigation drawer trigger area bigger
 			try {
-				Field topDragger = getClass().getSuperclass().getDeclaredField("mTopDrawerDragger");
+				Field topDragger = getClass().getSuperclass().getDeclaredField("mBottomDrawerDragger");
 				topDragger.setAccessible(true);
-				Object topDraggerInstance = topDragger.get(this);
-				Field edgeSize = topDraggerInstance.getClass().getDeclaredField("mEdgeSize");
+				Object bottomDraggerInstance = topDragger.get(this);
+				Field edgeSize = bottomDraggerInstance.getClass().getDeclaredField("mEdgeSize");
 				edgeSize.setAccessible(true);
-				int edgeSizePx = edgeSize.getInt(topDraggerInstance);
-				edgeSize.set(topDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
+				int edgeSizePx = edgeSize.getInt(bottomDraggerInstance);
+				edgeSize.set(bottomDraggerInstance, (int) (edgeSizePx * NAV_DRAWER_PULL_DOWN_AREA_SCALE + 0.5f));
 			} catch (Exception e) {
 			}
 		}

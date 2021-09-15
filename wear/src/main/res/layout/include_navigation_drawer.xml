@@ -1,11 +1,11 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
         android:id="@+id/navigation_drawer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top"
+        android:layout_gravity="bottom"
         android:background="@color/base_primary"
         app:drawerContent="@+id/drawer_content"
         app:peekView="@+id/peek_view">
@@ -15,11 +15,23 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/imageViewDrawerOpened"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:padding="8dp"
+                android:background="@color/nav_drawer_dark_background"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/nav_arrow_down_white" />
+
             <TextView
                 android:id="@+id/navDrawerTvTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="30dp"
                 android:gravity="center"
                 android:textSize="@dimen/text_size_massive"
                 android:textColor="@color/white"
@@ -28,18 +40,20 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-
                 />
+
             <ImageView
-                style="@style/navDrawerButton"
                 android:id="@+id/navigation_drawer_item_map"
+                style="@style/navDrawerButton"
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_map"
                 android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
-                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
                 app:layout_constraintEnd_toEndOf="@+id/x_nav_drawer_vertical_center"
-                app:layout_constraintStart_toEndOf="@id/x_nav_drawer_vertical_12_5" />
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/x_nav_drawer_vertical_12_5"
+                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
+                app:layout_constraintVertical_bias="1.0" />
 
             <ImageView
                 style="@style/navDrawerButton"
@@ -66,7 +80,8 @@
                 app:layout_constraintBottom_toTopOf="@id/imageViewDrawerOpened"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/x_nav_drawer_horizontal_bottom" />
+                app:layout_constraintTop_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
+                app:layout_constraintVertical_bias="0.0" />
 
             <View
                 style="@style/SeparatorVertical"
@@ -77,19 +92,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/navigation_drawer_item_map"
                 app:layout_constraintTop_toTopOf="@id/navigation_drawer_item_map" />
-
-
-            <ImageView
-                android:id="@+id/imageViewDrawerOpened"
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:padding="8dp"
-                android:background="@color/nav_drawer_dark_background"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:src="@drawable/nav_arrow_down_white" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/x_nav_drawer_vertical_12_5"
@@ -151,7 +153,7 @@
                 android:layout_height="32dp"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/nav_arrow_down_white" />
+                android:src="@drawable/nav_arrow_up_white" />
 
         </LinearLayout>
     </com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer>
