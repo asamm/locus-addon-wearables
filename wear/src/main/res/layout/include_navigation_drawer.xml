@@ -31,7 +31,7 @@
                 android:id="@+id/navDrawerTvTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="32dp"
                 android:gravity="center"
                 android:textSize="@dimen/text_size_massive"
                 android:textColor="@color/white"
@@ -120,14 +120,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.25" />
+                app:layout_constraintGuide_percent="0.3" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/x_nav_drawer_horizontal_bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0.65" />
+                app:layout_constraintGuide_percent="0.7" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/x_nav_drawer_horizontal_center"
