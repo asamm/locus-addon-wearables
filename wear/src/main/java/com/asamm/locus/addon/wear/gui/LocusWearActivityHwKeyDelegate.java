@@ -1,11 +1,11 @@
 package com.asamm.locus.addon.wear.gui;
 
 import android.app.Activity;
-import android.support.wearable.input.RotaryEncoder;
 import android.support.wearable.input.WearableButtons;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import com.google.android.wearable.input.RotaryEncoderHelper;
 
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.application.AppPreferencesManager;
@@ -205,8 +205,8 @@ public interface LocusWearActivityHwKeyDelegate {
 				throw new IllegalArgumentException("Got null rootVIew in registerDefaultRotaryMotionListener().");
 
 			rootView.setOnGenericMotionListener((View v, MotionEvent ev) -> {
-				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
-					mRotaryAccumulator += -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(mContext);
+				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoderHelper.isFromRotaryEncoder(ev)) {
+					mRotaryAccumulator += -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(mContext);
 					float triggerLimit = mScreenHeight / 3.0f;
 					if (Math.abs(mRotaryAccumulator) > triggerLimit) {
 						HwButtonActionDescEnum actionDesc =
