@@ -7,7 +7,7 @@
     <application
         android:name="com.asamm.locus.addon.wear.MainApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_launcher_no1"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 

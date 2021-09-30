@@ -114,7 +114,7 @@ public class TrackRecordingService extends Service {
 
         b.setContentTitle(getString(R.string.app_name));
         b.setContentText(getString(R.string.hrm_rec_service_desc));
-        b.setSmallIcon(R.mipmap.ic_launcher);
+        b.setSmallIcon(R.mipmap.ic_launcher_no1);
         b.setContentIntent(pendingIntent);
         b.setTicker(getString(R.string.app_name));
 
