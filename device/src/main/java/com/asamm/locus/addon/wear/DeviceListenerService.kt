@@ -58,8 +58,7 @@ class DeviceListenerService : WearableListenerService() {
         }
 
         override fun getPath(newData: DataEvent): DataPath? {
-            val d = newData.dataItem
-            return DataPath.valueOf(d)
+            return DataPath.valueOf(newData.dataItem)
         }
     }
 

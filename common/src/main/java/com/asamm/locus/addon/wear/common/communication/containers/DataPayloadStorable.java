@@ -1,3 +1,7 @@
+/**
+ * Created by Milan Cejnar on 08.03.2018.
+ * Asamm Software, s.r.o.
+ */
 package com.asamm.locus.addon.wear.common.communication.containers;
 
 import androidx.annotation.NonNull;
@@ -12,10 +16,7 @@ import locus.api.utils.DataWriterBigEndian;
 
 /**
  * Simple Path + Data wrapper to replace DataItem when replacing Data API with Message API calls.
- * Created by Milan Cejnar on 08.03.2018.
- * Asamm Software, s.r.o.
  */
-
 public class DataPayloadStorable extends Storable {
 
 	private DataPath mDataPath = null;

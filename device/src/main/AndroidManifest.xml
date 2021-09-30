@@ -32,8 +32,6 @@
 
         </service>
 
-        <!-- receiver for periodic updates -->
-
     </application>
 
 </manifest>

@@ -233,7 +233,7 @@ public class MainApplication extends Application implements Application.Activity
     }
 
     public void handleDataEvent(DataItem dataItem) {
-        DataPath p = DataPath.valueOf(dataItem);
+        DataPath p = DataPath.Companion.valueOf(dataItem);
         if (p != null) {
             TimeStampStorable value = WearCommService.getInstance().createStorableForPath(p, dataItem);
             handleData(p, value);

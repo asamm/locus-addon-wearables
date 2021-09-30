@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import com.asamm.locus.addon.wear.common.communication.Const
@@ -51,8 +52,8 @@ class DeviceCommService private constructor(ctx: Context)
     private var lastUpdateContainerReceived = 0L
 
     // time for periodic data transmission to wear device
-    private var mPeriodicDataTimer: PeriodicDataTimer? = null
-    private var mProfileIcons: TrackProfileIconValue.ValueList? = null
+    private var periodicDataTimer: PeriodicDataTimer? = null
+    private var profileIcons: TrackProfileIconValue.ValueList? = null
 
     /**
      * Marks last time that data was received from the watch
@@ -90,31 +91,29 @@ class DeviceCommService private constructor(ctx: Context)
         stopRefresher()
     }
 
+    // DEVICE LISTENER EVENTS
+
     /**
-     * Update content with fresh updates.
-     *
-     * @param update update container
+     * Handle data registered over `onDataChanged` callback.
      */
-    fun onUpdate(update: UpdateContainer?) {
-        Logger.logD(TAG, "onUpdate($update)")
-        if (System.currentTimeMillis() - lastReceivedTime > 15000) {
-            destroyInstance()
-        } else {
-            lastUpdateContainer = update
-            lastUpdateContainerReceived = System.currentTimeMillis()
+    fun onDataChanged(c: Context, newData: DataEvent) {
+        val item = newData.dataItem
+        val path = DataPath.valueOf(item)
+        if (path == null) {
+            Logger.logD(TAG, "onDataChanged($c, $newData), " +
+                    "invalid path")
+            return
         }
+
+        // handle data
+        onDataReceived(c, path, createStorableForPath(path, item))
     }
 
     /**
-     * Notify about incorrect data.
+     * Handle data registered primary over `onMessageReceived` callback.
      */
-    fun onIncorrectData() {
-        Logger.logD(TAG, "onIncorrectData()")
-        lastUpdateContainer = null
-    }
-
-    fun onDataReceived(c: Context, path: DataPath, params: TimeStampStorable?) {
-        Logger.logD(TAG, "onDataReceived($c, $path, $params)")
+    fun onDataReceived(ctx: Context, path: DataPath, params: TimeStampStorable?) {
+        Logger.logD(TAG, "onDataReceived($ctx, $path, $params)")
 
         // check if refresher works and restart if needed
         val currentTime = System.currentTimeMillis()
@@ -122,7 +121,7 @@ class DeviceCommService private constructor(ctx: Context)
             Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.")
             try {
                 // update mLastUpdate manually and refresh mLastPeriodicUpdateReceivedMilis
-                onUpdate(ActionBasics.getUpdateContainer(c, lv!!))
+                onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
                 Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
@@ -137,51 +136,29 @@ class DeviceCommService private constructor(ctx: Context)
         // handle data
         when (path) {
             DataPath.GET_HAND_SHAKE -> {
-                val handShake = loadHandShake(c)
-                sendDataItem(DataPath.PUT_HAND_SHAKE, handShake)
+                handleGetHandShake(ctx)
             }
             DataPath.GET_TRACK_REC_PROFILES -> {
-                val profiles = loadTrackRecordProfiles(c)
-                if (profiles.first != null) {
-                    sendDataItem(DataPath.PUT_TRACK_REC_PROFILE_INFO, profiles.first)
-                    mProfileIcons = profiles.second
-                }
+                handleGetTrackRecProfiles(ctx)
             }
             DataPath.GET_PROFILE_ICON -> {
-                if (mProfileIcons == null) {
-                    val profilesIcons = loadTrackRecordProfiles(c)
-                    mProfileIcons = profilesIcons.second
-                }
-                val pigc = params as ProfileIconGetCommand
-                if (mProfileIcons != null) {
-                    for (icon in mProfileIcons!!.storables) {
-                        if (pigc.profileId == icon.id) {
-                            sendDataItem(DataPath.PUT_PROFILE_ICON, icon)
-                            break
-                        }
-                    }
-                }
+                handleGetTrackRecProfileIcon(ctx, params)
             }
             DataPath.PUT_TRACK_REC_STATE_CHANGE -> {
-                lv = getActiveVersion(c)
+                lv = getActiveVersion(ctx)
                 val v = params as TrackRecordingStateChangeValue
-                handleRecordingStateChanged(c, lv, v.recordingState, v.getmProfileName())
+                handleRecordingStateChanged(ctx, lv, v.recordingState, v.getmProfileName())
             }
             DataPath.GET_ADD_WAYPOINT -> {
-                lv = getActiveVersion(c)
-                handleAddWpt(c, lv, null)
-                sendCommand(DataPath.PUT_ADD_WAYPOINT)
-            }
-            DataPath.GET_PERIODIC_DATA -> {
-                lv = getActiveVersion(c)
-                val v = params as PeriodicCommand
-                handlePeriodicWearUpdate(c, v)
+                handleAddWpt(ctx, null)
             }
             DataPath.POST_ADD_WAYPOINT -> {
-                val wptName = (params as CommandStringExtra).value
-                lv = getActiveVersion(c)
-                handleAddWpt(c, lv, wptName)
-                sendCommand(DataPath.PUT_ADD_WAYPOINT)
+                handleAddWpt(ctx, (params as CommandStringExtra).value)
+            }
+            DataPath.GET_PERIODIC_DATA -> {
+                lv = getActiveVersion(ctx)
+                val v = params as PeriodicCommand
+                handlePeriodicWearUpdate(ctx, v)
             }
             DataPath.PUT_HEART_RATE -> {
                 val tag = "Wear HRM"
@@ -191,7 +168,7 @@ class DeviceCommService private constructor(ctx: Context)
                     intent.action = "com.asamm.locus.DATA_TASK"
                     val hrmData = "{heart_rate:{data:" + hrValue.value + "}}"
                     intent.putExtra("tasks", hrmData)
-                    sendBroadcast(c, intent)
+                    sendBroadcast(ctx, intent)
                     sendLocusMapLogD(tag, hrmData)
                 } else {
                     sendLocusMapLogD(tag, "Ignored, invalid data: " + hrValue.value)
@@ -208,9 +185,128 @@ class DeviceCommService private constructor(ctx: Context)
                 }
             }
             else -> {
+                // nothing to do
             }
         }
     }
+
+    // HAND SHAKE
+
+    /**
+     * Handle request to "Hand shake".
+     */
+    private fun handleGetHandShake(ctx: Context) {
+        sendDataItem(DataPath.PUT_HAND_SHAKE,
+                loadHandShake(ctx))
+    }
+
+    /**
+     * Load basic data from current Locus application.
+     */
+    private fun loadHandShake(ctx: Context): HandShakeValue {
+        // check if object exists
+        var locusInfo: LocusInfo? = null
+        if (lv != null) {
+            // handle info
+            locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
+        }
+
+        // prepare container with data and send it
+        Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
+        return if (lv == null) HandShakeValue() else HandShakeValue(
+                lv!!.versionCode,
+                // - 1 to compensate for device suffix
+                BuildConfig.VERSION_CODE - 1,
+                locusInfo != null && locusInfo.isRunning
+        )
+    }
+
+    // TRACK RECORDING
+
+    private fun handleGetTrackRecProfiles(ctx: Context) {
+        val profiles = loadTrackRecordProfiles(ctx)
+        if (profiles.first != null) {
+            sendDataItem(DataPath.PUT_TRACK_REC_PROFILE_INFO, profiles.first)
+            profileIcons = profiles.second
+        }
+    }
+
+    private fun handleGetTrackRecProfileIcon(ctx: Context, params: TimeStampStorable?) {
+        if (profileIcons == null) {
+            val profilesIcons = loadTrackRecordProfiles(ctx)
+            profileIcons = profilesIcons.second
+        }
+        val pigc = params as ProfileIconGetCommand
+        if (profileIcons != null) {
+            for (icon in profileIcons!!.storables) {
+                if (pigc.profileId == icon.id) {
+                    sendDataItem(DataPath.PUT_PROFILE_ICON, icon)
+                    break
+                }
+            }
+        }
+    }
+
+    /**
+     * Load recording profiles data from current Locus application.
+     *
+     * @return A pair of lists. First lists contains track profiles and description.
+     * Second list contains track profile icons. Both lists are the same lenght and order.
+     */
+    private fun loadTrackRecordProfiles(ctx: Context)
+            : Pair<TrackProfileInfoValue.ValueList, TrackProfileIconValue.ValueList> {
+        var trackRecProfiles: List<TrackRecordProfileSimple>? = null
+        try {
+            // read Locus info
+            val lv = getActiveVersion(ctx, lv!!.versionCode)
+            if (lv != null) {
+                // load also track record profiles
+                trackRecProfiles = ActionBasics.getTrackRecordingProfiles(ctx, lv)
+            }
+        } catch (e: RequiredVersionMissingException) {
+            Logger.logE(TAG, "loadTrackRecordProfiles()", e)
+
+            // clear data
+            trackRecProfiles = null
+        }
+
+        // return result
+        val result = Pair(TrackProfileInfoValue.ValueList(), TrackProfileIconValue.ValueList())
+        if (trackRecProfiles != null && trackRecProfiles.isNotEmpty()) {
+            val profiles = ArrayList<TrackProfileInfoValue>(trackRecProfiles.size)
+            val icons = ArrayList<TrackProfileIconValue>(trackRecProfiles.size)
+            for (profile in trackRecProfiles) {
+                profiles.add(TrackProfileInfoValue(profile))
+                icons.add(TrackProfileIconValue(profile))
+            }
+            result.first!!.storables = profiles
+            result.second.storables = icons
+        }
+        return result
+    }
+
+    // ADD WAYPOINT
+
+    private fun handleAddWpt(ctx: Context, wpName: String?) {
+        lv = getActiveVersion(ctx)
+        try {
+            if (wpName == null || wpName.trim { it <= ' ' }.isEmpty()) {
+                ActionBasics.actionTrackRecordAddWpt(ctx, lv!!, "", true)
+            } else {
+                ActionBasics.actionTrackRecordAddWpt(ctx, lv!!, wpName, true)
+            }
+        } catch (e: RequiredVersionMissingException) {
+            Logger.logE(TAG, "Invalid version $lv, can't add WPT", e)
+            throw IllegalStateException(e)
+        }
+
+        // send data
+        sendCommand(DataPath.PUT_ADD_WAYPOINT)
+    }
+
+    //*************************************************
+    // HELPERS
+    //*************************************************
 
     private fun sendBroadcast(c: Context, i: Intent) {
         val tmpLv = getLocusVersion(c)
@@ -241,32 +337,20 @@ class DeviceCommService private constructor(ctx: Context)
         //        sendBroadcast(context, intent);
     }
 
-    fun onDataChanged(c: Context, newData: DataEvent) {
-        val item = newData.dataItem
-        val path = DataPath.valueOf(item)
-        val params: TimeStampStorable? = createStorableForPath(path, item)
-        onDataReceived(c, path, params)
-    }
-
     private fun destroyPeriodicDataTimer() {
         synchronized(TAG) {
-            if (mPeriodicDataTimer != null) {
-                mPeriodicDataTimer!!.cancel()
-                mPeriodicDataTimer = null
-            }
+            periodicDataTimer?.cancel()
+            periodicDataTimer = null
         }
     }
 
     private fun handlePeriodicWearUpdate(ctx: Context, command: PeriodicCommand) {
-        var command: PeriodicCommand? = command
-        if (command == null) {
-            command = PeriodicCommand.createStopPeriodicUpdatesCommand()
-        }
-        val activityId = command!!.getmPeriodicActivityId()
+        val activityId = command.getmPeriodicActivityId()
         val periodMs = command.getmPeriodMs()
         val extra = command.getExtra<TimeStampStorable>()
         val task: TimerTask? = when (activityId) {
             PeriodicCommand.IDX_PERIODIC_TRACK_RECORDING -> object : TimerTask() {
+
                 override fun run() {
                     if (aboutToBeDestroyed) {
                         destroyPeriodicDataTimer()
@@ -292,8 +376,9 @@ class DeviceCommService private constructor(ctx: Context)
             if (command.isStopRequest || task == null || aboutToBeDestroyed) {
                 return
             }
-            mPeriodicDataTimer = PeriodicDataTimer(activityId, periodMs)
-            mPeriodicDataTimer!!.schedule(task, 0, periodMs.toLong())
+            periodicDataTimer = PeriodicDataTimer().apply {
+                schedule(task, 0, periodMs.toLong())
+            }
         }
     }
 
@@ -338,11 +423,15 @@ class DeviceCommService private constructor(ctx: Context)
                 correctedOffsetX = (cos * offsetX - sin * offsetY + 0.5f).toInt()
                 correctedOffsetY = (sin * offsetX + cos * offsetY + 0.5f).toInt()
             }
-            mapPreview = getMapPreview(ctx, lv!!,
-                    createMapPreviewParams(offsetCenter,
+            mapPreview = getMapPreview(
+                    ctx, lv!!,
+                    createMapPreviewParams(
+                            offsetCenter,
                             zoom, extra.width, extra.height,
                             correctedOffsetX, correctedOffsetY,
-                            extra.densityDpi, if (extra.isAutoRotate) mapRotation else 0, extra.diagonal))
+                            extra.densityDpi, if (extra.isAutoRotate) mapRotation else 0
+                    )
+            )
         } catch (e: RequiredVersionMissingException) {
             Logger.logE(TAG, "loadMapPreview($lv)")
         }
@@ -355,13 +444,23 @@ class DeviceCommService private constructor(ctx: Context)
             // if offset (panning) is currently applied, then just return last used offset center from the watch
             offsetCenter
         }
-        val m = MapContainer(mapPreview, data, locusInfo, zoom, offsetX, offsetY, locToSend, rotationDeg.toShort())
+        val m = MapContainer(
+                mapPreview,
+                data,
+                locusInfo,
+                zoom,
+                offsetX,
+                offsetY,
+                locToSend,
+                rotationDeg.toShort()
+        )
         sendDataItem(DataPath.PUT_MAP, m)
     }
 
-    private fun createMapPreviewParams(location: Location, zoom: Int, width: Int, height: Int,
-                                       offsetX: Int, offsetY: Int, dpi: Int, rotation: Int,
-                                       diagonal: Int): MapPreviewParams {
+    private fun createMapPreviewParams(
+            location: Location, zoom: Int, width: Int, height: Int,
+            offsetX: Int, offsetY: Int, dpi: Int, rotation: Int)
+            : MapPreviewParams {
         val mpp = MapPreviewParams()
         mpp.zoom = zoom
         mpp.locCenter = location
@@ -378,37 +477,49 @@ class DeviceCommService private constructor(ctx: Context)
     ///////////////////////////////////////////////////////////////////////////
     //      Value object create methods - reading from Locus API             //
     ///////////////////////////////////////////////////////////////////////////
-    private fun handleAddWpt(ctx: Context, lv: LocusVersion?, wpName: String?) {
-        try {
-            if (wpName == null || wpName.trim { it <= ' ' }.isEmpty()) {
-                ActionBasics.actionTrackRecordAddWpt(ctx, lv!!, "", true)
-            } else {
-                ActionBasics.actionTrackRecordAddWpt(ctx, lv!!, wpName, true)
-            }
-        } catch (e: RequiredVersionMissingException) {
-            Logger.logE(TAG, "Invalid version $lv, can't add WPT", e)
-            throw IllegalStateException(e)
-        }
-    }
 
-    private fun handleRecordingStateChanged(ctx: Context, lv: LocusVersion?, newState: TrackRecordingStateEnum?, profile: String) {
+
+
+    private fun handleRecordingStateChanged(
+            ctx: Context,
+            lv: LocusVersion?,
+            newState: TrackRecordingStateEnum?,
+            profile: String) {
         var currentRecState: TrackRecordingStateEnum? = null
         if (lastUpdateContainer != null) {
-            currentRecState = if (lastUpdateContainer!!.isTrackRecPaused) TrackRecordingStateEnum.PAUSED else if (lastUpdateContainer!!.isTrackRecRecording) TrackRecordingStateEnum.RECORDING else TrackRecordingStateEnum.NOT_RECORDING
+            currentRecState = when {
+                lastUpdateContainer!!.isTrackRecPaused -> {
+                    TrackRecordingStateEnum.PAUSED
+                }
+                lastUpdateContainer!!.isTrackRecRecording -> {
+                    TrackRecordingStateEnum.RECORDING
+                }
+                else -> {
+                    TrackRecordingStateEnum.NOT_RECORDING
+                }
+            }
         }
         if (newState != null && currentRecState != newState) {
             try {
                 when (newState) {
                     TrackRecordingStateEnum.PAUSED -> ActionBasics.actionTrackRecordPause(ctx, lv!!)
-                    TrackRecordingStateEnum.RECORDING -> ActionBasics.actionTrackRecordStart(ctx, lv!!, profile)
-                    TrackRecordingStateEnum.NOT_RECORDING -> ActionBasics.actionTrackRecordStop(ctx, lv!!, true)
+                    TrackRecordingStateEnum.RECORDING -> ActionBasics.actionTrackRecordStart(
+                            ctx,
+                            lv!!,
+                            profile
+                    )
+                    TrackRecordingStateEnum.NOT_RECORDING -> ActionBasics.actionTrackRecordStop(
+                            ctx,
+                            lv!!,
+                            true
+                    )
                 }
             } catch (e: RequiredVersionMissingException) {
                 Logger.logE(TAG, "Invalid version $lv, cant change track recording state.", e)
             }
         }
         try {
-            onUpdate(ActionBasics.getUpdateContainer(ctx, lv!!))
+            onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
         } catch (e: RequiredVersionMissingException) {
             Logger.logW(TAG, "getDataUpdateContainer() - RequiredVersionMissingException")
         }
@@ -416,88 +527,29 @@ class DeviceCommService private constructor(ctx: Context)
         sendDataItem(DataPath.PUT_TRACK_REC, trv)
     }
 
-    /**
-     * Load basic data from current Locus application.
-     */
-    private fun loadHandShake(ctx: Context): HandShakeValue {
-        // check if object exists
-        var locusInfo: LocusInfo? = null
-        if (lv != null) {
-            // handle info
-            locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
-        }
-
-        // prepare container with data and send it
-        Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
-        return if (lv == null) HandShakeValue() else HandShakeValue(lv!!.versionCode,
-                // - 1 to compensate for device suffix
-                BuildConfig.VERSION_CODE - 1,
-                locusInfo != null && locusInfo.isRunning)
-    }
-    /**
-     * Load recording profiles data from current Locus application.
-     * @param nodeId ID of requester
-     */
-    /**
-     * @param ctx
-     * @return A pair of lists. First lists contains track profiles and description.
-     * Second list contains track profile icons. Both lists are the same lenght and order.
-     */
-    private fun loadTrackRecordProfiles(ctx: Context): Pair<TrackProfileInfoValue.ValueList?, TrackProfileIconValue.ValueList> {
-        var trackRecProfiles: List<TrackRecordProfileSimple?>? = null
-        try {
-            // read Locus info
-            val lv = getActiveVersion(
-                    ctx, lv!!.versionCode)
-
-            // check if object exists
-            if (lv != null) {
-                // load also track record profiles
-                trackRecProfiles = ActionBasics.getTrackRecordingProfiles(
-                        ctx, lv)
-            }
-        } catch (e: RequiredVersionMissingException) {
-            Logger.logE(TAG, "loadTrackRecordProfiles()", e)
-
-            // clear data
-            trackRecProfiles = null
-        }
-        val result = Pair(TrackProfileInfoValue.ValueList(), TrackProfileIconValue.ValueList())
-        if (trackRecProfiles != null && !trackRecProfiles.isEmpty()) {
-            val profiles = ArrayList<TrackProfileInfoValue>(trackRecProfiles.size)
-            val icons = ArrayList<TrackProfileIconValue>(trackRecProfiles.size)
-            for (profile in trackRecProfiles) {
-                profiles.add(TrackProfileInfoValue(profile))
-                icons.add(TrackProfileIconValue(profile))
-            }
-            result.first!!.storables = profiles
-            result.second.storables = icons
-        }
-        return result
-    }
-
     private fun loadTrackRecordingValue(ctx: Context): TrackRecordingValue {
         val infoAvailable = lastUpdateContainer != null
-        val myLocAvailable = infoAvailable && lastUpdateContainer!!.locMyLocation != null
+        val myLocAvailable = lastUpdateContainer?.locMyLocation != null
         val myLoc = if (myLocAvailable) lastUpdateContainer!!.locMyLocation else null
         val trackRec = infoAvailable && lastUpdateContainer!!.isTrackRecRecording
         val trackRecPause = infoAvailable && lastUpdateContainer!!.isTrackRecPaused
         val profileName = if (infoAvailable) lastUpdateContainer!!.trackRecProfileName else ""
-        val speed = if (myLocAvailable) myLoc!!.speed else null
-        val hrm = if (myLocAvailable) myLoc!!.sensorHeartRate else 0
-        val altitude = if (myLocAvailable && myLoc!!.hasAltitude) myLoc.altitude.toFloat() else Float.NaN
+        val speed = myLoc?.speed?.takeIf { it.hasData }?.value
+        val hrm = myLoc?.sensorHeartRate?.takeIf { it.hasData }?.value?.toInt() ?: 0
+        val altitude = myLoc?.altitude?.takeIf { it.hasData }?.value?.toFloat() ?: Float.NaN
         val stats = if (infoAvailable) lastUpdateContainer!!.trackRecStats else null
-        var locusInfo: LocusInfo? = null
-        locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
-        return TrackRecordingValue(infoAvailable, trackRec, trackRecPause,
-                profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude))
+        val locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
+        return TrackRecordingValue(
+                infoAvailable, trackRec, trackRecPause,
+                profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude)
+        )
     }
 
     fun doUpdateReceiveTimestamp() {
         lastReceivedTime = System.currentTimeMillis()
     }
 
-    private class PeriodicDataTimer(private val activityId: Byte, private val periodMs: Int) : Timer()
+    private class PeriodicDataTimer : Timer()
 
     //*************************************************
     // UPDATES RECEIVER
@@ -506,8 +558,10 @@ class DeviceCommService private constructor(ctx: Context)
     var refresher: Thread? = null
 
     private fun startRefresher() {
-        Logger.logD(TAG, "startRefresher(), " +
-                "aboutToBeDestroyed: $aboutToBeDestroyed")
+        Logger.logD(
+                TAG, "startRefresher(), " +
+                "aboutToBeDestroyed: $aboutToBeDestroyed"
+        )
         // clear current refresher
         stopRefresher()
 
@@ -519,9 +573,32 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     private fun stopRefresher() {
-        Logger.logD(TAG, "stopRefresher(), " +
-                "current: ${refresher?.hashCode()}")
+        Logger.logD(
+                TAG, "stopRefresher(), " +
+                "current: ${refresher?.hashCode()}"
+        )
         refresher = null
+    }
+
+    /**
+     * Update content with fresh updates.
+     */
+    private fun onNewUpdateContainer(update: UpdateContainer?) {
+        Logger.logD(TAG, "onUpdate($update)")
+        if (System.currentTimeMillis() - lastReceivedTime > 15000) {
+            destroyInstance()
+        } else {
+            lastUpdateContainer = update
+            lastUpdateContainerReceived = System.currentTimeMillis()
+        }
+    }
+
+    /**
+     * Notify about incorrect data.
+     */
+    fun onIncorrectData() {
+        Logger.logD(TAG, "onIncorrectData()")
+        lastUpdateContainer = null
     }
 
     private inner class Refresher : Runnable {
@@ -529,8 +606,8 @@ class DeviceCommService private constructor(ctx: Context)
         override fun run() {
             Logger.logD(TAG, "refresher: started: ${Thread.currentThread().hashCode()}")
             while (true) {
-                // stop refresher
                 Thread.sleep(1000)
+                // stop refresher
                 if (Thread.currentThread() != refresher) {
                     break
                 }
@@ -538,7 +615,7 @@ class DeviceCommService private constructor(ctx: Context)
                 // request new data
                 val uc = ActionBasics.getUpdateContainer(context, lv!!)
                 if (uc != null) {
-                    onUpdate(uc)
+                    onNewUpdateContainer(uc)
                 } else {
                     onIncorrectData()
                 }
@@ -550,6 +627,7 @@ class DeviceCommService private constructor(ctx: Context)
     companion object {
 
         @Volatile
+        @SuppressLint("StaticFieldLeak")
         private var _instance: DeviceCommService? = null
 
         private const val REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS = 5000L
@@ -580,8 +658,6 @@ class DeviceCommService private constructor(ctx: Context)
 
         /**
          * Destroy instance of receiver.
-         *
-         * @param ctx current context
          */
         @JvmStatic
         fun destroyInstance() {
@@ -599,8 +675,5 @@ class DeviceCommService private constructor(ctx: Context)
                 }
             }
         }
-
-        val isInstance: Boolean
-            get() = _instance != null
     }
 }
