@@ -1,11 +1,11 @@
 package com.asamm.locus.addon.wear.gui;
 
 import android.app.Activity;
-import android.support.wearable.input.RotaryEncoder;
 import android.support.wearable.input.WearableButtons;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import com.google.android.wearable.input.RotaryEncoderHelper;
 
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.application.AppPreferencesManager;
@@ -16,6 +16,7 @@ import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectAction
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.lang.Math;
 
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_LONG_PRESS;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_PRESS;
@@ -147,6 +148,7 @@ public interface LocusWearActivityHwKeyDelegate {
 
 		private int mNumMultifunctionButtons = 0;
 		private Double mRotaryAccumulator = 0.0;
+		private float lastRotaryValue = 0.0f;
 		private final int mScreenHeight;
 		// used only to temporarily disable while switching screens
 		private boolean mUseHwButtons = true;
@@ -205,9 +207,15 @@ public interface LocusWearActivityHwKeyDelegate {
 				throw new IllegalArgumentException("Got null rootVIew in registerDefaultRotaryMotionListener().");
 
 			rootView.setOnGenericMotionListener((View v, MotionEvent ev) -> {
-				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoder.isFromRotaryEncoder(ev)) {
-					mRotaryAccumulator += -RotaryEncoder.getRotaryAxisValue(ev) * RotaryEncoder.getScaledScrollFactor(mContext);
-					float triggerLimit = mScreenHeight / 3.0f;
+				if (ev.getAction() == MotionEvent.ACTION_SCROLL && RotaryEncoderHelper.isFromRotaryEncoder(ev)) {
+					float newRotaryValue = -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(mContext);
+					// reset value if direction changed
+					if (Math.signum(newRotaryValue) != Math.signum(lastRotaryValue)) {
+						mRotaryAccumulator = 0.0;
+					}
+					mRotaryAccumulator += newRotaryValue;
+					lastRotaryValue = newRotaryValue;
+					float triggerLimit = mScreenHeight / 3.5f;
 					if (Math.abs(mRotaryAccumulator) > triggerLimit) {
 						HwButtonActionDescEnum actionDesc =
 								mRotaryAccumulator < 0 ? ROTARY_UP : ROTARY_DOWN;
