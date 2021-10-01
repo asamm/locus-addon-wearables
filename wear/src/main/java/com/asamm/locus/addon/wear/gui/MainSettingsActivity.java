@@ -1,3 +1,8 @@
+/*
+ * Created by milan on 10.08.2018.
+ * This code is part of Locus project from Asamm Software, s. r. o.
+ * Copyright (C) 2018
+ */
 package com.asamm.locus.addon.wear.gui;
 
 import android.content.Intent;
@@ -16,11 +21,6 @@ import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
 import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
 
-/*
- * Created by milan on 10.08.2018.
- * This code is part of Locus project from Asamm Software, s. r. o.
- * Copyright (C) 2018
- */
 public class MainSettingsActivity extends LocusWearActivity {
 
     private Switch switchHrm;
