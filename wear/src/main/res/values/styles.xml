@@ -157,7 +157,7 @@
         <item name="android:textSize">@dimen/text_size_huge</item>
     </style>
 
-    <style name="LocusWearBasicButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+    <style name="LocusWearBasicButton" parent="@style/Widget.AppCompat.Button">
         <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">true</item>
     </style>

@@ -5,8 +5,6 @@
   <string name="waypoint_added">Přidán bod na trase</string>
   <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
   <string name="err_locus_version_not_supported">Locus Map v telefonu je zastaralý nebo zcela chybí. Aktualizujte nebo instalujte.</string>
-  <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
-  <string name="err_periodic_updates_disabled">Nelze se připojit k Locusu. Povolte \"Propojit s doplňky\" v nastavení Locusu &gt; Různé.</string>
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
   <string name="err_connection_failed">Spojení se ztratilo. Zkontrolujte prosím nastavení bluetooth a zkuste to znova.</string>
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme.ThemeLocusWear" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+<!--    <style name="AppTheme.ThemeLocusWear" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
+    <style name="AppTheme.ThemeLocusWear" parent="Theme.AppCompat.Light.NoActionBar">
+<!--    <style name="AppTheme.ThemeLocusWear" parent="@android:style/Theme.DeviceDefault">-->
         <item name="android:textColor">@color/base_dark_primary</item>
         <item name="android:colorPrimary">@color/base_primary</item>
         <item name="android:buttonStyle">@style/LocusWearBasicButton</item>

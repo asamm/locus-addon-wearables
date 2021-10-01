@@ -5,8 +5,6 @@
   <string name="waypoint_added">Veipunkt lagt til</string>
   <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
   <string name="err_locus_version_not_supported">Locus Map i telefonen er utdatert eller mangler. Vennligst oppdater eller installere programnet.</string>
-  <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
-  <string name="err_periodic_updates_disabled">Kan ikke koble til Locus. Aktiver \"Koble til med add-ons\" i Locus Map &gt; Innstillinger &gt; Diverse.</string>
   <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
   <string name="err_connection_failed">Forbindelsen ble brutt. Kontroller bluetooth-innstillingene, og prøv igjen.</string>
   <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->

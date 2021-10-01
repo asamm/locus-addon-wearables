@@ -15,6 +15,5 @@ dependencies {
     // get locus API
     api 'com.asamm:locus-api-core:' + LIB_LOCUS_API_VERSION
     api 'com.asamm:locus-api-android:' + LIB_LOCUS_API_VERSION
-    api 'com.google.android.gms:play-services-wearable:17.1.0'
-
+    api 'com.google.android.gms:play-services-wearable:' + LIB_PLAY_SERVICES_WEARABLE
 }
