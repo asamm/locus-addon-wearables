@@ -12,8 +12,8 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.common.utils.Pair;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.stats.model.TrackRecordActivityConfiguration;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity;
+import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackRecordActivityConfiguration;
 
 import java.io.IOException;
 

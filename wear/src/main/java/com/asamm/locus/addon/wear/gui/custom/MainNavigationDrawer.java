@@ -1,3 +1,7 @@
+/**
+ * Created by Milan Cejnar on 14.11.2017.
+ * Asamm Software, s.r.o.
+ */
 package com.asamm.locus.addon.wear.gui.custom;
 
 import android.content.Context;
@@ -6,14 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.wear.widget.drawer.WearableDrawerView;
 import android.util.AttributeSet;
 
-/**
- * Created by Milan Cejnar on 14.11.2017.
- * Asamm Software, s.r.o.
- */
-
 public class MainNavigationDrawer extends WearableDrawerView {
-
-	private static final String TAG = "MainNavigationDrawer";
 
 	private static final int DEFAULT_PEEK_DELAY = 1500;
 

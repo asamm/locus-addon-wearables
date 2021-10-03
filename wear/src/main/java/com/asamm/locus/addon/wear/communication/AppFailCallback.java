@@ -1,6 +1,6 @@
 package com.asamm.locus.addon.wear.communication;
 
-import com.asamm.locus.addon.wear.gui.error.AppFailType;
+import com.asamm.locus.addon.wear.features.error.AppFailType;
 
 /**
  * Definition of callback interface for application wide failure handling

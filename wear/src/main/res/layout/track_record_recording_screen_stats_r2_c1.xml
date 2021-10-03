@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout
+    <com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout
         android:id="@+id/track_stats_top"
         style="@style/trackStatLayoutStyle"
         app:layout_constraintBottom_toTopOf="@id/track_stats_bottom"
@@ -23,9 +23,9 @@
         android:gravity="center"
         app:positionTop="true">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
+    </com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout>
 
-    <com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout
+    <com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout
         android:id="@+id/track_stats_bottom"
         style="@style/trackStatLayoutStyle"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -35,6 +35,6 @@
         android:gravity="center"
         app:positionTop="false">
 
-    </com.asamm.locus.addon.wear.gui.trackrec.stats.view.TrackStatLayout>
+    </com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

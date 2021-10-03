@@ -24,9 +24,10 @@ import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.features.map.MapActivity;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity;
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer;
-import com.asamm.locus.addon.wear.gui.error.AppFailType;
-import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
+import com.asamm.locus.addon.wear.features.error.AppFailType;
 import com.google.android.gms.wearable.Node;
 
 import java.text.DateFormat;
@@ -85,7 +86,7 @@ public abstract class LocusWearActivity extends WearableActivity {
     /**
      * flag specifying if mobile phone is connected
      */
-    private volatile boolean mIsNodeConnected = false;
+    private volatile boolean isNodeConnected = false;
 
     /**
      * Delegate for handling HW keys actions
@@ -216,18 +217,16 @@ public abstract class LocusWearActivity extends WearableActivity {
         if (!wcs.isConnected()) {
             wcs.reconnectIfNeeded();
             return false;
-        } else if (!mIsNodeConnected) {
+        } else if (!isNodeConnected) {
             if (!mGetConnectedNodesSent.getAndSet(true)) {
                 wcs.getConnectedNodes((result) -> {
-                    if (result != null && result.getNodes() != null) {
-                        for (Node node : result.getNodes()) {
-                            if (node.isNearby()) {
-                                mIsNodeConnected = true;
-                                break;
-                            }
+                    for (Node node : result.getNodes()) {
+                        if (node.isNearby()) {
+                            isNodeConnected = true;
+                            break;
                         }
                     }
-                    if (mIsNodeConnected) {
+                    if (isNodeConnected) {
                         onConnectionFailedTimerTick();
                     } else {
                         cancelConnectionFailedTimer();
@@ -287,8 +286,11 @@ public abstract class LocusWearActivity extends WearableActivity {
     }
 
     protected void startConnectionFailTimer() {
-        if (mConnectionFailedTimer != null || mState == WearActivityState.ON_STOP || mState == WearActivityState.ON_DESTROY)
+        if (mConnectionFailedTimer != null
+                || mState == WearActivityState.ON_STOP
+                || mState == WearActivityState.ON_DESTROY) {
             return;
+        }
 
         ticks = 0;
         mIsHandShakeReceived = false;
@@ -412,8 +414,8 @@ public abstract class LocusWearActivity extends WearableActivity {
      * Activities that use request for periodic data ie. Map or active track recording should
      * override this method and return true.
      * <p>
-     * Used when transitionig between activities to automatically disable any currently
-     * receiving periodic data if no activity or activity withou periodic data use is shown.
+     * Used when transitioning between activities to automatically disable any currently
+     * receiving periodic data if no activity or activity without periodic data use is shown.
      *
      * @return whether activity uses periodic data request
      */

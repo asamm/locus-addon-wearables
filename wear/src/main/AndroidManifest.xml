@@ -25,7 +25,9 @@
             android:required="true" />
 
         <!-- register service for events -->
-        <service android:name=".communication.WearListenerService">
+        <service
+            android:name=".communication.WearListenerService"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
@@ -38,25 +40,33 @@
         </service>
 
         <activity
-            android:name=".gui.trackrec.TrackRecordActivity"
+            android:name=".features.trackRecord.TrackRecordActivity"
+            android:exported="true"
             android:launchMode="singleInstance">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".gui.MapActivity"
+            android:name=".features.map.MapActivity"
             android:launchMode="singleInstance" />
+
         <activity
-            android:name=".gui.trackrec.profiles.ProfileListActivity"
+            android:name=".features.trackRecord.profiles.ProfileListActivity"
             android:launchMode="singleInstance" />
+
         <activity
-            android:name=".gui.error.AppFailActivity"
+            android:name=".features.error.AppFailActivity"
             android:launchMode="singleInstance" />
+
         <activity android:name=".gui.custom.WaypointInputTextActivity" />
-        <activity android:name=".gui.trackrec.stats.view.TrackStatsSelectListActivity" />
+
+        <activity android:name=".features.trackRecord.stats.view.TrackStatsSelectListActivity" />
+
         <activity android:name=".gui.MainSettingsActivity" />
 
         <service

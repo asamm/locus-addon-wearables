@@ -24,10 +24,10 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.MapActivity;
-import com.asamm.locus.addon.wear.gui.error.AppFailActivity;
-import com.asamm.locus.addon.wear.gui.error.AppFailType;
-import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
+import com.asamm.locus.addon.wear.features.map.MapActivity;
+import com.asamm.locus.addon.wear.features.error.AppFailActivity;
+import com.asamm.locus.addon.wear.features.error.AppFailType;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity;
 import com.google.android.gms.wearable.DataItem;
 
 import org.jetbrains.annotations.NotNull;

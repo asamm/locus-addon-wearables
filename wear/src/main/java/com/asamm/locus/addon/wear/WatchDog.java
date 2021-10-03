@@ -7,7 +7,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStora
 import com.asamm.locus.addon.wear.communication.AppFailCallback;
 import com.asamm.locus.addon.wear.communication.WearCommService;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.error.AppFailType;
+import com.asamm.locus.addon.wear.features.error.AppFailType;
 
 import java.util.ArrayList;
 import java.util.HashMap;

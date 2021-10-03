@@ -19,7 +19,7 @@ import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorManager;
 
 public class MainSettingsActivity extends LocusWearActivity {
 

@@ -21,10 +21,10 @@ import androidx.core.app.NotificationCompat;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.communication.WearCommService;
-import com.asamm.locus.addon.wear.gui.trackrec.TrackRecordActivity;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmValue;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorManager;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.HrmValue;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorManager;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorStore;
 
 import locus.api.utils.Logger;
 

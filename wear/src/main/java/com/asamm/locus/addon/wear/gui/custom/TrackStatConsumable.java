@@ -4,9 +4,9 @@ import android.text.Html;
 
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.common.utils.Pair;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmDebugValue;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.HrmValue;
-import com.asamm.locus.addon.wear.gui.trackrec.recording.sensors.RecordingSensorStore;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.HrmDebugValue;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.HrmValue;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.utils.UtilsFormatWear;
 
 import java.text.DateFormat;
