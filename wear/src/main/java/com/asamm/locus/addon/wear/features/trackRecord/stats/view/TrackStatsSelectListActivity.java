@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
@@ -81,9 +81,6 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
                 getIntent().getExtras().getInt(PARAM_CELL_IDX, -1));
         mAdapter = new StatsTypeListAdapter();
         mRecyclerView.setAdapter(mAdapter);
-
-        // Enables Always-on
-        //setAmbientEnabled();
     }
 
     /**
@@ -106,7 +103,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
 
     private TrackStatTypeEnum[] getSelectionModel() {
         TrackStatTypeEnum[] model = TrackStatTypeEnum.VALUES_FOR_SELECTIONS;
-        if (AppPreferencesManager.isDebug(this)) {
+        if (PreferencesEx.isDebug()) {
             ArrayList<TrackStatTypeEnum> list = new ArrayList<>(Arrays.asList(model));
             list.add(TrackStatTypeEnum.HRM_DEBUG);
             TrackStatTypeEnum[] tmparr = new TrackStatTypeEnum[list.size()];

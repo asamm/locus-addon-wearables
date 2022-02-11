@@ -94,9 +94,6 @@ public class WatchDog {
 
     /**
      * Should be called after new activity is opened
-     *
-     * @param previous
-     * @param current
      */
     void onCurrentActivityChanged(Class<? extends LocusWearActivity> previous,
                                   Class<? extends LocusWearActivity> current) {
@@ -120,7 +117,7 @@ public class WatchDog {
         }
     }
 
-    public void setmAppFailCallback(AppFailCallback mAppFailCallback) {
+    public void setAppFailCallback(AppFailCallback mAppFailCallback) {
         this.mAppFailCallback = mAppFailCallback;
     }
 
@@ -129,7 +126,7 @@ public class WatchDog {
      */
     private void doTimerTick() {
         // seems both trackrec service and main application were killed. Destroy watchdog immediately
-        if (MainApplication.applicationContext == null && !TrackRecordingService.isRunning()) {
+        if (MainApplication.app == null && !TrackRecordingService.isRunning()) {
             Logger.INSTANCE.logW(TAG, "Application termination detected");
             destroy();
             return;
@@ -163,7 +160,7 @@ public class WatchDog {
                     break;
                 } else if (w.isRequestResendConditionMet()) {
                     if (reqsToResend == null) {
-                        reqsToResend = new ArrayList<DataPayload>(3);
+                        reqsToResend = new ArrayList<>(3);
                     }
                     reqsToResend.add(w.mRequest);
                     w.incrementRetryAttempts();
@@ -184,8 +181,6 @@ public class WatchDog {
 
     /**
      * Should be called immediately after receiving new data from comms
-     *
-     * @param receivedPath
      */
     void onNewData(DataPath receivedPath, TimeStampStorable value) {
         synchronized (WATCHDOG_LOCK) {

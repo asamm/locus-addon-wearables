@@ -5,7 +5,7 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
@@ -41,7 +41,7 @@ public class ApplicationMemoryCache {
 	}
 
 	public void setLastTrackRecState(Context ctx, TrackRecordingValue value) {
-		AppPreferencesManager.persistLastRecState(ctx, value);
+		PreferencesEx.persistLastRecState(value);
 	}
 
 	public void setLastMapData(MapContainer mapContainer) {

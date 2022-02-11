@@ -20,7 +20,7 @@ import androidx.wear.widget.CircularProgressLayout;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.WatchDogPredicate;
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.application.FeatureConfigEnum;
 import com.asamm.locus.addon.wear.application.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
@@ -79,6 +79,7 @@ import static com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivitySt
 public class TrackRecordActivity extends LocusWearActivity implements CircularProgressLayout.OnTimerFinishedListener {
 
     private static final String TAG = TrackRecordActivity.class.getSimpleName();
+
     private static final int REQUEST_WP_NAME = 2;
 
     private static final int FLIPPER_START_RECORDING_SCREEN_IDX = 0;
@@ -133,6 +134,11 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     }
 
     @Override
+    public boolean getSupportAmbientMode() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.track_record_activity);
@@ -148,8 +154,6 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
         initRecordingScrollScreen();
         setDisabledDrawables();
-        // Enables Always-on
-        setAmbientEnabled();
     }
 
     private void initRecordingScrollScreen() {
@@ -261,7 +265,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 TrackProfileInfoValue info = new TrackProfileInfoValue();
                 info.read(profileBytes);
                 mProfileSelect.setParameters(info);
-                AppPreferencesManager.persistLastTrackRecProfile(this, mProfileSelect.getProfile());
+                PreferencesEx.persistLastTrackRecProfile(mProfileSelect.getProfile());
             } catch (IOException e) {
                 Logger.INSTANCE.logE("TAG", "empty profile bytes", e);
 
@@ -334,8 +338,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     @Override
     protected void onResume() {
         super.onResume();
-        TrackProfileInfoValue profileInfo = AppPreferencesManager.getLastTrackRecProfile(this);
-        TrackRecordingStateEnum lastState = AppPreferencesManager.getLastTrackRecProfileState(this);
+        TrackProfileInfoValue profileInfo = PreferencesEx.getLastTrackRecProfile();
+        TrackRecordingStateEnum lastState = PreferencesEx.getLastTrackRecProfileState();
         if (profileInfo.getName() != null) {
             mProfileSelect.setParameters(profileInfo);
         } else {
@@ -356,8 +360,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     @Override
     protected void onStop() {
         super.onStop();
-        AppPreferencesManager.persistLastRecState(this, model);
-        AppPreferencesManager.persistLastTrackRecProfile(this, mProfileSelect.getProfile());
+        PreferencesEx.persistLastRecState(model);
+        PreferencesEx.persistLastTrackRecProfile(mProfileSelect.getProfile());
     }
 
     private volatile Handler mDelayedStartClickHandler;
@@ -388,7 +392,8 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         final TrackRecActivityState state = mStateMachine.getCurrentState();
         return ((MainApplication) getApplication()).getCurrentActivity() == this
                 && (state == IDLE || state == IDLE_WAITING || state == UNINITIALIZED)
-                && mState != WearActivityState.ON_STOP && mState != WearActivityState.ON_DESTROY;
+                && this.getState() != WearActivityState.ON_STOP
+                && this.getState() != WearActivityState.ON_DESTROY;
     }
 
 
@@ -536,7 +541,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     private void startTrackRecService() {
         if (!TrackRecordingService.isRunning()
-                && AppPreferencesManager.getHrmFeatureConfig(this) == FeatureConfigEnum.ENABLED) {
+                && PreferencesEx.getHrmFeatureConfig() == FeatureConfigEnum.ENABLED) {
             Intent i = new Intent(this, TrackRecordingService.class);
             i.setAction(TrackRecordingService.ACTION_START_FOREGROUND_SERVICE);
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

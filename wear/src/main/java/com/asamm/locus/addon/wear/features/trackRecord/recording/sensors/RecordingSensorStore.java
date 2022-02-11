@@ -22,7 +22,7 @@ public class RecordingSensorStore {
     public static BatteryValue getBatteryValue() {
         if (!battery.isValid() || System.currentTimeMillis() - battery.timestamp > 30_000) {
             try {
-                Context ctx = MainApplication.applicationContext;
+                Context ctx = MainApplication.app;
                 if (ctx != null) {
                     BatteryManager bm = (BatteryManager) ctx.getSystemService(BATTERY_SERVICE);
                     int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);

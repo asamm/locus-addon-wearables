@@ -8,7 +8,7 @@ import android.view.View;
 import com.google.android.wearable.input.RotaryEncoderHelper;
 
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
@@ -46,26 +46,20 @@ public interface LocusWearActivityHwKeyDelegate {
 
 	/**
 	 * This method can be used to manually set actions for any HW button press/long press
-	 *
-	 * @param button
-	 * @param action
 	 */
 	void registerHwButtonListener(HwButtonActionDescEnum button, HwButtonAction action);
 
 	/**
 	 * This function returns recommended HW button mapping for abstract autodetect actions.
-	 *
-	 * @param adAction
-	 * @return
 	 */
-	public HwButtonActionDescEnum getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum adAction);
+    HwButtonActionDescEnum getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum adAction);
 
 	boolean isUseHwButtons();
 
 	/**
 	 * Currently only used to temporarily disable  delegate right before screen switch.
 	 */
-	public void setUseHwButtons(boolean enabled);
+    void setUseHwButtons(boolean enabled);
 
 	void registerDefaultRotaryMotionListener(View rootView);
 
@@ -79,7 +73,7 @@ public interface LocusWearActivityHwKeyDelegate {
 	 */
 	class Factory {
 		public static LocusWearActivityHwKeyDelegate createDelegate(LocusWearActivity ctx) {
-			if (AppPreferencesManager.isUseHwButtons(ctx)) {
+			if (PreferencesEx.isUseHwButtons()) {
 				return new LocusWearActivityHwKeyDelegateImpl(ctx);
 			} else {
 				// return dummy key delegate if hw keys are disabled

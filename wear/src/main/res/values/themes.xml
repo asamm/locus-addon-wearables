@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!--    <style name="AppTheme.ThemeLocusWear" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
-    <style name="AppTheme.ThemeLocusWear" parent="Theme.AppCompat.Light.NoActionBar">
-<!--    <style name="AppTheme.ThemeLocusWear" parent="@android:style/Theme.DeviceDefault">-->
+    <style name="Theme.Asamm.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@color/base_dark_primary</item>
         <item name="android:colorPrimary">@color/base_primary</item>
         <item name="android:buttonStyle">@style/LocusWearBasicButton</item>
         <item name="android:colorButtonNormal">@color/base_colorButtonNormal</item>
+
+        <!-- OTHER MODIFICATIONS -->
+
+        <!-- screen transitions -->
+        <item name="android:windowAnimationStyle">@style/Animation.Window</item>
+    </style>
+
+    <!--
+        Main application theme, suitable for extending.
+    -->
+    <style name="Theme.Asamm.App" parent="Theme.Asamm.Base" />
+
+    <!--
+        Theme used as base launch screen.
+    -->
+    <style name="Theme.Asamm.App.Launcher">
+        <item name="android:windowBackground">@drawable/var_splashscreen</item>
+        <item name="android:statusBarColor">@color/base_primary</item>
+        <item name="android:navigationBarColor">@color/base_primary</item>
+    </style>
+
+    <style name="Animation.Window" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
     </style>
 
 </resources>

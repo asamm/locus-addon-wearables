@@ -148,7 +148,7 @@ public class TrackRecordingService extends Service {
             stopForegroundService();
             return;
         }
-        FeatureConfigEnum hrmConfig = AppPreferencesManager.getHrmFeatureConfig(this);
+        FeatureConfigEnum hrmConfig = PreferencesEx.getHrmFeatureConfig();
         if (hrmConfig == FeatureConfigEnum.ENABLED) {
             if (rsm.startHrSensor(this, false)) {
                 final Handler handler = new Handler(getMainLooper());

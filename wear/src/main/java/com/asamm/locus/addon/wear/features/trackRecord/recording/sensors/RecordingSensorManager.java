@@ -16,7 +16,7 @@ import android.hardware.SensorManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.application.FeatureConfigEnum;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
@@ -39,7 +39,7 @@ public class RecordingSensorManager {
     public static boolean checkAndRequestBodySensorPermission(Context owner) {
         if (ContextCompat.checkSelfPermission(owner, Manifest.permission.BODY_SENSORS)
                 != PackageManager.PERMISSION_GRANTED) {
-            AppPreferencesManager.persistHrmFeatureConfig(owner, FeatureConfigEnum.NO_PERMISSION);
+            PreferencesEx.persistHrmFeatureConfig(FeatureConfigEnum.NO_PERMISSION);
             if (owner instanceof Activity) {
                 // Permission is not granted
                 ActivityCompat.requestPermissions((Activity) owner,
@@ -53,7 +53,7 @@ public class RecordingSensorManager {
 
     public boolean startHrSensor(Context ctx, boolean isRestart) {
         // No permission/sensor not available or HR already running
-        if (AppPreferencesManager.getHrmFeatureConfig(ctx) != FeatureConfigEnum.ENABLED)
+        if (PreferencesEx.getHrmFeatureConfig() != FeatureConfigEnum.ENABLED)
             return false;
 
         Sensor hrm = null;
@@ -121,7 +121,7 @@ public class RecordingSensorManager {
      * Should only be called if app has permission to read body sensors
      */
     public static FeatureConfigEnum recheckSensorAvailability(Context ctx) {
-        FeatureConfigEnum currentState = AppPreferencesManager.getHrmFeatureConfig(ctx);
+        FeatureConfigEnum currentState = PreferencesEx.getHrmFeatureConfig();
         if (currentState != FeatureConfigEnum.NOT_AVAILABLE) {
             Logger.INSTANCE.logW(TAG, "recheckSensorAvailability() called with state  FeatureConfigEnum.NOT_AVAILABLE ");
             return currentState; // Other state than not available, do not check, should have not been called at all.
@@ -135,7 +135,7 @@ public class RecordingSensorManager {
             FeatureConfigEnum hrmConfig = hearRateSensor != null ? FeatureConfigEnum.ENABLED : FeatureConfigEnum.NOT_AVAILABLE;
             if (hrmConfig == FeatureConfigEnum.ENABLED) {
                 // great, HRM has become accessible, enable it
-                AppPreferencesManager.persistHrmFeatureConfig(ctx, hrmConfig);
+                PreferencesEx.persistHrmFeatureConfig(hrmConfig);
             }
             return hrmConfig;
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class RecordingSensorManager {
             } else {
                 hrmConfig = FeatureConfigEnum.DISABLED;
             }
-            AppPreferencesManager.persistHrmFeatureConfig(owner, hrmConfig);
+            PreferencesEx.persistHrmFeatureConfig(hrmConfig);
             return hrmConfig;
         }
         return FeatureConfigEnum.NOT_AVAILABLE;

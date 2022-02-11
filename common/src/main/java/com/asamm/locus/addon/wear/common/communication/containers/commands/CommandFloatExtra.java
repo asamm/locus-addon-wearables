@@ -2,6 +2,8 @@ package com.asamm.locus.addon.wear.common.communication.containers.commands;
 
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 
 import locus.api.utils.DataReaderBigEndian;
@@ -31,13 +33,13 @@ public class CommandFloatExtra extends TimeStampStorable {
     }
 
     @Override
-    protected void readObject(int version, DataReaderBigEndian dr) throws IOException {
+    protected void readObject(int version, @NotNull DataReaderBigEndian dr) throws IOException {
         super.readObject(version, dr);
         value = dr.readFloat();
     }
 
     @Override
-    protected void writeObject(DataWriterBigEndian dw) throws IOException {
+    protected void writeObject(@NotNull DataWriterBigEndian dw) throws IOException {
         super.writeObject(dw);
         dw.writeFloat(value);
     }

@@ -92,9 +92,6 @@ public class ProfileListActivity extends LocusWearActivity {
 
 		mAdapter = new ProfileListAdapter(mProfiles.getStorables().toArray(new TrackProfileInfoValue[0]));
 		mRecyclerView.setAdapter(mAdapter);
-
-		// Enables Always-on
-		//setAmbientEnabled();
 	}
 
 	@Override

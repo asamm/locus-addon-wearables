@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.features.trackRecord.stats.model;
 
 import android.content.Context;
 
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class TrackRecordActivityConfiguration {
     private static final Object INSTANCE_LOCK = new Object();
 
     private TrackRecordActivityConfiguration(Context ctx) {
-        CfgContainer tmp = AppPreferencesManager.getStatsScreenConfiguration(ctx);
+        CfgContainer tmp = PreferencesEx.getStatsScreenConfiguration();
         config = tmp != null ? tmp : createDefaultConfiguration();
     }
 
@@ -43,7 +43,7 @@ public class TrackRecordActivityConfiguration {
         if (screenIdx >= 0 && screenIdx < config.getScreenCount()
                 && cellIdx >= 0 && cellIdx < config.screens.get(screenIdx).getScreenType().getPositionsCount()) {
             config.screens.get(screenIdx).setCellTypeAtIdx(cellIdx, newStat);
-            AppPreferencesManager.persistStatsScreenConfiguration(ctx, this);
+            PreferencesEx.persistStatsScreenConfiguration(this);
         } else {
             Logger.INSTANCE.logE(TAG, "invalid TrackStat cell index (" + screenIdx + ", " + cellIdx + ")");
         }

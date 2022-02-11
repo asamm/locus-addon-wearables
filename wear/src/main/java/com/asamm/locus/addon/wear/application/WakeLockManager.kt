@@ -8,7 +8,7 @@ import java.lang.Exception
 /**
  * Base constructor.
  */
-public class WakeLockManager(val tag: String) {
+class WakeLockManager(val tag: String) {
 
     // wake-lock itself
     private var wakeLock: PowerManager.WakeLock? = null

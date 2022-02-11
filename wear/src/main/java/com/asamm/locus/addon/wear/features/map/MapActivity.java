@@ -29,7 +29,7 @@ import android.widget.TextView;
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
-import com.asamm.locus.addon.wear.application.AppPreferencesManager;
+import com.asamm.locus.addon.wear.application.PreferencesEx;
 import com.asamm.locus.addon.wear.common.communication.Const;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
@@ -160,6 +160,11 @@ public class MapActivity extends LocusWearActivity {
     }
 
     @Override
+    public boolean getSupportAmbientMode() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appCache = ((MainApplication) getApplication()).getCache();
@@ -219,9 +224,6 @@ public class MapActivity extends LocusWearActivity {
                 return true;
             }
         });
-
-        // Enables Always-on
-        setAmbientEnabled();
         initView();
     }
 
@@ -231,7 +233,7 @@ public class MapActivity extends LocusWearActivity {
         int h = appCache.getScreenHeight();
         int action = ev.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_UP
-                || (mDrawer != null && mDrawer.isOpened())) {
+                || (drawer != null && drawer.isOpened())) {
             // finish possible panning
             if (!scrollLock) {
                 detector.onTouchEvent(ev);
@@ -268,13 +270,13 @@ public class MapActivity extends LocusWearActivity {
 
     @Override
     protected void onStart() {
-        Pair<Integer, Integer> zooms = AppPreferencesManager.getZoomValues(this);
-        mDeviceZoom = zooms.first;
-        mRequestedZoom = zooms.second;
-        mStatus.setAutoRotate(AppPreferencesManager.isMapAutoRotateEnabled(this));
-        Pair<Integer, Integer> offset = AppPreferencesManager.getMapOffsetValues(this);
-        mStatus.setOffset(offset.first, offset.second);
-        mStatus.setLastBearing(AppPreferencesManager.getMapBearing(this));
+        mDeviceZoom = PreferencesEx.INSTANCE.getMapZoomDevice();
+        mRequestedZoom = PreferencesEx.INSTANCE.getMapZoomWear();
+        mStatus.setAutoRotate(PreferencesEx.INSTANCE.getMapAutoRotateEnabled());
+        mStatus.setOffset(
+                PreferencesEx.INSTANCE.getMapOffsetX(),
+                PreferencesEx.INSTANCE.getMapOffsetY());
+        mStatus.setLastBearing(PreferencesEx.INSTANCE.getMapBearing());
         onOffsetChanged();
         super.onStart();
     }
@@ -282,10 +284,12 @@ public class MapActivity extends LocusWearActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        AppPreferencesManager.persistZoomValues(this, mDeviceZoom, mRequestedZoom);
-        AppPreferencesManager.persistMapAutoRotateEnabled(this, mStatus.isAutoRotateEnabled());
-        AppPreferencesManager.persistMapOffsetValues(this, mStatus.mMapOffsetX, mStatus.mMapOffsetY);
-        AppPreferencesManager.persistMapBearing(this, mStatus.getLastBearing());
+        PreferencesEx.INSTANCE.setMapZoomDevice(mDeviceZoom);
+        PreferencesEx.INSTANCE.setMapZoomWear(mRequestedZoom);
+        PreferencesEx.INSTANCE.setMapAutoRotateEnabled(mStatus.isAutoRotateEnabled());
+        PreferencesEx.INSTANCE.setMapOffsetX(mStatus.mMapOffsetX);
+        PreferencesEx.INSTANCE.setMapOffsetY(mStatus.mMapOffsetY);
+        PreferencesEx.INSTANCE.setMapBearing(mStatus.getLastBearing());
     }
 
     /**
