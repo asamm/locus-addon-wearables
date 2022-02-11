@@ -38,8 +38,7 @@ import kotlin.math.sin
  * Created by Milan Cejnar on 08.11.2017.
  * Asamm Software, s.r.o.
  */
-class DeviceCommService private constructor(ctx: Context)
-    : LocusWearCommService(ctx) {
+class DeviceCommService private constructor(ctx: Context) : LocusWearCommService(ctx) {
 
     @Volatile
     private var aboutToBeDestroyed = false
@@ -100,8 +99,10 @@ class DeviceCommService private constructor(ctx: Context)
         val item = newData.dataItem
         val path = DataPath.valueOf(item)
         if (path == null) {
-            Logger.logD(TAG, "onDataChanged($c, $newData), " +
-                    "invalid path")
+            Logger.logD(
+                TAG, "onDataChanged($c, $newData), " +
+                        "invalid path"
+            )
             return
         }
 
@@ -124,7 +125,10 @@ class DeviceCommService private constructor(ctx: Context)
                 onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
-                Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
+                Logger.logW(
+                    TAG,
+                    "ActionTools.getDataUpdateContainer RequiredVersionMissingException"
+                )
             }
         }
 
@@ -196,8 +200,10 @@ class DeviceCommService private constructor(ctx: Context)
      * Handle request to "Hand shake".
      */
     private fun handleGetHandShake(ctx: Context) {
-        sendDataItem(DataPath.PUT_HAND_SHAKE,
-                loadHandShake(ctx))
+        sendDataItem(
+            DataPath.PUT_HAND_SHAKE,
+            loadHandShake(ctx)
+        )
     }
 
     /**
@@ -214,10 +220,10 @@ class DeviceCommService private constructor(ctx: Context)
         // prepare container with data and send it
         Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
         return if (lv == null) HandShakeValue() else HandShakeValue(
-                lv!!.versionCode,
-                // - 1 to compensate for device suffix
-                BuildConfig.VERSION_CODE - 1,
-                locusInfo != null && locusInfo.isRunning
+            lv!!.versionCode,
+            // - 1 to compensate for device suffix
+            BuildConfig.VERSION_CODE - 1,
+            locusInfo != null && locusInfo.isRunning
         )
     }
 
@@ -424,13 +430,13 @@ class DeviceCommService private constructor(ctx: Context)
                 correctedOffsetY = (sin * offsetX + cos * offsetY + 0.5f).toInt()
             }
             mapPreview = getMapPreview(
-                    ctx, lv!!,
-                    createMapPreviewParams(
-                            offsetCenter,
-                            zoom, extra.width, extra.height,
-                            correctedOffsetX, correctedOffsetY,
-                            extra.densityDpi, if (extra.isAutoRotate) mapRotation else 0
-                    )
+                ctx, lv!!,
+                createMapPreviewParams(
+                    offsetCenter,
+                    zoom, extra.width, extra.height,
+                    correctedOffsetX, correctedOffsetY,
+                    extra.densityDpi, if (extra.isAutoRotate) mapRotation else 0
+                )
             )
         } catch (e: RequiredVersionMissingException) {
             Logger.logE(TAG, "loadMapPreview($lv)")
@@ -445,21 +451,22 @@ class DeviceCommService private constructor(ctx: Context)
             offsetCenter
         }
         val m = MapContainer(
-                mapPreview,
-                data,
-                locusInfo,
-                zoom,
-                offsetX,
-                offsetY,
-                locToSend,
-                rotationDeg.toShort()
+            mapPreview,
+            data,
+            locusInfo,
+            zoom,
+            offsetX,
+            offsetY,
+            locToSend,
+            rotationDeg.toShort()
         )
         sendDataItem(DataPath.PUT_MAP, m)
     }
 
     private fun createMapPreviewParams(
-            location: Location, zoom: Int, width: Int, height: Int,
-            offsetX: Int, offsetY: Int, dpi: Int, rotation: Int)
+        location: Location, zoom: Int, width: Int, height: Int,
+        offsetX: Int, offsetY: Int, dpi: Int, rotation: Int
+    )
             : MapPreviewParams {
         val mpp = MapPreviewParams()
         mpp.zoom = zoom
@@ -479,12 +486,12 @@ class DeviceCommService private constructor(ctx: Context)
     ///////////////////////////////////////////////////////////////////////////
 
 
-
     private fun handleRecordingStateChanged(
-            ctx: Context,
-            lv: LocusVersion?,
-            newState: TrackRecordingStateEnum?,
-            profile: String) {
+        ctx: Context,
+        lv: LocusVersion?,
+        newState: TrackRecordingStateEnum?,
+        profile: String
+    ) {
         var currentRecState: TrackRecordingStateEnum? = null
         if (lastUpdateContainer != null) {
             currentRecState = when {
@@ -504,14 +511,14 @@ class DeviceCommService private constructor(ctx: Context)
                 when (newState) {
                     TrackRecordingStateEnum.PAUSED -> ActionBasics.actionTrackRecordPause(ctx, lv!!)
                     TrackRecordingStateEnum.RECORDING -> ActionBasics.actionTrackRecordStart(
-                            ctx,
-                            lv!!,
-                            profile
+                        ctx,
+                        lv!!,
+                        profile
                     )
                     TrackRecordingStateEnum.NOT_RECORDING -> ActionBasics.actionTrackRecordStop(
-                            ctx,
-                            lv!!,
-                            true
+                        ctx,
+                        lv!!,
+                        true
                     )
                 }
             } catch (e: RequiredVersionMissingException) {
@@ -534,14 +541,14 @@ class DeviceCommService private constructor(ctx: Context)
         val trackRec = infoAvailable && lastUpdateContainer!!.isTrackRecRecording
         val trackRecPause = infoAvailable && lastUpdateContainer!!.isTrackRecPaused
         val profileName = if (infoAvailable) lastUpdateContainer!!.trackRecProfileName else ""
-        val speed = myLoc?.speed?.takeIf { it.hasData }?.value
-        val hrm = myLoc?.sensorHeartRate?.takeIf { it.hasData }?.value?.toInt() ?: 0
-        val altitude = myLoc?.altitude?.takeIf { it.hasData }?.value?.toFloat() ?: Float.NaN
+        val speed = if (myLoc?.hasSpeed == true) myLoc.speed else 0.0f
+        val hrm = if (myLoc?.hasSensorHeartRate == true) myLoc.sensorHeartRate else 0.toShort()
+        val altitude = if (myLoc?.hasAltitude == true) myLoc.altitude else 0.0
         val stats = if (infoAvailable) lastUpdateContainer!!.trackRecStats else null
         val locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
         return TrackRecordingValue(
-                infoAvailable, trackRec, trackRecPause,
-                profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude)
+            infoAvailable, trackRec, trackRecPause,
+            profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude.toFloat())
         )
     }
 
@@ -559,8 +566,8 @@ class DeviceCommService private constructor(ctx: Context)
 
     private fun startRefresher() {
         Logger.logD(
-                TAG, "startRefresher(), " +
-                "aboutToBeDestroyed: $aboutToBeDestroyed"
+            TAG, "startRefresher(), " +
+                    "aboutToBeDestroyed: $aboutToBeDestroyed"
         )
         // clear current refresher
         stopRefresher()
@@ -574,8 +581,8 @@ class DeviceCommService private constructor(ctx: Context)
 
     private fun stopRefresher() {
         Logger.logD(
-                TAG, "stopRefresher(), " +
-                "current: ${refresher?.hashCode()}"
+            TAG, "stopRefresher(), " +
+                    "current: ${refresher?.hashCode()}"
         )
         refresher = null
     }

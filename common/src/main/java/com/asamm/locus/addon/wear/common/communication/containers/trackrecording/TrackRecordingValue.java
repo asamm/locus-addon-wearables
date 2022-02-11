@@ -199,7 +199,7 @@ public class TrackRecordingValue extends TimeStampStorable {
         /**
          * current hrm value
          */
-        private int hrm = 0;
+        private short hrm = 0;
         private float altitude = Float.NaN;
 
         public ExtendedTrackInfo() {
@@ -211,7 +211,7 @@ public class TrackRecordingValue extends TimeStampStorable {
             read(data);
         }
 
-        public ExtendedTrackInfo(Float speed, int hr, float altitude) {
+        public ExtendedTrackInfo(Float speed, short hr, float altitude) {
             this();
             mSpeed = speed == null ? INVALID_SPEED : speed;
             this.hrm = hr;
