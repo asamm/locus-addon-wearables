@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import androidx.annotation.Nullable;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -20,14 +19,17 @@ import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
-import com.asamm.locus.addon.wear.utils.UtilsGui;
+import com.asamm.locus.addon.wear.gui.UiUtils;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 /**
  * Text input activity to input new waypoint name
  */
 public class WaypointInputTextActivity extends LocusWearActivity {
+
     public static final String KEY_RESULT_DATA = "KEY_RESULT_DATA";
     private static final int REQUEST_SPEECH = 2;
 
@@ -64,7 +66,7 @@ public class WaypointInputTextActivity extends LocusWearActivity {
 
         editText = findViewById(R.id.edit_text);
         editText.setOnEditorActionListener((v, actionId, event) -> {
-            UtilsGui.hideKeyboard(editText);
+            UiUtils.INSTANCE.hideKeyboard(editText);
             finishWithResult(v.getText().toString());
             return false;
         });
@@ -73,11 +75,11 @@ public class WaypointInputTextActivity extends LocusWearActivity {
         btnKeyboard.setOnClickListener(v -> {
             // show dummy 1x1px sized EditText and open keyboard
             editText.setVisibility(View.VISIBLE);
-            UtilsGui.showKeyboard(editText);
+            UiUtils.INSTANCE.showKeyboard(editText);
         });
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         int numInputMethods = imm.getEnabledInputMethodList().size();
-        if ( numInputMethods == 0) {
+        if (numInputMethods == 0) {
             btnKeyboard.setVisibility(View.GONE);
             editText.setVisibility(View.GONE);
         }

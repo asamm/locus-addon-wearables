@@ -3,7 +3,7 @@
  * This code is part of Locus project from Asamm Software, s. r. o.
  * Copyright (C) 2018
  */
-package com.asamm.locus.addon.wear.gui;
+package com.asamm.locus.addon.wear.features.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,9 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.asamm.locus.addon.wear.R;
-import com.asamm.locus.addon.wear.application.PreferencesEx;
-import com.asamm.locus.addon.wear.application.FeatureConfigEnum;
-import com.asamm.locus.addon.wear.application.TrackRecordingService;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
+import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;

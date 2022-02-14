@@ -18,8 +18,8 @@ import locus.api.utils.Logger;
  * Created by Milan Cejnar on 23.11.2017.
  * Asamm Software, s.r.o.
  */
-
 public class AppStorageManager {
+
 	private static final String TAG = "AppStorageManager";
 	private static final String ICON_PREFIX = "icon";
 

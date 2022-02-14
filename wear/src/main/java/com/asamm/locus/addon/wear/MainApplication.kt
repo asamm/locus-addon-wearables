@@ -12,8 +12,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.asamm.locus.addon.wear.application.PreferencesEx
-import com.asamm.locus.addon.wear.application.TrackRecordingService
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService
 import com.asamm.locus.addon.wear.common.communication.Const
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.*

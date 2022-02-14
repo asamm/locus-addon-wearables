@@ -16,8 +16,8 @@ import android.hardware.SensorManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.asamm.locus.addon.wear.application.PreferencesEx;
-import com.asamm.locus.addon.wear.application.FeatureConfigEnum;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
+import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
 import locus.api.utils.Logger;

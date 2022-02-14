@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.features.launcher
 
 import android.content.Intent
 import android.os.Bundle
-import com.asamm.locus.addon.wear.application.PreferencesEx
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
 import com.asamm.locus.addon.wear.gui.LocusWearActivity

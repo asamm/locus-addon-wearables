@@ -19,7 +19,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.wear.ambient.AmbientModeSupport
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R
-import com.asamm.locus.addon.wear.application.PreferencesEx
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
@@ -27,6 +27,7 @@ import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum
 import com.asamm.locus.addon.wear.communication.WearCommService
 import com.asamm.locus.addon.wear.features.error.AppFailType
 import com.asamm.locus.addon.wear.features.map.MapActivity
+import com.asamm.locus.addon.wear.features.settings.MainSettingsActivity
 import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult

@@ -19,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
-import com.asamm.locus.addon.wear.application.PreferencesEx;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;

@@ -8,7 +8,7 @@ import android.view.View;
 import com.google.android.wearable.input.RotaryEncoderHelper;
 
 import com.asamm.locus.addon.wear.ApplicationMemoryCache;
-import com.asamm.locus.addon.wear.application.PreferencesEx;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;

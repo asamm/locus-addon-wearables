@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.application
+package com.asamm.locus.addon.wear.features.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,6 +14,7 @@ import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackRecordActivityConfiguration
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackRecordActivityConfiguration.CfgContainer
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
+import com.asamm.locus.addon.wear.utils.FeatureConfigEnum
 import java.io.IOException
 
 /**

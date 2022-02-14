@@ -37,3 +37,10 @@ After importing the project, go to run configurations - launch options - launch 
 - When pairing emulator for debug with the phone follow [these instructions](https://developer.android.com/training/wearables/apps/creating)
    - Mainly apart from enabling developer options and ADB debugging on both the phone and the emulated watch, you must also call ```adb -d forward tcp:5601 tcp:5601``` from the computer console to properly forward adb commands. Call this once command before pairing the watch with the phone or before debugging.
    - Also in the Wear OS app on the phone there are no watches visible when connecting new watch. Tap menu icon in the top right and select "Pair with an emulator" option.
+
+## Release
+Both modules needs to be generated and published separately.
+
+`device` module generate over `:device:assembleRelease` gradle task. Generated APK may be found in the 'device\build\intermediates\apk\release\' directory.
+
+`wear` module generate over `:wear:assembleRelease` gradle task. Generated APK may be found in the 'wear\build\intermediates\apk\release\' directory.

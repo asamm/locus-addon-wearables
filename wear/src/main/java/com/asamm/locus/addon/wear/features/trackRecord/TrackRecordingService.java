@@ -3,7 +3,7 @@
  * This code is part of Locus project from Asamm Software, s. r. o.
  * Copyright (C) 2018
  */
-package com.asamm.locus.addon.wear.application;
+package com.asamm.locus.addon.wear.features.trackRecord;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -21,10 +21,12 @@ import androidx.core.app.NotificationCompat;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.communication.WearCommService;
-import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.HrmValue;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorStore;
+import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
+import com.asamm.locus.addon.wear.utils.WakeLockManager;
 
 import locus.api.utils.Logger;
 

@@ -1,4 +1,4 @@
-package com.asamm.locus.addon.wear.application
+package com.asamm.locus.addon.wear.utils
 
 import android.content.Context
 import android.os.PowerManager

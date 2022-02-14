@@ -56,7 +56,7 @@
 
         <activity android:name=".features.trackRecord.stats.view.TrackStatsSelectListActivity" />
 
-        <activity android:name=".gui.MainSettingsActivity" />
+        <activity android:name=".features.settings.MainSettingsActivity" />
 
         <!-- service for events -->
         <service
@@ -75,7 +75,7 @@
 
         <!-- service for the track recording -->
         <service
-            android:name=".application.TrackRecordingService"
+            android:name=".features.trackRecord.TrackRecordingService"
             android:exported="false" />
 
     </application>

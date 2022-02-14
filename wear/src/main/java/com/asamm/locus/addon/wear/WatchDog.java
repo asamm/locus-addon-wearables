@@ -1,6 +1,6 @@
 package com.asamm.locus.addon.wear;
 
-import com.asamm.locus.addon.wear.application.TrackRecordingService;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
