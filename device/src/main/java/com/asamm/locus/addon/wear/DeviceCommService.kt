@@ -100,8 +100,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
         val path = DataPath.valueOf(item)
         if (path == null) {
             Logger.logD(
-                TAG, "onDataChanged($c, $newData), " +
-                        "invalid path"
+                    TAG, "onDataChanged($c, $newData), " +
+                    "invalid path"
             )
             return
         }
@@ -126,8 +126,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
                 Logger.logW(
-                    TAG,
-                    "ActionTools.getDataUpdateContainer RequiredVersionMissingException"
+                        TAG,
+                        "ActionTools.getDataUpdateContainer RequiredVersionMissingException"
                 )
             }
         }
@@ -201,8 +201,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
      */
     private fun handleGetHandShake(ctx: Context) {
         sendDataItem(
-            DataPath.PUT_HAND_SHAKE,
-            loadHandShake(ctx)
+                DataPath.PUT_HAND_SHAKE,
+                loadHandShake(ctx)
         )
     }
 
@@ -220,10 +220,10 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
         // prepare container with data and send it
         Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
         return if (lv == null) HandShakeValue() else HandShakeValue(
-            lv!!.versionCode,
-            // - 1 to compensate for device suffix
-            BuildConfig.VERSION_CODE - 1,
-            locusInfo != null && locusInfo.isRunning
+                lv!!.versionCode,
+                // - 1 to compensate for device suffix
+                BuildConfig.VERSION_CODE - 1,
+                locusInfo != null && locusInfo.isRunning
         )
     }
 
@@ -430,13 +430,13 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
                 correctedOffsetY = (sin * offsetX + cos * offsetY + 0.5f).toInt()
             }
             mapPreview = getMapPreview(
-                ctx, lv!!,
-                createMapPreviewParams(
-                    offsetCenter,
-                    zoom, extra.width, extra.height,
-                    correctedOffsetX, correctedOffsetY,
-                    extra.densityDpi, if (extra.isAutoRotate) mapRotation else 0
-                )
+                    ctx, lv!!,
+                    createMapPreviewParams(
+                            offsetCenter,
+                            zoom, extra.width, extra.height,
+                            correctedOffsetX, correctedOffsetY,
+                            extra.densityDpi,
+                            extra.isAutoRotate, if (extra.isAutoRotate) mapRotation else 0)
             )
         } catch (e: RequiredVersionMissingException) {
             Logger.logE(TAG, "loadMapPreview($lv)")
@@ -451,22 +451,22 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
             offsetCenter
         }
         val m = MapContainer(
-            mapPreview,
-            data,
-            locusInfo,
-            zoom,
-            offsetX,
-            offsetY,
-            locToSend,
-            rotationDeg.toShort()
+                mapPreview,
+                data,
+                locusInfo,
+                zoom,
+                offsetX,
+                offsetY,
+                locToSend,
+                rotationDeg.toShort()
         )
         sendDataItem(DataPath.PUT_MAP, m)
     }
 
     private fun createMapPreviewParams(
-        location: Location, zoom: Int, width: Int, height: Int,
-        offsetX: Int, offsetY: Int, dpi: Int, rotation: Int
-    )
+            location: Location, zoom: Int, width: Int, height: Int,
+            offsetX: Int, offsetY: Int, dpi: Int,
+            rotate: Boolean, rotation: Int)
             : MapPreviewParams {
         val mpp = MapPreviewParams()
         mpp.zoom = zoom
@@ -476,8 +476,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
         mpp.offsetX = offsetX
         mpp.offsetY = offsetY
         mpp.densityDpi = dpi
+        mpp.rotate = rotate
         mpp.rotation = rotation
-        //mpp.setRadius(diagonal);
         return mpp
     }
 
@@ -487,10 +487,10 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
 
 
     private fun handleRecordingStateChanged(
-        ctx: Context,
-        lv: LocusVersion?,
-        newState: TrackRecordingStateEnum?,
-        profile: String
+            ctx: Context,
+            lv: LocusVersion?,
+            newState: TrackRecordingStateEnum?,
+            profile: String
     ) {
         var currentRecState: TrackRecordingStateEnum? = null
         if (lastUpdateContainer != null) {
@@ -511,14 +511,14 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
                 when (newState) {
                     TrackRecordingStateEnum.PAUSED -> ActionBasics.actionTrackRecordPause(ctx, lv!!)
                     TrackRecordingStateEnum.RECORDING -> ActionBasics.actionTrackRecordStart(
-                        ctx,
-                        lv!!,
-                        profile
+                            ctx,
+                            lv!!,
+                            profile
                     )
                     TrackRecordingStateEnum.NOT_RECORDING -> ActionBasics.actionTrackRecordStop(
-                        ctx,
-                        lv!!,
-                        true
+                            ctx,
+                            lv!!,
+                            true
                     )
                 }
             } catch (e: RequiredVersionMissingException) {
@@ -547,8 +547,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
         val stats = if (infoAvailable) lastUpdateContainer!!.trackRecStats else null
         val locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
         return TrackRecordingValue(
-            infoAvailable, trackRec, trackRecPause,
-            profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude.toFloat())
+                infoAvailable, trackRec, trackRecPause,
+                profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude.toFloat())
         )
     }
 
@@ -566,8 +566,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
 
     private fun startRefresher() {
         Logger.logD(
-            TAG, "startRefresher(), " +
-                    "aboutToBeDestroyed: $aboutToBeDestroyed"
+                TAG, "startRefresher(), " +
+                "aboutToBeDestroyed: $aboutToBeDestroyed"
         )
         // clear current refresher
         stopRefresher()
@@ -581,8 +581,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
 
     private fun stopRefresher() {
         Logger.logD(
-            TAG, "stopRefresher(), " +
-                    "current: ${refresher?.hashCode()}"
+                TAG, "stopRefresher(), " +
+                "current: ${refresher?.hashCode()}"
         )
         refresher = null
     }
