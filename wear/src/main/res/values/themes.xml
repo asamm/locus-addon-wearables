@@ -2,10 +2,28 @@
 <resources>
 
     <style name="Theme.Asamm.Base" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:textColor">@color/base_dark_primary</item>
-        <item name="android:colorPrimary">@color/base_primary</item>
+        <!-- BASE COLORS -->
+
+        <!-- Material color attributes -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary_variant</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
+
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
+
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnError">@color/color_on_error</item>
+
+<!--        <item name="android:textColor">@color/base_dark_primary</item>-->
+<!--        <item name="android:colorPrimary">@color/base_primary</item>-->
         <item name="android:buttonStyle">@style/LocusWearBasicButton</item>
-        <item name="android:colorButtonNormal">@color/base_colorButtonNormal</item>
+<!--        <item name="android:colorButtonNormal">@color/base_colorButtonNormal</item>-->
 
         <!-- OTHER MODIFICATIONS -->
 
@@ -32,6 +50,11 @@
         <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
         <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
         <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="LocusWearBasicButton" parent="@style/Widget.AppCompat.Button">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

@@ -23,22 +23,28 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "02"
-private const val PARAM_PATCH_VERSION = "000"
+private const val PARAM_PATCH_VERSION = "001"
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
+
+private const val PARAM_VERSION_NAME_READABLE = "1.2.0"
+
+private fun String.removeLeadingZeros(): String {
+    return replaceFirst("^0+(?!$)", "")
+}
 
 object ModuleDevice {
 
     val versionCode = "$PARAM_MAJOR_VERSION$PARAM_MINOR_VERSION$PARAM_PATCH_VERSION$PARAM_DEVICE_VERSION_SUFFIX".toInt()
 
-    const val versionName = "$PARAM_MAJOR_VERSION.$PARAM_MINOR_VERSION.$PARAM_PATCH_VERSION"
+    const val versionName = PARAM_VERSION_NAME_READABLE
 }
 
 object ModuleWear {
 
     val versionCode = "$PARAM_MAJOR_VERSION$PARAM_MINOR_VERSION$PARAM_PATCH_VERSION$PARAM_WEAR_VERSION_SUFFIX".toInt()
 
-    const val versionName = "$PARAM_MAJOR_VERSION.$PARAM_MINOR_VERSION.$PARAM_PATCH_VERSION"
+    const val versionName = PARAM_VERSION_NAME_READABLE
 }
 
 //*****************************************************

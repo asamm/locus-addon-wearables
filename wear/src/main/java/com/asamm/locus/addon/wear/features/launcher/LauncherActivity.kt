@@ -2,11 +2,10 @@ package com.asamm.locus.addon.wear.features.launcher
 
 import android.content.Intent
 import android.os.Bundle
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
-import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate
 import locus.api.utils.Logger
 
 /**
@@ -19,10 +18,6 @@ class LauncherActivity : LocusWearActivity() {
 
     override val initialCommandResponseType: DataPath
         get() = TODO("Not yet implemented")
-
-    override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {
-        TODO("Not yet implemented")
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // detect that application was started from main application menu

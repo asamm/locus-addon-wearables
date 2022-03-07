@@ -1,3 +1,7 @@
+/**
+ * Created by menion on 07/08/15.
+ * Asamm Software, s. r. o.
+ */
 package com.asamm.locus.addon.wear
 
 import android.content.Context
@@ -13,9 +17,6 @@ import java.util.concurrent.TimeUnit
 
 /**
  * Listener for incoming messages/data from the watch.
- *
- * Created by menion on 07/08/15.
- * Asamm Software, s. r. o.
  */
 class DeviceListenerService : WearableListenerService() {
 

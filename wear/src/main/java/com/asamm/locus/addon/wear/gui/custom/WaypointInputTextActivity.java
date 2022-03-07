@@ -18,7 +18,6 @@ import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 import com.asamm.locus.addon.wear.gui.UiUtils;
 
 import java.util.List;
@@ -41,10 +40,6 @@ public class WaypointInputTextActivity extends LocusWearActivity {
     @Override
     protected DataPath getInitialCommandResponseType() {
         return null;
-    }
-
-    @Override
-    public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
     }
 
     @Override

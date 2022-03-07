@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -17,7 +18,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <!-- app:layout_constraintTop_toBottomOf="@+id/text_view_screen_header" -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,16 +25,19 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <Switch
+            <TextView
+                android:id="@+id/text_view_version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/component_padding"
+                tools:text="Version: 1.2.0" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_hrm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:drawablePadding="@dimen/component_padding"
-                android:maxLines="4"
                 android:onClick="onHrmClicked"
-                android:text="@string/settings_hrm"
-                android:textColor="@color/base_dark_primary" />
+                android:text="@string/settings_hrm" />
         </LinearLayout>
     </ScrollView>
 

@@ -660,7 +660,7 @@ open class MapActivity : LocusWearActivity() {
         }
     }
 
-    public override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {
+    override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {
         enableCustomRotatryActions()
         val upPrimaryBtn =
                 delegate!!.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP)

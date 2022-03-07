@@ -521,7 +521,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     @Override
     public void onExitAmbient() {
         super.onExitAmbient();
-        rootLayout.setBackgroundColor(getColor(R.color.activity_background));
+        rootLayout.setBackgroundColor(getColor(R.color.color_background));
         mTvStartTrackRecordingHeader.setBackgroundColor(getColor(R.color.base_primary));
         mProfileSelect.setVisibility(View.VISIBLE);
         mRecordingScrollScreen.setAmbient(false);

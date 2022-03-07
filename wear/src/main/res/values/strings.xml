@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Toast message shown after waypoint was added during track recording -->
-    <string name="waypoint_added">Waypoint added</string>
+
+    <!-- Ambient mode (UI text) -->
+    <string name="ambient_mode">Ambient mode</string>
+    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
+    <string name="continue_installation">Proceed installation on your phone…</string>
     <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
     <string name="err_locus_version_not_supported">Locus Map in your phone is outdated or missing. Please update or install it.</string>
     <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
@@ -14,12 +17,20 @@
     <string name="err_connection_device_app_outdated">Can\'t connect - Wear for Locus add-on on your phone is outdated.</string>
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the watch is out of date. -->
     <string name="err_connection_watch_app_outdated">Can\'t connect - Wear for Locus on your watch is outdated</string>
-    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
-    <string name="toast_err_device_not_supported">Request failed, install from your phone.</string>
-    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-    <string name="continue_installation">Proceed installation on your phone...</string>
-
-
+    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+    <string name="err_hrm_sensor_not_available">HRM not available on your device</string>
+    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+    <string name="err_no_hrm_permission">Sorry, can\'t read body sensors without your permission.</string>
+    <!-- Description text for HRM/track rec. service in system notification area -->
+    <string name="hrm_rec_service_desc">HRM active due to track recording</string>
+    <!-- Install button text -->
+    <string name="install">Install</string>
+    <!-- Loading (placeholder text) -->
+    <string name="loading_profiles">Loading</string>
+    <!-- Label "Settings"-->
+    <string name="settings">Settings</string>
+    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+    <string name="settings_hrm">Monitor heart rate when recording track?</string>
     <!-- UI Label current altitude -->
     <string name="stat_altitude">Altitude</string>
     <!-- UI Label Altitude minimal -->
@@ -68,19 +79,22 @@
     <string name="stat_distance">Distance</string>
     <!-- UI Label track recording time total -->
     <string name="stat_track_time">Track time</string>
-
-    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
-    <string name="err_no_hrm_permission">Sorry, can\'t read body sensors without your permission.</string>
-    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
-    <string name="err_hrm_sensor_not_available">HRM not available on your device</string>
-    <!-- Description text for HRM/track rec. service in system notification area -->
-    <string name="hrm_rec_service_desc">HRM active due to track recording</string>
-    <!-- Label "Settings"-->
-    <string name="settings">Settings</string>
-    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
-    <string name="settings_hrm">Monitor heart rate when recording track?</string>
+    <!-- Error (label/header)-->
+    <string name="title_activity_error">Error</string>
+    <!-- Screen header for profile list screen, should be short -->
+    <string name="title_activity_profile_list">Profiles</string>
     <!-- Header for statistics dashboard selection list screen. The header should be short. -->
     <string name="title_activity_stats_select_list">Options</string>
+    <!-- Screen header for track recording screen, should be reasonably short -->
+    <string name="title_activity_track_record">Track recording</string>
+    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+    <string name="toast_err_device_not_supported">Request failed, install from your phone.</string>
+    <!-- Update button text -->
+    <string name="update">Update</string>
+    <!-- name of the version -->
+    <string name="version_name_X">Version: %s</string>
+    <!-- Toast message shown after waypoint was added during track recording -->
+    <string name="waypoint_added">Waypoint added</string>
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Leave it as is</string>
     <!-- Option to type in a point name when creating new waypoint -->
@@ -89,21 +103,5 @@
     <string name="wp_name_speech">Say it</string>
     <!-- Title/header for the dialog with options of how to name a new waypoint -->
     <string name="wp_name_title">Name waypoint?</string>
-    <!-- Loading (placeholder text) -->
-    <string name="loading_profiles">Loading</string>
-    <!-- Ambient mode (UI text) -->
-    <string name="ambient_mode">Ambient mode</string>
-    <!-- Install button text -->
-    <string name="install">Install</string>
-    <!-- Update button text -->
-    <string name="update">Update</string>
 
-    <!-- Screen header for track recording screen, should be reasonably short -->
-    <string name="title_activity_track_record">Track recording</string>
-    <!-- Screen header for profile list screen, should be short -->
-    <string name="title_activity_profile_list">Profiles</string>
-    <!-- Error (label/header)-->
-    <string name="title_activity_error">Error</string>
-
-    <!-- NOT YET VALIDATED -->
 </resources>

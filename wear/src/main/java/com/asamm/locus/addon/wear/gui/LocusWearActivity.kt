@@ -109,7 +109,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     /**
      * Expected type of response for initialCommand
      */
-    protected abstract val initialCommandResponseType: DataPath
+    protected abstract val initialCommandResponseType: DataPath?
 
     /**
      * This method is called only once as a callback, that activity's initial command
@@ -424,7 +424,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      * Overriding and returning false means that all handshaking and even initial command request
      * response are skipped!
      *
-     * @return if should do initialization hanshake and init communication
+     * @return if should do initialization handshake and init communication
      */
     protected open val isMakeHandshakeOnStart: Boolean
         get() = true
@@ -432,12 +432,14 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     val mainApplication: MainApplication
         get() = application as MainApplication
 
+    // HARDWARE KEYS
+
     /**
-     * This function can be overriden in inheriting activities and is called during each on resume.
+     * This function can be overridden in inheriting activities and is called during each on resume.
      * Activity that wishes to use custom HW button handling should register appropriate listeners
      * in the provided [delegate]
      */
-    protected abstract fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?)
+    open fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {}
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         return if (getHwKeyDelegate()!!.onKeyDown(

@@ -1,3 +1,7 @@
+/**
+ * Created by Milan Cejnar on 08.11.2017.
+ * Asamm Software, s.r.o.
+ */
 package com.asamm.locus.addon.wear
 
 import android.annotation.SuppressLint
@@ -35,10 +39,9 @@ import kotlin.math.sin
 
 /**
  * Singleton class for handling communication between this application and the watch.
- * Created by Milan Cejnar on 08.11.2017.
- * Asamm Software, s.r.o.
  */
-class DeviceCommService private constructor(ctx: Context) : LocusWearCommService(ctx) {
+class DeviceCommService private constructor(ctx: Context)
+    : LocusWearCommService(ctx) {
 
     @Volatile
     private var aboutToBeDestroyed = false
@@ -125,10 +128,7 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
                 onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
-                Logger.logW(
-                        TAG,
-                        "ActionTools.getDataUpdateContainer RequiredVersionMissingException"
-                )
+                Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
             }
         }
 
@@ -436,7 +436,8 @@ class DeviceCommService private constructor(ctx: Context) : LocusWearCommService
                             zoom, extra.width, extra.height,
                             correctedOffsetX, correctedOffsetY,
                             extra.densityDpi,
-                            extra.isAutoRotate, if (extra.isAutoRotate) mapRotation else 0)
+                            extra.isAutoRotate, if (extra.isAutoRotate) mapRotation else 0
+                    )
             )
         } catch (e: RequiredVersionMissingException) {
             Logger.logE(TAG, "loadMapPreview($lv)")

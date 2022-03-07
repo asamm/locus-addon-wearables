@@ -3,9 +3,6 @@ package com.asamm.locus.addon.wear.features.trackRecord.profiles;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.wear.widget.WearableLinearLayoutManager;
-import androidx.wear.widget.WearableRecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +18,13 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.Empty
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue;
 import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.widget.WearableLinearLayoutManager;
+import androidx.wear.widget.WearableRecyclerView;
 import locus.api.android.utils.UtilsBitmap;
 import locus.api.utils.Logger;
 
@@ -119,11 +118,6 @@ public class ProfileListActivity extends LocusWearActivity {
 	@Override
 	public boolean isChildLocusWearActivity() {
 		return true; // runs on top of TrackRecording activity, not independetly
-	}
-
-	@Override
-	public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
-
 	}
 
 	private class TrackProfileModelHolder {

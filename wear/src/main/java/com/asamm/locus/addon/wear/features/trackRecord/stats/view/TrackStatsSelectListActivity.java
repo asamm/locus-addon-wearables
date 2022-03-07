@@ -8,9 +8,6 @@ package com.asamm.locus.addon.wear.features.trackRecord.stats.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.wear.widget.WearableLinearLayoutManager;
-import androidx.wear.widget.WearableRecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,17 +16,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.asamm.locus.addon.wear.R;
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand;
-import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatTypeEnum;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatViewId;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.widget.WearableLinearLayoutManager;
+import androidx.wear.widget.WearableRecyclerView;
 
 /**
  * Activity containing single recycler view for choosing recording profile.
@@ -94,11 +94,6 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
     @Override
     public boolean isChildLocusWearActivity() {
         return true; // runs on top of TrackRecording activity, not independetly
-    }
-
-    @Override
-    public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
-
     }
 
     private TrackStatTypeEnum[] getSelectionModel() {
