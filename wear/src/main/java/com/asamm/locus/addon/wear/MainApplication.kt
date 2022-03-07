@@ -419,7 +419,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     /**
-     * Cacnel running termination timer.
+     * Cancel running termination timer.
      */
     private fun cancelTerminationTimer() {
         timerTerminate?.cancel()

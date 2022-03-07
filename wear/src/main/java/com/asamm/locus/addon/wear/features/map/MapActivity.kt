@@ -40,6 +40,7 @@ import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum
+import com.asamm.locus.addon.wear.utils.UtilsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import locus.api.android.features.periodicUpdates.UpdateContainer
 import locus.api.android.utils.UtilsFormat
@@ -785,10 +786,30 @@ open class MapActivity : LocusWearActivity() {
 
         private const val TAG = "MapActivity"
 
-        private const val MAP_REFRESH_PERIOD_MS = 5000
-        private const val WATCHDOG_TIMEOUT_MS = MAP_REFRESH_PERIOD_MS * 3
+        /**
+         * Refresh of the map.
+         */
+        private val MAP_REFRESH_PERIOD_MS = if (UtilsCompat.isAPI30orMore) {
+            2500
+        } else {
+            5000
+        }
+
+        /**
+         * Timeout for WatchDog.
+         */
+        private val WATCHDOG_TIMEOUT_MS = MAP_REFRESH_PERIOD_MS * 3
+
+        /**
+         * Animation for the scale.
+         */
         private const val SCALE_ANIMATION_DURATION_MS = 200
+
         private const val PAN_DELAY = 300
+
+        /**
+         * Timeout for the automatic button hiding.
+         */
         private const val BUTTON_HIDE_TIME_MS = 4000
 
         private fun testMapContainerAndImageNotNull(m: MapContainer?): Boolean {

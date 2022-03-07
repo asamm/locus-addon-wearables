@@ -38,7 +38,9 @@
                 android:layout_height="wrap_content"
                 android:onClick="onHrmClicked"
                 android:text="@string/settings_hrm" />
+
         </LinearLayout>
+
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

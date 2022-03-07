@@ -4,7 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+# [Unreleased]
+
+## [1.3.0] - 2022-22-22
+### Changed
+- map refresh rate on Android 11+ reduced to 2.5s
+- improved map zoom behavior
+- big refactoring & conversion to the Kotlin
+
+### Fixed
+- issues in reconnecting
+
+# [Released]
+
+## [1.2.0] - 2018-10-12
+### Added
+- launcher screen
+
+### Changed
+- navigation drawer now extends from the bottom (to prevent interference with the Galaxy Watch 4's quick settings menu)
+- major refactor and simplification of "activity system"
+- converted few classes to Kotlin
+- updated build system to Gradle Kotlin DSL
+- updated to the last Locus API, AndroidX
+- updated app icons to match latest Locus Map 4.x version
+- make scrolling with the rotating bezel more responsive
+- removed dependency on periodic updates system
 
 ## [1.1.7] - 2018-10-12
 ### Fixed
