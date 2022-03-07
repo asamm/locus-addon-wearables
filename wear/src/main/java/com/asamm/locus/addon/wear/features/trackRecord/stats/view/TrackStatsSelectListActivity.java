@@ -27,16 +27,18 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.wear.widget.WearableLinearLayoutManager;
 import androidx.wear.widget.WearableRecyclerView;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Activity containing single recycler view for choosing recording profile.
  */
 public class TrackStatsSelectListActivity extends LocusWearActivity {
 
-    private static final String TAG = "TrackStatsSelectListActivity";
     public static final String RESULT_STAT_ID = "RESULT_STAT_ID";
     public static final String PARAM_SCREEN_IDX = "PARAM_SCREEN_IDX";
     public static final String PARAM_CELL_IDX = "PARAM_CELL_IDX";
@@ -106,8 +108,10 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         }
         return model;
     }
+
     private class StatsTypeListAdapter extends RecyclerView.Adapter<StatsTypeListAdapter.ViewHolder> {
-        private TrackStatTypeEnum[] mModel = getSelectionModel();
+
+        private final TrackStatTypeEnum[] model = getSelectionModel();
 
         private void onItemSelected(TrackStatTypeEnum selectedType) {
             Intent resultIntent = new Intent();
@@ -119,15 +123,16 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         }
 
         // Create new views (invoked by the layout manager)
+        @NotNull
         @Override
         public StatsTypeListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                  int viewType) {
+                int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_layout, parent, false);
             // customize layout to be able to handle longer multiline statistics names
             v.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
             TextView tv = v.findViewById(R.id.profile_list_item_name);
-            tv.setMinHeight((int)getResources().getDimension(R.dimen.list_select_icon_height));
+            tv.setMinHeight((int) getResources().getDimension(R.dimen.list_select_icon_height));
             float textSize = getResources().getDimension(R.dimen.text_size_base);
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
             tv.setMaxLines(3);
@@ -140,11 +145,11 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
-            final TrackStatTypeEnum value = mModel[position];
+            final TrackStatTypeEnum value = model[position];
 
 
             holder.mTextViewName.setText(getString(value.getNameStringId()));
-            holder.mIcon.setImageDrawable(getDrawable(value.getIconId()));
+            holder.mIcon.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(), value.getIconId()));
             View.OnClickListener clickHandler = view -> onItemSelected(value);
             holder.mTextViewName.setOnClickListener(clickHandler);
             holder.mIcon.setOnClickListener(clickHandler);
@@ -159,7 +164,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         // Return the size of your dataset (invoked by the layout manager)
         @Override
         public int getItemCount() {
-            return mModel.length;
+            return model.length;
         }
 
         /**

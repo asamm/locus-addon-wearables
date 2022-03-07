@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import com.google.android.wearable.input.RotaryEncoderHelper;
 
-import com.asamm.locus.addon.wear.ApplicationMemoryCache;
+import com.asamm.locus.addon.wear.utils.AppMemoryCache;
 import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
@@ -268,7 +268,7 @@ public interface LocusWearActivityHwKeyDelegate {
 				return;
 			}
 			mNumMultifunctionButtons = 3;
-			ApplicationMemoryCache appMem = ctx.getMainApplication().getCache();
+			AppMemoryCache appMem = ctx.getMainApplication().getCache();
 			int w = appMem.getScreenWidth();
 			int h = appMem.getScreenHeight();
 

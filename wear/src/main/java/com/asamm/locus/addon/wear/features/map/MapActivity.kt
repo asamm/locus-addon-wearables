@@ -18,8 +18,8 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import com.asamm.locus.addon.wear.ApplicationMemoryCache
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R
 import com.asamm.locus.addon.wear.WatchDogPredicate
@@ -37,18 +37,15 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate
 import com.asamm.locus.addon.wear.gui.custom.NavHelper
 import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling
-import com.asamm.locus.addon.wear.gui.custom.WearMapActionMoveFling.OffsetUpdatable
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import locus.api.android.features.periodicUpdates.UpdateContainer
-import locus.api.android.utils.UtilsFormat.formatDistance
-import locus.api.android.utils.UtilsFormat.formatDistanceUnits
+import locus.api.android.utils.UtilsFormat
 import locus.api.objects.extra.Location
 import locus.api.objects.extra.PointRteAction
-import locus.api.objects.extra.PointRteAction.Companion.getActionById
-import locus.api.utils.Logger.logE
+import locus.api.utils.Logger
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -56,6 +53,7 @@ import kotlin.math.sqrt
 /**
  * Activity with map preview
  */
+@Suppress("DEPRECATION")
 open class MapActivity : LocusWearActivity() {
 
     // reference to map view
@@ -90,6 +88,7 @@ open class MapActivity : LocusWearActivity() {
 
     @Volatile
     private var lastContainer: MapContainer? = null
+
     private var detector: GestureDetector? = null
 
     /**
@@ -102,13 +101,17 @@ open class MapActivity : LocusWearActivity() {
     private var isScaled = false
 
     @Volatile
-    private var deviceZoom = 0
+    private var mapZoom = PreferencesEx.mapZoom
 
     @Volatile
-    private var requestedZoom = Const.ZOOM_UNKOWN.toInt()
+    private var mapZoomRequest = Const.ZOOM_UNKOWN.toInt()
     private var densityDpi = 0
     private var diagonal = 0
-    private var appCache: ApplicationMemoryCache? = null
+
+    // reference to app cache
+    private val appCache by lazy {
+        (application as MainApplication).cache
+    }
 
     /**
      * Last rendered location and offset
@@ -135,7 +138,7 @@ open class MapActivity : LocusWearActivity() {
     private val mapState = MapActivityState()
 
     // fling handling
-    private val flingUpdatable = OffsetUpdatable { x: Int, y: Int, isLast: Boolean ->
+    private val flingUpdatable = WearMapActionMoveFling.OffsetUpdatable { x: Int, y: Int, isLast: Boolean ->
         runOnUiThread {
             mapState.addOffset(x, y)
             onOffsetChanged()
@@ -160,9 +163,9 @@ open class MapActivity : LocusWearActivity() {
         get() {
             // prepare parameters
             val params = MapPeriodicParams(
-                    requestedZoom,
-                    appCache!!.screenWidth,
-                    appCache!!.screenHeight,
+                    mapZoomRequest,
+                    appCache.screenWidth,
+                    appCache.screenHeight,
                     mapState.mapOffsetX,
                     mapState.mapOffsetY,
                     densityDpi,
@@ -191,7 +194,6 @@ open class MapActivity : LocusWearActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appCache = (application as MainApplication).cache
         setContentView(R.layout.activity_map)
 
         // get references to views
@@ -209,8 +211,8 @@ open class MapActivity : LocusWearActivity() {
         resources.getValue(R.dimen.map_fab_scale, typedFabScale, true)
         defaultFabScale = typedFabScale.float
         densityDpi = resources.displayMetrics.densityDpi / 2
-        val w = appCache!!.screenWidth
-        val h = appCache!!.screenHeight
+        val w = appCache.screenWidth
+        val h = appCache.screenHeight
         val isRound = resources.configuration.isScreenRound
         diagonal = if (isRound) {
             (max(w, h) + 1) / 2
@@ -258,8 +260,8 @@ open class MapActivity : LocusWearActivity() {
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        val w = appCache!!.screenHeight
-        val h = appCache!!.screenHeight
+        val w = appCache.screenHeight
+        val h = appCache.screenHeight
         val action = ev.action and MotionEvent.ACTION_MASK
         if (action == MotionEvent.ACTION_UP
                 || drawer != null && drawer!!.isOpened) {
@@ -292,8 +294,6 @@ open class MapActivity : LocusWearActivity() {
     }
 
     override fun onStart() {
-        deviceZoom = PreferencesEx.mapZoomDevice
-        requestedZoom = PreferencesEx.mapZoomWear
         mapState.isAutoRotateEnabled = PreferencesEx.mapAutoRotateEnabled
         mapState.setOffset(
                 PreferencesEx.mapOffsetX,
@@ -306,8 +306,7 @@ open class MapActivity : LocusWearActivity() {
 
     override fun onStop() {
         super.onStop()
-        PreferencesEx.mapZoomDevice = deviceZoom
-        PreferencesEx.mapZoomWear = requestedZoom
+        PreferencesEx.mapZoom = mapZoom
         PreferencesEx.mapAutoRotateEnabled = mapState.isAutoRotateEnabled
         PreferencesEx.mapOffsetX = mapState.mapOffsetX
         PreferencesEx.mapOffsetY = mapState.mapOffsetY
@@ -319,116 +318,22 @@ open class MapActivity : LocusWearActivity() {
      */
     private fun initView() {
         val cache = (application as MainApplication).cache
-        val savedContainer = cache!!.lastMapData
-        if (savedContainer != null && savedContainer.isMapPresent) {
+        val savedContainer = cache.lastMapData
+        if (savedContainer?.isMapPresent == true) {
             refreshMapView(savedContainer)
         } else {
-            mapView.background = getDrawable(R.drawable.var_map_loading_tile_256)
-        }
-        refreshPanelNavigation(null) // hide navigation panel
-    }
-
-    private fun refreshLayout(data: MapContainer) {
-        // run in UI thread
-        runOnUiThread {
-            refreshMapView(data)
-            refreshZoomModel(data)
-            refreshPanelNavigation(data)
-        }
-    }
-
-    private fun refreshZoomModel(data: MapContainer) {
-        // zoom on device changed right now or from last time app was opened - reset zoom to device zoom value
-        if (deviceZoom != data.zoomDevice && data.zoomDevice != Const.ZOOM_UNKOWN.toInt()) {
-            changeZoom(requestedZoom, data.zoomDevice - requestedZoom)
-        }
-        deviceZoom = data.zoomDevice
-    }
-
-    /**
-     * Refreshes map image view
-     */
-    private fun refreshMapView(data: MapContainer?) {
-        if (testMapContainerAndImageNotNull(data)) {
-            val map = data!!.loadedMap.getAsImage()
-            lastMapLocation = data.lastLocation
-            lastRenderedOffsetX = data.offsetX
-            lastRenderedOffsetY = data.offsetY
-            mapState.lastBearing = data.bearing
-            refreshMapOffset(
-                    mapState.mapOffsetX,
-                    mapState.mapOffsetY,
-                    lastRenderedOffsetX,
-                    lastRenderedOffsetY
-            )
-            mapView.setImageDrawable(BitmapDrawable(resources, map))
-            if (data.zoomWear == requestedZoom && isScaled) {
-                mapView.animate().cancel()
-                mapView.scaleX = 1f
-                mapView.scaleY = 1f
-                zoomLock = false
-                isScaled = false
-            }
-        } else {
-            logE(
-                    TAG, (if (data == null) {
-                "data"
-            } else if (data.loadedMap == null) {
-                "data.loadedMap"
-            } else {
-                "data.loadedMap.image"
-            }) + " is null."
+            mapView.background = AppCompatResources.getDrawable(
+                    this,
+                    R.drawable.var_map_loading_tile_256
             )
         }
-    }
 
-    private fun refreshMapOffset(
-            offsetX: Int,
-            offsetY: Int,
-            renderOffsetX: Int,
-            renderOffsetY: Int) {
-        runOnUiThread {
-            mapView.translationX = (-offsetX + renderOffsetX).toFloat()
-            mapView.translationY = (-offsetY + renderOffsetY).toFloat()
-        }
-    }
-
-    /**
-     * Refresh panel with navigation.
-     */
-    private fun refreshPanelNavigation(data: MapContainer?) {
-        if (data == null || data.getmGuideType() != UpdateContainer.GUIDE_TYPE_TRACK_NAVIGATION) {
-            llNavPanel.visibility = View.GONE
-            return
-        }
-        llNavPanel.visibility = View.VISIBLE
-
-        // action for current point
-        setNavImageForAction(
-                ivNavPanelMiddle,
-                if (data.isNavValid) data.navPointAction1Id else PointRteAction.UNDEFINED.id
-        )
-        if (data.isNavValid) {
-            if (ivNavPanelTop.visibility != View.VISIBLE) {
-                ivNavPanelTop.visibility = View.VISIBLE
-            }
-            // action for next point
-            setNavImageForAction(ivNavPanelTop, data.navPointAction2Id)
-            tvNavPanelDistValue.text = formatDistance(
-                    data.unitsFormatLength, data.navPoint1Dist, true
-            )
-            tvNavPanelDistUnits.text = formatDistanceUnits(
-                    data.unitsFormatLength, data.navPoint1Dist
-            )
-        } else {
-            ivNavPanelTop.visibility = View.INVISIBLE
-            tvNavPanelDistValue.text = ""
-            tvNavPanelDistUnits.text = ""
-        }
+        // hide navigation panel
+        refreshPanelNavigation(null)
     }
 
     private fun setNavImageForAction(view: ImageView?, pointRteActionId: Int) {
-        val action = getActionById(pointRteActionId)
+        val action = PointRteAction.getActionById(pointRteActionId)
         val img = NavHelper.getNavPointImageRes(action)
         if (Integer.valueOf(img) != view!!.tag) {
             view.setImageResource(img)
@@ -443,8 +348,9 @@ open class MapActivity : LocusWearActivity() {
                 val tmp = data as MapContainer?
                 if (tmp != null) {
                     lastContainer = tmp
-                    refreshLayout(lastContainer!!)
+                    refreshLayout(tmp)
                 }
+
                 if (!testMapContainerAndImageNotNull(tmp)) {
                     mainApplication.sendDataWithWatchDogConditionable(
                             initialCommandType,
@@ -452,7 +358,7 @@ open class MapActivity : LocusWearActivity() {
                             WatchDogPredicate { cont: MapContainer? ->
                                 testMapContainerAndImageNotNull(cont)
                             })
-                } else if (tmp!!.loadedMap.numOfNotYetLoadedTiles > 0 && !mapState.isFlinging) {
+                } else if (tmp!!.loadedMap?.numOfNotYetLoadedTiles ?: 0 > 0 && !mapState.isFlinging) {
                     mainApplication.sendDataWithWatchDog(
                             initialCommandType,
                             initialCommandResponseType, WATCHDOG_TIMEOUT_MS.toLong()
@@ -464,6 +370,9 @@ open class MapActivity : LocusWearActivity() {
                             WATCHDOG_TIMEOUT_MS.toLong()
                     )
                 }
+            }
+            else -> {
+                Logger.logD(TAG, "consumeNewData($path, $data), data not handled")
             }
         }
     }
@@ -485,14 +394,14 @@ open class MapActivity : LocusWearActivity() {
     }
 
     private fun doZoomClicked(zoomDiff: Int) {
-        if (deviceZoom == Const.ZOOM_UNKOWN.toInt() || zoomLock) {
+        // check state
+        if (zoomLock) {
             return
         }
-        if (requestedZoom == Const.ZOOM_UNKOWN.toInt()) {
-            requestedZoom = deviceZoom
-        }
+
+        // lock zoom level
         zoomLock = true
-        if (changeZoom(requestedZoom, zoomDiff)) {
+        if (changeZoom(mapZoom, zoomDiff)) {
             val scale = if (zoomDiff < 0) 0.5f else 2f
             isScaled = true
             mapView.animate()
@@ -505,25 +414,6 @@ open class MapActivity : LocusWearActivity() {
         } else {
             zoomLock = false
         }
-    }
-
-    private fun changeZoom(currentZoom: Int, zoomDiff: Int): Boolean {
-        var newZoom = currentZoom + zoomDiff
-        newZoom = min(max(newZoom, Const.ZOOM_MIN), Const.ZOOM_MAX)
-        if (newZoom == requestedZoom) {
-            return false
-        }
-        // correct offset before zooming
-        if (zoomDiff < 0) {
-            mapState.divideOffset(1 shl -zoomDiff)
-        } else if (zoomDiff > 0) {
-            mapState.multiplyOffset(1 shl zoomDiff)
-        }
-        onOffsetChanged()
-        requestedZoom = newZoom
-        val refreshCmd = initialCommandType
-        WearCommService.instance.sendDataItem(refreshCmd.path, refreshCmd.storable)
-        return true
     }
 
     override val isUsePeriodicData: Boolean
@@ -544,6 +434,7 @@ open class MapActivity : LocusWearActivity() {
         animateButton(btnZoomIn, true)
         animateButton(btnZoomOut, true)
         animateButton(fabRotPan, true)
+
         // give a little time to animate the buttons for a bit before enabling buttons function
         Handler().postDelayed(
                 { mapState.buttonsVisible = true },
@@ -565,6 +456,134 @@ open class MapActivity : LocusWearActivity() {
                 .start()
     }
 
+    //*************************************************
+    // REFRESH MAP CONTENT
+    //*************************************************
+
+    /**
+     * Refresh all map data.
+     */
+    private fun refreshLayout(data: MapContainer) {
+        Logger.logD(TAG, "refreshLayout($data)")
+        runOnUiThread {
+            refreshMapView(data)
+            refreshPanelNavigation(data)
+        }
+    }
+
+    /**
+     * Refreshes map image view
+     */
+    private fun refreshMapView(data: MapContainer) {
+        if (testMapContainerAndImageNotNull(data)) {
+            val map = data.loadedMap?.getAsImage()
+            lastMapLocation = data.lastLocation
+            lastRenderedOffsetX = data.offsetX
+            lastRenderedOffsetY = data.offsetY
+            mapState.lastBearing = data.bearing
+            refreshMapOffset(
+                    mapState.mapOffsetX,
+                    mapState.mapOffsetY,
+                    lastRenderedOffsetX,
+                    lastRenderedOffsetY
+            )
+            mapView.setImageDrawable(BitmapDrawable(resources, map))
+
+            // reset scale if valid data received
+            if (data.zoomRequest.toInt() == mapZoom && isScaled) {
+                mapView.animate().cancel()
+                mapView.scaleX = 1f
+                mapView.scaleY = 1f
+                zoomLock = false
+                isScaled = false
+            }
+        } else {
+            Logger.logE(
+                    TAG, (when (data.loadedMap) {
+                null -> {
+                    "data.loadedMap"
+                }
+                else -> {
+                    "data.loadedMap.image"
+                }
+            }) + " is null."
+            )
+        }
+    }
+
+    private fun refreshMapOffset(
+            offsetX: Int,
+            offsetY: Int,
+            renderOffsetX: Int,
+            renderOffsetY: Int) {
+        runOnUiThread {
+            mapView.translationX = (-offsetX + renderOffsetX).toFloat()
+            mapView.translationY = (-offsetY + renderOffsetY).toFloat()
+        }
+    }
+
+    // ZOOM SYSTEM
+
+    private fun changeZoom(currentZoom: Int, zoomDiff: Int): Boolean {
+        // compute new zoom value
+        var newZoom = currentZoom + zoomDiff
+        newZoom = min(max(newZoom, Const.ZOOM_MIN), Const.ZOOM_MAX)
+        if (newZoom == currentZoom) {
+            return false
+        }
+
+        // correct offset before zooming
+        if (zoomDiff < 0) {
+            mapState.divideOffset(1 shl -zoomDiff)
+        } else if (zoomDiff > 0) {
+            mapState.multiplyOffset(1 shl zoomDiff)
+        }
+
+        // perform zoom
+        onOffsetChanged()
+        mapZoom = newZoom
+        mapZoomRequest = newZoom
+        val refreshCmd = initialCommandType
+        WearCommService.instance.sendDataItem(refreshCmd.path, refreshCmd.storable)
+        return true
+    }
+
+    /**
+     * Refresh panel with navigation.
+     */
+    private fun refreshPanelNavigation(data: MapContainer?) {
+        if (data == null || data.guideType != UpdateContainer.GUIDE_TYPE_TRACK_NAVIGATION) {
+            llNavPanel.visibility = View.GONE
+            return
+        }
+        llNavPanel.visibility = View.VISIBLE
+
+        // action for current point
+        setNavImageForAction(
+                ivNavPanelMiddle,
+                if (data.isNavValid) data.navPointAction1Id else PointRteAction.UNDEFINED.id
+        )
+        if (data.isNavValid) {
+            if (ivNavPanelTop.visibility != View.VISIBLE) {
+                ivNavPanelTop.visibility = View.VISIBLE
+            }
+            // action for next point
+            setNavImageForAction(ivNavPanelTop, data.navPointAction2Id)
+            tvNavPanelDistValue.text = UtilsFormat.formatDistance(
+                    data.unitsFormatLength, data.navPoint1Dist, true
+            )
+            tvNavPanelDistUnits.text = UtilsFormat.formatDistanceUnits(
+                    data.unitsFormatLength, data.navPoint1Dist
+            )
+        } else {
+            ivNavPanelTop.visibility = View.INVISIBLE
+            tvNavPanelDistValue.text = ""
+            tvNavPanelDistUnits.text = ""
+        }
+    }
+
+    // AMBIENT
+
     override fun onEnterAmbient(ambientDetails: Bundle?) {
         super.onEnterAmbient(ambientDetails)
         doHideButtons()
@@ -572,7 +591,9 @@ open class MapActivity : LocusWearActivity() {
         llNavPanel.setBackgroundColor(getColor(R.color.base_dark_primary))
         tvNavPanelDistValue.setTextColor(Color.WHITE)
         tvNavPanelDistUnits.setTextColor(Color.WHITE)
-        refreshMapView(lastContainer)
+        lastContainer?.let {
+            refreshMapView(it)
+        }
         mapState.isAmbient = true
     }
 
@@ -584,7 +605,9 @@ open class MapActivity : LocusWearActivity() {
         llNavPanel.setBackgroundColor(getColor(R.color.panel_map_side))
         tvNavPanelDistValue.setTextColor(getColor(R.color.base_dark_primary))
         tvNavPanelDistUnits.setTextColor(getColor(R.color.base_dark_primary))
-        refreshMapView(lastContainer)
+        lastContainer?.let {
+            refreshMapView(it)
+        }
     }
 
     private fun cancelFling() {
@@ -595,7 +618,8 @@ open class MapActivity : LocusWearActivity() {
     /**
      * Handle click on the center/rotate button.
      */
-    fun onCenterRotateButtonClicked(v: View) {
+    @Suppress("UNUSED_PARAMETER")
+    fun onCenterRotateButtonClicked(view: View) {
         // ignore if button is not visible
         if (!mapState.buttonsVisible) {
             return
@@ -613,7 +637,7 @@ open class MapActivity : LocusWearActivity() {
             cancelFling()
             mapState.isPanning = false
 
-            // animate centration
+            // animate centering
             mapView.animate().cancel()
             mapView.animate()
                     .translationXBy(mapState.mapOffsetX.toFloat())
@@ -759,8 +783,9 @@ open class MapActivity : LocusWearActivity() {
         private const val SCALE_ANIMATION_DURATION_MS = 200
         private const val PAN_DELAY = 300
         private const val BUTTON_HIDE_TIME_MS = 4000
+
         private fun testMapContainerAndImageNotNull(m: MapContainer?): Boolean {
-            return m != null && m.loadedMap != null && m.loadedMap.isValid()
+            return m?.loadedMap != null && m.loadedMap?.isValid() == true
         }
     }
 }

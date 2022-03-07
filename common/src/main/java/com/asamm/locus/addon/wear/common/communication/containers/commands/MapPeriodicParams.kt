@@ -58,13 +58,13 @@ class MapPeriodicParams() : TimeStampStorable(), PeriodicExtra {
         get() = bFlags and FLG_AUTOROTATE != 0.toByte()
 
     constructor(
-            mZoom: Int, mWidth: Int, mHeight: Int,
+            zoom: Int, width: Int, height: Int,
             offsetX: Int, offsetY: Int, densityDpi: Int,
             isAutoRotate: Boolean, bearing: Short, diagonal: Int,
             lastOffsetLatitude: Double, lastOffsetLongitude: Double) : this() {
-        zoom = mZoom
-        width = mWidth
-        height = mHeight
+        this.zoom = zoom
+        this.width = width
+        this.height = height
         bFlags = if (isAutoRotate) FLG_AUTOROTATE else 0
         this.offsetX = offsetX
         this.offsetY = offsetY

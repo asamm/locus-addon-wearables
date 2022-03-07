@@ -26,7 +26,7 @@ object PreferencesEx {
      * Reference to preferences system.
      */
     private val prefs: SharedPreferences by lazy {
-        MainApplication.app!!.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+        MainApplication.app.getSharedPreferences("preferences", Context.MODE_PRIVATE)
     }
 
     // PREFERENCE KEYS
@@ -40,7 +40,6 @@ object PreferencesEx {
     private const val PREF_MAP_OFFSET_X = "PREF_MAP_OFFSET_X"
     private const val PREF_MAP_OFFSET_Y = "PREF_MAP_OFFSET_Y"
     private const val PREF_DEVICE_ZOOM = "DEV_ZOOM"
-    private const val PREF_WEAR_ZOOM = "WEAR ZOOM"
 
     //*************************************************
     // PREFERENCES
@@ -106,7 +105,7 @@ object PreferencesEx {
                     .apply()
         }
 
-    var mapZoomDevice: Int
+    var mapZoom: Int
         get() {
             return prefs.getInt(PREF_DEVICE_ZOOM, Const.ZOOM_UNKOWN.toInt())
         }
@@ -115,17 +114,6 @@ object PreferencesEx {
                     .putInt(PREF_DEVICE_ZOOM, value)
                     .apply()
         }
-
-    var mapZoomWear: Int
-        get() {
-            return prefs.getInt(PREF_WEAR_ZOOM, Const.ZOOM_UNKOWN.toInt())
-        }
-        set(value) {
-            prefs.edit()
-                    .putInt(PREF_WEAR_ZOOM, value)
-                    .apply()
-        }
-
 
     // TODO refactor preferences below
 

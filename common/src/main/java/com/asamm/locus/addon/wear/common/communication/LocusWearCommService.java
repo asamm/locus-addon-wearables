@@ -105,9 +105,9 @@ public class LocusWearCommService implements
      * Sends given [data] to given [path].
      */
     public void sendDataItem(DataPath path, TimeStampStorable data) {
-        Logger.INSTANCE.logD(LocusWearCommService.class.getSimpleName(),
-                "sendDataItem(" + path + ", " + data + "), " +
-                        "connected: " + googleApiClient.isConnected());
+//        Logger.INSTANCE.logD(LocusWearCommService.class.getSimpleName(),
+//                "sendDataItem(" + path + ", " + data + "), " +
+//                        "connected: " + googleApiClient.isConnected());
         if (!googleApiClient.isConnected()) {
             unsentData.offer(new Pair<>(path, data));
             reconnectIfNeeded();

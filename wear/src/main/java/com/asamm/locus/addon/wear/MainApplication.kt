@@ -12,8 +12,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx
-import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService
 import com.asamm.locus.addon.wear.common.communication.Const
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.*
@@ -25,8 +23,11 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.communication.WearCommService
 import com.asamm.locus.addon.wear.features.error.AppFailActivity
 import com.asamm.locus.addon.wear.features.error.AppFailType
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.LocusWearActivity.WearActivityState
+import com.asamm.locus.addon.wear.utils.AppMemoryCache
 import com.google.android.gms.wearable.DataItem
 import locus.api.utils.Logger
 import locus.api.utils.Logger.registerLogger
@@ -36,12 +37,13 @@ import java.util.concurrent.TimeUnit
 class MainApplication : Application(), ActivityLifecycleCallbacks {
 
     @Volatile
-    var cache: ApplicationMemoryCache? = null
+    lateinit var cache: AppMemoryCache
         private set
+
 
     override fun onCreate() {
         super.onCreate()
-        app = applicationContext
+        app = this
 
         // set logger
         registerLogger(object : Logger.ILogger {
@@ -71,7 +73,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         // notify about create of app
         registerActivityLifecycleCallbacks(this)
         setTerminationTimer()
-        cache = ApplicationMemoryCache(this)
+        cache = AppMemoryCache(this)
 
         // initialize communication service
         WearCommService.initialize(this)
@@ -86,7 +88,6 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
 
         // destroy instance of communication class
         WatchDog.getInstance().setAppFailCallback(null)
-        app = null
     }
 
     //*************************************************
@@ -148,9 +149,6 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     override fun onActivityResumed(activity: Activity) {
-        // refresh reference
-        app = applicationContext
-
         // handle special "Fail" activity
         if (activity is AppFailActivity) {
             cancelTerminationTimer()
@@ -252,7 +250,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
     }
 
     private fun handleData(p: DataPath?, value: TimeStampStorable?) {
-        Logger.logD(TAG, "handleData($p, $value)")
+        //Logger.logD(TAG, "handleData($p, $value)")
         val currentActivity = _currentActivity
         if (currentActivity != null && p != null) {
             when (p) {
@@ -262,23 +260,22 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
                         return
                     }
                 }
-                DataPath.PUT_MAP -> cache!!.lastMapData = value as MapContainer?
-                DataPath.PUT_TRACK_REC -> cache!!.setLastTrackRecState(
-                        this,
+                DataPath.PUT_MAP -> cache.lastMapData = value as MapContainer?
+                DataPath.PUT_TRACK_REC -> cache.setLastTrackRecState(
                         value as TrackRecordingValue?
                 )
                 DataPath.PUT_TRACK_REC_PROFILE_INFO -> {
                     run {
                         val profiles = value as TrackProfileInfoValue.ValueList?
                         if (profiles != null) {
-                            cache!!.profiles = profiles.storables
+                            cache.profiles = profiles.storables
                         }
                     }
                     run {
                         if (value is TrackProfileIconValue) {
                             AppStorageManager.persistIcon(this, value as TrackProfileIconValue?)
                         }
-                        val profiles = cache!!.profiles
+                        val profiles = cache.profiles
                         for (info in profiles) {
                             if (!AppStorageManager.isIconCached(this, info.id)) {
                                 WearCommService.instance.sendDataItem(
@@ -294,7 +291,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
                     if (value is TrackProfileIconValue) {
                         AppStorageManager.persistIcon(this, value as TrackProfileIconValue?)
                     }
-                    val profiles = cache!!.profiles
+                    val profiles = cache.profiles
                     for (info in profiles) {
                         if (!AppStorageManager.isIconCached(this, info.id)) {
                             WearCommService.instance.sendDataItem(
@@ -447,10 +444,9 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         // timer for termination
         private var timerTerminate: Timer? = null
 
-        @JvmField
         @Volatile
         @SuppressLint("StaticFieldLeak")
-        var app: Context? = null
+        lateinit var app: MainApplication
 
         /**
          * This method contains some logic to handle requests that are not dependent
