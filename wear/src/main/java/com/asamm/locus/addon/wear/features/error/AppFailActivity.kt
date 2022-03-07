@@ -62,7 +62,8 @@ class AppFailActivity : FragmentActivity() {
     /**
      * Handle click on the 'install' button.
      */
-    fun onInstallClicked() {
+    @Suppress("UNUSED_PARAMETER")
+    fun onInstallClicked(view: View) {
         val phoneDeviceType = PhoneDeviceType.getPhoneDeviceType(applicationContext)
         // Only target AW2.0+ since AW 1.x user should not see this at all and should reinstall manually
         if (Build.VERSION.SDK_INT >= 25
@@ -95,6 +96,7 @@ class AppFailActivity : FragmentActivity() {
             RemoteIntent.startRemoteActivity(
                     applicationContext, intentAndroid,
                     object : ResultReceiver(Handler()) {
+
                         override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
                             installReqResultReceived = true
                             val isResultOk: Boolean
@@ -137,7 +139,8 @@ class AppFailActivity : FragmentActivity() {
         }
     }
 
-    fun onRetryClicked() {
+    @Suppress("UNUSED_PARAMETER")
+    fun onRetryClicked(view: View) {
         startActivity(Intent(this, PreferencesEx.lastActivity))
         finish()
     }

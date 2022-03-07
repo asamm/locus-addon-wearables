@@ -354,14 +354,16 @@ open class MapActivity : LocusWearActivity() {
                 if (!testMapContainerAndImageNotNull(tmp)) {
                     mainApplication.sendDataWithWatchDogConditionable(
                             initialCommandType,
-                            initialCommandResponseType, WATCHDOG_TIMEOUT_MS.toLong(),
+                            initialCommandResponseType,
+                            WATCHDOG_TIMEOUT_MS.toLong(),
                             WatchDogPredicate { cont: MapContainer? ->
                                 testMapContainerAndImageNotNull(cont)
                             })
                 } else if (tmp!!.loadedMap?.numOfNotYetLoadedTiles ?: 0 > 0 && !mapState.isFlinging) {
                     mainApplication.sendDataWithWatchDog(
                             initialCommandType,
-                            initialCommandResponseType, WATCHDOG_TIMEOUT_MS.toLong()
+                            initialCommandResponseType,
+                            WATCHDOG_TIMEOUT_MS.toLong()
                     )
                 } else {
                     mainApplication.addWatchDog(
@@ -403,6 +405,10 @@ open class MapActivity : LocusWearActivity() {
         zoomLock = true
         if (changeZoom(mapZoom, zoomDiff)) {
             val scale = if (zoomDiff < 0) 0.5f else 2f
+            // cancel currently running animation. This will break a flow little, so it may be improved
+            // by keeping unfinished values and using them here again
+            mapView.animate()
+                    .cancel()
             isScaled = true
             mapView.animate()
                     .scaleX(scale)
@@ -444,8 +450,9 @@ open class MapActivity : LocusWearActivity() {
         handlerBtnHide.postDelayed({ doHideButtons() }, BUTTON_HIDE_TIME_MS.toLong())
     }
 
-    private fun animateButton(v: View?, visible: Boolean) {
-        v!!.animate().cancel()
+    private fun animateButton(v: View, visible: Boolean) {
+        v.animate()
+                .cancel()
         v.animate()
                 .scaleX(if (visible) defaultFabScale else 0.0f)
                 .scaleY(if (visible) defaultFabScale else 0.0f)

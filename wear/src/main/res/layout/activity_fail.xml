@@ -11,19 +11,19 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/inner_frame_layout_padding"
+        android:fadeScrollbars="false"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/x_fail_activity_guide_nav_button_top"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_view_screen_header"
-        android:fadeScrollbars="false">
+        app:layout_constraintTop_toBottomOf="@+id/text_view_screen_header">
 
         <TextView
             android:id="@+id/fail_msg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="2dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:padding="2dp"
             android:textSize="@dimen/text_size_base" />
     </ScrollView>
 
@@ -45,10 +45,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/outer_frame_layout_padding"
-        android:visibility="gone"
+        android:onClick="onInstallClicked"
         android:text="@string/install"
         android:textSize="@dimen/text_size_base"
-        android:onClick="onInstallClicked"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -128,6 +128,7 @@ open class MainSettingsActivity : LocusWearActivity() {
             requestCode: Int,
             permissions: Array<String>,
             grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         RecordingSensorManager.handlePermissionResult(this, requestCode, permissions, grantResults)
         enableHrm()
         updateSwitchState()
