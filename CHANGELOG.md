@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - map refresh rate on Android 11+ reduced to 2.5s
 - improved map zoom behavior
 - big refactoring & conversion to the Kotlin
+- change in map centering icons
+- updated translations
 
 ### Fixed
 - issues in reconnecting

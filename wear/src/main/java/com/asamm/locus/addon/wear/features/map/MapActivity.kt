@@ -19,7 +19,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R
 import com.asamm.locus.addon.wear.WatchDogPredicate
@@ -142,7 +141,7 @@ open class MapActivity : LocusWearActivity() {
     private val flingUpdatable = WearMapActionMoveFling.OffsetUpdatable { x: Int, y: Int, isLast: Boolean ->
         runOnUiThread {
             mapState.addOffset(x, y)
-            onOffsetChanged()
+            refreshCenterRotateButton()
             mapView.translationX = (-mapState.mapOffsetX + lastRenderedOffsetX).toFloat()
             mapView.translationY = (-mapState.mapOffsetY + lastRenderedOffsetY).toFloat()
             if (isLast) {
@@ -229,7 +228,7 @@ open class MapActivity : LocusWearActivity() {
                     distanceY: Float): Boolean {
                 mapState.isPanning = true
                 mapState.addOffset((distanceX + 0.5f).toInt(), (distanceY + 0.5f).toInt())
-                onOffsetChanged()
+                refreshCenterRotateButton()
                 refreshMapOffset(
                         mapState.mapOffsetX,
                         mapState.mapOffsetY,
@@ -301,7 +300,7 @@ open class MapActivity : LocusWearActivity() {
                 PreferencesEx.mapOffsetY
         )
         mapState.lastBearing = PreferencesEx.mapBearing
-        onOffsetChanged()
+        refreshCenterRotateButton()
         super.onStart()
     }
 
@@ -548,7 +547,7 @@ open class MapActivity : LocusWearActivity() {
         }
 
         // perform zoom
-        onOffsetChanged()
+        refreshCenterRotateButton()
         mapZoom = newZoom
         mapZoomRequest = newZoom
         val refreshCmd = initialCommandType
@@ -658,37 +657,29 @@ open class MapActivity : LocusWearActivity() {
         }
 
         // handle change in offset
-        onOffsetChanged()
+        refreshCenterRotateButton()
         panHandler.removeCallbacksAndMessages(null)
         panHandler.post(panRunnable)
     }
 
-    private fun onOffsetChanged() {
-        if (mapState.isMapCentered) {
-            setRotPanBtnToRotation()
-        } else {
-            fabRotPan.clearColorFilter()
-            if (fabRotPan.tag == null
-                    || fabRotPan.tag != R.drawable.ic_my_location) {
-                fabRotPan.tag = R.drawable.ic_my_location
-                fabRotPan.setImageDrawable(
-                        ContextCompat.getDrawable(this, R.drawable.ic_my_location)
-                )
+    private fun refreshCenterRotateButton() {
+        // prepare image
+        val imgToSet = if (mapState.isMapCentered) {
+            if (mapState.isAutoRotateEnabled) {
+                R.drawable.ic_rotate_screen
+            } else {
+                R.drawable.ic_my_location_on
             }
-        }
-    }
-
-    private fun setRotPanBtnToRotation() {
-        fabRotPan.setColorFilter(ContextCompat.getColor(this, R.color.base_primary))
-        val resId = if (mapState.isAutoRotateEnabled) {
-            R.drawable.ic_rotate_screen
         } else {
-            R.drawable.ic_my_location
+            R.drawable.ic_my_location_off
         }
+
+        // set if image is new
+        mapState.lastBearing
         if (fabRotPan.tag == null
-                || fabRotPan.tag != resId) {
-            fabRotPan.tag = resId
-            fabRotPan.setImageDrawable(ContextCompat.getDrawable(this, resId))
+                || fabRotPan.tag != imgToSet) {
+            fabRotPan.tag = imgToSet
+            fabRotPan.setImageResource(imgToSet)
         }
     }
 

@@ -22,12 +22,12 @@ object Modules {
 
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
-private const val PARAM_MINOR_VERSION = "02"
+private const val PARAM_MINOR_VERSION = "03"
 private const val PARAM_PATCH_VERSION = "001"
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.2.0"
+private const val PARAM_VERSION_NAME_READABLE = "1.3.0"
 
 private fun String.removeLeadingZeros(): String {
     return replaceFirst("^0+(?!$)", "")
@@ -61,7 +61,7 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.1.0"
+    const val gradle = "7.1.2"
     // https://developer.android.com/studio/releases/build-tools.html
     const val buildTools = "32.0.0"
 
@@ -85,11 +85,12 @@ object Versions {
  */
 private object VersionsApi {
     // Locus API
-    const val locusApi = "0.9.45"
+    const val locusApi = "0.9.46"
 }
 
 /**
  * Versions for AndroidX dependencies
+ * https://developer.android.com/jetpack/androidx/releases/wear
  */
 private object VersionsAndroidX {
     const val appCompat = "1.4.1"
@@ -101,9 +102,11 @@ private object VersionsAndroidX {
  * Versions for Google based libraries.
  */
 private object VersionsGoogle {
+    // https://developers.google.com/android/guides/setup?device=wear-os#dependencies
     const val psWear = "17.1.0"
     const val material = "1.4.0"
-    const val supportWear = "2.8.1"
+    // https://developer.android.com/wear/releases
+    const val supportWear = "2.9.0"
 }
 
 //*****************************************************
