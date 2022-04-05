@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Toast message shown after waypoint was added during track recording -->
+    <!-- Ambient mode (UI text) -->
+    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
-    <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
     <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
     <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on is probably not installed on it. -->
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the phone is out of date. -->
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the watch is out of date. -->
-    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
-    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
+    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+    <!-- Description text for HRM/track rec. service in system notification area -->
+    <!-- Install button text -->
+    <!-- Loading (placeholder text) -->
+    <!-- Label "Settings"-->
+    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
     <!-- UI Label current altitude -->
     <!-- UI Label Altitude minimal -->
     <!-- UI Label Altitude maximal -->
@@ -34,22 +39,16 @@
     <!-- UI Label Average moving speed -->
     <!-- UI Label distance -->
     <!-- UI Label track recording time total -->
-    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
-    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
-    <!-- Description text for HRM/track rec. service in system notification area -->
-    <!-- Label "Settings"-->
-    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+    <!-- Error (label/header)-->
+    <!-- Screen header for profile list screen, should be short -->
     <!-- Header for statistics dashboard selection list screen. The header should be short. -->
+    <!-- Screen header for track recording screen, should be reasonably short -->
+    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+    <!-- Update button text -->
+    <!-- name of the version -->
+    <!-- Toast message shown after waypoint was added during track recording -->
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <!-- Option to type in a point name when creating new waypoint -->
     <!-- Option to enter a point name using speech recognition when creating new waypoint -->
     <!-- Title/header for the dialog with options of how to name a new waypoint -->
-    <!-- Loading (placeholder text) -->
-    <!-- Ambient mode (UI text) -->
-    <!-- Install button text -->
-    <!-- Update button text -->
-    <!-- Screen header for track recording screen, should be reasonably short -->
-    <!-- Screen header for profile list screen, should be short -->
-    <!-- Error (label/header)-->
-    <!-- NOT YET VALIDATED -->
 </resources>

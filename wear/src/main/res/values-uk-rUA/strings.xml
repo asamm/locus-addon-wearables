@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Toast message shown after waypoint was added during track recording -->
-    <string name="waypoint_added">Точку додано</string>
+    <!-- Ambient mode (UI text) -->
+    <string name="ambient_mode">Тьмяний режим</string>
+    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
     <string name="err_locus_version_not_supported">Locus Map застарів або відсутній у пристрої. Онови або встанови його.</string>
-    <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
-    <string name="err_periodic_updates_disabled">Не можливо підключитися до Locus. Ввімкни \"З\'єднати з додатками\" в Locus Map &gt; Налаштування &gt; Різне.</string>
     <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
     <string name="err_connection_failed">З\'єднання втрачено. Перевір настройки bluetooth та повтори спробу.</string>
     <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
@@ -16,10 +15,20 @@
     <string name="err_connection_device_app_outdated">Не можливо підключитися - додаток Wear у пристрої застарілий</string>
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the watch is out of date. -->
     <string name="err_connection_watch_app_outdated">Не можливо підключитися - Wear у годиннику застарілий</string>
-    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
-    <string name="toast_err_device_not_supported">Помилка запиту, встанови з пристрою.</string>
-    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-    <string name="continue_installation">Продовжи встановлення на пристрої...</string>
+    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+    <string name="err_hrm_sensor_not_available">HRM не доступно на цьому пристрої</string>
+    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+    <string name="err_no_hrm_permission">Не можливо прочитати датчики тіла без наданого дозволу</string>
+    <!-- Description text for HRM/track rec. service in system notification area -->
+    <string name="hrm_rec_service_desc">Активність HRM при записі маршруту</string>
+    <!-- Install button text -->
+    <string name="install">Встановити</string>
+    <!-- Loading (placeholder text) -->
+    <string name="loading_profiles">Завантаження</string>
+    <!-- Label "Settings"-->
+    <string name="settings">Налаштування</string>
+    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+    <string name="settings_hrm">Контролювати пульс під час запису маршруту?</string>
     <!-- UI Label current altitude -->
     <string name="stat_altitude">Висота</string>
     <!-- UI Label Altitude minimal -->
@@ -68,18 +77,21 @@
     <string name="stat_distance">Відстань</string>
     <!-- UI Label track recording time total -->
     <string name="stat_track_time">Тривалість маршруту</string>
-    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
-    <string name="err_no_hrm_permission">Не можливо прочитати датчики тіла без наданого дозволу</string>
-    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
-    <string name="err_hrm_sensor_not_available">HRM не доступно на цьому пристрої</string>
-    <!-- Description text for HRM/track rec. service in system notification area -->
-    <string name="hrm_rec_service_desc">Активність HRM при записі маршруту</string>
-    <!-- Label "Settings"-->
-    <string name="settings">Налаштування</string>
-    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
-    <string name="settings_hrm">Контролювати пульс під час запису маршруту?</string>
+    <!-- Error (label/header)-->
+    <string name="title_activity_error">Помилка</string>
+    <!-- Screen header for profile list screen, should be short -->
+    <string name="title_activity_profile_list">Профілі</string>
     <!-- Header for statistics dashboard selection list screen. The header should be short. -->
     <string name="title_activity_stats_select_list">Параметри</string>
+    <!-- Screen header for track recording screen, should be reasonably short -->
+    <string name="title_activity_track_record">Запис маршруту</string>
+    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+    <string name="toast_err_device_not_supported">Помилка запиту, встанови з пристрою.</string>
+    <!-- Update button text -->
+    <string name="update">Оновити</string>
+    <!-- name of the version -->
+    <!-- Toast message shown after waypoint was added during track recording -->
+    <string name="waypoint_added">Точку додано</string>
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Залишити як є</string>
     <!-- Option to type in a point name when creating new waypoint -->
@@ -88,19 +100,4 @@
     <string name="wp_name_speech">Промов це</string>
     <!-- Title/header for the dialog with options of how to name a new waypoint -->
     <string name="wp_name_title">Назвати точку?</string>
-    <!-- Loading (placeholder text) -->
-    <string name="loading_profiles">Завантаження</string>
-    <!-- Ambient mode (UI text) -->
-    <string name="ambient_mode">Тьмяний режим</string>
-    <!-- Install button text -->
-    <string name="install">Встановити</string>
-    <!-- Update button text -->
-    <string name="update">Оновити</string>
-    <!-- Screen header for track recording screen, should be reasonably short -->
-    <string name="title_activity_track_record">Запис маршруту</string>
-    <!-- Screen header for profile list screen, should be short -->
-    <string name="title_activity_profile_list">Профілі</string>
-    <!-- Error (label/header)-->
-    <string name="title_activity_error">Помилка</string>
-    <!-- NOT YET VALIDATED -->
 </resources>

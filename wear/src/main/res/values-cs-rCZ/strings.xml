@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Toast message shown after waypoint was added during track recording -->
-    <string name="waypoint_added">Přidán bod na trase</string>
+    <!-- Ambient mode (UI text) -->
+    <string name="ambient_mode">Úsporný režim</string>
+    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
     <!-- Error message stating, that the current version of Locus Map on the phone is too old -->
     <string name="err_locus_version_not_supported">Locus Map v telefonu je zastaralý nebo zcela chybí. Aktualizujte nebo instalujte.</string>
-    <!-- Error msg, after detection that periodic updates are disabled on the phone containing information on how to turn them on. -->
-    <string name="err_periodic_updates_disabled">Nelze se připojit k Locusu. Povolte „Propojit s doplňky“ v nastavení Locusu &gt; Různé.</string>
     <!-- Generic error message shown in various situations when connection to the mobile phone fails. -->
     <string name="err_connection_failed">Spojení se ztratilo. Zkontrolujte prosím nastavení bluetooth a zkuste to znova.</string>
     <!-- Error stating that the phone is currently disconnected and that they need to be paired and connected. -->
@@ -16,10 +15,20 @@
     <string name="err_connection_device_app_outdated">Nelze se připojit - doplněk Wear for Locus v telefonu je zastaralý.</string>
     <!-- Error shown when the phone is connected but Wear for Locus Map add-on on the watch is out of date. -->
     <string name="err_connection_watch_app_outdated">Nelze se připojit – „Wear for Locus“ ve vašich hodinkách je zastaralý.</string>
-    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
-    <string name="toast_err_device_not_supported">Nepovedlo se... zkuste instalovat přímo z telefonu.</string>
-    <!-- Message after successfully opening Google Play on the phone saying that a user should proceed with the installation -->
-    <string name="continue_installation">Pokračujte v instalaci na telefonu...</string>
+    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
+    <string name="err_hrm_sensor_not_available">Toto zařízení nemá monitor tepu</string>
+    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
+    <string name="err_no_hrm_permission">Bohužel nelze načítat údaje ze senzorů bez vašeho svolení.</string>
+    <!-- Description text for HRM/track rec. service in system notification area -->
+    <string name="hrm_rec_service_desc">Sledování tepů aktivní - záznam trasy</string>
+    <!-- Install button text -->
+    <string name="install">Instalovat</string>
+    <!-- Loading (placeholder text) -->
+    <string name="loading_profiles">Načítám…</string>
+    <!-- Label "Settings"-->
+    <string name="settings">Nastavení</string>
+    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
+    <string name="settings_hrm">Sledovat tepy při záznamu trasy?</string>
     <!-- UI Label current altitude -->
     <string name="stat_altitude">Nadm. výška</string>
     <!-- UI Label Altitude minimal -->
@@ -68,18 +77,21 @@
     <string name="stat_distance">Vzdálenost</string>
     <!-- UI Label track recording time total -->
     <string name="stat_track_time">Čas trasy</string>
-    <!-- Error (toast) message when trying to enable HRM without granted user permission to read body sensors -->
-    <string name="err_no_hrm_permission">Bohužel nelze načítat údaje ze senzorů bez vašeho svolení.</string>
-    <!-- Error (toast) message when trying to enable HRM when the watch doesn't seem to physically have HR sensor available -->
-    <string name="err_hrm_sensor_not_available">Toto zařízení nemá monitor tepu</string>
-    <!-- Description text for HRM/track rec. service in system notification area -->
-    <string name="hrm_rec_service_desc">Sledování tepů aktivní - záznam trasy</string>
-    <!-- Label "Settings"-->
-    <string name="settings">Nastavení</string>
-    <!-- Settings option on/off - Monitor heart rate (and send it to LM) when track recording is active -->
-    <string name="settings_hrm">Sledovat tepy při záznamu trasy?</string>
+    <!-- Error (label/header)-->
+    <string name="title_activity_error">Chyba</string>
+    <!-- Screen header for profile list screen, should be short -->
+    <string name="title_activity_profile_list">Profily</string>
     <!-- Header for statistics dashboard selection list screen. The header should be short. -->
     <string name="title_activity_stats_select_list">Možnosti</string>
+    <!-- Screen header for track recording screen, should be reasonably short -->
+    <string name="title_activity_track_record">Záznam trasy</string>
+    <!-- Toast message - request to open Google Play with Locus Map on the phone has failed and informing user they should install manually -->
+    <string name="toast_err_device_not_supported">Nepovedlo se... zkuste instalovat přímo z telefonu.</string>
+    <!-- Update button text -->
+    <string name="update">Aktualizovat</string>
+    <!-- name of the version -->
+    <!-- Toast message shown after waypoint was added during track recording -->
+    <string name="waypoint_added">Přidán bod na trase</string>
     <!-- Option to leave default waypoint name when creating new waypoint -->
     <string name="wp_name_default">Nechat tak</string>
     <!-- Option to type in a point name when creating new waypoint -->
@@ -88,19 +100,4 @@
     <string name="wp_name_speech">Nadiktovat</string>
     <!-- Title/header for the dialog with options of how to name a new waypoint -->
     <string name="wp_name_title">Název bodu?</string>
-    <!-- Loading (placeholder text) -->
-    <string name="loading_profiles">Načítám…</string>
-    <!-- Ambient mode (UI text) -->
-    <string name="ambient_mode">Úsporný režim</string>
-    <!-- Install button text -->
-    <string name="install">Instalovat</string>
-    <!-- Update button text -->
-    <string name="update">Aktualizovat</string>
-    <!-- Screen header for track recording screen, should be reasonably short -->
-    <string name="title_activity_track_record">Záznam trasy</string>
-    <!-- Screen header for profile list screen, should be short -->
-    <string name="title_activity_profile_list">Profily</string>
-    <!-- Error (label/header)-->
-    <string name="title_activity_error">Chyba</string>
-    <!-- NOT YET VALIDATED -->
 </resources>
