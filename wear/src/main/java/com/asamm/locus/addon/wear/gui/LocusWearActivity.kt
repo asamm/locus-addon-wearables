@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import androidx.wear.ambient.AmbientModeSupport
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R

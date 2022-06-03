@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Unreleased]
 
+
+# [Released]
+
+## [1.4.0] - 2022-06-03
+### Fixes
+- many smaller fixes across the app
+
 ## [1.3.0] - 2022-22-22
 ### Changed
 - map refresh rate on Android 11+ reduced to 2.5s
@@ -16,8 +23,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - issues in reconnecting
-
-# [Released]
 
 ## [1.2.0] - 2018-10-12
 ### Added

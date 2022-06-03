@@ -89,7 +89,10 @@ open class MapActivity : LocusWearActivity() {
     @Volatile
     private var lastContainer: MapContainer? = null
 
-    private var detector: GestureDetector? = null
+    /**
+     * Detector for gestures.
+     */
+    private lateinit var detector: GestureDetector
 
     /**
      * simple mutex for temporary locking zooming function while animating
@@ -259,15 +262,40 @@ open class MapActivity : LocusWearActivity() {
         initView()
     }
 
+    override fun onStart() {
+        mapState.isAutoRotateEnabled = PreferencesEx.mapAutoRotateEnabled
+        mapState.setOffset(
+                PreferencesEx.mapOffsetX,
+                PreferencesEx.mapOffsetY
+        )
+        mapState.lastBearing = PreferencesEx.mapBearing
+        refreshCenterRotateButton()
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        doShowButtons()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PreferencesEx.mapZoom = mapZoom
+        PreferencesEx.mapAutoRotateEnabled = mapState.isAutoRotateEnabled
+        PreferencesEx.mapOffsetX = mapState.mapOffsetX
+        PreferencesEx.mapOffsetY = mapState.mapOffsetY
+        PreferencesEx.mapBearing = mapState.lastBearing
+    }
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val w = appCache.screenHeight
         val h = appCache.screenHeight
         val action = ev.action and MotionEvent.ACTION_MASK
         if (action == MotionEvent.ACTION_UP
-                || drawer != null && drawer!!.isOpened) {
+                || drawer?.isOpened == true) {
             // finish possible panning
             if (!scrollLock) {
-                detector!!.onTouchEvent(ev)
+                detector.onTouchEvent(ev)
                 if (!mapState.isFlinging && mapState.isPanning) {
                     // this is the end of simple panning, request new map immediately
                     panHandler.removeCallbacksAndMessages(null)
@@ -285,32 +313,11 @@ open class MapActivity : LocusWearActivity() {
         }
 
         // forward event
-        return if (scrollLock) super.dispatchTouchEvent(ev) else detector!!.onTouchEvent(ev)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        doShowButtons()
-    }
-
-    override fun onStart() {
-        mapState.isAutoRotateEnabled = PreferencesEx.mapAutoRotateEnabled
-        mapState.setOffset(
-                PreferencesEx.mapOffsetX,
-                PreferencesEx.mapOffsetY
-        )
-        mapState.lastBearing = PreferencesEx.mapBearing
-        refreshCenterRotateButton()
-        super.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        PreferencesEx.mapZoom = mapZoom
-        PreferencesEx.mapAutoRotateEnabled = mapState.isAutoRotateEnabled
-        PreferencesEx.mapOffsetX = mapState.mapOffsetX
-        PreferencesEx.mapOffsetY = mapState.mapOffsetY
-        PreferencesEx.mapBearing = mapState.lastBearing
+        return if (scrollLock) {
+            super.dispatchTouchEvent(ev)
+        } else {
+            detector.onTouchEvent(ev)
+        }
     }
 
     /**
