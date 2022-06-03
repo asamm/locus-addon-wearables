@@ -10,6 +10,7 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import com.asamm.locus.addon.wear.common.communication.Const
@@ -43,7 +44,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
 
     override fun onCreate() {
         super.onCreate()
-        app = this
+        initialize()
 
         // set logger
         registerLogger(object : Logger.ILogger {
@@ -80,6 +81,14 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         reconnectIfNeeded()
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        // do initialize once more so all is correctly set
+        initialize()
+
+        // call parent
+        super.onConfigurationChanged(newConfig)
+    }
+
     /**
      * Destroy instance of this application.
      */
@@ -88,6 +97,13 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
 
         // destroy instance of communication class
         WatchDog.getInstance().setAppFailCallback(null)
+    }
+
+    /**
+     * Initialize basics.
+     */
+    private fun initialize() {
+        app = this
     }
 
     //*************************************************

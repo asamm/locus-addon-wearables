@@ -35,12 +35,6 @@ android {
 
     // signing of versions
     signingConfigs {
-        getByName("debug") {
-            storeFile = file(System.getenv("ANDROID_SIGN_DEBUG").split("|")[0])
-            storePassword = System.getenv("ANDROID_SIGN_DEBUG").split("|")[1]
-            keyAlias = System.getenv("ANDROID_SIGN_DEBUG").split("|")[2]
-            keyPassword = System.getenv("ANDROID_SIGN_DEBUG").split("|")[3]
-        }
         create("release") {
             storeFile = file(System.getenv("ANDROID_SIGN_RELEASE").split("|")[0])
             storePassword = System.getenv("ANDROID_SIGN_RELEASE").split("|")[1]

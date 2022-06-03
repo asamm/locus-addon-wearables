@@ -43,8 +43,8 @@ public class TrackRecordingValue extends TimeStampStorable {
     }
 
     public TrackRecordingValue(boolean infoAvailable, boolean isTrackRecording, boolean isPaused,
-                               String trackRecProfileName, TrackStats trackStats, LocusInfo info,
-                               ExtendedTrackInfo ext) {
+            String trackRecProfileName, TrackStats trackStats, LocusInfo info,
+            ExtendedTrackInfo ext) {
         super();
         this.infoAvailable = infoAvailable;
         this.trackRecRecording = isTrackRecording;

@@ -64,7 +64,7 @@ class DeviceCommService private constructor(ctx: Context)
     private var lastReceivedTime = System.currentTimeMillis()
 
     /**
-     * is updated as side effect of some selected wear requests during handling
+     * Is updated as side effect of some selected wear requests during handling.
      */
     @Volatile
     private var lv: LocusVersion? = null
@@ -124,8 +124,10 @@ class DeviceCommService private constructor(ctx: Context)
         if (currentTime - lastUpdateContainerReceived > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
             Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.")
             try {
-                // update mLastUpdate manually and refresh mLastPeriodicUpdateReceivedMilis
-                onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
+                // reload data
+                reloadUpdateContainer()
+
+                // start refresher
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
                 Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
@@ -151,7 +153,7 @@ class DeviceCommService private constructor(ctx: Context)
             DataPath.PUT_TRACK_REC_STATE_CHANGE -> {
                 lv = getActiveVersion(ctx)
                 val v = params as TrackRecordingStateChangeValue
-                handleRecordingStateChanged(ctx, lv, v.recordingState, v.getmProfileName())
+                handleRecordingStateChanged(ctx, lv!!, v.recordingState, v.getmProfileName())
             }
             DataPath.GET_ADD_WAYPOINT -> {
                 handleAddWpt(ctx, null)
@@ -332,7 +334,6 @@ class DeviceCommService private constructor(ctx: Context)
 
     private fun sendLocusMapLogD(tag: String, text: String) {
         // commented out for production release
-
         //        Intent intent = new Intent();
         //        intent.setAction("com.asamm.locus.DATA_TASK");
         //        intent.putExtra("tasks"," {log:{" +
@@ -486,10 +487,9 @@ class DeviceCommService private constructor(ctx: Context)
     //      Value object create methods - reading from Locus API             //
     ///////////////////////////////////////////////////////////////////////////
 
-
     private fun handleRecordingStateChanged(
             ctx: Context,
-            lv: LocusVersion?,
+            lv: LocusVersion,
             newState: TrackRecordingStateEnum?,
             profile: String
     ) {
@@ -510,15 +510,15 @@ class DeviceCommService private constructor(ctx: Context)
         if (newState != null && currentRecState != newState) {
             try {
                 when (newState) {
-                    TrackRecordingStateEnum.PAUSED -> ActionBasics.actionTrackRecordPause(ctx, lv!!)
+                    TrackRecordingStateEnum.PAUSED -> ActionBasics.actionTrackRecordPause(ctx, lv)
                     TrackRecordingStateEnum.RECORDING -> ActionBasics.actionTrackRecordStart(
                             ctx,
-                            lv!!,
+                            lv,
                             profile
                     )
                     TrackRecordingStateEnum.NOT_RECORDING -> ActionBasics.actionTrackRecordStop(
                             ctx,
-                            lv!!,
+                            lv,
                             true
                     )
                 }
@@ -527,7 +527,7 @@ class DeviceCommService private constructor(ctx: Context)
             }
         }
         try {
-            onNewUpdateContainer(ActionBasics.getUpdateContainer(ctx, lv!!))
+            reloadUpdateContainer(ctx)
         } catch (e: RequiredVersionMissingException) {
             Logger.logW(TAG, "getDataUpdateContainer() - RequiredVersionMissingException")
         }
@@ -536,19 +536,18 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     private fun loadTrackRecordingValue(ctx: Context): TrackRecordingValue {
-        val infoAvailable = lastUpdateContainer != null
-        val myLocAvailable = lastUpdateContainer?.locMyLocation != null
-        val myLoc = if (myLocAvailable) lastUpdateContainer!!.locMyLocation else null
-        val trackRec = infoAvailable && lastUpdateContainer!!.isTrackRecRecording
-        val trackRecPause = infoAvailable && lastUpdateContainer!!.isTrackRecPaused
-        val profileName = if (infoAvailable) lastUpdateContainer!!.trackRecProfileName else ""
+        val container = lastUpdateContainer
+        val myLoc = container?.locMyLocation
+        val trackRec = container?.isTrackRecRecording ?: false
+        val trackRecPause = container?.isTrackRecPaused ?: false
+        val profileName = container?.trackRecProfileName ?: ""
         val speed = if (myLoc?.hasSpeed == true) myLoc.speed else 0.0f
         val hrm = if (myLoc?.hasSensorHeartRate == true) myLoc.sensorHeartRate else 0.toShort()
         val altitude = if (myLoc?.hasAltitude == true) myLoc.altitude else 0.0
-        val stats = if (infoAvailable) lastUpdateContainer!!.trackRecStats else null
-        val locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
+        val stats = container?.trackRecStats
+        val locusInfo = lv?.let { ActionBasics.getLocusInfo(ctx, it) }
         return TrackRecordingValue(
-                infoAvailable, trackRec, trackRecPause,
+                container != null, trackRec, trackRecPause,
                 profileName, stats, locusInfo, ExtendedTrackInfo(speed, hrm, altitude.toFloat())
         )
     }
@@ -589,26 +588,22 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     /**
-     * Update content with fresh updates.
+     * Reload fresh [UpdateContainer] data.
      */
-    private fun onNewUpdateContainer(update: UpdateContainer?) {
-        Logger.logD(TAG, "onUpdate($update)")
-        if (System.currentTimeMillis() - lastReceivedTime > 15000) {
-            destroyInstance()
-        } else {
-            lastUpdateContainer = update
+    private fun reloadUpdateContainer(ctx: Context = context) {
+        val uc = lv?.let { ActionBasics.getUpdateContainer(ctx, it) }
+        Logger.logD(TAG, "reloadUpdateContainer(), uc: $uc")
+        if (uc != null) {
+            lastUpdateContainer = uc
             lastUpdateContainerReceived = System.currentTimeMillis()
+        } else {
+            lastUpdateContainer = null
         }
     }
 
     /**
-     * Notify about incorrect data.
+     * Refresher that take care about periodic download of new updates.
      */
-    fun onIncorrectData() {
-        Logger.logD(TAG, "onIncorrectData()")
-        lastUpdateContainer = null
-    }
-
     private inner class Refresher : Runnable {
 
         override fun run() {
@@ -621,12 +616,7 @@ class DeviceCommService private constructor(ctx: Context)
                 }
 
                 // request new data
-                val uc = ActionBasics.getUpdateContainer(context, lv!!)
-                if (uc != null) {
-                    onNewUpdateContainer(uc)
-                } else {
-                    onIncorrectData()
-                }
+                reloadUpdateContainer()
             }
             Logger.logD(TAG, "refresher $refresher finished")
         }
