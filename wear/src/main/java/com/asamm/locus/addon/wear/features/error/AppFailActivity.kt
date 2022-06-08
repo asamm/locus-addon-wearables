@@ -97,7 +97,7 @@ class AppFailActivity : FragmentActivity() {
                     applicationContext, intentAndroid,
                     object : ResultReceiver(Handler()) {
 
-                        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+                        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                             installReqResultReceived = true
                             val isResultOk: Boolean
                             when (resultCode) {

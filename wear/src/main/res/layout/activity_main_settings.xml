@@ -32,7 +32,7 @@
                 android:layout_marginBottom="@dimen/component_padding"
                 tools:text="Version: 1.2.0" />
 
-            <androidx.appcompat.widget.SwitchCompat
+            <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/switch_hrm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Released]
 
+## [1.4.1] - 2022-06-08
+### Fixes
+- crash when entering settings
+- rare crash when requesting install of companion app over watches
+
 ## [1.4.0] - 2022-06-03
 ### Fixes
 - many smaller fixes across the app

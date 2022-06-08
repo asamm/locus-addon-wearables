@@ -23,11 +23,11 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "04"
-private const val PARAM_PATCH_VERSION = "001"
+private const val PARAM_PATCH_VERSION = "002"
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.4.0"
+private const val PARAM_VERSION_NAME_READABLE = "1.4.1"
 
 private fun String.removeLeadingZeros(): String {
     return replaceFirst("^0+(?!$)", "")
