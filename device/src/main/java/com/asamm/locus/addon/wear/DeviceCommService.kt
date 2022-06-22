@@ -240,14 +240,17 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     private fun handleGetTrackRecProfileIcon(ctx: Context, params: TimeStampStorable?) {
+        // load icons lazily
         if (profileIcons == null) {
             val profilesIcons = loadTrackRecordProfiles(ctx)
             profileIcons = profilesIcons.second
         }
-        val pigc = params as ProfileIconGetCommand
-        if (profileIcons != null) {
+
+        // send loaded icons
+        if (profileIcons != null
+                && params is ProfileIconGetCommand) {
             for (icon in profileIcons!!.storables) {
-                if (pigc.profileId == icon.id) {
+                if (params.profileId == icon.id) {
                     sendDataItem(DataPath.PUT_PROFILE_ICON, icon)
                     break
                 }
