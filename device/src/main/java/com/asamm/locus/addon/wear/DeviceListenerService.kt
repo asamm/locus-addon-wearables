@@ -54,8 +54,8 @@ class DeviceListenerService : WearableListenerService() {
      */
     private val dataEventConsumer: DataConsumer<DataEvent> = object : DataConsumer<DataEvent> {
 
-        override fun consume(c: Context?, rh: DeviceCommService, newData: DataEvent) {
-            rh.onDataChanged(c!!, newData)
+        override fun consume(c: Context, rh: DeviceCommService, newData: DataEvent) {
+            rh.onDataChanged(c, newData)
         }
 
         override fun getPath(newData: DataEvent): DataPath? {
@@ -68,12 +68,12 @@ class DeviceListenerService : WearableListenerService() {
      */
     private val dataChannelConsumer: DataConsumer<DataPayloadStorable> = object : DataConsumer<DataPayloadStorable> {
 
-        override fun consume(c: Context?, rh: DeviceCommService, newData: DataPayloadStorable) {
+        override fun consume(c: Context, rh: DeviceCommService, newData: DataPayloadStorable) {
             if (newData.dataPath == DataPath.GET_HAND_SHAKE) {
                 Logger.logD(TAG, "handling hand shake")
             }
             if (newData.isValid) {
-                rh.onDataReceived(c!!, newData.dataPath, newData.getData(newData.dataPath.containerClass))
+                rh.onDataReceived(c, newData.dataPath, newData.getData(newData.dataPath.containerClass))
             }
         }
 
@@ -136,7 +136,7 @@ class DeviceListenerService : WearableListenerService() {
          * @param rh      comm service which will handle data consumption
          * @param newData data to consume
          */
-        fun consume(c: Context?, rh: DeviceCommService, newData: T)
+        fun consume(c: Context, rh: DeviceCommService, newData: T)
 
         /**
          * Checks incoming data for termination request.

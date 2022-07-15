@@ -209,8 +209,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
             currentActivity = null
         }
         // no activity is visible any more or currently shown activity does not consume periodic data
-        if (_currentActivity == null
-                || !_currentActivity!!.isUsePeriodicData) {
+        if (_currentActivity?.isUsePeriodicData != true) {
             WearCommService.instance.sendDataItem(
                     DataPath.GET_PERIODIC_DATA,
                     PeriodicCommand.createStopPeriodicUpdatesCommand()

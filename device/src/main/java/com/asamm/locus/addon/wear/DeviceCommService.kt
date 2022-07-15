@@ -23,7 +23,6 @@ import locus.api.android.ActionMapTools.getMapPreview
 import locus.api.android.MapPreviewParams
 import locus.api.android.MapPreviewResult
 import locus.api.android.features.periodicUpdates.UpdateContainer
-import locus.api.android.objects.LocusInfo
 import locus.api.android.objects.LocusVersion
 import locus.api.android.objects.TrackRecordProfileSimple
 import locus.api.android.objects.VersionCode
@@ -130,7 +129,7 @@ class DeviceCommService private constructor(ctx: Context)
                 // start refresher
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
-                Logger.logW(TAG, "ActionTools.getDataUpdateContainer RequiredVersionMissingException")
+                Logger.logW(TAG, "onDataReceived, RequiredVersionMissingException")
             }
         }
 
@@ -212,21 +211,19 @@ class DeviceCommService private constructor(ctx: Context)
      * Load basic data from current Locus application.
      */
     private fun loadHandShake(ctx: Context): HandShakeValue {
-        // check if object exists
-        var locusInfo: LocusInfo? = null
-        if (lv != null) {
-            // handle info
-            locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
+        lv?.let {
+            val locusInfo = ActionBasics.getLocusInfo(ctx, it)
+            Logger.logD(TAG, "loadHandShake($ctx), lv: $it, $locusInfo")
+            return HandShakeValue(
+                    it.versionCode,
+                    // - 1 to compensate for device suffix
+                    BuildConfig.VERSION_CODE - 1,
+                    locusInfo != null && locusInfo.isRunning
+            )
+        } ?: run {
+            Logger.logD(TAG, "loadHandShake($ctx), lv not known")
+            return HandShakeValue()
         }
-
-        // prepare container with data and send it
-        Logger.logD(TAG, "loadHandShake($ctx), lv: $lv, $locusInfo")
-        return if (lv == null) HandShakeValue() else HandShakeValue(
-                lv!!.versionCode,
-                // - 1 to compensate for device suffix
-                BuildConfig.VERSION_CODE - 1,
-                locusInfo != null && locusInfo.isRunning
-        )
     }
 
     // TRACK RECORDING
@@ -247,9 +244,9 @@ class DeviceCommService private constructor(ctx: Context)
         }
 
         // send loaded icons
-        if (profileIcons != null
-                && params is ProfileIconGetCommand) {
-            for (icon in profileIcons!!.storables) {
+        val icons = profileIcons ?: return
+        if (params is ProfileIconGetCommand) {
+            for (icon in icons.storables) {
                 if (params.profileId == icon.id) {
                     sendDataItem(DataPath.PUT_PROFILE_ICON, icon)
                     break
@@ -290,7 +287,7 @@ class DeviceCommService private constructor(ctx: Context)
                 profiles.add(TrackProfileInfoValue(profile))
                 icons.add(TrackProfileIconValue(profile))
             }
-            result.first!!.storables = profiles
+            result.first.storables = profiles
             result.second.storables = icons
         }
         return result
@@ -394,7 +391,7 @@ class DeviceCommService private constructor(ctx: Context)
 
     private fun sendMapPeriodic(ctx: Context, extra: MapPeriodicParams) {
         // just ignore the request, application should recognize that Locus is missing.
-        if (lv == null || lv!!.versionCode < VersionCode.UPDATE_14.vcFree) {
+        if (lv == null || (lv?.versionCode ?: 0) < VersionCode.UPDATE_14.vcFree) {
             return
         }
         var zoom = extra.zoom
@@ -497,12 +494,12 @@ class DeviceCommService private constructor(ctx: Context)
             profile: String
     ) {
         var currentRecState: TrackRecordingStateEnum? = null
-        if (lastUpdateContainer != null) {
+        lastUpdateContainer?.let { uc ->
             currentRecState = when {
-                lastUpdateContainer!!.isTrackRecPaused -> {
+                uc.isTrackRecPaused -> {
                     TrackRecordingStateEnum.PAUSED
                 }
-                lastUpdateContainer!!.isTrackRecRecording -> {
+                uc.isTrackRecRecording -> {
                     TrackRecordingStateEnum.RECORDING
                 }
                 else -> {

@@ -16,11 +16,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
 import androidx.wear.ambient.AmbientModeSupport
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
@@ -29,6 +27,7 @@ import com.asamm.locus.addon.wear.communication.WearCommService
 import com.asamm.locus.addon.wear.features.error.AppFailType
 import com.asamm.locus.addon.wear.features.map.MapActivity
 import com.asamm.locus.addon.wear.features.settings.MainSettingsActivity
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
@@ -169,11 +168,12 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         if (tvNavDrawerTime != null) {
             navDrawerTimeHandler = Handler()
             navDrawerTimeHandler!!.post(object : Runnable {
+
                 @SuppressLint("SetTextI18n")
                 override fun run() {
                     val time = dateFormat!!.format(Date())
                     tvNavDrawerTime!!.text = (if (time.length <= 4) " " else "") + time
-                    navDrawerTimeHandler!!.postDelayed(this, 999)
+                    navDrawerTimeHandler?.postDelayed(this, 999)
                 }
             })
         }
@@ -185,9 +185,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         }
         if (drawer != null && PreferencesEx.isFirstAppStart()) {
             PreferencesEx.persistFirstAppStart()
-            Handler().postDelayed({ drawer!!.controller.openDrawer() }, 800)
+            Handler().postDelayed({ drawer?.controller?.openDrawer() }, 800)
         } else if (drawer != null && !ignoreNextDrawerPeek) {
-            Handler().postDelayed({ drawer!!.controller.peekDrawer() }, 800)
+            Handler().postDelayed({ drawer?.controller?.peekDrawer() }, 800)
         }
         ignoreNextDrawerPeek = false
     }
@@ -196,9 +196,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         state = WearActivityState.ON_PAUSE
         super.onPause()
 
-        if (navDrawerTimeHandler != null) {
-            navDrawerTimeHandler!!.removeCallbacksAndMessages(null)
-        }
+        navDrawerTimeHandler?.removeCallbacksAndMessages(null)
     }
 
     override fun onStop() {
@@ -242,11 +240,11 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         }
     }
 
-    private fun getHwKeyDelegate(): LocusWearActivityHwKeyDelegate? {
+    private fun getHwKeyDelegate(): LocusWearActivityHwKeyDelegate {
         if (hwKeyDelegate == null) {
             hwKeyDelegate = LocusWearActivityHwKeyDelegate.Factory.createDelegate(this)
         }
-        return hwKeyDelegate
+        return hwKeyDelegate!!
     }
 
     /**
@@ -363,16 +361,14 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                     )
                 }
             }
-            connectionFailedTimer!!.start()
+            connectionFailedTimer?.start()
         }
     }
 
     protected fun cancelConnectionFailedTimer() {
         synchronized(connectionTimerLock) {
-            if (connectionFailedTimer != null) {
-                connectionFailedTimer!!.cancel()
-                connectionFailedTimer = null // and canceling and nulling timer
-            }
+            connectionFailedTimer?.cancel()
+            connectionFailedTimer = null // and canceling and nulling timer
         }
     }
 
@@ -400,15 +396,13 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     }
 
     protected fun startLocusWearActivity(activityToStart: Class<out LocusWearActivity>?) {
-        if (drawer != null) {
-            drawer!!.controller.closeDrawer()
-        }
-        if (activityToStart == null || this.javaClass.simpleName == activityToStart.simpleName) {
+        drawer?.controller?.closeDrawer()
+        if (activityToStart == null
+                || this.javaClass.simpleName == activityToStart.simpleName) {
             return
         }
-        val i = Intent(this, activityToStart)
         PreferencesEx.lastActivity = activityToStart
-        startActivity(i)
+        startActivity(Intent(this, activityToStart))
     }
 
     /**
@@ -440,10 +434,10 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      * Activity that wishes to use custom HW button handling should register appropriate listeners
      * in the provided [delegate]
      */
-    open fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {}
+    open fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate) {}
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        return if (getHwKeyDelegate()!!.onKeyDown(
+        return if (getHwKeyDelegate().onKeyDown(
                         keyCode,
                         event
                 )
@@ -451,7 +445,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     }
 
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
-        return if (getHwKeyDelegate()!!.onKeyLongPress(
+        return if (getHwKeyDelegate().onKeyLongPress(
                         keyCode,
                         event
                 )
@@ -459,14 +453,14 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        return if (getHwKeyDelegate()!!.onKeyUp(keyCode, event)) true else super.onKeyUp(
+        return if (getHwKeyDelegate().onKeyUp(keyCode, event)) true else super.onKeyUp(
                 keyCode,
                 event
         )
     }
 
-    protected fun enableCustomRotatryActions() {
-        getHwKeyDelegate()!!.registerDefaultRotaryMotionListener(window.decorView.rootView)
+    protected fun enableCustomRotaryActions() {
+        getHwKeyDelegate().registerDefaultRotaryMotionListener(window.decorView.rootView)
     }
 
     protected fun setIgnoreNextDrawerPeek() {
@@ -476,7 +470,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     // AMBIENT SUPPORT
 
     override fun getAmbientCallback(): AmbientModeSupport.AmbientCallback {
-        return object: AmbientModeSupport.AmbientCallback() {
+        return object : AmbientModeSupport.AmbientCallback() {
 
             override fun onEnterAmbient(ambientDetails: Bundle?) {
                 this@LocusWearActivity.onEnterAmbient(ambientDetails)

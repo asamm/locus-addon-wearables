@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Released]
 
+## [1.4.3] - 2022-07-15
+### Fixes
+- minor fixes
+
 ## [1.4.2] - 2022-06-22
 ### Fixes
 - crash when loading of recording profile icons

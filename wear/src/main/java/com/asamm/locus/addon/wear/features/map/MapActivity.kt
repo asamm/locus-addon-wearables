@@ -339,10 +339,10 @@ open class MapActivity : LocusWearActivity() {
         refreshPanelNavigation(null)
     }
 
-    private fun setNavImageForAction(view: ImageView?, pointRteActionId: Int) {
+    private fun setNavImageForAction(view: ImageView, pointRteActionId: Int) {
         val action = PointRteAction.getActionById(pointRteActionId)
         val img = NavHelper.getNavPointImageRes(action)
-        if (Integer.valueOf(img) != view!!.tag) {
+        if (Integer.valueOf(img) != view.tag) {
             view.setImageResource(img)
             view.tag = img
         }
@@ -366,7 +366,7 @@ open class MapActivity : LocusWearActivity() {
                             WatchDogPredicate { cont: MapContainer? ->
                                 testMapContainerAndImageNotNull(cont)
                             })
-                } else if (tmp!!.loadedMap?.numOfNotYetLoadedTiles ?: 0 > 0 && !mapState.isFlinging) {
+                } else if ((tmp?.loadedMap?.numOfNotYetLoadedTiles ?: 0) > 0 && !mapState.isFlinging) {
                     mainApplication.sendDataWithWatchDog(
                             initialCommandType,
                             initialCommandResponseType,
@@ -392,12 +392,18 @@ open class MapActivity : LocusWearActivity() {
         }
         val zoomDiff: Int
         val viewId = v.id
-        zoomDiff = if (viewId == R.id.btn_zoom_in || viewId == R.id.area_zoom_in) {
-            1
-        } else if (viewId == R.id.btn_zoom_out || viewId == R.id.area_zoom_out) {
-            -1
-        } else {
-            return
+        zoomDiff = when (viewId) {
+            R.id.btn_zoom_in,
+            R.id.area_zoom_in -> {
+                1
+            }
+            R.id.btn_zoom_out,
+            R.id.area_zoom_out -> {
+                -1
+            }
+            else -> {
+                return
+            }
         }
         doZoomClicked(zoomDiff)
     }
@@ -690,10 +696,10 @@ open class MapActivity : LocusWearActivity() {
         }
     }
 
-    override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate?) {
-        enableCustomRotatryActions()
+    override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate) {
+        enableCustomRotaryActions()
         val upPrimaryBtn =
-                delegate!!.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP)
+                delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP)
         val downBtn =
                 delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN)
         val secondaryActionBtn =

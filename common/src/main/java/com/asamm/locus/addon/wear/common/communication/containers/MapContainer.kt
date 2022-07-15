@@ -74,9 +74,9 @@ class MapContainer() : TimeStampStorable() {
             val guide = lastUpdate.contentGuideTrack
             if (guide != null) {
                 status = status or (if (guide.isValid) NAV_VALID_FLAG else 0).toByte()
-                navPointAction1Id = guide.navPointFirst!!.action.id
-                navPointAction2Id = guide.navPointSecond!!.action.id
-                navPoint1Dist = guide.navPointFirst!!.distance
+                navPointAction1Id = guide.navPointFirst?.action?.id ?: navPointAction1Id
+                navPointAction2Id = guide.navPointSecond?.action?.id ?: navPointAction2Id
+                navPoint1Dist = guide.navPointFirst?.distance ?: navPoint1Dist
                 if (li != null) {
                     unitsFormatLength = li.unitsFormatLength
                 }

@@ -77,11 +77,11 @@ class WearCommService private constructor(val app: MainApplication)
     }
 
     override fun onCapabilityChanged(capabilityInfo: CapabilityInfo) {
-        val capableNodes = if (capabilityInfo != null) capabilityInfo.nodes else null
+        val capableNodes = capabilityInfo.nodes
         isAppInstalledOnDevice =
-                if (capableNodes != null && capableNodes.size > 0) TriStateLogicEnum.TRUE else TriStateLogicEnum.FALSE
+                if (capableNodes.size > 0) TriStateLogicEnum.TRUE else TriStateLogicEnum.FALSE
         if (isAppInstalledOnDevice == TriStateLogicEnum.TRUE) {
-            val nodeIt: Iterator<Node> = capableNodes!!.iterator()
+            val nodeIt: Iterator<Node> = capableNodes.iterator()
             mNodeId = null
             while (mNodeId == null && nodeIt.hasNext()) {
                 val n = nodeIt.next()
