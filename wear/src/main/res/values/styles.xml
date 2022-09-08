@@ -38,6 +38,7 @@
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
     </style>
+
     <style name="TvCaption.Light">
         <item name="android:textColor">@color/base_primary</item>
     </style>
@@ -51,9 +52,11 @@
         <item name="android:textStyle">bold</item>
         <item name="android:maxLines">1</item>
     </style>
+
     <style name="statText.Big">
         <item name="android:textSize">@dimen/text_size_enormous</item>
     </style>
+
     <style name="statDescription">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -126,6 +129,7 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:padding">9dp</item>
     </style>
+
     <style name="ButtonTrackRecord.Ext">
         <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
         <item name="android:scaleType">fitStart</item>
@@ -138,7 +142,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:drawablePadding">@dimen/component_padding_half</item>
         <item name="android:layout_margin">0dp</item>
-        <item name="android:background">@color/base_light_primary</item>
         <item name="android:textColor">@color/base_dark_primary</item>
         <item name="android:drawableTint">@color/base_primary</item>
         <item name="android:textAllCaps">true</item>

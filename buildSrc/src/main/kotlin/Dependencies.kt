@@ -23,11 +23,11 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "04"
-private const val PARAM_PATCH_VERSION = "003"
+private const val PARAM_PATCH_VERSION = "004"
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.4.3"
+private const val PARAM_VERSION_NAME_READABLE = "1.4.4"
 
 private fun String.removeLeadingZeros(): String {
     return replaceFirst("^0+(?!$)", "")
@@ -61,13 +61,13 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.1.2"
+    const val gradle = "7.2.2"
     // https://developer.android.com/studio/releases/build-tools.html
     const val buildTools = "32.0.0"
 
     // ANDROID
 
-    const val compileSdk = 31
+    const val compileSdk = 33
     const val minSdk = 21
     const val targetSdk = 31
 
@@ -77,7 +77,7 @@ object Versions {
     // KOTLIN
 
     // https://github.com/JetBrains/kotlin
-    const val kotlin = "1.6.10"
+    const val kotlin = "1.7.0"
 }
 
 /**
@@ -93,8 +93,8 @@ private object VersionsApi {
  * https://developer.android.com/jetpack/androidx/releases/wear
  */
 private object VersionsAndroidX {
-    const val appCompat = "1.4.1"
-    const val constraintLayout = "2.1.3"
+    const val appCompat = "1.4.2"
+    const val constraintLayout = "2.1.4"
     const val wear = "1.2.0"
 }
 
@@ -104,7 +104,8 @@ private object VersionsAndroidX {
 private object VersionsGoogle {
     // https://developers.google.com/android/guides/setup?device=wear-os#dependencies
     const val psWear = "17.1.0"
-    const val material = "1.4.0"
+    // https://github.com/material-components/material-components-android/releases
+    const val material = "1.6.1"
     // https://developer.android.com/wear/releases
     const val supportWear = "2.9.0"
 }

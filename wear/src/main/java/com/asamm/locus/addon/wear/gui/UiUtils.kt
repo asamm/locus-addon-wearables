@@ -1,7 +1,9 @@
 package com.asamm.locus.addon.wear.gui
 
 import android.content.Context
+import android.text.InputType
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 
@@ -27,7 +29,7 @@ object UiUtils {
 
             // hide keyboard
             val manager =
-                view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             manager.hideSoftInputFromWindow(view.windowToken, 0)
             view.clearFocus()
         }, 200)
@@ -37,16 +39,9 @@ object UiUtils {
      * Move a cursor or select a content of edit text and display keyboard.
      */
     fun showKeyboard(et: EditText) {
-        et.requestFocus()
-
-        // show keyboard with small delay
-        et.postDelayed(Runnable {
-
-            // get context
-            val ctx = et.context ?: return@Runnable
-            // http://stackoverflow.com/a/6475381/836138
-            val imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (et.requestFocus()) {
+            val imm = et.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(et, InputMethodManager.SHOW_FORCED)
-        }, 200)
+        }
     }
 }

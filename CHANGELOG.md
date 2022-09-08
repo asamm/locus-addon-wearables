@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Released]
 
+## [1.4.4] - 2022-09-08
+### Changed
+- improved text input system, [link](https://help.locusmap.eu/topic/29453-locus-map-wear-typing-waypoint-name-should-be-single-line)
+
 ## [1.4.3] - 2022-07-15
 ### Fixes
 - minor fixes

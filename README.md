@@ -41,6 +41,6 @@ After importing the project, go to run configurations - launch options - launch 
 ## Release
 Both modules needs to be generated and published separately.
 
-`device` module generate over `:device:assembleRelease` gradle task. Generated APK may be found in the 'device\build\intermediates\apk\release\' directory.
+`device` module generate over `:device:assembleRelease` gradle task. Generated APK may be found in the 'device\build\outputs\apk\release\' directory.
 
-`wear` module generate over `:wear:assembleRelease` gradle task. Generated APK may be found in the 'wear\build\intermediates\apk\release\' directory.
+`wear` module generate over `:wear:assembleRelease` gradle task. Generated APK may be found in the 'wear\build\outputs\apk\release\' directory.

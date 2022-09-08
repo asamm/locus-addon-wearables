@@ -28,7 +28,7 @@
                 android:paddingLeft="@dimen/component_padding"
                 android:paddingRight="@dimen/component_padding"
                 android:text="@string/wp_name_title"
-                android:textColor="@color/base_primary"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />
 
@@ -50,13 +50,20 @@
                 android:drawableStart="@drawable/ic_microphone"
                 android:text="@string/wp_name_speech" />
 
-            <!-- this 1 by 1 px sized EditText is required in the visible part of the activity layout
-                 for soft keyboard to show and work correctly -->
-            <EditText
-                android:id="@+id/edit_text"
-                android:layout_width="1px"
-                android:layout_height="1px"
-                android:visibility="invisible" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="1px"
+                    android:layout_height="1px"
+                    android:imeOptions="actionDone"
+                    android:inputType="text" />
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </androidx.wear.widget.BoxInsetLayout>
