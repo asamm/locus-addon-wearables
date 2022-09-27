@@ -1,13 +1,13 @@
 package com.asamm.locus.addon.wear;
 
-import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
 import com.asamm.locus.addon.wear.communication.AppFailCallback;
 import com.asamm.locus.addon.wear.communication.WearCommService;
-import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 import com.asamm.locus.addon.wear.features.error.AppFailType;
+import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,13 +37,13 @@ public class WatchDog {
     private static final int WD_START_DELAY_MS = 1000;
     public static final int WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS = 4500;
 
-    private volatile HashMap<String, List<Watched>> mWatchedActivities;
-    private volatile Timer mWdTimer;
-    private volatile long mLastKeepAliveSentTimestamp = -1;
-    private Class<? extends LocusWearActivity> mCurrentActivityClass;
-    private AppFailCallback mAppFailCallback;
+    private volatile HashMap<String, List<Watched>> watchedActivities;
+    private volatile Timer wdTimer;
+    private volatile long lastKeepAliveSentTimestamp = -1;
+    private Class<? extends LocusWearActivity> currentActivityClass;
+    private AppFailCallback appFailCallback;
 
-    static WatchDog getInstance() {
+    public static WatchDog getInstance() {
         if (INSTANCE == null) {
             synchronized (WATCHDOG_LOCK) {
                 if (INSTANCE == null) {
@@ -55,20 +55,23 @@ public class WatchDog {
     }
 
     private WatchDog() {
-        mAppFailCallback = null;
-        mWatchedActivities = new HashMap<>(5);
+        appFailCallback = null;
+        watchedActivities = new HashMap<>(5);
         startWdTimer();
         Logger.INSTANCE.logW(TAG, "Starting watchdog");
     }
 
+    /**
+     * Destroy watchDog and all referenced services.
+     */
     void destroy() {
         Logger.INSTANCE.logW(TAG, "Terminating watchdog");
-        mAppFailCallback = null;
+        appFailCallback = null;
         synchronized (WATCHDOG_LOCK) {
-            if (mWdTimer != null) {
-                if (mWdTimer != null) {
-                    mWdTimer.cancel();
-                    mWdTimer = null;
+            if (wdTimer != null) {
+                if (wdTimer != null) {
+                    wdTimer.cancel();
+                    wdTimer = null;
                 }
             }
             WearCommService.destroyInstance();
@@ -77,8 +80,10 @@ public class WatchDog {
     }
 
     private void startWdTimer() {
-        if (mWdTimer != null)
+        if (wdTimer != null) {
             return;
+        }
+
         TimerTask t = new TimerTask() {
             @Override
             public void run() {
@@ -86,9 +91,9 @@ public class WatchDog {
             }
         };
         synchronized (WATCHDOG_LOCK) {
-            mWdTimer = new Timer();
-            mLastKeepAliveSentTimestamp = System.currentTimeMillis() + WD_START_DELAY_MS;
-            mWdTimer.schedule(t, WD_START_DELAY_MS, WD_PERIOD_MS);
+            wdTimer = new Timer();
+            lastKeepAliveSentTimestamp = System.currentTimeMillis() + WD_START_DELAY_MS;
+            wdTimer.schedule(t, WD_START_DELAY_MS, WD_PERIOD_MS);
         }
     }
 
@@ -96,11 +101,11 @@ public class WatchDog {
      * Should be called after new activity is opened
      */
     void onCurrentActivityChanged(Class<? extends LocusWearActivity> previous,
-                                  Class<? extends LocusWearActivity> current) {
+            Class<? extends LocusWearActivity> current) {
         // transition in current activity - clear previous and new activity watchdogs
         if (previous != null) {
             synchronized (WATCHDOG_LOCK) {
-                List<Watched> watched = mWatchedActivities.get(previous.getSimpleName());
+                List<Watched> watched = watchedActivities.get(previous.getSimpleName());
                 if (watched != null) {
                     watched.clear();
                 }
@@ -108,34 +113,38 @@ public class WatchDog {
         }
         if (current != null) {
             synchronized (WATCHDOG_LOCK) {
-                List<Watched> watched = mWatchedActivities.get(current.getSimpleName());
+                List<Watched> watched = watchedActivities.get(current.getSimpleName());
                 if (watched != null) {
                     watched.clear();
                 }
             }
-            mCurrentActivityClass = current;
+            currentActivityClass = current;
         }
     }
 
     public void setAppFailCallback(AppFailCallback mAppFailCallback) {
-        this.mAppFailCallback = mAppFailCallback;
+        this.appFailCallback = mAppFailCallback;
     }
 
     /**
      * Handles tick of WD timer
      */
     private void doTimerTick() {
-        // seems both trackrec service and main application were killed. Destroy watchdog immediately
+        // seems both trackRec service and main application were killed. Destroy watchdog immediately
+        Logger.INSTANCE.logD(TAG, "doTimerTick(), " +
+                "app: " + MainApplication.app + ", " +
+                "trackRec: " + TrackRecordingService.isRunning());
         if (MainApplication.app == null && !TrackRecordingService.isRunning()) {
             Logger.INSTANCE.logW(TAG, "Application termination detected");
             destroy();
             return;
         }
+
         // handle keep alive transmission first
         long now = System.currentTimeMillis();
-        if (now - mLastKeepAliveSentTimestamp >= WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS) {
-            WearCommService.getInstance().sendCommand(DataPath.GET_KEEP_ALIVE);
-            mLastKeepAliveSentTimestamp = now;
+        if (now - lastKeepAliveSentTimestamp >= WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS) {
+            WearCommService.getInstance().sendCommand(DataPath.TD_KEEP_ALIVE);
+            lastKeepAliveSentTimestamp = now;
         }
 
         // now handle communication watch for activities
@@ -144,10 +153,10 @@ public class WatchDog {
         List<DataPayload> reqsToResend = null;
 
         synchronized (WATCHDOG_LOCK) {
-            if (mCurrentActivityClass == null) {
+            if (currentActivityClass == null) {
                 return;
             }
-            List<Watched> watched = mWatchedActivities.get(mCurrentActivityClass.getSimpleName());
+            List<Watched> watched = watchedActivities.get(currentActivityClass.getSimpleName());
             if (watched == null) {
                 return;
             }
@@ -167,7 +176,7 @@ public class WatchDog {
                 }
             }
         }
-        AppFailCallback onFail = mAppFailCallback;
+        AppFailCallback onFail = appFailCallback;
         if (failed && onFail != null) {
             Logger.INSTANCE.logD(TAG, "Watchdog fail event");
             onFail.onAppFail(AppFailType.CONNECTION_FAILED);
@@ -182,12 +191,12 @@ public class WatchDog {
     /**
      * Should be called immediately after receiving new data from comms
      */
-    void onNewData(DataPath receivedPath, TimeStampStorable value) {
+    public void onNewData(DataPath receivedPath, TimeStampStorable value) {
         synchronized (WATCHDOG_LOCK) {
-            if (mCurrentActivityClass == null) {
+            if (currentActivityClass == null) {
                 return;
             }
-            List<Watched> watched = mWatchedActivities.get(mCurrentActivityClass.getSimpleName());
+            List<Watched> watched = watchedActivities.get(currentActivityClass.getSimpleName());
             if (watched == null) {
                 return;
             }
@@ -214,7 +223,7 @@ public class WatchDog {
      * @param timeOutToFail timeout in ms after which application fails if expected response is not received
      */
     public void startWatching(Class<? extends LocusWearActivity> clazz,
-                              DataPayload<? extends TimeStampStorable> request, DataPath expected, long timeOutToFail) {
+            DataPayload<? extends TimeStampStorable> request, DataPath expected, long timeOutToFail) {
         startWatchingWithCondition(clazz, request, expected, timeOutToFail, null);
     }
 
@@ -230,15 +239,15 @@ public class WatchDog {
      * @param responsePredicate additional condition on expected data to be accepted
      */
     public void startWatchingWithCondition(Class<? extends LocusWearActivity> clazz,
-                                           DataPayload<? extends TimeStampStorable> request, DataPath expected,
-                                           long timeOutToFail, WatchDogPredicate responsePredicate) {
+            DataPayload<? extends TimeStampStorable> request, DataPath expected,
+            long timeOutToFail, WatchDogPredicate responsePredicate) {
         final Watched newWatched = new Watched(clazz, request, expected, timeOutToFail, responsePredicate);
         final String className = clazz.getSimpleName();
         synchronized (WATCHDOG_LOCK) {
-            List<Watched> list = mWatchedActivities.get(className);
+            List<Watched> list = watchedActivities.get(className);
             if (list == null) {
                 list = new LinkedList<>();
-                mWatchedActivities.put(className, list);
+                watchedActivities.put(className, list);
             }
             Iterator<Watched> it = list.iterator();
             // check if list already contains similar watchable
@@ -275,8 +284,8 @@ public class WatchDog {
         private WatchDogPredicate<TimeStampStorable> mResponsePredicate;
 
         private Watched(Class<? extends LocusWearActivity> clazz,
-                        DataPayload<? extends TimeStampStorable> request, DataPath expectedResponse,
-                        long timeoutToFail, WatchDogPredicate<TimeStampStorable> responsePredicate) {
+                DataPayload<? extends TimeStampStorable> request, DataPath expectedResponse,
+                long timeoutToFail, WatchDogPredicate<TimeStampStorable> responsePredicate) {
             this.mActivity = clazz;
             this.mRequest = request;
             this.mExpected = expectedResponse;

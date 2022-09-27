@@ -10,6 +10,7 @@ import locus.api.utils.Logger
 import locus.api.utils.Logger.registerLogger
 
 class MainApplication : Application() {
+
     override fun onCreate() {
         super.onCreate()
 

@@ -13,14 +13,10 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import com.asamm.locus.addon.wear.common.communication.Const
 import com.asamm.locus.addon.wear.common.communication.DataPath
-import com.asamm.locus.addon.wear.common.communication.containers.*
+import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
+import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
 import com.asamm.locus.addon.wear.common.communication.containers.commands.PeriodicCommand
-import com.asamm.locus.addon.wear.common.communication.containers.commands.ProfileIconGetCommand
-import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue
-import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue
-import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue
 import com.asamm.locus.addon.wear.communication.WearCommService
 import com.asamm.locus.addon.wear.features.error.AppFailActivity
 import com.asamm.locus.addon.wear.features.error.AppFailType
@@ -29,18 +25,19 @@ import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.LocusWearActivity.WearActivityState
 import com.asamm.locus.addon.wear.utils.AppMemoryCache
-import com.google.android.gms.wearable.DataItem
 import locus.api.utils.Logger
 import locus.api.utils.Logger.registerLogger
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+/**
+ * Core application instance for the Wear module.
+ */
 class MainApplication : Application(), ActivityLifecycleCallbacks {
 
     @Volatile
     lateinit var cache: AppMemoryCache
         private set
-
 
     override fun onCreate() {
         super.onCreate()
@@ -93,10 +90,10 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
      * Destroy instance of this application.
      */
     fun onDestroy() {
-        Logger.logD(TAG, "destroyInstance()")
+        Logger.logD(TAG, "onDestroy()")
 
         // destroy instance of communication class
-        WatchDog.getInstance().setAppFailCallback(null)
+        WatchDog.getInstance().destroy()
     }
 
     /**
@@ -139,15 +136,14 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
             }
             val previous = _currentActivity
             _currentActivity = activity
-            val wd = WatchDog.getInstance()
-            wd?.onCurrentActivityChanged(
+            WatchDog.getInstance()?.onCurrentActivityChanged(
                     previous?.javaClass,
                     if (_currentActivity == null) null else _currentActivity!!.javaClass
             )
         }
 
     override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
-        Logger.logD(TAG, "onActivityCreated($activity, $bundle)")
+        Logger.logD(TAG, "onActivityCreated($activity, $bundle), test: ${activity is LocusWearActivity}")
         if (activity !is LocusWearActivity) {
             return
         }
@@ -189,6 +185,8 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
                 WearActivityState.ON_START,
                 WearActivityState.ON_PAUSE,
                 WearActivityState.ON_STOP -> currentActivity = activity
+                else -> { /* nothing to do */
+                }
             }
         }
 
@@ -211,7 +209,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         // no activity is visible any more or currently shown activity does not consume periodic data
         if (_currentActivity?.isUsePeriodicData != true) {
             WearCommService.instance.sendDataItem(
-                    DataPath.GET_PERIODIC_DATA,
+                    DataPath.TD_GET_PERIODIC_DATA,
                     PeriodicCommand.createStopPeriodicUpdatesCommand()
             )
         }
@@ -236,133 +234,8 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         _currentActivity?.consumeNewData(DataPath.PUT_ON_CONNECTED_EVENT, null)
     }
 
-    fun onConnectionSuspended() {
-        reconnectIfNeeded()
-    }
-
     private fun reconnectIfNeeded() {
         WearCommService.instance.reconnectIfNeeded()
-    }
-
-    //*************************************************
-    // CONSUME DATA
-    //*************************************************
-
-    fun handleDataEvent(dataItem: DataItem) {
-        val p = DataPath.valueOf(dataItem)
-        if (p != null) {
-            val value = WearCommService.instance.createStorableForPath<TimeStampStorable>(p, dataItem)
-            handleData(p, value)
-        } else {
-            Logger.logW(TAG, "unknown DataItem path " + dataItem.uri.path)
-        }
-    }
-
-    fun handleDataChannelEvent(data: DataPayloadStorable) {
-        if (data.dataPath != null) {
-            handleData(data.dataPath, data.getData(data.dataPath.containerClass))
-        }
-    }
-
-    private fun handleData(p: DataPath?, value: TimeStampStorable?) {
-        //Logger.logD(TAG, "handleData($p, $value)")
-        val currentActivity = _currentActivity
-        if (currentActivity != null && p != null) {
-            when (p) {
-                DataPath.PUT_HAND_SHAKE -> {
-                    val handShakeValue = value as HandShakeValue?
-                    if (!validateHandShakeOrFail(handShakeValue)) {
-                        return
-                    }
-                }
-                DataPath.PUT_MAP -> cache.lastMapData = value as MapContainer?
-                DataPath.PUT_TRACK_REC -> cache.setLastTrackRecState(
-                        value as TrackRecordingValue?
-                )
-                DataPath.PUT_TRACK_REC_PROFILE_INFO -> {
-                    run {
-                        val profiles = value as TrackProfileInfoValue.ValueList?
-                        if (profiles != null) {
-                            cache.profiles = profiles.storables
-                        }
-                    }
-                    run {
-                        if (value is TrackProfileIconValue) {
-                            AppStorageManager.persistIcon(this, value as TrackProfileIconValue?)
-                        }
-                        val profiles = cache.profiles
-                        for (info in profiles) {
-                            if (!AppStorageManager.isIconCached(this, info.id)) {
-                                WearCommService.instance.sendDataItem(
-                                        DataPath.GET_PROFILE_ICON,
-                                        ProfileIconGetCommand(info.id)
-                                )
-                                break
-                            }
-                        }
-                    }
-                }
-                DataPath.PUT_PROFILE_ICON -> {
-                    if (value is TrackProfileIconValue) {
-                        AppStorageManager.persistIcon(this, value as TrackProfileIconValue?)
-                    }
-                    val profiles = cache.profiles
-                    for (info in profiles) {
-                        if (!AppStorageManager.isIconCached(this, info.id)) {
-                            WearCommService.instance.sendDataItem(
-                                    DataPath.GET_PROFILE_ICON,
-                                    ProfileIconGetCommand(info.id)
-                            )
-                            break
-                        }
-                    }
-                }
-                else -> {}
-            }
-            val wd = WatchDog.getInstance()
-            wd?.onNewData(p, value)
-            currentActivity.consumeNewData(p, value)
-        }
-        // special activity/context free requests handling
-        if (p != null) {
-            handleActivityFreeCommRequests(this, p, value)
-        }
-    }
-
-    /**
-     * Validate received handshake value.
-     */
-    private fun validateHandShakeOrFail(handShakeValue: HandShakeValue?): Boolean {
-        // check handshake value itself
-        if (handShakeValue == null) {
-            Logger.logD(
-                    TAG, "validateHandShakeOrFail($handShakeValue), " +
-                    "handshake empty, requesting new one"
-            )
-            WearCommService.instance.sendCommand(DataPath.GET_HAND_SHAKE)
-            return false
-        }
-
-        // validate handshake content
-        if (handShakeValue.isEmpty
-                || handShakeValue.locusVersion < Const.LOCUS_MIN_VERSION_CODE) {
-            Logger.logD(
-                    TAG, "validateHandShakeOrFail($handShakeValue), " +
-                    "empty: ${handShakeValue.isEmpty}, " +
-                    "locusVersion: ${handShakeValue.locusVersion}"
-            )
-            doApplicationFail(AppFailType.UNSUPPORTED_LOCUS_VERSION)
-            return false
-        }
-
-        // TODO cejnar check required version codes before release
-        val requiredAddonVersionLowerBound = 1010060 //BuildConfig.VERSION_CODE
-        if (handShakeValue.addOnVersion < requiredAddonVersionLowerBound) {
-            doApplicationFail(AppFailType.CONNECTION_ERROR_DEVICE_APP_OUTDATED)
-        } else if (handShakeValue.addOnVersion > BuildConfig.VERSION_CODE) {
-            doApplicationFail(AppFailType.CONNECTION_ERROR_WATCH_APP_OUTDATED)
-        }
-        return true
     }
 
     //*************************************************
@@ -419,6 +292,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
     private fun setTerminationTimer() {
         // start timer
         val terminateTask: TimerTask = object : TimerTask() {
+
             override fun run() {
                 onDestroy()
             }
@@ -472,7 +346,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
          */
         @JvmStatic
         fun handleActivityFreeCommRequests(ctx: Context, p: DataPath, value: TimeStampStorable?) {
-            if (p === DataPath.DEVICE_KEEP_ALIVE) {
+            if (p === DataPath.TW_KEEP_ALIVE) {
                 WearCommService.instance.pushLastTransmitTimeFor(p)
             } else if (p === DataPath.STOP_WATCH_TRACK_REC_SERVICE) {
                 val intent = Intent(ctx, TrackRecordingService::class.java)

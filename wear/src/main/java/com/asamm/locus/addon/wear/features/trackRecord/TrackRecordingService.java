@@ -30,7 +30,7 @@ import com.asamm.locus.addon.wear.utils.WakeLockManager;
 
 import locus.api.utils.Logger;
 
-import static com.asamm.locus.addon.wear.common.communication.DataPath.DEVICE_KEEP_ALIVE;
+import static com.asamm.locus.addon.wear.common.communication.DataPath.TW_KEEP_ALIVE;
 import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
 
 /**
@@ -143,7 +143,7 @@ public class TrackRecordingService extends Service {
             return;
         }
         // fake push first device keep alive, real ones start to come in a while
-        WearCommService.getInstance().pushLastTransmitTimeFor(DEVICE_KEEP_ALIVE);
+        WearCommService.getInstance().pushLastTransmitTimeFor(TW_KEEP_ALIVE);
 
         if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
             Logger.INSTANCE.logW(TAG, "checkAndRequestBodySensorPermission() failed during service start.");
@@ -162,7 +162,7 @@ public class TrackRecordingService extends Service {
                             return;
 
                         final long currentTime = System.currentTimeMillis();
-                        if (currentTime - WearCommService.getInstance().getLastTransmitTimeFor(DEVICE_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
+                        if (currentTime - WearCommService.getInstance().getLastTransmitTimeFor(TW_KEEP_ALIVE) >= DEVICE_KEEP_ALIVE_TIMEOUT_MS) {
                             Logger.INSTANCE.logW(TAG, "DEVICE_KEEP_ALIVE has not come in time, terminating HRM service.");
                             stopForegroundService();
                             return;

@@ -13,7 +13,12 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateChangeValue
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue
 import com.google.android.gms.wearable.DataItem
-import java.util.*
+
+private enum class Target {
+    DEVICE,
+    WEAR,
+    UNDEFINED,
+}
 
 /**
  * Specifies available Paths for data communications using DataAPI.
@@ -21,64 +26,97 @@ import java.util.*
  * Also includes other properties
  * - mark as urgent message
  * - support for Asset based communication instead of DataItem for bigger payloads
+ *
+ * Items are separated by the target to the
+ * - DEVICE > path has prefix "/locus/toDevice" and is registered only on the device module. Such items
+ *     has prefix "TD_".
+ * - WEAR > path has prefix "/locus/toWear" and is registered only on the wear module. Such items
+ *     has prefix "TW_".
+ * - UNDEFINED > path has prefix "/locus/wear" and is registered in both modules. This is only system,
+ *     where both modules received events. This is not recommended to use if not intended.
  */
 enum class DataPath(
         container: Class<out TimeStampStorable>,
-        val isUrgent: Boolean,
+        val isUrgent: Boolean = true,
+        private val target: Target = Target.UNDEFINED,
         val id: Byte) {
 
-    GET_HAND_SHAKE(
-            EmptyCommand::class.java,
-            1.toByte()),
+    /**
+     * Initial request To Device to "Get hand shake" object.
+     */
+    TD_GET_HAND_SHAKE(
+            container = EmptyCommand::class.java,
+            target = Target.DEVICE,
+            id = 1.toByte()
+    ),
 
-    PUT_HAND_SHAKE(
-            HandShakeValue::class.java,
-            2.toByte()),
+    /**
+     * Response to "Get hand shake" To Wear with [HandShakeValue] object.
+     */
+    TW_PUT_HAND_SHAKE(
+            container = HandShakeValue::class.java,
+            target = Target.WEAR,
+            id = 2.toByte()
+    ),
 
     GET_TRACK_REC_PROFILES(
             EmptyCommand::class.java,
-            3.toByte()),
+            3.toByte()
+    ),
 
     PUT_TRACK_REC_PROFILE_INFO(
             TrackProfileInfoValue.ValueList::class.java,
-            4.toByte()),
+            4.toByte()
+    ),
 
     PUT_TRACK_REC(
             TrackRecordingValue::class.java,
-            5.toByte()),
+            5.toByte()
+    ),
 
     PUT_TRACK_REC_STATE_CHANGE(
             TrackRecordingStateChangeValue::class.java,
-            6.toByte()),
+            6.toByte()
+    ),
 
     GET_PROFILE_ICON(
             ProfileIconGetCommand::class.java,
-            7.toByte()),
+            7.toByte()
+    ),
 
     PUT_PROFILE_ICON(
             TrackProfileIconValue::class.java,
-            8.toByte()),
+            8.toByte()
+    ),
 
     // can be removed in future versions
     GET_ADD_WAYPOINT(
             EmptyCommand::class.java,
-            9.toByte()),
+            9.toByte()
+    ),
 
     PUT_ADD_WAYPOINT(
             EmptyCommand::class.java,
-            10.toByte()),
+            10.toByte()
+    ),
 
-    GET_PERIODIC_DATA(
-            PeriodicCommand::class.java,
-            11.toByte()),
+    /**
+     * Request for a new periodic updates container.
+     */
+    TD_GET_PERIODIC_DATA(
+            container = PeriodicCommand::class.java,
+            target = Target.DEVICE,
+            id = 11.toByte()
+    ),
 
-    GET_KEEP_ALIVE(
-            EmptyCommand::class.java,
-            12.toByte()),
-
-    PUT_MAP(
-            MapContainer::class.java,
-            13.toByte()),
+    /**
+     * Container with the map & necessary map content send from running app to The Watches.
+     */
+    TW_PUT_MAP(
+            container = MapContainer::class.java,
+            target = Target.WEAR,
+            id = 13.toByte()
+    ),
 
     /**
      * Fake communication data path, used for signalling activity about ON_CONNECTED event inside
@@ -86,15 +124,18 @@ enum class DataPath(
      */
     PUT_ON_CONNECTED_EVENT(
             EmptyCommand::class.java,
-            14.toByte()),
+            14.toByte()
+    ),
 
     POST_ADD_WAYPOINT(
             CommandStringExtra::class.java,
-            15.toByte()),
+            15.toByte()
+    ),
 
     PUT_HEART_RATE(
             CommandFloatExtra::class.java,
-            16.toByte()),
+            16.toByte()
+    ),
 
     /**
      * Sent if track recording end detected but device is receiving sensor data
@@ -102,22 +143,49 @@ enum class DataPath(
      */
     STOP_WATCH_TRACK_REC_SERVICE(
             EmptyCommand::class.java,
-            17.toByte()),
+            17.toByte()
+    ),
 
     /**
-     * Special keep alive data packet sent to notify the watch running foreground track rec service
-     * that the phone app is still alive and connected .
+     * Special keep alive data packet sent to notify The Device that the watch app is still alive and connected.
      */
-    DEVICE_KEEP_ALIVE(
-            EmptyCommand::class.java,
-            18.toByte());
+    TD_KEEP_ALIVE(
+            container = EmptyCommand::class.java,
+            target = Target.DEVICE,
+            id = 12.toByte()
+    ),
 
-    val key = name.toLowerCase(Locale.ROOT)
-    val path = "/locus/wear/$key"
+    /**
+     * Special keep alive data packet sent to notify The Watch, that the phone app is still alive and connected.
+     */
+    TW_KEEP_ALIVE(
+            container = EmptyCommand::class.java,
+            target = Target.WEAR,
+            id = 18.toByte()
+    );
+
+    /**
+     * Get unique "path" identifier of target listener.
+     */
+    val path = when (target) {
+        Target.DEVICE -> "/locus/toDevice/${name.lowercase()}"
+        Target.WEAR -> "/locus/toWear/${name.lowercase()}"
+        Target.UNDEFINED -> "/locus/wear/${name.lowercase()}"
+    }
+
     val containerClass: Class<out TimeStampStorable> = container
 
     constructor(container: Class<out TimeStampStorable>, id: Byte)
-            : this(container, URGENT_DEFAULT, id)
+            : this(container, true, Target.UNDEFINED, id)
+
+    override fun toString(): String {
+        return "DataPath [$name, " +
+                "container: ${containerClass.simpleName}, " +
+                "target: $target, " +
+                "urgent: $isUrgent, " +
+                "id: $id, " +
+                "path: $path]"
+    }
 
     companion object {
 
@@ -125,33 +193,18 @@ enum class DataPath(
 
         const val DEFAULT_ASSET_KEY = ":"
 
-        /**
-         * default urgent setting if not explicitly specified
-         */
-        private const val URGENT_DEFAULT = true
-
         fun valueOf(item: DataItem): DataPath? {
             return fromPath(item.uri.path)
         }
 
         @JvmStatic
         fun fromPath(path: String?): DataPath? {
-            for (p in values) {
-                if (p.path == path) {
-                    return p
-                }
-            }
-            return null
+            return values.find { it.path == path }
         }
 
         @JvmStatic
         fun valueOf(id: Byte): DataPath? {
-            for (p in values) {
-                if (p.id == id) {
-                    return p
-                }
-            }
-            return null
+            return values.find { it.id == id }
         }
     }
 }

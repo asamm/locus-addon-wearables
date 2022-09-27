@@ -181,7 +181,7 @@ open class MapActivity : LocusWearActivity() {
 
             // generate payload container
             return DataPayload(
-                    DataPath.GET_PERIODIC_DATA,
+                    DataPath.TD_GET_PERIODIC_DATA,
                     PeriodicCommand(
                             PeriodicCommand.IDX_PERIODIC_MAP,
                             MAP_REFRESH_PERIOD_MS, params
@@ -190,7 +190,7 @@ open class MapActivity : LocusWearActivity() {
         }
 
     override val initialCommandResponseType: DataPath
-        get() = DataPath.PUT_MAP
+        get() = DataPath.TW_PUT_MAP
 
     override val supportAmbientMode: Boolean
         get() = true
@@ -351,7 +351,8 @@ open class MapActivity : LocusWearActivity() {
     override fun consumeNewData(path: DataPath, data: TimeStampStorable?) {
         super.consumeNewData(path, data)
         when (path) {
-            DataPath.PUT_MAP -> {
+            DataPath.TW_PUT_MAP -> {
+                Logger.logD(TAG, "consumeNewData($path, $data)")
                 val tmp = data as MapContainer?
                 if (tmp != null) {
                     lastContainer = tmp
@@ -381,7 +382,7 @@ open class MapActivity : LocusWearActivity() {
                 }
             }
             else -> {
-                Logger.logD(TAG, "consumeNewData($path, $data), data not handled")
+                /* not needed */
             }
         }
     }

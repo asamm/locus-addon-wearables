@@ -124,7 +124,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     protected DataPayload getInitialCommandType() {
         PeriodicCommand cmd = new PeriodicCommand(PeriodicCommand.IDX_PERIODIC_TRACK_RECORDING,
                 REFRESH_PERIOD_MS);
-        return new DataPayload(DataPath.GET_PERIODIC_DATA, cmd);
+        return new DataPayload(DataPath.TD_GET_PERIODIC_DATA, cmd);
     }
 
     @Override

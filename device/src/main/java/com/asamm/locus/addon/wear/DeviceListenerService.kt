@@ -21,8 +21,9 @@ import java.util.concurrent.TimeUnit
 class DeviceListenerService : WearableListenerService() {
 
     override fun onDataChanged(dataEventBuffer: DataEventBuffer) {
-        Logger.logD(TAG, "onDataChanged($dataEventBuffer)")
+//        Logger.logD(TAG, "onDataChanged($dataEventBuffer)")
         for (event in dataEventBuffer) {
+//            Logger.logD(TAG, "  event.type: ${event.type}")
             @Suppress("ControlFlowWithEmptyBody")
             if (event.type == DataEvent.TYPE_CHANGED) {
                 handleDataChange(dataEventConsumer, event)
@@ -33,21 +34,31 @@ class DeviceListenerService : WearableListenerService() {
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-        Logger.logD(TAG, "onMessageReceived($messageEvent), " +
-                "node: ${messageEvent.sourceNodeId}, " +
-                "path: ${DataPath.fromPath(messageEvent.path)}")
+//        Logger.logD(
+//                TAG, "onMessageReceived($messageEvent), " +
+//                "node: ${messageEvent.sourceNodeId}, " +
+//                "path: ${DataPath.fromPath(messageEvent.path)}"
+//        )
         DeviceCommService.getInstance(this).nodeId = messageEvent.sourceNodeId
         val p = DataPath.fromPath(messageEvent.path)
                 ?: return
         try {
-            handleDataChange(dataChannelConsumer, DataPayloadStorable(p,
+            handleDataChange(
+                    dataMessageConsumer, DataPayloadStorable(
+                    p,
                     p.containerClass
                             .getConstructor(ByteArray::class.java)
-                            .newInstance(messageEvent.data)))
+                            .newInstance(messageEvent.data)
+            )
+            )
         } catch (e: Exception) {
             Logger.logE(TAG, "onMessageReceived($messageEvent)", e)
         }
     }
+
+    //*************************************************
+    // CONSUME DATA
+    //*************************************************
 
     /**
      * DataEvent consumer
@@ -66,19 +77,19 @@ class DeviceListenerService : WearableListenerService() {
     /**
      * DataEvent consumer
      */
-    private val dataChannelConsumer: DataConsumer<DataPayloadStorable> = object : DataConsumer<DataPayloadStorable> {
+    private val dataMessageConsumer: DataConsumer<DataPayloadStorable> = object : DataConsumer<DataPayloadStorable> {
+
+        override fun getPath(newData: DataPayloadStorable): DataPath? {
+            return newData.dataPath
+        }
 
         override fun consume(c: Context, rh: DeviceCommService, newData: DataPayloadStorable) {
-            if (newData.dataPath == DataPath.GET_HAND_SHAKE) {
+            if (newData.dataPath == DataPath.TD_GET_HAND_SHAKE) {
                 Logger.logD(TAG, "handling hand shake")
             }
             if (newData.isValid) {
                 rh.onDataReceived(c, newData.dataPath, newData.getData(newData.dataPath.containerClass))
             }
-        }
-
-        override fun getPath(newData: DataPayloadStorable): DataPath? {
-            return newData.dataPath
         }
     }
 
@@ -87,13 +98,17 @@ class DeviceListenerService : WearableListenerService() {
      */
     private fun <T> handleDataChange(dataConsumer: DataConsumer<T>, newData: T) {
         // check valid path. Unknown path = ignore received data
+//        Logger.logD(
+//                TAG, "handleDataChange($dataConsumer, $newData), " +
+//                "path: ${dataConsumer.getPath(newData)}"
+//        )
         val p = dataConsumer.getPath(newData)
                 ?: return
         when (p) {
-            DataPath.GET_KEEP_ALIVE,
-            DataPath.GET_HAND_SHAKE,
+            DataPath.TD_KEEP_ALIVE,
+            DataPath.TD_GET_HAND_SHAKE,
             DataPath.GET_TRACK_REC_PROFILES,
-            DataPath.GET_PERIODIC_DATA,
+            DataPath.TD_GET_PERIODIC_DATA,
             DataPath.GET_PROFILE_ICON,
             DataPath.PUT_HEART_RATE -> {
                 cancelTerminationTimer()
@@ -130,6 +145,11 @@ class DeviceListenerService : WearableListenerService() {
     private interface DataConsumer<T> {
 
         /**
+         * Get [DataPath] from incoming data.
+         */
+        fun getPath(newData: T): DataPath?
+
+        /**
          * Processes new incoming data
          *
          * @param c       context
@@ -137,13 +157,6 @@ class DeviceListenerService : WearableListenerService() {
          * @param newData data to consume
          */
         fun consume(c: Context, rh: DeviceCommService, newData: T)
-
-        /**
-         * Checks incoming data for termination request.
-         *
-         * @param newData data to consume
-         */
-        fun getPath(newData: T): DataPath?
     }
 
     companion object {

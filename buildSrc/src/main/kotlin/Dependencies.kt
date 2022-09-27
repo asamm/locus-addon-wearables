@@ -22,16 +22,12 @@ object Modules {
 
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
-private const val PARAM_MINOR_VERSION = "04"
-private const val PARAM_PATCH_VERSION = "004"
+private const val PARAM_MINOR_VERSION = "05"
+private const val PARAM_PATCH_VERSION = "001"
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.4.4"
-
-private fun String.removeLeadingZeros(): String {
-    return replaceFirst("^0+(?!$)", "")
-}
+private const val PARAM_VERSION_NAME_READABLE = "1.5.1"
 
 object ModuleDevice {
 
@@ -61,18 +57,19 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.2.2"
+    const val gradle = "7.3.0"
+
     // https://developer.android.com/studio/releases/build-tools.html
-    const val buildTools = "32.0.0"
+    const val buildTools = "33.0.0"
 
     // ANDROID
 
     const val compileSdk = 33
     const val minSdk = 21
-    const val targetSdk = 31
+    const val targetSdk = 33
 
     const val minSdkWear = 23
-    const val targetSdkWear = 30
+    const val targetSdkWear = 33
 
     // KOTLIN
 
@@ -102,10 +99,13 @@ private object VersionsAndroidX {
  * Versions for Google based libraries.
  */
 private object VersionsGoogle {
+    // https://developer.android.com/training/wearables/data/data-layer
     // https://developers.google.com/android/guides/setup?device=wear-os#dependencies
-    const val psWear = "17.1.0"
+    const val psWear = "18.0.0"
+
     // https://github.com/material-components/material-components-android/releases
     const val material = "1.6.1"
+
     // https://developer.android.com/wear/releases
     const val supportWear = "2.9.0"
 }

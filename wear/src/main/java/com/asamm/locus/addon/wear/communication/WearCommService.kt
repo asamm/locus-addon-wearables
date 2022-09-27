@@ -5,7 +5,7 @@ import android.os.Bundle
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.WatchDog
 import com.asamm.locus.addon.wear.common.communication.DataPath
-import com.asamm.locus.addon.wear.common.communication.LocusWearCommService
+import com.asamm.locus.addon.wear.common.communication.CommonCommService
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
 import com.asamm.locus.addon.wear.common.utils.TriStateLogicEnum
 import com.google.android.gms.common.ConnectionResult
@@ -17,6 +17,7 @@ import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
 import com.google.android.gms.wearable.Wearable
+import locus.api.utils.Logger
 import java.util.concurrent.TimeUnit
 
 /**
@@ -27,10 +28,10 @@ import java.util.concurrent.TimeUnit
  * Asamm Software, s.r.o.
  */
 class WearCommService private constructor(val app: MainApplication)
-    : LocusWearCommService(app), CapabilityListener {
+    : CommonCommService(app), CapabilityListener {
 
     @Volatile
-    private var mLastSentDataTimestamp = 0L
+    private var lastSentDataTimestamp = 0L
 
     /**
      * @return UNKNOWN if not known yet, TRUE if cabable client present, FALSE if capable device not found
@@ -39,7 +40,7 @@ class WearCommService private constructor(val app: MainApplication)
         private set
 
     override fun destroy() {
-        if (googleApiClient != null && googleApiClient.isConnected) {
+        if (googleApiClient.isConnected) {
             Wearable.CapabilityApi.removeCapabilityListener(
                     googleApiClient,
                     this,
@@ -50,6 +51,7 @@ class WearCommService private constructor(val app: MainApplication)
     }
 
     override fun onConnected(bundle: Bundle?) {
+        Logger.logD("WearCommService", "onConnected($bundle)")
         super.onConnected(bundle)
         // Set up listeners for capability changes (install/uninstall of remote app).
         Wearable.CapabilityApi.addCapabilityListener(
@@ -62,13 +64,15 @@ class WearCommService private constructor(val app: MainApplication)
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Logger.logD("WearCommService", "onConnectionFailed($connectionResult)")
         super.onConnectionFailed(connectionResult)
-        app.onConnectionSuspended()
+        reconnectIfNeeded()
     }
 
     override fun onConnectionSuspended(i: Int) {
+        Logger.logD("WearCommService", "onConnectionSuspended($i)")
         super.onConnectionSuspended(i)
-        app.onConnectionSuspended()
+        reconnectIfNeeded()
     }
 
     fun getConnectedNodes(resultCallback: ResultCallback<GetConnectedNodesResult>) {
@@ -82,27 +86,28 @@ class WearCommService private constructor(val app: MainApplication)
                 if (capableNodes.size > 0) TriStateLogicEnum.TRUE else TriStateLogicEnum.FALSE
         if (isAppInstalledOnDevice == TriStateLogicEnum.TRUE) {
             val nodeIt: Iterator<Node> = capableNodes.iterator()
-            mNodeId = null
-            while (mNodeId == null && nodeIt.hasNext()) {
+            nodeId = null
+            while (nodeId == null && nodeIt.hasNext()) {
                 val n = nodeIt.next()
-                mNodeId = if (n.isNearby) n.id else null
+                nodeId = if (n.isNearby) n.id else null
             }
         }
         app.onConnected()
     }
 
     override fun sendDataItemWithoutConnectionCheck(path: DataPath, data: TimeStampStorable) {
-        val currentTime = System.currentTimeMillis()
         // if keep alive command but some other command was sent recently then ignore this
         // command to save bandwidth
-        if (path === DataPath.GET_KEEP_ALIVE &&
-                currentTime - mLastSentDataTimestamp <= WatchDog.WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS) {
+        val currentTime = System.currentTimeMillis()
+        if (path === DataPath.TD_KEEP_ALIVE
+                && currentTime - lastSentDataTimestamp <= WatchDog.WD_PERIOD_TRANSMIT_KEEP_ALIVE_MS) {
             return
         }
+
         // if sending other data than keep alive command, write current time to
         // postpone keep alive thread
-        if (path !== DataPath.GET_KEEP_ALIVE) {
-            mLastSentDataTimestamp = currentTime
+        if (path !== DataPath.TD_KEEP_ALIVE) {
+            lastSentDataTimestamp = currentTime
         }
         super.sendDataItemWithoutConnectionCheck(path, data)
     }

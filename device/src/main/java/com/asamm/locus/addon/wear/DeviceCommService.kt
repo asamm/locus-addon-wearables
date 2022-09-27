@@ -9,7 +9,7 @@ import android.content.Context
 import android.content.Intent
 import com.asamm.locus.addon.wear.common.communication.Const
 import com.asamm.locus.addon.wear.common.communication.DataPath
-import com.asamm.locus.addon.wear.common.communication.LocusWearCommService
+import com.asamm.locus.addon.wear.common.communication.CommonCommService
 import com.asamm.locus.addon.wear.common.communication.containers.HandShakeValue
 import com.asamm.locus.addon.wear.common.communication.containers.MapContainer
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
@@ -40,7 +40,7 @@ import kotlin.math.sin
  * Singleton class for handling communication between this application and the watch.
  */
 class DeviceCommService private constructor(ctx: Context)
-    : LocusWearCommService(ctx) {
+    : CommonCommService(ctx) {
 
     @Volatile
     private var aboutToBeDestroyed = false
@@ -140,7 +140,7 @@ class DeviceCommService private constructor(ctx: Context)
 
         // handle data
         when (path) {
-            DataPath.GET_HAND_SHAKE -> {
+            DataPath.TD_GET_HAND_SHAKE -> {
                 handleGetHandShake(ctx)
             }
             DataPath.GET_TRACK_REC_PROFILES -> {
@@ -160,7 +160,7 @@ class DeviceCommService private constructor(ctx: Context)
             DataPath.POST_ADD_WAYPOINT -> {
                 handleAddWpt(ctx, (params as CommandStringExtra).value)
             }
-            DataPath.GET_PERIODIC_DATA -> {
+            DataPath.TD_GET_PERIODIC_DATA -> {
                 lv = getActiveVersion(ctx)
                 val v = params as PeriodicCommand
                 handlePeriodicWearUpdate(ctx, v)
@@ -178,15 +178,15 @@ class DeviceCommService private constructor(ctx: Context)
                 } else {
                     sendLocusMapLogD(tag, "Ignored, invalid data: " + hrValue.value)
                 }
-                val lastDevKeepAlive = getLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE)
+                val lastDevKeepAlive = getLastTransmitTimeFor(DataPath.TW_KEEP_ALIVE)
                 val lastUpdate = lastUpdateContainer
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording) {
                     Logger.logD(TAG, "sending STOP_WATCH_TRACK_REC_SERVICE")
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE)
-                    pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE)
+                    pushLastTransmitTimeFor(DataPath.TW_KEEP_ALIVE)
                 } else if (currentTime - lastDevKeepAlive > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS) {
-                    sendCommand(DataPath.DEVICE_KEEP_ALIVE)
-                    pushLastTransmitTimeFor(DataPath.DEVICE_KEEP_ALIVE)
+                    sendCommand(DataPath.TW_KEEP_ALIVE)
+                    pushLastTransmitTimeFor(DataPath.TW_KEEP_ALIVE)
                 }
             }
             else -> {
@@ -202,7 +202,7 @@ class DeviceCommService private constructor(ctx: Context)
      */
     private fun handleGetHandShake(ctx: Context) {
         sendDataItem(
-                DataPath.PUT_HAND_SHAKE,
+                DataPath.TW_PUT_HAND_SHAKE,
                 loadHandShake(ctx)
         )
     }
@@ -462,7 +462,7 @@ class DeviceCommService private constructor(ctx: Context)
                 locToSend,
                 rotationDeg.toShort()
         )
-        sendDataItem(DataPath.PUT_MAP, m)
+        sendDataItem(DataPath.TW_PUT_MAP, m)
     }
 
     private fun createMapPreviewParams(

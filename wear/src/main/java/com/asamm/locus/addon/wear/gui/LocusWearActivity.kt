@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
@@ -48,7 +49,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
     private var drawerCloseArrowImg: ImageView? = null
     private var tvNavDrawerTime: TextView? = null
-    private var navDrawerTimeHandler: Handler? = null
+
+    // handler for the nav drawer
+    private val navDrawerTimeHandler = Handler(Looper.getMainLooper())
     private var dateFormat: DateFormat? = null
 
     /**
@@ -63,7 +66,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     private var ticks: Byte = 0
 
     /**
-     * activated on start for monitoring initial handshake exchange
+     * Activated on start for monitoring initial handshake exchange.
      */
     private var connectionFailedTimer: CountDownTimer? = null
     private val connectionTimerLock = Any()
@@ -88,7 +91,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     private var dbgClickCounter: Byte = 0
 
     /**
-     * flag specifying if mobile phone is connected
+     * Flag specifying if mobile phone is connected.
      */
     @Volatile
     private var isNodeConnected = false
@@ -166,14 +169,13 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         super.onResume()
 
         if (tvNavDrawerTime != null) {
-            navDrawerTimeHandler = Handler()
-            navDrawerTimeHandler!!.post(object : Runnable {
+            navDrawerTimeHandler.post(object : Runnable {
 
                 @SuppressLint("SetTextI18n")
                 override fun run() {
                     val time = dateFormat!!.format(Date())
                     tvNavDrawerTime!!.text = (if (time.length <= 4) " " else "") + time
-                    navDrawerTimeHandler?.postDelayed(this, 999)
+                    navDrawerTimeHandler.postDelayed(this, 999)
                 }
             })
         }
@@ -196,7 +198,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         state = WearActivityState.ON_PAUSE
         super.onPause()
 
-        navDrawerTimeHandler?.removeCallbacksAndMessages(null)
+        navDrawerTimeHandler.removeCallbacksAndMessages(null)
     }
 
     override fun onStop() {
@@ -222,18 +224,19 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      * Consumes new data coming from WearListenerService
      */
     open fun consumeNewData(path: DataPath, data: TimeStampStorable?) {
+        Logger.logD(TAG, "consumeNewData($path, $data)")
         if (connectionFailedTimer != null) {
             when {
                 path === DataPath.PUT_ON_CONNECTED_EVENT -> {
-                    onConnectionFailedTimerTick()
+                    verifyConnection()
                 }
-                path === DataPath.PUT_HAND_SHAKE -> {
+                path === DataPath.TW_PUT_HAND_SHAKE -> {
                     isHandShakeReceived = true
-                    onConnectionFailedTimerTick()
+                    verifyConnection()
                 }
                 path === initialCommandResponseType -> {
                     isInitialRequestReceived = true
-                    onConnectionFailedTimerTick()
+                    verifyConnection()
                     onGotInitialCommandResponse()
                 }
             }
@@ -253,22 +256,38 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      *
      * @return true if handshaking finished successfully
      */
-    protected fun onConnectionFailedTimerTick(): Boolean {
+    private fun verifyConnection(): Boolean {
         val wcs = WearCommService.instance
+        Logger.logD(
+                TAG, "verifyConnection(), " +
+                "API connected: ${wcs.isConnected}, " +
+                "isNodeConnected: $isNodeConnected, " +
+                "deviceAppInstalled: ${wcs.isAppInstalledOnDevice}"
+        )
+
+        // check connection to Google API
         if (!wcs.isConnected) {
             wcs.reconnectIfNeeded()
             return false
-        } else if (!isNodeConnected) {
+        }
+
+        // check connection to phone
+        if (!isNodeConnected) {
+            Logger.logD(TAG, "verifyConnection(), node not connected")
             if (!getConnectedNodesSent.getAndSet(true)) {
                 wcs.getConnectedNodes { result: GetConnectedNodesResult ->
                     for (node in result.nodes) {
+                        Logger.logD(TAG, "  testing node $node, nearby: ${node.isNearby}")
                         if (node.isNearby) {
                             isNodeConnected = true
                             break
                         }
                     }
+
+                    // check connection
+                    Logger.logD(TAG, "  all nodes tested, connected: $isNodeConnected")
                     if (isNodeConnected) {
-                        onConnectionFailedTimerTick()
+                        verifyConnection()
                     } else {
                         cancelConnectionFailedTimer()
                         (application as MainApplication).doApplicationFail(AppFailType.CONNECTION_ERROR_NODE_NOT_CONNECTED)
@@ -276,7 +295,10 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                 }
             }
             return false
-        } else if (wcs.isAppInstalledOnDevice != TriStateLogicEnum.TRUE) {
+        }
+
+        // check if phone companion app is installed
+        if (wcs.isAppInstalledOnDevice != TriStateLogicEnum.TRUE) {
             // app is probably not installed on the device
             if (wcs.isAppInstalledOnDevice == TriStateLogicEnum.FALSE) {
                 mainApplication.doApplicationFail(AppFailType.CONNECTION_ERROR_APP_NOT_INSTALLED_ON_DEVICE)
@@ -285,13 +307,12 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         }
 
         // in approx. half of timeout resent requests one more time
-        if (ticks.toInt() == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS && !handshakeRetrySent.getAndSet(
-                        true
-                )
+        if (ticks.toInt() == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
+                && !handshakeRetrySent.getAndSet(true)
         ) {
-            Logger.logD(TAG, "Attempting second handshake")
+            Logger.logD(TAG, "verifyConnection(), attempting second handshake")
             if (!isHandShakeReceived) {
-                wcs.sendCommand(DataPath.GET_HAND_SHAKE)
+                wcs.sendCommand(DataPath.TD_GET_HAND_SHAKE)
             }
             if (!isInitialRequestReceived) {
                 val p = initialCommandType
@@ -301,9 +322,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
             }
         }
 
-        // handle first tick - send hanshake and initial command request
+        // handle first tick - send handshake and initial command request
         if (!handshakeSent.getAndSet(true) && isMakeHandshakeOnStart) {
-            wcs.sendCommand(DataPath.GET_HAND_SHAKE)
+            wcs.sendCommand(DataPath.TD_GET_HAND_SHAKE)
             val p = initialCommandType
             if (p != null) {
                 wcs.sendDataItem(p.path, p.storable)
@@ -311,8 +332,15 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                 isInitialRequestReceived = true
             }
         }
-        val result = !isMakeHandshakeOnStart ||
-                isHandShakeReceived && isInitialRequestReceived
+        val result = !isMakeHandshakeOnStart
+                || isHandShakeReceived && isInitialRequestReceived
+        Logger.logD(
+                TAG,
+                "verifyConnection(), result: $result, " +
+                        "isMakeHandshakeOnStart: $isMakeHandshakeOnStart, " +
+                        "isHandShakeReceived: $isHandShakeReceived, " +
+                        "isInitialRequestReceived: $isInitialRequestReceived"
+        )
         if (result) {
             cancelConnectionFailedTimer()
             onHandShakeFinished()
@@ -349,7 +377,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
                 override fun onTick(l: Long) {
                     ticks++
-                    onConnectionFailedTimerTick()
+                    verifyConnection()
                 }
 
                 override fun onFinish() {
