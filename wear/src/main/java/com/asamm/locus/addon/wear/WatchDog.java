@@ -130,10 +130,10 @@ public class WatchDog {
      * Handles tick of WD timer
      */
     private void doTimerTick() {
+//        Logger.INSTANCE.logD(TAG, "doTimerTick(), " +
+//                "app: " + MainApplication.app + ", " +
+//                "trackRec: " + TrackRecordingService.isRunning());
         // seems both trackRec service and main application were killed. Destroy watchdog immediately
-        Logger.INSTANCE.logD(TAG, "doTimerTick(), " +
-                "app: " + MainApplication.app + ", " +
-                "trackRec: " + TrackRecordingService.isRunning());
         if (MainApplication.app == null && !TrackRecordingService.isRunning()) {
             Logger.INSTANCE.logW(TAG, "Application termination detected");
             destroy();

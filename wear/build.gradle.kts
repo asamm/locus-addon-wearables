@@ -19,6 +19,7 @@ dependencies {
     implementation(Libraries.androidXAppCompat)
     implementation(Libraries.androidXConstraintLayout)
     implementation(Libraries.androidXWear)
+    implementation(Libraries.androidXWearRemoteInteractions)
     implementation(Libraries.googleMaterial)
     implementation(Libraries.googleSupportWearable)
     compileOnly(Libraries.googleWearable)

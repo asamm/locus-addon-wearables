@@ -352,7 +352,7 @@ open class MapActivity : LocusWearActivity() {
         super.consumeNewData(path, data)
         when (path) {
             DataPath.TW_PUT_MAP -> {
-                Logger.logD(TAG, "consumeNewData($path, $data)")
+                //Logger.logD(TAG, "consumeNewData($path, $data)")
                 val tmp = data as MapContainer?
                 if (tmp != null) {
                     lastContainer = tmp
@@ -485,7 +485,7 @@ open class MapActivity : LocusWearActivity() {
      * Refresh all map data.
      */
     private fun refreshLayout(data: MapContainer) {
-        Logger.logD(TAG, "refreshLayout($data)")
+        //Logger.logD(TAG, "refreshLayout($data)")
         runOnUiThread {
             refreshMapView(data)
             refreshPanelNavigation(data)

@@ -224,7 +224,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      * Consumes new data coming from WearListenerService
      */
     open fun consumeNewData(path: DataPath, data: TimeStampStorable?) {
-        Logger.logD(TAG, "consumeNewData($path, $data)")
+        //Logger.logD(TAG, "consumeNewData($path, $data)")
         if (connectionFailedTimer != null) {
             when {
                 path === DataPath.PUT_ON_CONNECTED_EVENT -> {

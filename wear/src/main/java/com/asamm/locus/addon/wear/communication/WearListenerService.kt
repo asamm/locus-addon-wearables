@@ -166,7 +166,7 @@ class WearListenerService : WearableListenerService() {
         // check handshake value itself
         if (handShakeValue == null) {
             Logger.logD(
-                    TAG, "validateHandShakeOrFail($handShakeValue), " +
+                    TAG, "validateHandShakeOrFail(null), " +
                     "handshake empty, requesting new one"
             )
             WearCommService.instance.sendCommand(DataPath.TD_GET_HAND_SHAKE)

@@ -23,11 +23,12 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "05"
-private const val PARAM_PATCH_VERSION = "001"
+private const val PARAM_PATCH_VERSION = "002"
+
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.5.1"
+private const val PARAM_VERSION_NAME_READABLE = "1.5.2"
 
 object ModuleDevice {
 
@@ -93,6 +94,7 @@ private object VersionsAndroidX {
     const val appCompat = "1.4.2"
     const val constraintLayout = "2.1.4"
     const val wear = "1.2.0"
+    const val wearRemoteInteractions = "1.0.0"
 }
 
 /**
@@ -123,6 +125,7 @@ object Libraries {
     const val androidXAppCompat = "androidx.appcompat:appcompat:${VersionsAndroidX.appCompat}"
     const val androidXConstraintLayout = "androidx.constraintlayout:constraintlayout:${VersionsAndroidX.constraintLayout}"
     const val androidXWear = "androidx.wear:wear:${VersionsAndroidX.wear}"
+    const val androidXWearRemoteInteractions = "androidx.wear:wear-remote-interactions:${VersionsAndroidX.wearRemoteInteractions}"
     const val googleMaterial = "com.google.android.material:material:${VersionsGoogle.material}"
     const val googlePsWear = "com.google.android.gms:play-services-wearable:${VersionsGoogle.psWear}"
     const val googleSupportWearable = "com.google.android.support:wearable:${VersionsGoogle.supportWear}"

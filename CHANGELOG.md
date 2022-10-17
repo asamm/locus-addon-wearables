@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Released]
 
+## [1.5.2] - 2022-10-17
+### Changed
+- improved error notification screen
+
 ## [1.5.1] - 2022-09-27
 ### Changed
 - no changes since 1.5.0 
