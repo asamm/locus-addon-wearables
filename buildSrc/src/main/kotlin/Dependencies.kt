@@ -23,12 +23,12 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "05"
-private const val PARAM_PATCH_VERSION = "002"
+private const val PARAM_PATCH_VERSION = "003"
 
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.5.2"
+private const val PARAM_VERSION_NAME_READABLE = "1.5.3"
 
 object ModuleDevice {
 
@@ -58,7 +58,7 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.3.0"
+    const val gradle = "7.3.1"
 
     // https://developer.android.com/studio/releases/build-tools.html
     const val buildTools = "33.0.0"
@@ -69,7 +69,7 @@ object Versions {
     const val minSdk = 21
     const val targetSdk = 33
 
-    const val minSdkWear = 23
+    const val minSdkWear = 25
     const val targetSdkWear = 33
 
     // KOTLIN
@@ -90,9 +90,13 @@ private object VersionsApi {
  * Versions for AndroidX dependencies
  * https://developer.android.com/jetpack/androidx/releases/wear
  */
-private object VersionsAndroidX {
+object VersionsAndroidX {
     const val appCompat = "1.4.2"
+    // https://developer.android.com/training/wearables/compose
+    const val compose = "1.0.2"
+    const val composeActivity = "1.3.1"
     const val constraintLayout = "2.1.4"
+//    const val lifecycle = "2.5.0"
     const val wear = "1.2.0"
     const val wearRemoteInteractions = "1.0.0"
 }
@@ -123,6 +127,11 @@ object Build {
 
 object Libraries {
     const val androidXAppCompat = "androidx.appcompat:appcompat:${VersionsAndroidX.appCompat}"
+    const val composeActivity = "androidx.activity:activity-compose:${VersionsAndroidX.composeActivity}"
+    const val composeLiveData = "androidx.compose.runtime:runtime-livedata:${VersionsAndroidX.compose}"
+    const val composeMaterial = "androidx.wear.compose:compose-material:${VersionsAndroidX.compose}"
+    const val composeTooling = "androidx.compose.ui:ui-tooling:${VersionsAndroidX.compose}"
+    const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:${VersionsAndroidX.compose}"
     const val androidXConstraintLayout = "androidx.constraintlayout:constraintlayout:${VersionsAndroidX.constraintLayout}"
     const val androidXWear = "androidx.wear:wear:${VersionsAndroidX.wear}"
     const val androidXWearRemoteInteractions = "androidx.wear:wear-remote-interactions:${VersionsAndroidX.wearRemoteInteractions}"
@@ -131,5 +140,7 @@ object Libraries {
     const val googleSupportWearable = "com.google.android.support:wearable:${VersionsGoogle.supportWear}"
     const val googleWearable = "com.google.android.wearable:wearable:${VersionsGoogle.supportWear}"
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
+//    const val lifecycleCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${VersionsAndroidX.lifecycle}"
+    //const val lifecycleLiveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:${VersionsAndroidX.lifecycle}"
     const val locusApiAndroid = "com.asamm:locus-api-android:${VersionsApi.locusApi}"
 }

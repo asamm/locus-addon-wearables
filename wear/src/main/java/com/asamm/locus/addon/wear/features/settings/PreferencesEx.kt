@@ -1,9 +1,9 @@
 package com.asamm.locus.addon.wear.features.settings
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Base64
+import androidx.lifecycle.MutableLiveData
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.common.communication.Const
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileInfoValue
@@ -59,8 +59,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putString(PREF_LAST_ACTIVITY_CLASS_NAME, value.simpleName)
-                    .apply()
+                .putString(PREF_LAST_ACTIVITY_CLASS_NAME, value.simpleName)
+                .apply()
         }
 
     // MAP
@@ -71,8 +71,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putBoolean(PREF_MAP_AUTOROTATE_ENABLED, value)
-                    .apply()
+                .putBoolean(PREF_MAP_AUTOROTATE_ENABLED, value)
+                .apply()
         }
 
     var mapBearing: Short
@@ -81,8 +81,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putInt(PREF_MAP_BEARING, value.toInt())
-                    .apply()
+                .putInt(PREF_MAP_BEARING, value.toInt())
+                .apply()
         }
 
     var mapOffsetX: Int
@@ -91,8 +91,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putInt(PREF_MAP_OFFSET_X, value)
-                    .apply()
+                .putInt(PREF_MAP_OFFSET_X, value)
+                .apply()
         }
 
     var mapOffsetY: Int
@@ -101,8 +101,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putInt(PREF_MAP_OFFSET_Y, value)
-                    .apply()
+                .putInt(PREF_MAP_OFFSET_Y, value)
+                .apply()
         }
 
     var mapZoom: Int
@@ -111,8 +111,8 @@ object PreferencesEx {
         }
         set(value) {
             prefs.edit()
-                    .putInt(PREF_DEVICE_ZOOM, value)
-                    .apply()
+                .putInt(PREF_DEVICE_ZOOM, value)
+                .apply()
         }
 
     // TODO refactor preferences below
@@ -134,8 +134,8 @@ object PreferencesEx {
             return
         }
         prefs.edit()
-                .putString(PREF_REC_STATE, trackRec.trackRecordingState.name)
-                .apply()
+            .putString(PREF_REC_STATE, trackRec.trackRecordingState.name)
+            .apply()
     }
 
     @JvmStatic
@@ -144,9 +144,9 @@ object PreferencesEx {
             return
         }
         prefs.edit()
-                .putString(PREF_PROFILE_NAME, value.name)
-                .putLong(PREF_PROFILE_ID, value.id)
-                .apply()
+            .putString(PREF_PROFILE_NAME, value.name)
+            .putLong(PREF_PROFILE_ID, value.id)
+            .apply()
     }
 
     @JvmStatic
@@ -171,19 +171,12 @@ object PreferencesEx {
 
     fun persistFirstAppStart() {
         prefs.edit()
-                .putBoolean(PREF_FIRST_APP_START, false)
-                .apply()
+            .putBoolean(PREF_FIRST_APP_START, false)
+            .apply()
     }
 
     fun isFirstAppStart(): Boolean {
         return prefs.getBoolean(PREF_FIRST_APP_START, true)
-    }
-
-    /**
-     * Deletes all shared preferences
-     */
-    fun debugClear() {
-        prefs.edit().clear().apply()
     }
 
     @JvmStatic
@@ -193,15 +186,15 @@ object PreferencesEx {
 
     fun persistUseHwButtons(useHwButtons: Boolean) {
         prefs.edit()
-                .putBoolean(PREF_USE_HW_BUTTONS, useHwButtons)
-                .apply()
+            .putBoolean(PREF_USE_HW_BUTTONS, useHwButtons)
+            .apply()
     }
 
     @JvmStatic
     fun persistStatsScreenConfiguration(config: TrackRecordActivityConfiguration) {
         prefs.edit()
-                .putString(PREF_STAT_CONFIG, Base64.encodeToString(config.asBytes, Base64.DEFAULT))
-                .apply()
+            .putString(PREF_STAT_CONFIG, Base64.encodeToString(config.asBytes, Base64.DEFAULT))
+            .apply()
     }
 
     @JvmStatic
@@ -219,30 +212,38 @@ object PreferencesEx {
         }
     }
 
-    @JvmStatic
-    @SuppressLint("ApplySharedPref")
-    fun persistHrmFeatureConfig(configState: FeatureConfigEnum?) {
-        if (configState == null) return
-        prefs.edit()
-                .putInt(PREF_USE_HRM, configState.id)
-                .commit()
-    }
-
-    @JvmStatic
-    fun getHrmFeatureConfig(): FeatureConfigEnum {
-        val featureConfigID = prefs.getInt(PREF_USE_HRM, FeatureConfigEnum.NO_PERMISSION.id)
-        return FeatureConfigEnum.getById(featureConfigID)
-    }
-
-    @SuppressLint("ApplySharedPref")
-    fun persistIsDebug(isDebug: Boolean) {
-        prefs.edit()
-                .putBoolean(PREF_BOOL_IS_DEBUG, isDebug)
+    var hrmFeatureConfigState: FeatureConfigEnum
+        get() {
+            val featureConfigID = prefs.getInt(PREF_USE_HRM, FeatureConfigEnum.NO_PERMISSION.id)
+            return FeatureConfigEnum.getById(featureConfigID)
+        }
+        set(value) {
+            hrmFeatureConfigStateLd.value = value
+            prefs.edit()
+                .putInt(PREF_USE_HRM, value.id)
                 .apply()
+        }
+
+    val hrmFeatureConfigStateLd: MutableLiveData<FeatureConfigEnum> by lazy {
+        MutableLiveData(hrmFeatureConfigState)
     }
 
-    @JvmStatic
-    fun isDebug(): Boolean {
-        return prefs.getBoolean(PREF_BOOL_IS_DEBUG, false)
+    // DEBUG PART
+
+    var isDebug: Boolean
+        get() {
+            return prefs.getBoolean(PREF_BOOL_IS_DEBUG, false)
+        }
+        set(value) {
+            prefs.edit()
+                .putBoolean(PREF_BOOL_IS_DEBUG, value)
+                .apply()
+        }
+
+    /**
+     * Deletes all shared preferences
+     */
+    fun debugClear() {
+        prefs.edit().clear().apply()
     }
 }

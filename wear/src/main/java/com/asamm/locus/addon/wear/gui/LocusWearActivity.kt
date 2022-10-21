@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
 import androidx.wear.ambient.AmbientModeSupport
+import com.asamm.locus.addon.wear.BuildConfig
 import com.asamm.locus.addon.wear.MainApplication
 import com.asamm.locus.addon.wear.R
 import com.asamm.locus.addon.wear.common.communication.DataPath
@@ -151,12 +152,12 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                 dbgClickCounter++
                 if (dbgClickCounter.toInt() == 6) {
                     dbgClickCounter = 0
-                    val isDebug = PreferencesEx.isDebug()
-                    PreferencesEx.persistIsDebug(!isDebug)
+                    val isDebug = PreferencesEx.isDebug
+                    PreferencesEx.isDebug = !isDebug
                     Toast.makeText(
-                            this,
-                            "Debug mode " + if (isDebug) "disabled" else "enabled",
-                            Toast.LENGTH_LONG
+                        this,
+                        "Debug mode " + if (isDebug) "disabled" else "enabled",
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }
@@ -259,10 +260,10 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     private fun verifyConnection(): Boolean {
         val wcs = WearCommService.instance
         Logger.logD(
-                TAG, "verifyConnection(), " +
-                "API connected: ${wcs.isConnected}, " +
-                "isNodeConnected: $isNodeConnected, " +
-                "deviceAppInstalled: ${wcs.isAppInstalledOnDevice}"
+            TAG, "verifyConnection(), " +
+                    "API connected: ${wcs.isConnected}, " +
+                    "isNodeConnected: $isNodeConnected, " +
+                    "deviceAppInstalled: ${wcs.isAppInstalledOnDevice}"
         )
 
         // check connection to Google API
@@ -308,7 +309,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
         // in approx. half of timeout resent requests one more time
         if (ticks.toInt() == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
-                && !handshakeRetrySent.getAndSet(true)
+            && !handshakeRetrySent.getAndSet(true)
         ) {
             Logger.logD(TAG, "verifyConnection(), attempting second handshake")
             if (!isHandShakeReceived) {
@@ -335,11 +336,11 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         val result = !isMakeHandshakeOnStart
                 || isHandShakeReceived && isInitialRequestReceived
         Logger.logD(
-                TAG,
-                "verifyConnection(), result: $result, " +
-                        "isMakeHandshakeOnStart: $isMakeHandshakeOnStart, " +
-                        "isHandShakeReceived: $isHandShakeReceived, " +
-                        "isInitialRequestReceived: $isInitialRequestReceived"
+            TAG,
+            "verifyConnection(), result: $result, " +
+                    "isMakeHandshakeOnStart: $isMakeHandshakeOnStart, " +
+                    "isHandShakeReceived: $isHandShakeReceived, " +
+                    "isInitialRequestReceived: $isInitialRequestReceived"
         )
         if (result) {
             cancelConnectionFailedTimer()
@@ -355,8 +356,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
     private fun startConnectionFailTimer() {
         if (connectionFailedTimer != null
-                || state == WearActivityState.ON_STOP
-                || state == WearActivityState.ON_DESTROY) {
+            || state == WearActivityState.ON_STOP
+            || state == WearActivityState.ON_DESTROY
+        ) {
             return
         }
         ticks = 0
@@ -368,8 +370,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
         synchronized(connectionTimerLock) {
             if (connectionFailedTimer != null
-                    || state == WearActivityState.ON_STOP
-                    || state == WearActivityState.ON_DESTROY) {
+                || state == WearActivityState.ON_STOP
+                || state == WearActivityState.ON_DESTROY
+            ) {
                 return
             }
 
@@ -385,7 +388,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                     cancelConnectionFailedTimer()
                     // could not establish handshake connection
                     (application as MainApplication).doApplicationFail(
-                            AppFailType.CONNECTION_FAILED
+                        AppFailType.CONNECTION_FAILED
                     )
                 }
             }
@@ -426,7 +429,8 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     protected fun startLocusWearActivity(activityToStart: Class<out LocusWearActivity>?) {
         drawer?.controller?.closeDrawer()
         if (activityToStart == null
-                || this.javaClass.simpleName == activityToStart.simpleName) {
+            || this.javaClass.simpleName == activityToStart.simpleName
+        ) {
             return
         }
         PreferencesEx.lastActivity = activityToStart
@@ -466,24 +470,24 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         return if (getHwKeyDelegate().onKeyDown(
-                        keyCode,
-                        event
-                )
+                keyCode,
+                event
+            )
         ) true else super.onKeyDown(keyCode, event)
     }
 
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent): Boolean {
         return if (getHwKeyDelegate().onKeyLongPress(
-                        keyCode,
-                        event
-                )
+                keyCode,
+                event
+            )
         ) true else super.onKeyLongPress(keyCode, event)
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
         return if (getHwKeyDelegate().onKeyUp(keyCode, event)) true else super.onKeyUp(
-                keyCode,
-                event
+            keyCode,
+            event
         )
     }
 
@@ -527,7 +531,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
     companion object {
 
         private const val TAG = "LocusWearActivity"
-        private const val IS_DEBUG_MODE_ENABLED = false
+        private val IS_DEBUG_MODE_ENABLED = BuildConfig.DEBUG
         private const val HANDSHAKE_TIMEOUT_MS = 8000
         private const val HANDSHAKE_TICK_MS = 400
     }

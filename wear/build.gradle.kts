@@ -11,12 +11,25 @@ android {
         versionCode = ModuleWear.versionCode
         versionName = ModuleWear.versionName
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0" //VersionsAndroidX.compose
+    }
 }
 
 dependencies {
     // libraries
     implementation(Libraries.kotlin)
     implementation(Libraries.androidXAppCompat)
+    implementation(Libraries.composeActivity)
+    implementation(Libraries.composeLiveData)
+    implementation(Libraries.composeMaterial)
+    implementation(Libraries.composeTooling)
+    implementation(Libraries.composeToolingPreview)
     implementation(Libraries.androidXConstraintLayout)
     implementation(Libraries.androidXWear)
     implementation(Libraries.androidXWearRemoteInteractions)

@@ -22,7 +22,7 @@ enum class FeatureConfigEnum(val id: Int) {
 
         fun getById(id: Int): FeatureConfigEnum {
             for (it in values()) {
-                if (it.id.toInt() == id) return it
+                if (it.id == id) return it
             }
             return NOT_AVAILABLE
         }

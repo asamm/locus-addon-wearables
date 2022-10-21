@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Released]
 
+## [1.5.3] - 2022-10-21
+### Added
+- internal support for Compose system
+
+### Changed
+- reworded "Settings screen" and system around HRM
+
 ## [1.5.2] - 2022-10-17
 ### Changed
 - improved error notification screen

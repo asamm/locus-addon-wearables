@@ -45,8 +45,6 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
     public static final String PARAM_STAT_ID = "PARAM_STAT_ID";
     public static final int REQUEST_CODE_STATS_SELECT_LIST_ACTIVITY = 1793130860;
 
-    private WearableRecyclerView mRecyclerView;
-    private StatsTypeListAdapter mAdapter;
     private TrackStatViewId viewId;
 
     /**
@@ -72,7 +70,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         if (header != null) {
             header.setText(getText(R.string.title_activity_stats_select_list));
         }
-        mRecyclerView = findViewById(R.id.profile_list);
+        WearableRecyclerView mRecyclerView = findViewById(R.id.profile_list);
         mRecyclerView.setEdgeItemsCenteringEnabled(true);
         mRecyclerView.setLayoutManager(
                 new WearableLinearLayoutManager(this));
@@ -81,7 +79,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
         mCurrentStatId = getIntent().getExtras().getByte(PARAM_STAT_ID, TrackStatTypeEnum.BLANK.getId());
         viewId = new TrackStatViewId(getIntent().getExtras().getInt(PARAM_SCREEN_IDX, -1),
                 getIntent().getExtras().getInt(PARAM_CELL_IDX, -1));
-        mAdapter = new StatsTypeListAdapter();
+        StatsTypeListAdapter mAdapter = new StatsTypeListAdapter();
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -100,7 +98,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
 
     private TrackStatTypeEnum[] getSelectionModel() {
         TrackStatTypeEnum[] model = TrackStatTypeEnum.VALUES_FOR_SELECTIONS;
-        if (PreferencesEx.isDebug()) {
+        if (PreferencesEx.INSTANCE.isDebug()) {
             ArrayList<TrackStatTypeEnum> list = new ArrayList<>(Arrays.asList(model));
             list.add(TrackStatTypeEnum.HRM_DEBUG);
             TrackStatTypeEnum[] tmparr = new TrackStatTypeEnum[list.size()];

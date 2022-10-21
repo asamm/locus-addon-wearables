@@ -15,23 +15,23 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.common.communication.containers.commands.CommandFloatExtra;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
+import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.BodySensorsManager;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.HrmValue;
-import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorManager;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.sensors.RecordingSensorStore;
 import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.utils.WakeLockManager;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import locus.api.utils.Logger;
 
-import static com.asamm.locus.addon.wear.common.communication.DataPath.TW_KEEP_ALIVE;
 import static com.asamm.locus.addon.wear.common.communication.DataPath.PUT_HEART_RATE;
+import static com.asamm.locus.addon.wear.common.communication.DataPath.TW_KEEP_ALIVE;
 
 /**
  * Foreground service which is started during track recording if the watch is providing
@@ -52,7 +52,7 @@ public class TrackRecordingService extends Service {
 
     private WakeLockManager wakeLockManager;
 
-    private RecordingSensorManager mSensors;
+    private BodySensorsManager mSensors;
 
 
     public static boolean isRunning() {
@@ -69,7 +69,7 @@ public class TrackRecordingService extends Service {
     public void onCreate() {
         super.onCreate();
         instance = this;
-        mSensors = new RecordingSensorManager();
+        mSensors = new BodySensorsManager();
     }
 
     @Override
@@ -108,7 +108,8 @@ public class TrackRecordingService extends Service {
 
         // Create notification default intent.
         Intent intent = new Intent(this, TrackRecordActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE);
 
         initChannels(this);
         // Create notification builder.
@@ -137,7 +138,7 @@ public class TrackRecordingService extends Service {
     }
 
     private void afterStart() {
-        final RecordingSensorManager rsm = mSensors;
+        final BodySensorsManager rsm = mSensors;
         if (rsm == null) {
             Logger.INSTANCE.logE(TAG, "Could not finish TrackRecordingService#afterStart() call. Seems the service was destroyed right after the start.");
             return;
@@ -145,19 +146,19 @@ public class TrackRecordingService extends Service {
         // fake push first device keep alive, real ones start to come in a while
         WearCommService.getInstance().pushLastTransmitTimeFor(TW_KEEP_ALIVE);
 
-        if (!RecordingSensorManager.checkAndRequestBodySensorPermission(this)) {
+        if (!BodySensorsManager.Companion.checkAndRequestBodySensorsPermission(this)) {
             Logger.INSTANCE.logW(TAG, "checkAndRequestBodySensorPermission() failed during service start.");
             stopForegroundService();
             return;
         }
-        FeatureConfigEnum hrmConfig = PreferencesEx.getHrmFeatureConfig();
+        FeatureConfigEnum hrmConfig = PreferencesEx.INSTANCE.getHrmFeatureConfigState();
         if (hrmConfig == FeatureConfigEnum.ENABLED) {
             if (rsm.startHrSensor(this, false)) {
                 final Handler handler = new Handler(getMainLooper());
                 Runnable sendHrmUpdate = new Runnable() {
                     @Override
                     public void run() {
-                        RecordingSensorManager sensors = mSensors;
+                        BodySensorsManager sensors = mSensors;
                         if (sensors == null)
                             return;
 

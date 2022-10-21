@@ -540,7 +540,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     private void startTrackRecService() {
         if (!TrackRecordingService.isRunning()
-                && PreferencesEx.getHrmFeatureConfig() == FeatureConfigEnum.ENABLED) {
+                && PreferencesEx.INSTANCE.getHrmFeatureConfigState() == FeatureConfigEnum.ENABLED) {
             Intent i = new Intent(this, TrackRecordingService.class);
             i.setAction(TrackRecordingService.ACTION_START_FOREGROUND_SERVICE);
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
