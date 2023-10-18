@@ -20,7 +20,7 @@
         android:maxLines="1"
         android:gravity="center"
         android:textAllCaps="false"
-        android:textColor="@color/base_dark_primary"
+        android:textColor="@color/color_on_background"
         app:layout_constraintBottom_toBottomOf="@+id/track_profile_select_underline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -22,21 +22,21 @@
     <!-- COLORS THEME -->
 
     <!-- base colors -->
-    <color name="color_primary">#1976d2</color>
+    <color name="color_primary">#ffa5c8ff</color>
     <color name="color_primary_variant">#004ba0</color>
     <color name="color_secondary">#d84315</color>
     <color name="color_secondary_variant">#9f0000</color>
-    <color name="color_background">#fff9f9f9</color>
-    <color name="color_surface">#ffffffff</color>
-    <color name="color_error">#b00020</color>
+    <color name="color_background">#ff121212</color>
+    <color name="color_surface">#ff43474e</color>
+    <color name="color_error">#ffffb4ab</color>
 
     <!-- "On" colors define how text, icons and strokes are colored in relation to the surface -->
     <!-- on which they appear. -->
-    <color name="color_on_primary">@color/bw_light_primary</color>
-    <color name="color_on_secondary">@color/bw_light_primary</color>
-    <color name="color_on_background">@color/bw_dark_primary</color>
-    <color name="color_on_surface">@color/bw_dark_primary</color>
-    <color name="color_on_error">@color/bw_light_primary</color>
+    <color name="color_on_primary">#ff00315f</color>
+    <color name="color_on_secondary">#ff00315f</color>
+    <color name="color_on_background">#f5ffffff</color>
+    <color name="color_on_surface">#f5ffffff</color>
+    <color name="color_on_error">#ff690005</color>
 
     <!-- DEPRECATED, SHOULD BE REMOVED -->
 

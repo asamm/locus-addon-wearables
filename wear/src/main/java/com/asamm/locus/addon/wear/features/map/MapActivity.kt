@@ -45,7 +45,7 @@ import locus.api.android.features.periodicUpdates.UpdateContainer
 import locus.api.android.utils.UtilsFormat
 import locus.api.objects.extra.Location
 import locus.api.objects.extra.PointRteAction
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -225,7 +225,7 @@ open class MapActivity : LocusWearActivity() {
         detector = GestureDetector(this, object : SimpleOnGestureListener() {
 
             override fun onScroll(
-                    e1: MotionEvent,
+                    e1: MotionEvent?,
                     e2: MotionEvent,
                     distanceX: Float,
                     distanceY: Float): Boolean {
@@ -250,7 +250,7 @@ open class MapActivity : LocusWearActivity() {
             }
 
             override fun onFling(
-                    event1: MotionEvent, event2: MotionEvent,
+                    event1: MotionEvent?, event2: MotionEvent,
                     velocityX: Float, velocityY: Float): Boolean {
                 cancelFling()
                 mapState.isFlinging = true
@@ -352,7 +352,7 @@ open class MapActivity : LocusWearActivity() {
         super.consumeNewData(path, data)
         when (path) {
             DataPath.TW_PUT_MAP -> {
-                //Logger.logD(TAG, "consumeNewData($path, $data)")
+                //Logger.d(TAG, "consumeNewData($path, $data)")
                 val tmp = data as MapContainer?
                 if (tmp != null) {
                     lastContainer = tmp
@@ -485,7 +485,7 @@ open class MapActivity : LocusWearActivity() {
      * Refresh all map data.
      */
     private fun refreshLayout(data: MapContainer) {
-        //Logger.logD(TAG, "refreshLayout($data)")
+        //Logger.d(TAG, "refreshLayout($data)")
         runOnUiThread {
             refreshMapView(data)
             refreshPanelNavigation(data)
@@ -519,7 +519,7 @@ open class MapActivity : LocusWearActivity() {
                 isScaled = false
             }
         } else {
-            Logger.logE(
+            Logger.e(ex = null,
                     TAG, (when (data.loadedMap) {
                 null -> {
                     "data.loadedMap"

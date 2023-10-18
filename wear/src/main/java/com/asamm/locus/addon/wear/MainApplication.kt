@@ -25,8 +25,7 @@ import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordingService
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.LocusWearActivity.WearActivityState
 import com.asamm.locus.addon.wear.utils.AppMemoryCache
-import locus.api.utils.Logger
-import locus.api.utils.Logger.registerLogger
+import com.asamm.logger.Logger
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -44,29 +43,29 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         initialize()
 
         // set logger
-        registerLogger(object : Logger.ILogger {
+        Logger.registerLogger(object : Logger.ILogger {
 
-            override fun logI(tag: String, msg: String) {
-                Log.i(tag, msg)
-            }
-
-            override fun logD(tag: String, msg: String) {
+            override fun logD(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
                 Log.d(tag, msg)
             }
 
-            override fun logW(tag: String, msg: String) {
+            override fun logI(tag: String, msg: String, vararg args: Any) {
+                Log.i(tag, msg)
+            }
+
+            override fun logV(tag: String, msg: String, vararg args: Any) {
+                Log.i(tag, msg)
+            }
+
+            override fun logW(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
                 Log.w(tag, msg)
             }
 
-            override fun logE(tag: String, msg: String) {
-                Log.e(tag, msg)
-            }
-
-            override fun logE(tag: String, msg: String, e: Exception) {
-                Log.e(tag, msg, e)
+            override fun logE(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
+                Log.e(tag, msg, ex)
             }
         })
-        Logger.logD(TAG, "onCreate()")
+        Logger.d(TAG, "onCreate()")
 
         // notify about create of app
         registerActivityLifecycleCallbacks(this)
@@ -90,7 +89,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
      * Destroy instance of this application.
      */
     fun onDestroy() {
-        Logger.logD(TAG, "onDestroy()")
+        Logger.d(TAG, "onDestroy()")
 
         // destroy instance of communication class
         WatchDog.getInstance().destroy()
@@ -121,7 +120,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
                     && !activity.isChildLocusWearActivity) {
                 _currentActivity!!.finish()
             }
-            Logger.logD(TAG, "setCurrentActivity($activity)")
+            Logger.d(TAG, "setCurrentActivity($activity)")
 
             // if new activity is registered, end timer
             if (activity != null) {
@@ -129,9 +128,9 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
             }
             // register activity
             if (_currentActivity == null && activity != null) {
-                Logger.logD(TAG, " - application restored")
+                Logger.d(TAG, " - application restored")
             } else if (_currentActivity != null && activity == null) {
-                Logger.logD(TAG, " - application terminated")
+                Logger.d(TAG, " - application terminated")
                 setTerminationTimer()
             }
             val previous = _currentActivity
@@ -143,7 +142,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
         }
 
     override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
-        Logger.logD(TAG, "onActivityCreated($activity, $bundle), test: ${activity is LocusWearActivity}")
+        Logger.d(TAG, "onActivityCreated($activity, $bundle), test: ${activity is LocusWearActivity}")
         if (activity !is LocusWearActivity) {
             return
         }

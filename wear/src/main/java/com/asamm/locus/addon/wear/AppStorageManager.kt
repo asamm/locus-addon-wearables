@@ -6,7 +6,7 @@ package com.asamm.locus.addon.wear
 
 import android.content.Context
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackProfileIconValue
-import locus.api.utils.Logger.logE
+import com.asamm.loggerV2.logE
 import java.io.*
 
 /**
@@ -32,7 +32,9 @@ object AppStorageManager {
                 )
             }
         } catch (e: IOException) {
-            logE(TAG, "Cache write failed", e)
+            logE(ex = e) {
+                "Cache write failed"
+            }
         }
     }
 
@@ -52,7 +54,9 @@ object AppStorageManager {
                     }
                 }
             } catch (e: IOException) {
-                logE(TAG, "Cache write failed", e)
+                logE(ex = e) {
+                    "Cache write failed"
+                }
             }
         }
         return null

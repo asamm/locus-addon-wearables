@@ -87,10 +87,10 @@ public interface TrackStatConsumable {
 
                 switch (type) {
                     case AVG:
-                        hrm = rec.getTrackRecStats().getHrmAverage();
+                        hrm = rec.getTrackRecStats().getHeartRateAverage();
                         break;
                     case MAX:
-                        hrm = rec.getTrackRecStats().getHrmMax();
+                        hrm = rec.getTrackRecStats().getHeartRateMax();
                         break;
                     default:
                         hrm = rec.getHrm();

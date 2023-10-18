@@ -20,7 +20,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue
 import com.asamm.locus.addon.wear.features.error.AppFailType
 import com.google.android.gms.wearable.*
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 
 /**
  * Service listening to Data API data changes
@@ -28,12 +28,12 @@ import locus.api.utils.Logger
 class WearListenerService : WearableListenerService() {
 
     override fun onDataChanged(dataEventBuffer: DataEventBuffer) {
-//        Logger.logD(TAG, "onDataChanged($dataEventBuffer)")
+//        Logger.d(TAG, "onDataChanged($dataEventBuffer)")
         for (event in dataEventBuffer) {
             if (event.type == DataEvent.TYPE_CHANGED) {
                 val app = application
                 if (app == null) {
-                    Logger.logW(TAG, "Received data but application is null")
+                    Logger.w(TAG, "Received data but application is null")
                     val p = DataPath.valueOf(event.dataItem)
                     if (p != null) {
                         val value = WearCommService.instance.createStorableForPath<TimeStampStorable>(p, event.dataItem)
@@ -52,7 +52,7 @@ class WearListenerService : WearableListenerService() {
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-//        Logger.logD(TAG, "onMessageReceived($messageEvent), " +
+//        Logger.d(TAG, "onMessageReceived($messageEvent), " +
 //                "node: ${messageEvent.sourceNodeId}, " +
 //                "path: ${DataPath.fromPath(messageEvent.path)}")
         val p = DataPath.fromPath(messageEvent.path) ?: return
@@ -75,13 +75,13 @@ class WearListenerService : WearableListenerService() {
     //*************************************************
 
     private fun handleDataEvent(app: MainApplication, dataItem: DataItem) {
-//        Logger.logD(TAG, "handleDataEvent($dataItem), path: ${dataItem.uri.path}")
+//        Logger.d(TAG, "handleDataEvent($dataItem), path: ${dataItem.uri.path}")
         val path = DataPath.valueOf(dataItem)
         if (path != null) {
             val value = WearCommService.instance.createStorableForPath<TimeStampStorable>(path, dataItem)
             handleData(app, path, value)
         } else {
-            Logger.logW(TAG, "unknown DataItem path " + dataItem.uri.path)
+            Logger.w(TAG, "unknown DataItem path " + dataItem.uri.path)
         }
     }
 
@@ -92,7 +92,7 @@ class WearListenerService : WearableListenerService() {
     }
 
     private fun handleData(app: MainApplication, p: DataPath?, value: TimeStampStorable?) {
-//        Logger.logD(TAG, "handleData($p, $value)")
+//        Logger.d(TAG, "handleData($p, $value)")
         val currentActivity = app.currentActivity
         if (currentActivity != null && p != null) {
             when (p) {
@@ -165,7 +165,7 @@ class WearListenerService : WearableListenerService() {
     private fun validateHandShakeOrFail(app: MainApplication, handShakeValue: HandShakeValue?): Boolean {
         // check handshake value itself
         if (handShakeValue == null) {
-            Logger.logD(
+            Logger.d(
                     TAG, "validateHandShakeOrFail(null), " +
                     "handshake empty, requesting new one"
             )
@@ -176,7 +176,7 @@ class WearListenerService : WearableListenerService() {
         // validate handshake content
         if (handShakeValue.isEmpty
                 || handShakeValue.locusVersion < Const.LOCUS_MIN_VERSION_CODE) {
-            Logger.logD(
+            Logger.d(
                     TAG, "validateHandShakeOrFail($handShakeValue), " +
                     "empty: ${handShakeValue.isEmpty}, " +
                     "locusVersion: ${handShakeValue.locusVersion}"

@@ -3,7 +3,7 @@ package com.asamm.locus.addon.wear.gui.custom;
 
 import android.view.View;
 
-import locus.api.utils.Logger;
+import com.asamm.logger.Logger;
 
 /**
  * Created by menion on 01/10/2017.
@@ -65,7 +65,7 @@ public class WearMapActionMoveFling {
                     Thread.sleep(ANIMATION_STEP);
                 }
             } catch (Exception e) {
-                Logger.INSTANCE.logE(TAG, "startPrivate(" + map + ")", e);
+                Logger.e(TAG, "startPrivate(" + map + ")", e);
             }
         });
         mThread.start();

@@ -6,7 +6,7 @@ import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload
 import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 
 /**
  * Main start activity.
@@ -25,7 +25,7 @@ class LauncherActivity : LocusWearActivity() {
                 && intent.action != null
                 && "android.intent.action.MAIN" == intent.action
                 && (intent.categories == null || intent.categories.contains("android.intent.category.LAUNCHER"))) {
-            Logger.logD(TAG, "onCreate($savedInstanceState), new start")
+            Logger.d(TAG, "onCreate($savedInstanceState), new start")
             PreferencesEx.mapOffsetX = 0
             PreferencesEx.mapOffsetY = 0
             PreferencesEx.mapBearing = 0.toShort()

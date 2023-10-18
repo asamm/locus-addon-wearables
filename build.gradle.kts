@@ -15,5 +15,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        // package repository for Git
+        maven(url = "https://jitpack.io")
     }
 }

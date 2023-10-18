@@ -7,11 +7,11 @@ package com.asamm.locus.addon.wear
 import android.content.Context
 import com.asamm.locus.addon.wear.common.communication.DataPath
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayloadStorable
+import com.asamm.logger.Logger
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
-import locus.api.utils.Logger
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -21,9 +21,9 @@ import java.util.concurrent.TimeUnit
 class DeviceListenerService : WearableListenerService() {
 
     override fun onDataChanged(dataEventBuffer: DataEventBuffer) {
-//        Logger.logD(TAG, "onDataChanged($dataEventBuffer)")
+//        Logger.d(TAG, "onDataChanged($dataEventBuffer)")
         for (event in dataEventBuffer) {
-//            Logger.logD(TAG, "  event.type: ${event.type}")
+//            Logger.d(TAG, "  event.type: ${event.type}")
             @Suppress("ControlFlowWithEmptyBody")
             if (event.type == DataEvent.TYPE_CHANGED) {
                 handleDataChange(dataEventConsumer, event)
@@ -34,25 +34,25 @@ class DeviceListenerService : WearableListenerService() {
     }
 
     override fun onMessageReceived(messageEvent: MessageEvent) {
-//        Logger.logD(
+//        Logger.d(
 //                TAG, "onMessageReceived($messageEvent), " +
 //                "node: ${messageEvent.sourceNodeId}, " +
 //                "path: ${DataPath.fromPath(messageEvent.path)}"
 //        )
         DeviceCommService.getInstance(this).nodeId = messageEvent.sourceNodeId
         val p = DataPath.fromPath(messageEvent.path)
-                ?: return
+            ?: return
         try {
             handleDataChange(
-                    dataMessageConsumer, DataPayloadStorable(
+                dataMessageConsumer, DataPayloadStorable(
                     p,
                     p.containerClass
-                            .getConstructor(ByteArray::class.java)
-                            .newInstance(messageEvent.data)
-            )
+                        .getConstructor(ByteArray::class.java)
+                        .newInstance(messageEvent.data)
+                )
             )
         } catch (e: Exception) {
-            Logger.logE(TAG, "onMessageReceived($messageEvent)", e)
+            Logger.e(e, TAG, "onMessageReceived($messageEvent)")
         }
     }
 
@@ -85,7 +85,7 @@ class DeviceListenerService : WearableListenerService() {
 
         override fun consume(c: Context, rh: DeviceCommService, newData: DataPayloadStorable) {
             if (newData.dataPath == DataPath.TD_GET_HAND_SHAKE) {
-                Logger.logD(TAG, "handling hand shake")
+                Logger.d(TAG, "handling hand shake")
             }
             if (newData.isValid) {
                 rh.onDataReceived(c, newData.dataPath, newData.getData(newData.dataPath.containerClass))
@@ -98,12 +98,12 @@ class DeviceListenerService : WearableListenerService() {
      */
     private fun <T> handleDataChange(dataConsumer: DataConsumer<T>, newData: T) {
         // check valid path. Unknown path = ignore received data
-//        Logger.logD(
+//        Logger.d(
 //                TAG, "handleDataChange($dataConsumer, $newData), " +
 //                "path: ${dataConsumer.getPath(newData)}"
 //        )
         val p = dataConsumer.getPath(newData)
-                ?: return
+            ?: return
         when (p) {
             DataPath.TD_KEEP_ALIVE,
             DataPath.TD_GET_HAND_SHAKE,
@@ -124,9 +124,10 @@ class DeviceListenerService : WearableListenerService() {
                     }, TimeUnit.SECONDS.toMillis(INACTIVITY_TIMEOUT_SECONDS.toLong()))
                 }
                 DeviceCommService.getInstance(this)
-                        .doUpdateReceiveTimestamp()
+                    .doUpdateReceiveTimestamp()
                 dataConsumer.consume(this, DeviceCommService.getInstance(this), newData)
             }
+
             else -> {
                 dataConsumer.consume(this, DeviceCommService.getInstance(this), newData)
             }

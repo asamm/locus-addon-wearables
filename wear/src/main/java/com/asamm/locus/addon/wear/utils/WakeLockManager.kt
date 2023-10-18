@@ -2,7 +2,7 @@ package com.asamm.locus.addon.wear.utils
 
 import android.content.Context
 import android.os.PowerManager
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 import java.lang.Exception
 
 /**
@@ -24,7 +24,7 @@ class WakeLockManager(val tag: String) {
             if (wakeLock == null) {
                 wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, tag)
                 if (wakeLock == null) {
-                    Logger.logE(tag,"Could not create wake lock (null).")
+                    Logger.e(null, tag,"Could not create wake lock (null).")
                     return
                 }
             }
@@ -34,12 +34,12 @@ class WakeLockManager(val tag: String) {
                 if (!it.isHeld) {
                     it.acquire()
                     if (!it.isHeld) {
-                        Logger.logE(tag,"Could not acquire wake lock.")
+                        Logger.e(null, tag,"Could not acquire wake lock.")
                     }
                 }
             }
         } catch (e: RuntimeException) {
-            Logger.logE(tag, "acquireWakeLock()", e)
+            Logger.e(e, tag, "acquireWakeLock()")
         }
     }
 
@@ -52,7 +52,7 @@ class WakeLockManager(val tag: String) {
             try {
                 release()
             } catch (e: Exception) {
-                Logger.logE(tag, "releaseWakeLock()", e)
+                Logger.e(e, tag, "releaseWakeLock()")
             }
         }
 

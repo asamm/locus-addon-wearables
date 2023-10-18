@@ -4,14 +4,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors
 
 val AppColorPalette: Colors = Colors(
-        primary = Color(0xFF1976d2),
-        primaryVariant = Color(0xFF004ba0),
-        secondary = Color(0xFFd84315),
-        secondaryVariant = Color(0xFF9f0000),
-        error = Color(0xFFb00020),
-        background = Color.White,
-        onPrimary = Color.White,
-        onSecondary = Color.White,
-        onError = Color.Black,
-        onBackground = Color.Black
+        primary = Color(0xffa5c8ff),
+        primaryVariant = Color(0xff004786),
+        secondary = Color(0xffa5c8ff),
+        secondaryVariant = Color(0xff004786),
+        error = Color(0xffffb4ab),
+        background = Color(0xff121212),
+        onPrimary = Color(0xff00315f),
+        onSecondary = Color(0xffd4e3ff),
+        onError = Color(0xff690005),
+        onBackground = Color(0xf5ffffff),
 )

@@ -8,7 +8,7 @@ package com.asamm.locus.addon.wear.features.trackRecord.recording.sensors
 import android.content.Context
 import android.os.BatteryManager
 import com.asamm.locus.addon.wear.MainApplication
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 
 object RecordingSensorStore {
 
@@ -32,7 +32,7 @@ object RecordingSensorStore {
                     val batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
                     battery.value = batLevel
                 } catch (e: Exception) {
-                    Logger.logE("RecordingSensorStore", "Battery level read failed", e)
+                    Logger.e(e, "RecordingSensorStore", "Battery level read failed")
                     battery.value = BatteryValue.INVALID_VALUE
                 }
             }

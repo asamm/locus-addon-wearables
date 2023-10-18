@@ -13,7 +13,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
+
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -45,10 +45,10 @@ public class TrackStatLayout extends ConstraintLayout {
     private int mGravity;
     private boolean isPositionTopScreen;
     // formatted text of measured value/statistics
-    private TextView mTextViewValue;
+    private TextView textViewValue;
 
-    private ImageView mImageViewIcon;
-    private TextView mTextViewDescription;
+    private ImageView imageViewIcon;
+    private TextView textViewDescription;
     private TrackStatViewId trackStatViewPositionId = new TrackStatViewId(-1, -1);
     private LinearLayout blankInfo = null;
 
@@ -103,24 +103,24 @@ public class TrackStatLayout extends ConstraintLayout {
             layoutId = R.layout.track_stat_layout_icon_bottom;
         }
         View v = View.inflate(ctx, layoutId, this);
-        mTextViewValue = v.findViewById(R.id.stat_value);
-        mImageViewIcon = v.findViewById(R.id.stat_icon);
-        mTextViewDescription = v.findViewById(R.id.stat_description);
+        textViewValue = v.findViewById(R.id.stat_value);
+        imageViewIcon = v.findViewById(R.id.stat_icon);
+        textViewDescription = v.findViewById(R.id.stat_description);
 
         // apply a bit of margin to the description text on round screens
         if (!isPositionCentered() && getContext().getResources().getConfiguration().isScreenRound()) {
             int widthMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                     4, getContext().getResources().getDisplayMetrics());
             if (isAlignRight()) {
-                ((LayoutParams) mTextViewDescription.getLayoutParams()).leftMargin = widthMargin;
+                ((LayoutParams) textViewDescription.getLayoutParams()).leftMargin = widthMargin;
             } else {
-                ((LayoutParams) mTextViewDescription.getLayoutParams()).rightMargin = widthMargin;
+                ((LayoutParams) textViewDescription.getLayoutParams()).rightMargin = widthMargin;
             }
         }
 
-        mTextViewValue.setGravity(mGravity);
-        mTextViewDescription.setGravity(mGravity);
-        mImageViewIcon.setScaleType(isPositionCentered() ? ImageView.ScaleType.FIT_CENTER :
+        textViewValue.setGravity(mGravity);
+        textViewDescription.setGravity(mGravity);
+        imageViewIcon.setScaleType(isPositionCentered() ? ImageView.ScaleType.FIT_CENTER :
                 isAlignRight() ? ImageView.ScaleType.FIT_END : ImageView.ScaleType.FIT_START);
     }
 
@@ -133,9 +133,9 @@ public class TrackStatLayout extends ConstraintLayout {
 
     public void setType(TrackStatTypeEnum statType) {
         this.mType = statType;
-        mImageViewIcon.setImageDrawable(ContextCompat.getDrawable(getContext(), mType.getIconId()));
-        mTextViewDescription.setText(getResources().getText(mType.getNameStringId()));
-        mTextViewValue.setText("");
+        imageViewIcon.setImageResource(mType.getIconId());
+        textViewDescription.setText(mType.getNameStringId());
+        textViewValue.setText("");
 
         // initiate blank value overlay and set its layout properties based on position of the cell
         if (mType == TrackStatTypeEnum.BLANK && blankInfo == null) {
@@ -171,16 +171,16 @@ public class TrackStatLayout extends ConstraintLayout {
         TrackStatConsumable.ValueUnitContainer newValue = mType.consumeAndFormat(trv);
         SpannableStringBuilder ssb = new SpannableStringBuilder(newValue.getValue());
         SpannableTextUtils.addStyledText(ssb, " " + newValue.getUnits(), 0.5f, Typeface.NORMAL, 0);
-        mTextViewValue.setText(ssb);
+        textViewValue.setText(ssb);
     }
 
     public void setAmbientMode(boolean enabled) {
-        mTextViewDescription.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
-        mTextViewValue.setTextColor(enabled ? getContext().getColor(R.color.base_light_primary) : getContext().getColor(R.color.base_dark_primary));
+        textViewDescription.setTextColor(getContext().getColor(R.color.color_on_background));
+        textViewValue.setTextColor(getContext().getColor(R.color.color_on_background));
         if (enabled) {
-            mImageViewIcon.setColorFilter(getResources().getColor(R.color.base_light_primary));
+            imageViewIcon.setColorFilter(getContext().getColor(R.color.color_on_background));
         } else {
-            mImageViewIcon.clearColorFilter();
+            imageViewIcon.clearColorFilter();
         }
     }
 }

@@ -25,7 +25,6 @@
         android:gravity="center_vertical|right"
         app:positionTop="false" />
 
-
     <ImageButton
         android:id="@+id/image_view_track_rec_pause"
         style="@style/ButtonTrackRecord.Ext"

@@ -1,4 +1,5 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linear_layout"
     android:layout_width="match_parent"
@@ -11,18 +12,15 @@
         android:layout_width="@dimen/list_select_icon_height"
         android:layout_height="@dimen/list_select_icon_height"
         android:src="@drawable/ic_plus"
-        android:tint="@color/grey"
-        />
+        app:tint="@color/color_on_background" />
 
     <TextView
-        android:id="@+id/info"
         style="@style/statDescription"
+        android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="2"
-        android:textColor="@color/grey"
         android:gravity="center"
-        android:text="@string/stat_blank_info_text"
-        />
+        android:maxLines="2"
+        android:text="@string/stat_blank_info_text" />
 </LinearLayout>
 

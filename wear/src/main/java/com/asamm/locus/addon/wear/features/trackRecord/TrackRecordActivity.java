@@ -51,13 +51,12 @@ import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackRecordAc
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatTypeEnum;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatViewId;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatsSelectListActivity;
+import com.asamm.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import locus.api.utils.Logger;
 
 import static com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivityState.IDLE;
 import static com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivityState.IDLE_WAITING;
@@ -194,7 +193,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 if (isProfileListNotEmpty.test(profiles)) {
                     runOnUiThread(() -> onNewProfilesReceived(profiles));
                 } else {
-                    Logger.INSTANCE.logE(TAG, "Received empty profile list.");
+                    Logger.INSTANCE.e(new Exception(), "Received empty profile list.");
                     getMainApplication().sendDataWithWatchDogConditionable(
                             new DataPayload<>(DataPath.GET_TRACK_REC_PROFILES, new EmptyCommand()),
                             DataPath.PUT_TRACK_REC_PROFILE_INFO, WATCHDOG_TIMEOUT,
@@ -266,7 +265,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 mProfileSelect.setParameters(info);
                 PreferencesEx.persistLastTrackRecProfile(mProfileSelect.getProfile());
             } catch (IOException e) {
-                Logger.INSTANCE.logE("TAG", "empty profile bytes", e);
+                Logger.INSTANCE.e(e, "TAG", "empty profile bytes");
 
             }
         } else {
@@ -471,7 +470,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     private void transitionToIdlestate() {
         setIdleScreenEnabled(false);
         mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
-        Logger.INSTANCE.logD(TAG, "setting idle screen");
+        Logger.d(TAG, "setting idle screen");
     }
 
     /**
@@ -481,7 +480,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         stopTrackRecService();
         setIdleScreenEnabled(true);
         mRecViewFlipper.setDisplayedChild(FLIPPER_START_RECORDING_SCREEN_IDX);
-        Logger.INSTANCE.logD(TAG, "Enabling idle screen");
+        Logger.d(TAG, "Enabling idle screen");
     }
 
     /**
@@ -490,7 +489,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
     private void transitionToRecState() {
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
-        Logger.INSTANCE.logD(TAG, "setting rec screen");
+        Logger.d(TAG, "setting rec screen");
     }
 
     /**
@@ -500,7 +499,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
         startTrackRecService();
         mRecordingScrollScreen.onTrackActivityStateChange(this, mStateMachine.getCurrentState());
         mRecViewFlipper.setDisplayedChild(FLIPPER_RECORDING_RUNNING_SCREEN_IDX);
-        Logger.INSTANCE.logD(TAG, "Enabling rec screen");
+        Logger.d(TAG, "Enabling rec screen");
     }
 
     private void transitionToPauseState() {

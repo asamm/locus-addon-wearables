@@ -1,12 +1,12 @@
 package com.asamm.locus.addon.wear.common.communication.containers.commands;
 
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.logger.Logger;
 
 import java.io.IOException;
 
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
-import locus.api.utils.Logger;
 
 /**
  * Command/request to start sending specifyied periodic data udpates
@@ -81,7 +81,7 @@ public class PeriodicCommand extends TimeStampStorable {
 					mExtra = dr.readStorable(TimeStampStorable.class);
 				}
 			} catch (Exception e) {
-				Logger.INSTANCE.logE(TAG, "Failed to instantiate extra data.", e);
+				Logger.e(e, TAG, "Failed to instantiate extra data.");
 				mExtra = null;
 			}
 		} else {

@@ -30,4 +30,5 @@ dependencies {
     // libraries
     api(Libraries.googlePsWear)
     api(Libraries.locusApiAndroid)
+    api(Libraries.locusApiLogger)
 }

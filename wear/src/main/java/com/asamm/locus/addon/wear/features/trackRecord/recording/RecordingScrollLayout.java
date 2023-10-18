@@ -25,7 +25,7 @@ import com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivityState;
 
 import java.util.List;
 
-import locus.api.utils.Logger;
+import com.asamm.logger.Logger;
 
 public class RecordingScrollLayout extends ScrollView implements TrackRecordingControllerUpdatable {
     private static final String TAG = "RecordingScrollLayout";
@@ -52,8 +52,6 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
     }
 
     public void setFeatureItems(List<TrackRecordingControllerUpdatable> items) {
-        setHorizontalScrollBarEnabled(false);
-        setVerticalScrollBarEnabled(false);
         //Create a linear layout to hold each mScreens in the scroll view
         LinearLayout internalWrapper = new LinearLayout(getContext());
         internalWrapper.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -185,7 +183,7 @@ public class RecordingScrollLayout extends ScrollView implements TrackRecordingC
                     return true;
                 }
             } catch (Exception e) {
-                Logger.INSTANCE.logE(TAG, "There was an error processing the Fling event.", e);
+                Logger.e(e, TAG, "There was an error processing the Fling event.");
             }
             return false;
         }

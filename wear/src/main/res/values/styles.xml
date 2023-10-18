@@ -6,7 +6,6 @@
     <style name="rootActivityStyle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/white</item>
         <item name="android:padding">@dimen/box_inset_layout_padding</item>
     </style>
 
@@ -24,6 +23,7 @@
     <!-- *************************************************** -->
     <!-- STATISTICS -->
     <!-- *************************************************** -->
+
     <style name="trackStatLayoutStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">0dp</item>
@@ -51,6 +51,7 @@
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
         <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/color_on_background</item>
     </style>
 
     <style name="statText.Big">
@@ -64,7 +65,7 @@
         <item name="android:textSize">@dimen/text_size_minuscule</item>
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:color">@color/grey</item>
+        <item name="android:textColor">@color/color_on_background</item>
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
     </style>
@@ -142,8 +143,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:drawablePadding">@dimen/component_padding_half</item>
         <item name="android:layout_margin">0dp</item>
-        <item name="android:textColor">@color/base_dark_primary</item>
-        <item name="android:drawableTint">@color/base_primary</item>
+        <item name="android:textColor">@color/color_on_background</item>
+        <item name="android:drawableTint">@color/color_on_background</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
@@ -158,6 +159,7 @@
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:gravity">center_vertical|left</item>
         <item name="android:textSize">@dimen/text_size_huge</item>
+        <item name="android:textColor">@color/color_on_background</item>
     </style>
 
 </resources>

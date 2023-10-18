@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import locus.api.utils.Logger;
+import com.asamm.logger.Logger;
 
 /**
  * Watchdog class for automated keep alive data request transmission
@@ -58,14 +58,14 @@ public class WatchDog {
         appFailCallback = null;
         watchedActivities = new HashMap<>(5);
         startWdTimer();
-        Logger.INSTANCE.logW(TAG, "Starting watchdog");
+        Logger.w(TAG, "Starting watchdog");
     }
 
     /**
      * Destroy watchDog and all referenced services.
      */
     void destroy() {
-        Logger.INSTANCE.logW(TAG, "Terminating watchdog");
+        Logger.w(TAG, "Terminating watchdog");
         appFailCallback = null;
         synchronized (WATCHDOG_LOCK) {
             if (wdTimer != null) {
@@ -135,7 +135,7 @@ public class WatchDog {
 //                "trackRec: " + TrackRecordingService.isRunning());
         // seems both trackRec service and main application were killed. Destroy watchdog immediately
         if (MainApplication.app == null && !TrackRecordingService.isRunning()) {
-            Logger.INSTANCE.logW(TAG, "Application termination detected");
+            Logger.w(TAG, "Application termination detected");
             destroy();
             return;
         }
@@ -178,11 +178,11 @@ public class WatchDog {
         }
         AppFailCallback onFail = appFailCallback;
         if (failed && onFail != null) {
-            Logger.INSTANCE.logD(TAG, "Watchdog fail event");
+            Logger.d(TAG, "Watchdog fail event");
             onFail.onAppFail(AppFailType.CONNECTION_FAILED);
         } else if (reqsToResend != null) {
             for (DataPayload p : reqsToResend) {
-                Logger.INSTANCE.logD(TAG, "Watchdog retry request " + p.getPath());
+                Logger.d(TAG, "Watchdog retry request " + p.getPath());
                 WearCommService.getInstance().sendDataItem(p.getPath(), p.getStorable());
             }
         }

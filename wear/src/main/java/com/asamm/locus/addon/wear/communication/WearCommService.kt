@@ -17,7 +17,7 @@ import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
 import com.google.android.gms.wearable.Wearable
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 import java.util.concurrent.TimeUnit
 
 /**
@@ -51,7 +51,7 @@ class WearCommService private constructor(val app: MainApplication)
     }
 
     override fun onConnected(bundle: Bundle?) {
-        Logger.logD("WearCommService", "onConnected($bundle)")
+        Logger.d("WearCommService", "onConnected($bundle)")
         super.onConnected(bundle)
         // Set up listeners for capability changes (install/uninstall of remote app).
         Wearable.CapabilityApi.addCapabilityListener(
@@ -64,13 +64,13 @@ class WearCommService private constructor(val app: MainApplication)
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Logger.logD("WearCommService", "onConnectionFailed($connectionResult)")
+        Logger.d("WearCommService", "onConnectionFailed($connectionResult)")
         super.onConnectionFailed(connectionResult)
         reconnectIfNeeded()
     }
 
     override fun onConnectionSuspended(i: Int) {
-        Logger.logD("WearCommService", "onConnectionSuspended($i)")
+        Logger.d("WearCommService", "onConnectionSuspended($i)")
         super.onConnectionSuspended(i)
         reconnectIfNeeded()
     }

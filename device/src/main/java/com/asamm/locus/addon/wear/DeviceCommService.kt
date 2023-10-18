@@ -17,6 +17,7 @@ import com.asamm.locus.addon.wear.common.communication.containers.commands.*
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.*
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue.ExtendedTrackInfo
 import com.asamm.locus.addon.wear.common.utils.Pair
+import com.asamm.logger.Logger
 import com.google.android.gms.wearable.DataEvent
 import locus.api.android.ActionBasics
 import locus.api.android.ActionMapTools.getMapPreview
@@ -30,7 +31,6 @@ import locus.api.android.utils.LocusUtils.getActiveVersion
 import locus.api.android.utils.LocusUtils.sendBroadcast
 import locus.api.android.utils.exceptions.RequiredVersionMissingException
 import locus.api.objects.extra.Location
-import locus.api.utils.Logger
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.cos
@@ -72,7 +72,7 @@ class DeviceCommService private constructor(ctx: Context)
      * Default init.
      */
     init {
-        Logger.logD(TAG, "Device comm service started.")
+        Logger.d(TAG, "Device comm service started.")
         try {
             lv = getActiveVersion(ctx)
 
@@ -85,7 +85,7 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     override fun destroy() {
-        Logger.logD(TAG, "destroy()")
+        Logger.d(TAG, "destroy()")
         super.destroy()
 
         // stop receiver
@@ -101,7 +101,7 @@ class DeviceCommService private constructor(ctx: Context)
         val item = newData.dataItem
         val path = DataPath.valueOf(item)
         if (path == null) {
-            Logger.logD(
+            Logger.d(
                     TAG, "onDataChanged($c, $newData), " +
                     "invalid path"
             )
@@ -116,12 +116,12 @@ class DeviceCommService private constructor(ctx: Context)
      * Handle data registered primary over `onMessageReceived` callback.
      */
     fun onDataReceived(ctx: Context, path: DataPath, params: TimeStampStorable?) {
-        Logger.logD(TAG, "onDataReceived($ctx, $path, $params)")
+        Logger.d(TAG, "onDataReceived($ctx, $path, $params)")
 
         // check if refresher works and restart if needed
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastUpdateContainerReceived > REENABLE_PERIODIC_RECEIVER_TIMEOUT_MS) {
-            Logger.logE(TAG, "Periodic receiver seems offline, trying to restart.")
+            Logger.e(ex = null, TAG, "Periodic receiver seems offline, trying to restart.")
             try {
                 // reload data
                 reloadUpdateContainer()
@@ -129,7 +129,7 @@ class DeviceCommService private constructor(ctx: Context)
                 // start refresher
                 startRefresher()
             } catch (e: RequiredVersionMissingException) {
-                Logger.logW(TAG, "onDataReceived, RequiredVersionMissingException")
+                Logger.w(TAG, "onDataReceived, RequiredVersionMissingException")
             }
         }
 
@@ -181,7 +181,7 @@ class DeviceCommService private constructor(ctx: Context)
                 val lastDevKeepAlive = getLastTransmitTimeFor(DataPath.TW_KEEP_ALIVE)
                 val lastUpdate = lastUpdateContainer
                 if (lastUpdate != null && !lastUpdate.isTrackRecRecording) {
-                    Logger.logD(TAG, "sending STOP_WATCH_TRACK_REC_SERVICE")
+                    Logger.d(TAG, "sending STOP_WATCH_TRACK_REC_SERVICE")
                     sendCommand(DataPath.STOP_WATCH_TRACK_REC_SERVICE)
                     pushLastTransmitTimeFor(DataPath.TW_KEEP_ALIVE)
                 } else if (currentTime - lastDevKeepAlive > DEVICE_KEEP_ALIVE_SEND_PERIOD_MS) {
@@ -213,7 +213,7 @@ class DeviceCommService private constructor(ctx: Context)
     private fun loadHandShake(ctx: Context): HandShakeValue {
         lv?.let {
             val locusInfo = ActionBasics.getLocusInfo(ctx, it)
-            Logger.logD(TAG, "loadHandShake($ctx), lv: $it, $locusInfo")
+            Logger.d(TAG, "loadHandShake($ctx), lv: $it, $locusInfo")
             return HandShakeValue(
                     it.versionCode,
                     // - 1 to compensate for device suffix
@@ -221,7 +221,7 @@ class DeviceCommService private constructor(ctx: Context)
                     locusInfo != null && locusInfo.isRunning
             )
         } ?: run {
-            Logger.logD(TAG, "loadHandShake($ctx), lv not known")
+            Logger.d(TAG, "loadHandShake($ctx), lv not known")
             return HandShakeValue()
         }
     }
@@ -272,7 +272,7 @@ class DeviceCommService private constructor(ctx: Context)
                 trackRecProfiles = ActionBasics.getTrackRecordingProfiles(ctx, lv)
             }
         } catch (e: RequiredVersionMissingException) {
-            Logger.logE(TAG, "loadTrackRecordProfiles()", e)
+            Logger.e(e, TAG, "loadTrackRecordProfiles()", e)
 
             // clear data
             trackRecProfiles = null
@@ -304,7 +304,7 @@ class DeviceCommService private constructor(ctx: Context)
                 ActionBasics.actionTrackRecordAddWpt(ctx, lv!!, wpName, true)
             }
         } catch (e: RequiredVersionMissingException) {
-            Logger.logE(TAG, "Invalid version $lv, can't add WPT", e)
+            Logger.e(e, TAG, "Invalid version $lv, can't add WPT")
             throw IllegalStateException(e)
         }
 
@@ -321,7 +321,7 @@ class DeviceCommService private constructor(ctx: Context)
         if (tmpLv != null) {
             sendBroadcast(c, i, tmpLv)
         } else {
-            Logger.logE(TAG, "Cannot send broadcast, LocusVersion is null.")
+            Logger.e(ex = null, TAG, "Cannot send broadcast, LocusVersion is null.")
         }
     }
 
@@ -441,7 +441,7 @@ class DeviceCommService private constructor(ctx: Context)
                     )
             )
         } catch (e: RequiredVersionMissingException) {
-            Logger.logE(TAG, "loadMapPreview($lv)")
+            Logger.e(ex = null, TAG, "loadMapPreview($lv)")
         }
         val locusInfo = ActionBasics.getLocusInfo(ctx, lv!!)
         // if there is no offset applied, then return last know location
@@ -523,13 +523,13 @@ class DeviceCommService private constructor(ctx: Context)
                     )
                 }
             } catch (e: RequiredVersionMissingException) {
-                Logger.logE(TAG, "Invalid version $lv, cant change track recording state.", e)
+                Logger.e(e, TAG, "Invalid version $lv, cant change track recording state.")
             }
         }
         try {
             reloadUpdateContainer(ctx)
         } catch (e: RequiredVersionMissingException) {
-            Logger.logW(TAG, "getDataUpdateContainer() - RequiredVersionMissingException")
+            Logger.w(TAG, "getDataUpdateContainer() - RequiredVersionMissingException")
         }
         val trv = loadTrackRecordingValue(ctx)
         sendDataItem(DataPath.PUT_TRACK_REC, trv)
@@ -565,7 +565,7 @@ class DeviceCommService private constructor(ctx: Context)
     var refresher: Thread? = null
 
     private fun startRefresher() {
-        Logger.logD(
+        Logger.d(
                 TAG, "startRefresher(), " +
                 "aboutToBeDestroyed: $aboutToBeDestroyed"
         )
@@ -580,7 +580,7 @@ class DeviceCommService private constructor(ctx: Context)
     }
 
     private fun stopRefresher() {
-        Logger.logD(
+        Logger.d(
                 TAG, "stopRefresher(), " +
                 "current: ${refresher?.hashCode()}"
         )
@@ -592,7 +592,7 @@ class DeviceCommService private constructor(ctx: Context)
      */
     private fun reloadUpdateContainer(ctx: Context = context) {
         val uc = lv?.let { ActionBasics.getUpdateContainer(ctx, it) }
-        Logger.logD(TAG, "reloadUpdateContainer(), uc: $uc")
+        Logger.d(TAG, "reloadUpdateContainer(), uc: $uc")
         if (uc != null) {
             lastUpdateContainer = uc
             lastUpdateContainerReceived = System.currentTimeMillis()
@@ -607,7 +607,7 @@ class DeviceCommService private constructor(ctx: Context)
     private inner class Refresher : Runnable {
 
         override fun run() {
-            Logger.logD(TAG, "refresher: started: ${Thread.currentThread().hashCode()}")
+            Logger.d(TAG, "refresher: started: ${Thread.currentThread().hashCode()}")
             while (true) {
                 Thread.sleep(1000)
                 // stop refresher
@@ -618,7 +618,7 @@ class DeviceCommService private constructor(ctx: Context)
                 // request new data
                 reloadUpdateContainer()
             }
-            Logger.logD(TAG, "refresher $refresher finished")
+            Logger.d(TAG, "refresher $refresher finished")
         }
     }
 
@@ -669,7 +669,7 @@ class DeviceCommService private constructor(ctx: Context)
 
                     // destroy instance
                     _instance = null
-                    Logger.logD(TAG, "Destroying device comm instance")
+                    Logger.d(TAG, "Destroying device comm instance")
                 }
             }
         }

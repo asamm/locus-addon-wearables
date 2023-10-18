@@ -12,7 +12,7 @@ import java.util.List;
 import locus.api.objects.Storable;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
-import locus.api.utils.Logger;
+import com.asamm.logger.Logger;
 
 /**
  * Class for representation of Track recording activity statistics layout configuration
@@ -45,7 +45,7 @@ public class TrackRecordActivityConfiguration {
             config.screens.get(screenIdx).setCellTypeAtIdx(cellIdx, newStat);
             PreferencesEx.persistStatsScreenConfiguration(this);
         } else {
-            Logger.INSTANCE.logE(TAG, "invalid TrackStat cell index (" + screenIdx + ", " + cellIdx + ")");
+            Logger.e(TAG, "invalid TrackStat cell index (" + screenIdx + ", " + cellIdx + ")");
         }
     }
 

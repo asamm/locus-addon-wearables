@@ -6,8 +6,7 @@ package com.asamm.locus.addon.wear
 
 import android.app.Application
 import android.util.Log
-import locus.api.utils.Logger
-import locus.api.utils.Logger.registerLogger
+import com.asamm.logger.Logger
 
 class MainApplication : Application() {
 
@@ -15,26 +14,26 @@ class MainApplication : Application() {
         super.onCreate()
 
         // set logger
-        registerLogger(object : Logger.ILogger {
+        Logger.registerLogger(object : Logger.ILogger {
 
-            override fun logI(tag: String, msg: String) {
-                Log.i(tag, msg)
-            }
-
-            override fun logD(tag: String, msg: String) {
+            override fun logD(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
                 Log.d(tag, msg)
             }
 
-            override fun logW(tag: String, msg: String) {
+            override fun logI(tag: String, msg: String, vararg args: Any) {
+                Log.i(tag, msg)
+            }
+
+            override fun logV(tag: String, msg: String, vararg args: Any) {
+                Log.i(tag, msg)
+            }
+
+            override fun logW(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
                 Log.w(tag, msg)
             }
 
-            override fun logE(tag: String, msg: String) {
-                Log.e(tag, msg)
-            }
-
-            override fun logE(tag: String, msg: String, e: Exception) {
-                Log.e(tag, msg, e)
+            override fun logE(ex: Throwable?, tag: String, msg: String, vararg args: Any) {
+                Log.e(tag, msg, ex)
             }
         })
     }

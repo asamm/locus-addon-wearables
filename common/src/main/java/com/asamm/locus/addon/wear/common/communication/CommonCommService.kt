@@ -9,6 +9,7 @@ import android.os.Bundle
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable
 import com.asamm.locus.addon.wear.common.communication.containers.commands.EmptyCommand
 import com.asamm.locus.addon.wear.common.utils.Pair
+import com.asamm.loggerV2.logE
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.wearable.Asset
@@ -16,7 +17,6 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.PutDataRequest
 import com.google.android.gms.wearable.Wearable
 import locus.api.objects.Storable
-import locus.api.utils.Logger
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -25,18 +25,18 @@ import java.util.concurrent.ConcurrentLinkedQueue
  * Derived classes are meant to be implemented as singleton.
  */
 open class CommonCommService protected constructor(protected var context: Context) :
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private val MAX_DATA_ITEM_SIZE_B = 99 * 1024
 
     // Google API client
     protected var googleApiClient = GoogleApiClient.Builder(context.applicationContext)
-            .addApi(Wearable.API)
-            .addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .build().apply {
-                // connect the GoogleApiClient
-                this.connect()
-            }
+        .addApi(Wearable.API)
+        .addConnectionCallbacks(this)
+        .addOnConnectionFailedListener(this)
+        .build().apply {
+            // connect the GoogleApiClient
+            this.connect()
+        }
 
     val isConnected: Boolean
         get() = googleApiClient.isConnected
@@ -81,7 +81,7 @@ open class CommonCommService protected constructor(protected var context: Contex
     }
 
     fun reconnectIfNeeded() {
-//        Logger.logD(
+//        Logger.d(
 //                "CommonCommService", "reconnectIfNeeded(), " +
 //                "connected: " + isConnected + ", " +
 //                "connecting: " + isConnecting
@@ -104,7 +104,7 @@ open class CommonCommService protected constructor(protected var context: Contex
      * Sends given [data] to given [path].
      */
     fun sendDataItem(path: DataPath, data: TimeStampStorable) {
-//        Logger.logD(
+//        Logger.d(
 //                "CommonCommService",
 //                "sendDataItem($path, $data), " +
 //                        "connected: ${googleApiClient.isConnected}"
@@ -153,7 +153,7 @@ open class CommonCommService protected constructor(protected var context: Contex
             } else {
                 // blocking call - asset receive
                 val assetInputStream = Wearable.getDataClient(context).getFdForAsset(
-                        asset
+                    asset
                 ).result.inputStream
                 val baos = ByteArrayOutputStream()
                 var nRead: Int
@@ -166,7 +166,9 @@ open class CommonCommService protected constructor(protected var context: Contex
                 storable as E
             }
         } catch (e: Exception) {
-            Logger.logE("DataPath", "Constructor failed for " + path.name, e)
+            logE(tag = TAG) {
+                "Constructor failed for " + path.name
+            }
             null
         }
     }

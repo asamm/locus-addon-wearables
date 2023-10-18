@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.wear.widget.WearableLinearLayoutManager;
 import androidx.wear.widget.WearableRecyclerView;
 import locus.api.android.utils.UtilsBitmap;
-import locus.api.utils.Logger;
+import com.asamm.logger.Logger;
 
 /**
  * Activity containing single recycler view for choosing recording profile.
@@ -84,7 +84,7 @@ public class ProfileListActivity extends LocusWearActivity {
                 mProfiles = new TrackProfileInfoValue.ValueList();
                 mProfiles.read(arr);
             } catch (IOException e) {
-                Logger.INSTANCE.logE(TAG, "profile info constructor failed", e);
+                Logger.e(e, TAG, "profile info constructor failed");
                 finish();
             }
         }

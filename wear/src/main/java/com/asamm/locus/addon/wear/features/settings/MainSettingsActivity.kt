@@ -36,7 +36,7 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.compose.*
 import com.asamm.locus.addon.wear.gui.compose.theme.AppTheme
 import com.asamm.locus.addon.wear.utils.FeatureConfigEnum
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 
 /**
  * Main app settings activity.
@@ -162,7 +162,7 @@ class MainSettingsActivity : LocusWearActivity() {
     private fun enableHrm() {
         runOnUiThread {
             val hrmState = PreferencesEx.hrmFeatureConfigState
-            Logger.logD(TAG, "enableHrm(), state: $hrmState")
+            Logger.d(TAG, "enableHrm(), state: $hrmState")
 
             // check permission
             if (hrmState === FeatureConfigEnum.NO_PERMISSION) {

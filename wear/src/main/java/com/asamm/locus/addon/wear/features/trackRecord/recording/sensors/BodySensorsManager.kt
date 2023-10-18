@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat
 import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.utils.FeatureConfigEnum
-import locus.api.utils.Logger
+import com.asamm.logger.Logger
 import kotlin.math.abs
 
 /**
@@ -38,7 +38,7 @@ class BodySensorsManager {
             hrm = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
         }
         if (hrm == null) {
-            Logger.logE(
+            Logger.e(ex = null,
                 TAG, "Failed to get sensor in startHrSensor(). " +
                         "Sensor manager is " + (if (sensorManager == null) "" else " not ") + " null."
             )
@@ -47,7 +47,7 @@ class BodySensorsManager {
 
         synchronized(this) {
             if (sensorEventListener != null) {
-                Logger.logD(TAG, "mSensorEventListener already registered")
+                Logger.d(TAG, "mSensorEventListener already registered")
                 return true
             }
             sensorEventListener = object : SensorEventListener {
@@ -85,9 +85,9 @@ class BodySensorsManager {
         if (sensorEventListener == null) return
         val sensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         if (sensorManager == null) {
-            Logger.logE(TAG, "Failed to get sensorManager in stopHrSensor(). ")
+            Logger.e(ex = null, TAG, "Failed to get sensorManager in stopHrSensor(). ")
         } else {
-            Logger.logD(TAG, "Removing HRM listener")
+            Logger.d(TAG, "Removing HRM listener")
             synchronized(this) {
                 if (sensorEventListener != null) {
                     sensorManager.unregisterListener(sensorEventListener)
@@ -134,7 +134,7 @@ class BodySensorsManager {
         fun recheckSensorAvailability(ctx: Context): FeatureConfigEnum {
             val currentState = PreferencesEx.hrmFeatureConfigState
             if (currentState !== FeatureConfigEnum.NOT_AVAILABLE) {
-                Logger.logW(TAG, "recheckSensorAvailability(), called with state  FeatureConfigEnum.NOT_AVAILABLE ")
+                Logger.w(TAG, "recheckSensorAvailability(), called with state  FeatureConfigEnum.NOT_AVAILABLE ")
                 // Other state than not available, do not check, should have not been called at all.
                 return currentState
             }
@@ -151,7 +151,7 @@ class BodySensorsManager {
             owner: LocusWearActivity,
             requestCode: Int
         ): FeatureConfigEnum {
-            Logger.logD(TAG, "handlePermissionResult($owner, $requestCode)")
+            Logger.d(TAG, "handlePermissionResult($owner, $requestCode)")
             if (requestCode == HR_REQUEST_CODE) {
                 val newState = getHrmSensorState(owner)
                 PreferencesEx.hrmFeatureConfigState = newState
@@ -180,7 +180,7 @@ class BodySensorsManager {
                     FeatureConfigEnum.NOT_AVAILABLE
                 }
             } catch (e: Exception) {
-                Logger.logE(TAG, "getHrmSensorState($ctx)", e)
+                Logger.e(e, TAG, "getHrmSensorState($ctx)")
                 FeatureConfigEnum.NOT_AVAILABLE
             }
         }

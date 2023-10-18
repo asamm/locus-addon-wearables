@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.FragmentActivity
 import androidx.wear.ambient.AmbientModeSupport
 import com.asamm.locus.addon.wear.BuildConfig
@@ -32,8 +33,10 @@ import com.asamm.locus.addon.wear.features.settings.MainSettingsActivity
 import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
+import com.asamm.logger.Logger
+import com.asamm.loggerV2.Log
+import com.asamm.loggerV2.logD
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
-import locus.api.utils.Logger
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -134,6 +137,9 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         state = WearActivityState.ON_CREATE
         super.onCreate(savedInstanceState)
 
+        // set dark mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
         // enable ambient support
         if (supportAmbientMode) {
             AmbientModeSupport.attach(this)
@@ -225,7 +231,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      * Consumes new data coming from WearListenerService
      */
     open fun consumeNewData(path: DataPath, data: TimeStampStorable?) {
-        //Logger.logD(TAG, "consumeNewData($path, $data)")
+        //Logger.d(TAG, "consumeNewData($path, $data)")
         if (connectionFailedTimer != null) {
             when {
                 path === DataPath.PUT_ON_CONNECTED_EVENT -> {
@@ -259,12 +265,12 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
      */
     private fun verifyConnection(): Boolean {
         val wcs = WearCommService.instance
-        Logger.logD(
-            TAG, "verifyConnection(), " +
-                    "API connected: ${wcs.isConnected}, " +
+        logD {
+            "verifyConnection(), " +
+            "API connected: ${wcs.isConnected}, " +
                     "isNodeConnected: $isNodeConnected, " +
                     "deviceAppInstalled: ${wcs.isAppInstalledOnDevice}"
-        )
+        }
 
         // check connection to Google API
         if (!wcs.isConnected) {
@@ -274,11 +280,11 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
         // check connection to phone
         if (!isNodeConnected) {
-            Logger.logD(TAG, "verifyConnection(), node not connected")
+            Logger.d(TAG, "verifyConnection(), node not connected")
             if (!getConnectedNodesSent.getAndSet(true)) {
                 wcs.getConnectedNodes { result: GetConnectedNodesResult ->
                     for (node in result.nodes) {
-                        Logger.logD(TAG, "  testing node $node, nearby: ${node.isNearby}")
+                        Logger.d(TAG, "  testing node $node, nearby: ${node.isNearby}")
                         if (node.isNearby) {
                             isNodeConnected = true
                             break
@@ -286,7 +292,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                     }
 
                     // check connection
-                    Logger.logD(TAG, "  all nodes tested, connected: $isNodeConnected")
+                    Logger.d(TAG, "  all nodes tested, connected: $isNodeConnected")
                     if (isNodeConnected) {
                         verifyConnection()
                     } else {
@@ -311,7 +317,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         if (ticks.toInt() == HANDSHAKE_TIMEOUT_MS / 2 / HANDSHAKE_TICK_MS
             && !handshakeRetrySent.getAndSet(true)
         ) {
-            Logger.logD(TAG, "verifyConnection(), attempting second handshake")
+            Logger.d(TAG, "verifyConnection(), attempting second handshake")
             if (!isHandShakeReceived) {
                 wcs.sendCommand(DataPath.TD_GET_HAND_SHAKE)
             }
@@ -335,7 +341,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         }
         val result = !isMakeHandshakeOnStart
                 || isHandShakeReceived && isInitialRequestReceived
-        Logger.logD(
+        Logger.d(
             TAG,
             "verifyConnection(), result: $result, " +
                     "isMakeHandshakeOnStart: $isMakeHandshakeOnStart, " +
@@ -384,7 +390,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                 }
 
                 override fun onFinish() {
-                    Logger.logE(TAG, "Connection Failed!")
+                    Logger.e(Exception(), "Connection Failed!")
                     cancelConnectionFailedTimer()
                     // could not establish handshake connection
                     (application as MainApplication).doApplicationFail(

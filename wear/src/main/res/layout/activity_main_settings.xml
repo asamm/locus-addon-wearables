@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -30,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/component_padding"
+                android:textColor="@color/color_on_background"
                 tools:text="Version: 1.2.0" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -37,7 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onHrmClicked"
-                android:text="@string/settings_hrm" />
+                android:text="@string/settings_hrm"
+                android:textColor="@color/color_on_background" />
 
         </LinearLayout>
 

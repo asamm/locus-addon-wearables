@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.wear.widget.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@color/bw_light_primary"
     android:padding="@dimen/component_padding">
 
     <ScrollView
@@ -28,25 +28,25 @@
                 android:paddingLeft="@dimen/component_padding"
                 android:paddingRight="@dimen/component_padding"
                 android:text="@string/wp_name_title"
-                android:textColor="?attr/colorPrimary"
+                android:textColor="@color/color_on_background"
                 android:textSize="@dimen/text_size_small"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/btn_ok"
                 style="@style/BtnWaypointNameSelect"
+                android:id="@+id/btn_ok"
                 android:drawableStart="@drawable/ic_cc_checkmark_black"
                 android:text="@string/wp_name_default" />
 
             <Button
-                android:id="@+id/btn_keyboard"
                 style="@style/BtnWaypointNameSelect"
+                android:id="@+id/btn_keyboard"
                 android:drawableStart="@drawable/ic_keyboard"
                 android:text="@string/wp_name_keyboard" />
 
             <Button
-                android:id="@+id/btn_mic"
                 style="@style/BtnWaypointNameSelect"
+                android:id="@+id/btn_mic"
                 android:drawableStart="@drawable/ic_microphone"
                 android:text="@string/wp_name_speech" />
 
@@ -61,7 +61,8 @@
                     android:layout_width="1px"
                     android:layout_height="1px"
                     android:imeOptions="actionDone"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:textColor="@color/color_on_background" />
             </LinearLayout>
 
         </LinearLayout>

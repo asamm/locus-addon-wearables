@@ -1,6 +1,7 @@
 package com.asamm.locus.addon.wear.common.communication.containers.trackrecording;
 
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
+import com.asamm.logger.Logger;
 
 import java.io.IOException;
 
@@ -9,7 +10,6 @@ import locus.api.objects.Storable;
 import locus.api.objects.extra.TrackStats;
 import locus.api.utils.DataReaderBigEndian;
 import locus.api.utils.DataWriterBigEndian;
-import locus.api.utils.Logger;
 
 /**
  * Created by Milan Cejnar on 13.11.2017.
@@ -131,14 +131,14 @@ public class TrackRecordingValue extends TimeStampStorable {
             try {
                 mExtendedTrackInfo = dr.readStorable(ExtendedTrackInfo.class);
             } catch (Exception e) {
-                Logger.INSTANCE.logE(TAG, "Failed to read extended data", e);
+                Logger.e(e, TAG, "Failed to read extended data");
                 mExtendedTrackInfo = new ExtendedTrackInfo();
             }
             boolean isStats = dr.readBoolean();
             try {
                 trackRecStats = isStats ? dr.readStorable(TrackStats.class) : null;
             } catch (Exception e) {
-                Logger.INSTANCE.logE(TAG, "Failed to read trackStats", e);
+                Logger.INSTANCE.e(e, TAG, "Failed to read trackStats");
                 trackRecStats = null;
             }
         }

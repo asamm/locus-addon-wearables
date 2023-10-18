@@ -164,7 +164,7 @@ object PreferencesEx {
             result = TrackRecordingStateEnum.valueOf(name!!)
         } catch (e: IllegalArgumentException) {
             // Do nothing, result value is preset
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
         }
         return result
     }

@@ -58,14 +58,14 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.3.1"
+    const val gradle = "7.4.2"
 
     // https://developer.android.com/studio/releases/build-tools.html
-    const val buildTools = "33.0.0"
+    const val buildTools = "33.0.2"
 
     // ANDROID
 
-    const val compileSdk = 33
+    const val compileSdk = 34
     const val minSdk = 21
     const val targetSdk = 33
 
@@ -75,7 +75,7 @@ object Versions {
     // KOTLIN
 
     // https://github.com/JetBrains/kotlin
-    const val kotlin = "1.7.0"
+    const val kotlin = "1.9.10"
 }
 
 /**
@@ -83,7 +83,10 @@ object Versions {
  */
 private object VersionsApi {
     // Locus API
-    const val locusApi = "0.9.46"
+    const val locusApi = "0.9.50"
+
+    // Logger (Asamm)
+    const val logger = "2.2"
 }
 
 /**
@@ -91,13 +94,15 @@ private object VersionsApi {
  * https://developer.android.com/jetpack/androidx/releases/wear
  */
 object VersionsAndroidX {
-    const val appCompat = "1.4.2"
+    const val appCompat = "1.5.0"
     // https://developer.android.com/training/wearables/compose
-    const val compose = "1.0.2"
-    const val composeActivity = "1.3.1"
+    const val compose = "1.2.0"
+    // https://developer.android.com/jetpack/androidx/releases/compose-compiler
+    const val composeCompiler = "1.5.3"
+    const val composeActivity = "1.8.0"
     const val constraintLayout = "2.1.4"
-//    const val lifecycle = "2.5.0"
-    const val wear = "1.2.0"
+    // https://developer.android.com/jetpack/androidx/releases/wear
+    const val wear = "1.3.0"
     const val wearRemoteInteractions = "1.0.0"
 }
 
@@ -107,10 +112,10 @@ object VersionsAndroidX {
 private object VersionsGoogle {
     // https://developer.android.com/training/wearables/data/data-layer
     // https://developers.google.com/android/guides/setup?device=wear-os#dependencies
-    const val psWear = "18.0.0"
+    const val psWear = "18.1.0"
 
     // https://github.com/material-components/material-components-android/releases
-    const val material = "1.6.1"
+    const val material = "1.10.0"
 
     // https://developer.android.com/wear/releases
     const val supportWear = "2.9.0"
@@ -140,7 +145,6 @@ object Libraries {
     const val googleSupportWearable = "com.google.android.support:wearable:${VersionsGoogle.supportWear}"
     const val googleWearable = "com.google.android.wearable:wearable:${VersionsGoogle.supportWear}"
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
-//    const val lifecycleCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:${VersionsAndroidX.lifecycle}"
-    //const val lifecycleLiveDataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:${VersionsAndroidX.lifecycle}"
     const val locusApiAndroid = "com.asamm:locus-api-android:${VersionsApi.locusApi}"
+    const val locusApiLogger = "com.github.asamm:logger-asamm:${VersionsApi.logger}"
 }

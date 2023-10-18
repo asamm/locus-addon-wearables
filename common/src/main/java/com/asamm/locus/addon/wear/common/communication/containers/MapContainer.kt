@@ -5,6 +5,7 @@
 package com.asamm.locus.addon.wear.common.communication.containers
 
 import com.asamm.locus.addon.wear.common.communication.Const
+import com.asamm.loggerV2.logE
 import locus.api.android.MapPreviewResult
 import locus.api.android.features.periodicUpdates.UpdateContainer
 import locus.api.android.objects.LocusInfo
@@ -12,7 +13,6 @@ import locus.api.objects.extra.Location
 import locus.api.objects.extra.PointRteAction
 import locus.api.utils.DataReaderBigEndian
 import locus.api.utils.DataWriterBigEndian
-import locus.api.utils.Logger.logE
 import kotlin.experimental.and
 import kotlin.experimental.or
 
@@ -113,7 +113,7 @@ class MapContainer() : TimeStampStorable() {
             loadedMap = if (isMap) dr.readStorable(MapPreviewResult::class.java) else null
         } catch (e: Exception) {
             loadedMap = null
-            logE(TAG, "Could not read map image.", e)
+            logE(ex = e) { "Could not read map image." }
         }
 
         // V1
@@ -153,8 +153,6 @@ class MapContainer() : TimeStampStorable() {
     }
 
     companion object {
-
-        private const val TAG = "MapContainer"
 
         private const val NAV_VALID_FLAG: Byte = 0x1
 
