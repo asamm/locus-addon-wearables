@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace = "com.asamm.locus.addon.wear"
     defaultConfig {
         minSdk = Versions.minSdkWear
         targetSdk = Versions.targetSdkWear
@@ -14,6 +15,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

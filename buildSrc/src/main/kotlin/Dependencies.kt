@@ -58,7 +58,7 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "7.4.2"
+    const val gradle = "8.1.0"
 
     // https://developer.android.com/studio/releases/build-tools.html
     const val buildTools = "33.0.2"

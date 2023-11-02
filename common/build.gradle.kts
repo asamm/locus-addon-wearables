@@ -5,6 +5,7 @@ plugins {
 
 android {
     compileSdk = Versions.compileSdk
+    namespace = "com.asamm.locus.addon.wear.common"
 
     defaultConfig {
         minSdk = Versions.minSdk
