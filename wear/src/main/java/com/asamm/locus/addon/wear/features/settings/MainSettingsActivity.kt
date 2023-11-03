@@ -144,7 +144,7 @@ class MainSettingsActivity : LocusWearActivity() {
         when (PreferencesEx.hrmFeatureConfigState) {
             FeatureConfigEnum.ENABLED -> {
                 PreferencesEx.hrmFeatureConfigState = FeatureConfigEnum.DISABLED
-                if (TrackRecordingService.isRunning()) {
+                if (TrackRecordingService.isRunning) {
                     val intent = Intent(this, TrackRecordingService::class.java)
                     intent.action = TrackRecordingService.ACTION_STOP_FOREGROUND_SERVICE
                     startService(intent)

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SENSORS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -26,7 +28,7 @@
         <activity
             android:name=".features.launcher.LauncherActivity"
             android:exported="true"
-            android:theme="@style/Theme.Asamm.App.Launcher">
+            android:theme="@style/Theme.Asamm.App.Starting">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -86,7 +88,8 @@
         <!-- service for the track recording -->
         <service
             android:name=".features.trackRecord.TrackRecordingService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="location" />
 
     </application>
 

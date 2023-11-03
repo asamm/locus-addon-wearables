@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 # [Unreleased]
 
+## [1.6.0] - 2023-11-03
+### Added
+- ongoing notification when recording of HRM is active
+
+### Changed
+- whole application in the Dark mode
+- updated gradle dependencies
+
+### Fixes
+- missing scrollbars on some screens
+- incorrectly working rotary on some screens
 
 # [Released]
 

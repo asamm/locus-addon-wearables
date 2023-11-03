@@ -32,10 +32,11 @@
     <!--
         Theme used as base launch screen.
     -->
-    <style name="Theme.Asamm.App.Launcher">
-        <item name="android:windowBackground">@drawable/var_splashscreen</item>
-        <item name="android:statusBarColor">@color/base_primary</item>
-        <item name="android:navigationBarColor">@color/base_primary</item>
+    <!-- https://developer.android.com/training/wearables/apps/splash-screen -->
+    <style name="Theme.Asamm.App.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
+        <item name="postSplashScreenTheme">@style/Theme.Asamm.App</item>
     </style>
 
     <style name="Animation.Window" parent="@android:style/Animation.Activity">

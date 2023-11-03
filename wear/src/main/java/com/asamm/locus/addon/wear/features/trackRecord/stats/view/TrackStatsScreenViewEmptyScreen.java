@@ -43,7 +43,9 @@ public class TrackStatsScreenViewEmptyScreen implements TrackStatsScreenView {
 
     @Override
     public void setAmbientMode(boolean isAmbient) {
-        tvError.setTextColor(isAmbient ? mLayout.getContext().getColor(R.color.base_light_primary) : mLayout.getContext().getColor(R.color.base_dark_primary));
+        tvError.setTextColor(isAmbient
+                ? mLayout.getContext().getColor(R.color.base_light_primary)
+                : mLayout.getContext().getColor(R.color.color_on_background));
     }
 
 }

@@ -34,7 +34,6 @@ import com.asamm.locus.addon.wear.features.settings.PreferencesEx
 import com.asamm.locus.addon.wear.features.trackRecord.TrackRecordActivity
 import com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
 import com.asamm.logger.Logger
-import com.asamm.loggerV2.Log
 import com.asamm.loggerV2.logD
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
 import java.text.DateFormat
@@ -237,10 +236,12 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
                 path === DataPath.PUT_ON_CONNECTED_EVENT -> {
                     verifyConnection()
                 }
+
                 path === DataPath.TW_PUT_HAND_SHAKE -> {
                     isHandShakeReceived = true
                     verifyConnection()
                 }
+
                 path === initialCommandResponseType -> {
                     isInitialRequestReceived = true
                     verifyConnection()
@@ -267,7 +268,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
         val wcs = WearCommService.instance
         logD {
             "verifyConnection(), " +
-            "API connected: ${wcs.isConnected}, " +
+                    "API connected: ${wcs.isConnected}, " +
                     "isNodeConnected: $isNodeConnected, " +
                     "deviceAppInstalled: ${wcs.isAppInstalledOnDevice}"
         }
@@ -495,10 +496,6 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
             keyCode,
             event
         )
-    }
-
-    protected fun enableCustomRotaryActions() {
-        getHwKeyDelegate().registerDefaultRotaryMotionListener(window.decorView.rootView)
     }
 
     protected fun setIgnoreNextDrawerPeek() {

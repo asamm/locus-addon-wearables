@@ -2,6 +2,8 @@ package com.asamm.locus.addon.wear.features.trackRecord.profiles;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +25,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.compose.material.Colors;
+import androidx.wear.compose.material.ColorsKt;
 import androidx.wear.widget.WearableLinearLayoutManager;
 import androidx.wear.widget.WearableRecyclerView;
 import locus.api.android.utils.UtilsBitmap;
 import com.asamm.logger.Logger;
+import com.google.android.gms.wearable.AppTheme;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Activity containing single recycler view for choosing recording profile.
@@ -169,14 +176,14 @@ public class ProfileListActivity extends LocusWearActivity {
         }
 
         // Create new views (invoked by the layout manager)
+        @NotNull
         @Override
         public ProfileListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                 int viewType) {
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_item_layout, parent, false);
             // set the view's size, margins, paddings and layout parameters
-            ViewHolder vh = new ViewHolder(v);
-            return vh;
+            return new ViewHolder(v);
         }
 
         // Replace the contents of a view (invoked by the layout manager)
@@ -189,7 +196,9 @@ public class ProfileListActivity extends LocusWearActivity {
             View.OnClickListener clickHandler = view -> onItemSelected(value);
             holder.mTextViewName.setText(value.mProfileInfo.getName());
             if (value.mProfileIcon != null && value.mProfileIcon.getIcon() != null) {
-                holder.mIcon.setImageBitmap(UtilsBitmap.INSTANCE.getBitmap(value.mProfileIcon.getIcon()));
+                Drawable icon = new BitmapDrawable(UtilsBitmap.INSTANCE.getBitmap(value.mProfileIcon.getIcon()));
+                icon.setTint(getColor(R.color.color_on_background));
+                holder.mIcon.setImageDrawable(icon);
             }
             holder.mTextViewName.setOnClickListener(clickHandler);
             holder.mIcon.setOnClickListener(clickHandler);

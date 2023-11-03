@@ -1,5 +1,6 @@
 package com.asamm.locus.addon.wear.features.trackRecord;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -15,13 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import androidx.wear.widget.CircularProgressLayout;
-
 import com.asamm.locus.addon.wear.MainApplication;
 import com.asamm.locus.addon.wear.R;
 import com.asamm.locus.addon.wear.WatchDogPredicate;
-import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
-import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
 import com.asamm.locus.addon.wear.common.communication.DataPath;
 import com.asamm.locus.addon.wear.common.communication.containers.DataPayload;
 import com.asamm.locus.addon.wear.common.communication.containers.TimeStampStorable;
@@ -34,29 +31,34 @@ import com.asamm.locus.addon.wear.common.communication.containers.trackrecording
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingStateEnum;
 import com.asamm.locus.addon.wear.common.communication.containers.trackrecording.TrackRecordingValue;
 import com.asamm.locus.addon.wear.communication.WearCommService;
+import com.asamm.locus.addon.wear.features.map.MapActivity;
+import com.asamm.locus.addon.wear.features.settings.PreferencesEx;
 import com.asamm.locus.addon.wear.features.trackRecord.profiles.ProfileListActivity;
 import com.asamm.locus.addon.wear.features.trackRecord.profiles.TrackRecordProfileSelectLayout;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.MainScreenController;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.RecordingScrollLayout;
 import com.asamm.locus.addon.wear.features.trackRecord.recording.TrackRecordingControllerUpdatable;
-import com.asamm.locus.addon.wear.gui.LocusWearActivity;
-import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
-import com.asamm.locus.addon.wear.features.map.MapActivity;
-import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
-import com.asamm.locus.addon.wear.gui.custom.WaypointInputTextActivity;
-import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
-import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.StatsScreenController;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackRecordActivityConfiguration;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatTypeEnum;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.model.TrackStatViewId;
 import com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatsSelectListActivity;
+import com.asamm.locus.addon.wear.gui.LocusWearActivity;
+import com.asamm.locus.addon.wear.gui.LocusWearActivityHwKeyDelegate;
+import com.asamm.locus.addon.wear.gui.custom.DisableGuiHelper;
+import com.asamm.locus.addon.wear.gui.custom.WaypointInputTextActivity;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
+import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
+import com.asamm.locus.addon.wear.utils.FeatureConfigEnum;
 import com.asamm.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import androidx.core.app.ActivityCompat;
+import androidx.wear.widget.CircularProgressLayout;
 
 import static com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivityState.IDLE;
 import static com.asamm.locus.addon.wear.features.trackRecord.TrackRecActivityState.IDLE_WAITING;
@@ -182,7 +184,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     private static final WatchDogPredicate<TrackProfileInfoValue.ValueList> isProfileListNotEmpty =
             (TrackProfileInfoValue.ValueList profs) ->
-                    profs != null && profs.getStorables() != null && !profs.getStorables().isEmpty();
+                    profs.getStorables() != null && !profs.getStorables().isEmpty();
 
     @Override
     public void consumeNewData(DataPath path, TimeStampStorable data) {
@@ -193,7 +195,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 if (isProfileListNotEmpty.test(profiles)) {
                     runOnUiThread(() -> onNewProfilesReceived(profiles));
                 } else {
-                    Logger.INSTANCE.e(new Exception(), "Received empty profile list.");
+                    Logger.e(new Exception(), "Received empty profile list.");
                     getMainApplication().sendDataWithWatchDogConditionable(
                             new DataPayload<>(DataPath.GET_TRACK_REC_PROFILES, new EmptyCommand()),
                             DataPath.PUT_TRACK_REC_PROFILE_INFO, WATCHDOG_TIMEOUT,
@@ -265,7 +267,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
                 mProfileSelect.setParameters(info);
                 PreferencesEx.persistLastTrackRecProfile(mProfileSelect.getProfile());
             } catch (IOException e) {
-                Logger.INSTANCE.e(e, "TAG", "empty profile bytes");
+                Logger.e(e, "TAG", "empty profile bytes");
 
             }
         } else {
@@ -543,6 +545,16 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
             Intent i = new Intent(this, TrackRecordingService.class);
             i.setAction(TrackRecordingService.ACTION_START_FOREGROUND_SERVICE);
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                // request notification permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ActivityCompat.requestPermissions(
+                            this,
+                            new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                            0);
+                }
+
+                // start service
                 startForegroundService(i);
             } else {
                 startService(i);
@@ -560,7 +572,7 @@ public class TrackRecordActivity extends LocusWearActivity implements CircularPr
 
     @Override
     public void registerHwKeyActions(LocusWearActivityHwKeyDelegate delegate) {
-        delegate.registerDefaultRotaryMotionListener(mRecordingScrollScreen);
+        delegate.registerDefaultRotaryMotionListener(getWindow().getDecorView().getRootView());
         delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_DOWN, () -> mRecordingScrollScreen.scrollToNextPage());
         delegate.registerHwButtonListener(HwButtonActionDescEnum.ROTARY_UP, () -> mRecordingScrollScreen.scrollToPreviousPage());
 

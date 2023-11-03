@@ -22,13 +22,13 @@ object Modules {
 
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
-private const val PARAM_MINOR_VERSION = "05"
-private const val PARAM_PATCH_VERSION = "003"
+private const val PARAM_MINOR_VERSION = "06"
+private const val PARAM_PATCH_VERSION = "000"
 
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"
 
-private const val PARAM_VERSION_NAME_READABLE = "1.5.3"
+private const val PARAM_VERSION_NAME_READABLE = "1.6.0"
 
 object ModuleDevice {
 
@@ -101,8 +101,10 @@ object VersionsAndroidX {
     const val composeCompiler = "1.5.3"
     const val composeActivity = "1.8.0"
     const val constraintLayout = "2.1.4"
+    const val splashScreen = "1.0.1"
     // https://developer.android.com/jetpack/androidx/releases/wear
     const val wear = "1.3.0"
+    const val wearOngoing = "1.0.0"
     const val wearRemoteInteractions = "1.0.0"
 }
 
@@ -138,7 +140,9 @@ object Libraries {
     const val composeTooling = "androidx.compose.ui:ui-tooling:${VersionsAndroidX.compose}"
     const val composeToolingPreview = "androidx.compose.ui:ui-tooling-preview:${VersionsAndroidX.compose}"
     const val androidXConstraintLayout = "androidx.constraintlayout:constraintlayout:${VersionsAndroidX.constraintLayout}"
+    const val androidXSplashScreen = "androidx.core:core-splashscreen:${VersionsAndroidX.splashScreen}"
     const val androidXWear = "androidx.wear:wear:${VersionsAndroidX.wear}"
+    const val androidXWearOngoing = "androidx.wear:wear-ongoing:${VersionsAndroidX.wearOngoing}"
     const val androidXWearRemoteInteractions = "androidx.wear:wear-remote-interactions:${VersionsAndroidX.wearRemoteInteractions}"
     const val googleMaterial = "com.google.android.material:material:${VersionsGoogle.material}"
     const val googlePsWear = "com.google.android.gms:play-services-wearable:${VersionsGoogle.psWear}"

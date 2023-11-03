@@ -147,7 +147,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
 
 
             holder.mTextViewName.setText(getString(value.getNameStringId()));
-            holder.mIcon.setImageDrawable(AppCompatResources.getDrawable(getApplicationContext(), value.getIconId()));
+            holder.mIcon.setImageResource(value.getIconId());
             View.OnClickListener clickHandler = view -> onItemSelected(value);
             holder.mTextViewName.setOnClickListener(clickHandler);
             holder.mIcon.setOnClickListener(clickHandler);
@@ -155,7 +155,7 @@ public class TrackStatsSelectListActivity extends LocusWearActivity {
             if (mCurrentStatId == value.getId()) {
                 holder.mTextViewName.setTextColor(getColor(R.color.crimson));
             } else {
-                holder.mTextViewName.setTextColor(getColor(R.color.base_dark_primary));
+                holder.mTextViewName.setTextColor(getColor(R.color.color_on_background));
             }
         }
 

@@ -40,12 +40,12 @@ import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAction
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum
 import com.asamm.locus.addon.wear.utils.UtilsCompat
+import com.asamm.logger.Logger
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import locus.api.android.features.periodicUpdates.UpdateContainer
 import locus.api.android.utils.UtilsFormat
 import locus.api.objects.extra.Location
 import locus.api.objects.extra.PointRteAction
-import com.asamm.logger.Logger
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -166,26 +166,26 @@ open class MapActivity : LocusWearActivity() {
         get() {
             // prepare parameters
             val params = MapPeriodicParams(
-                    mapZoomRequest,
-                    appCache.screenWidth,
-                    appCache.screenHeight,
-                    mapState.mapOffsetX,
-                    mapState.mapOffsetY,
-                    densityDpi,
-                    mapState.isAutoRotateEnabled,
-                    mapState.lastBearing,
-                    diagonal,
-                    lastMapLocation.latitude,
-                    lastMapLocation.longitude
+                mapZoomRequest,
+                appCache.screenWidth,
+                appCache.screenHeight,
+                mapState.mapOffsetX,
+                mapState.mapOffsetY,
+                densityDpi,
+                mapState.isAutoRotateEnabled,
+                mapState.lastBearing,
+                diagonal,
+                lastMapLocation.latitude,
+                lastMapLocation.longitude
             )
 
             // generate payload container
             return DataPayload(
-                    DataPath.TD_GET_PERIODIC_DATA,
-                    PeriodicCommand(
-                            PeriodicCommand.IDX_PERIODIC_MAP,
-                            MAP_REFRESH_PERIOD_MS, params
-                    )
+                DataPath.TD_GET_PERIODIC_DATA,
+                PeriodicCommand(
+                    PeriodicCommand.IDX_PERIODIC_MAP,
+                    MAP_REFRESH_PERIOD_MS, params
+                )
             )
         }
 
@@ -225,18 +225,19 @@ open class MapActivity : LocusWearActivity() {
         detector = GestureDetector(this, object : SimpleOnGestureListener() {
 
             override fun onScroll(
-                    e1: MotionEvent?,
-                    e2: MotionEvent,
-                    distanceX: Float,
-                    distanceY: Float): Boolean {
+                e1: MotionEvent?,
+                e2: MotionEvent,
+                distanceX: Float,
+                distanceY: Float
+            ): Boolean {
                 mapState.isPanning = true
                 mapState.addOffset((distanceX + 0.5f).toInt(), (distanceY + 0.5f).toInt())
                 refreshCenterRotateButton()
                 refreshMapOffset(
-                        mapState.mapOffsetX,
-                        mapState.mapOffsetY,
-                        lastRenderedOffsetX,
-                        lastRenderedOffsetY
+                    mapState.mapOffsetX,
+                    mapState.mapOffsetY,
+                    lastRenderedOffsetX,
+                    lastRenderedOffsetY
                 )
                 panHandler.removeCallbacksAndMessages(null)
                 panHandler.postDelayed(panRunnable, PAN_DELAY.toLong())
@@ -250,8 +251,9 @@ open class MapActivity : LocusWearActivity() {
             }
 
             override fun onFling(
-                    event1: MotionEvent?, event2: MotionEvent,
-                    velocityX: Float, velocityY: Float): Boolean {
+                event1: MotionEvent?, event2: MotionEvent,
+                velocityX: Float, velocityY: Float
+            ): Boolean {
                 cancelFling()
                 mapState.isFlinging = true
                 flingAnimator = WearMapActionMoveFling(velocityX, velocityY, flingUpdatable)
@@ -265,8 +267,8 @@ open class MapActivity : LocusWearActivity() {
     override fun onStart() {
         mapState.isAutoRotateEnabled = PreferencesEx.mapAutoRotateEnabled
         mapState.setOffset(
-                PreferencesEx.mapOffsetX,
-                PreferencesEx.mapOffsetY
+            PreferencesEx.mapOffsetX,
+            PreferencesEx.mapOffsetY
         )
         mapState.lastBearing = PreferencesEx.mapBearing
         refreshCenterRotateButton()
@@ -292,7 +294,8 @@ open class MapActivity : LocusWearActivity() {
         val h = appCache.screenHeight
         val action = ev.action and MotionEvent.ACTION_MASK
         if (action == MotionEvent.ACTION_UP
-                || drawer?.isOpened == true) {
+            || drawer?.isOpened == true
+        ) {
             // finish possible panning
             if (!scrollLock) {
                 detector.onTouchEvent(ev)
@@ -330,8 +333,8 @@ open class MapActivity : LocusWearActivity() {
             refreshMapView(savedContainer)
         } else {
             mapView.background = AppCompatResources.getDrawable(
-                    this,
-                    R.drawable.var_map_loading_tile_256
+                this,
+                R.drawable.var_map_loading_tile_256
             )
         }
 
@@ -361,26 +364,27 @@ open class MapActivity : LocusWearActivity() {
 
                 if (!testMapContainerAndImageNotNull(tmp)) {
                     mainApplication.sendDataWithWatchDogConditionable(
-                            initialCommandType,
-                            initialCommandResponseType,
-                            WATCHDOG_TIMEOUT_MS.toLong(),
-                            WatchDogPredicate { cont: MapContainer? ->
-                                testMapContainerAndImageNotNull(cont)
-                            })
+                        initialCommandType,
+                        initialCommandResponseType,
+                        WATCHDOG_TIMEOUT_MS.toLong(),
+                        WatchDogPredicate { cont: MapContainer? ->
+                            testMapContainerAndImageNotNull(cont)
+                        })
                 } else if ((tmp?.loadedMap?.numOfNotYetLoadedTiles ?: 0) > 0 && !mapState.isFlinging) {
                     mainApplication.sendDataWithWatchDog(
-                            initialCommandType,
-                            initialCommandResponseType,
-                            WATCHDOG_TIMEOUT_MS.toLong()
+                        initialCommandType,
+                        initialCommandResponseType,
+                        WATCHDOG_TIMEOUT_MS.toLong()
                     )
                 } else {
                     mainApplication.addWatchDog(
-                            initialCommandType,
-                            initialCommandResponseType,
-                            WATCHDOG_TIMEOUT_MS.toLong()
+                        initialCommandType,
+                        initialCommandResponseType,
+                        WATCHDOG_TIMEOUT_MS.toLong()
                     )
                 }
             }
+
             else -> {
                 /* not needed */
             }
@@ -398,10 +402,12 @@ open class MapActivity : LocusWearActivity() {
             R.id.area_zoom_in -> {
                 1
             }
+
             R.id.btn_zoom_out,
             R.id.area_zoom_out -> {
                 -1
             }
+
             else -> {
                 return
             }
@@ -422,15 +428,15 @@ open class MapActivity : LocusWearActivity() {
             // cancel currently running animation. This will break a flow little, so it may be improved
             // by keeping unfinished values and using them here again
             mapView.animate()
-                    .cancel()
+                .cancel()
             isScaled = true
             mapView.animate()
-                    .scaleX(scale)
-                    .scaleY(scale)
-                    .setDuration(SCALE_ANIMATION_DURATION_MS.toLong())
-                    .setInterpolator(DecelerateInterpolator())
-                    .withEndAction { zoomLock = false }
-                    .start()
+                .scaleX(scale)
+                .scaleY(scale)
+                .setDuration(SCALE_ANIMATION_DURATION_MS.toLong())
+                .setInterpolator(DecelerateInterpolator())
+                .withEndAction { zoomLock = false }
+                .start()
         } else {
             zoomLock = false
         }
@@ -457,8 +463,8 @@ open class MapActivity : LocusWearActivity() {
 
         // give a little time to animate the buttons for a bit before enabling buttons function
         Handler().postDelayed(
-                { mapState.buttonsVisible = true },
-                (SCALE_ANIMATION_DURATION_MS / 2).toLong()
+            { mapState.buttonsVisible = true },
+            (SCALE_ANIMATION_DURATION_MS / 2).toLong()
         )
         handlerBtnHide.removeCallbacksAndMessages(null)
         handlerBtnHide.postDelayed({ doHideButtons() }, BUTTON_HIDE_TIME_MS.toLong())
@@ -466,15 +472,15 @@ open class MapActivity : LocusWearActivity() {
 
     private fun animateButton(v: View, visible: Boolean) {
         v.animate()
-                .cancel()
+            .cancel()
         v.animate()
-                .scaleX(if (visible) defaultFabScale else 0.0f)
-                .scaleY(if (visible) defaultFabScale else 0.0f)
-                .setDuration(SCALE_ANIMATION_DURATION_MS.toLong())
-                .setInterpolator(DecelerateInterpolator())
-                .withStartAction { v.visibility = View.VISIBLE }
-                .withEndAction { v.visibility = if (visible) View.VISIBLE else View.GONE }
-                .start()
+            .scaleX(if (visible) defaultFabScale else 0.0f)
+            .scaleY(if (visible) defaultFabScale else 0.0f)
+            .setDuration(SCALE_ANIMATION_DURATION_MS.toLong())
+            .setInterpolator(DecelerateInterpolator())
+            .withStartAction { v.visibility = View.VISIBLE }
+            .withEndAction { v.visibility = if (visible) View.VISIBLE else View.GONE }
+            .start()
     }
 
     //*************************************************
@@ -503,10 +509,10 @@ open class MapActivity : LocusWearActivity() {
             lastRenderedOffsetY = data.offsetY
             mapState.lastBearing = data.bearing
             refreshMapOffset(
-                    mapState.mapOffsetX,
-                    mapState.mapOffsetY,
-                    lastRenderedOffsetX,
-                    lastRenderedOffsetY
+                mapState.mapOffsetX,
+                mapState.mapOffsetY,
+                lastRenderedOffsetX,
+                lastRenderedOffsetY
             )
             mapView.setImageDrawable(BitmapDrawable(resources, map))
 
@@ -519,24 +525,27 @@ open class MapActivity : LocusWearActivity() {
                 isScaled = false
             }
         } else {
-            Logger.e(ex = null,
-                    TAG, (when (data.loadedMap) {
-                null -> {
-                    "data.loadedMap"
-                }
-                else -> {
-                    "data.loadedMap.image"
-                }
-            }) + " is null."
+            Logger.e(
+                ex = null,
+                TAG, (when (data.loadedMap) {
+                    null -> {
+                        "data.loadedMap"
+                    }
+
+                    else -> {
+                        "data.loadedMap.image"
+                    }
+                }) + " is null."
             )
         }
     }
 
     private fun refreshMapOffset(
-            offsetX: Int,
-            offsetY: Int,
-            renderOffsetX: Int,
-            renderOffsetY: Int) {
+        offsetX: Int,
+        offsetY: Int,
+        renderOffsetX: Int,
+        renderOffsetY: Int
+    ) {
         runOnUiThread {
             mapView.translationX = (-offsetX + renderOffsetX).toFloat()
             mapView.translationY = (-offsetY + renderOffsetY).toFloat()
@@ -581,8 +590,8 @@ open class MapActivity : LocusWearActivity() {
 
         // action for current point
         setNavImageForAction(
-                ivNavPanelMiddle,
-                if (data.isNavValid) data.navPointAction1Id else PointRteAction.UNDEFINED.id
+            ivNavPanelMiddle,
+            if (data.isNavValid) data.navPointAction1Id else PointRteAction.UNDEFINED.id
         )
         if (data.isNavValid) {
             if (ivNavPanelTop.visibility != View.VISIBLE) {
@@ -591,10 +600,10 @@ open class MapActivity : LocusWearActivity() {
             // action for next point
             setNavImageForAction(ivNavPanelTop, data.navPointAction2Id)
             tvNavPanelDistValue.text = UtilsFormat.formatDistance(
-                    data.unitsFormatLength, data.navPoint1Dist, true
+                data.unitsFormatLength, data.navPoint1Dist, true
             )
             tvNavPanelDistUnits.text = UtilsFormat.formatDistanceUnits(
-                    data.unitsFormatLength, data.navPoint1Dist
+                data.unitsFormatLength, data.navPoint1Dist
             )
         } else {
             ivNavPanelTop.visibility = View.INVISIBLE
@@ -661,10 +670,10 @@ open class MapActivity : LocusWearActivity() {
             // animate centering
             mapView.animate().cancel()
             mapView.animate()
-                    .translationXBy(mapState.mapOffsetX.toFloat())
-                    .translationYBy(mapState.mapOffsetY.toFloat())
-                    .setDuration(SCALE_ANIMATION_DURATION_MS.toLong()).interpolator =
-                    DecelerateInterpolator()
+                .translationXBy(mapState.mapOffsetX.toFloat())
+                .translationYBy(mapState.mapOffsetY.toFloat())
+                .setDuration(SCALE_ANIMATION_DURATION_MS.toLong()).interpolator =
+                DecelerateInterpolator()
             mapState.setOffset(0, 0)
         } else {
             mapState.isAutoRotateEnabled = !mapState.isAutoRotateEnabled
@@ -691,20 +700,18 @@ open class MapActivity : LocusWearActivity() {
         // set if image is new
         mapState.lastBearing
         if (fabRotPan.tag == null
-                || fabRotPan.tag != imgToSet) {
+            || fabRotPan.tag != imgToSet
+        ) {
             fabRotPan.tag = imgToSet
             fabRotPan.setImageResource(imgToSet)
         }
     }
 
     override fun registerHwKeyActions(delegate: LocusWearActivityHwKeyDelegate) {
-        enableCustomRotaryActions()
-        val upPrimaryBtn =
-                delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP)
-        val downBtn =
-                delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN)
-        val secondaryActionBtn =
-                delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY)
+        delegate.registerDefaultRotaryMotionListener(window.decorView.rootView)
+        val upPrimaryBtn = delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_PRIMARY_OR_UP)
+        val downBtn = delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_DOWN)
+        val secondaryActionBtn = delegate.getHwButtonForAutoDetectAction(HwButtonAutoDetectActionEnum.BTN_ACTION_SECONDARY)
         val centerAction = HwButtonAction {
             doShowButtons()
             handleCenterRotateButtonClicked()
@@ -718,7 +725,7 @@ open class MapActivity : LocusWearActivity() {
             delegate.registerHwButtonListener(upPrimaryBtn, centerAction)
         } else {
             delegate.registerHwButtonListener(
-                    HwButtonActionDescEnum.BTN_2_LONG_PRESS
+                HwButtonActionDescEnum.BTN_2_LONG_PRESS
             ) {
                 delegate.isUseHwButtons = false
                 startLocusWearActivity(TrackRecordActivity::class.java)

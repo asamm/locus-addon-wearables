@@ -26,6 +26,7 @@ import com.asamm.locus.addon.wear.gui.LocusWearActivity
 import com.asamm.locus.addon.wear.gui.LocusWearActivity.WearActivityState
 import com.asamm.locus.addon.wear.utils.AppMemoryCache
 import com.asamm.logger.Logger
+import com.asamm.loggerV2.logD
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -65,7 +66,7 @@ class MainApplication : Application(), ActivityLifecycleCallbacks {
                 Log.e(tag, msg, ex)
             }
         })
-        Logger.d(TAG, "onCreate()")
+        logD { "onCreate()" }
 
         // notify about create of app
         registerActivityLifecycleCallbacks(this)

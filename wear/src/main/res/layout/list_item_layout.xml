@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="32dp"
-    android:orientation="horizontal"
-    android:foregroundGravity="center"
-    android:paddingLeft="@dimen/inner_frame_layout_padding"
     android:layout_marginBottom="15dp"
+    android:foregroundGravity="center"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/inner_frame_layout_padding"
     android:paddingRight="@dimen/inner_frame_layout_padding">
 
     <ImageView
         android:id="@+id/profile_list_item_image"
         android:layout_width="32dp"
-        android:padding="2dp"
         android:layout_height="0dp"
+        android:padding="2dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/profile_list_item_name"
@@ -22,11 +23,11 @@
         app:tint="@color/color_on_background" />
 
     <TextView
-        android:id="@+id/profile_list_item_name"
         style="@style/TextViewListTitle"
+        android:id="@+id/profile_list_item_name"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/profile_list_item_image"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

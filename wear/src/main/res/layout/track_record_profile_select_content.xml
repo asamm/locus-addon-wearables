@@ -21,6 +21,7 @@
         android:gravity="center"
         android:textAllCaps="false"
         android:textColor="@color/color_on_background"
+        android:drawableTint="@color/color_on_background"
         app:layout_constraintBottom_toBottomOf="@+id/track_profile_select_underline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
