@@ -4,25 +4,17 @@
     <TextView
         android:id="@+id/text_view_screen_header"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="48.dp"
         android:background="?attr/colorPrimary"
         android:fontFamily="sans-serif-condensed"
         android:gravity="bottom|center_horizontal"
         android:paddingBottom="2dp"
         android:text="@string/app_name"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="17sp"
+        android:textSize="16sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toBottomOf="@id/x_guide_header_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/x_guide_header_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.19" />
 
 </merge>

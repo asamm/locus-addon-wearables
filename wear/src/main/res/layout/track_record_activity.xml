@@ -23,6 +23,7 @@
             <include layout="@layout/track_record_start_screen" />
 
             <include layout="@layout/track_record_recording_screen" />
+
         </ViewFlipper>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

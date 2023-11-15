@@ -37,6 +37,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/xGuideTrackRectStart0" />
+
     <TextView
         android:id="@+id/tv_lbl_ambient_mode"
         android:layout_width="0dp"

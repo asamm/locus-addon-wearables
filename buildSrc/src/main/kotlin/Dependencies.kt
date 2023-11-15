@@ -23,7 +23,7 @@ object Modules {
 // version parameters
 private const val PARAM_MAJOR_VERSION = "1"
 private const val PARAM_MINOR_VERSION = "06"
-private const val PARAM_PATCH_VERSION = "000"
+private const val PARAM_PATCH_VERSION = "002"
 
 private const val PARAM_DEVICE_VERSION_SUFFIX = "1"
 private const val PARAM_WEAR_VERSION_SUFFIX = "0"

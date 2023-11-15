@@ -7,6 +7,7 @@ package com.asamm.locus.addon.wear.features.settings
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Space
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -86,21 +87,20 @@ class MainSettingsActivity : LocusWearActivity() {
             LText(
                 text = stringResource(R.string.settings),
                 color = MaterialTheme.colors.onPrimary,
-                style = MaterialTheme.typography.title2
+                style = MaterialTheme.typography.body1
             )
         }
     }
 
     @Composable
     private fun ColumnScope.Content() {
-        val scrollState = rememberScrollState()
         val hrmState by PreferencesEx.hrmFeatureConfigStateLd.observeAsState()
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f, fill = true)
-                .verticalScroll(scrollState),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // version info
@@ -114,11 +114,11 @@ class MainSettingsActivity : LocusWearActivity() {
             // HRM settings
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
                     .clickable {
                         onHrmClicked()
-                    },
+                    }
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 LText(
@@ -136,6 +136,13 @@ class MainSettingsActivity : LocusWearActivity() {
             }
             if (PreferencesEx.isDebug) {
                 LText(text = "State: $hrmState")
+            }
+
+            // add space in case of rounded watches
+            if (resources.configuration.isScreenRound) {
+                Spacer(
+                    modifier = Modifier.height(48.dp)
+                )
             }
         }
     }
