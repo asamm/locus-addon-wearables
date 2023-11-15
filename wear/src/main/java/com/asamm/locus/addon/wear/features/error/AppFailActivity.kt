@@ -10,13 +10,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.support.wearable.phone.PhoneDeviceType
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.wear.phone.interactions.PhoneTypeHelper
 import androidx.wear.remote.interactions.RemoteActivityHelper
 import androidx.wear.widget.ConfirmationOverlay
 import com.asamm.locus.addon.wear.R
@@ -61,10 +61,9 @@ class AppFailActivity : FragmentActivity() {
      */
     @Suppress("UNUSED_PARAMETER")
     fun onInstallClicked(view: View) {
-        val phoneDeviceType = PhoneDeviceType.getPhoneDeviceType(applicationContext)
+        val phoneDeviceType = PhoneTypeHelper.getPhoneDeviceType(applicationContext)
         // Only target AW2.0+ since AW 1.x user should not see this at all and should reinstall manually
-        if (Build.VERSION.SDK_INT < 25
-                || phoneDeviceType != PhoneDeviceType.DEVICE_TYPE_ANDROID) {
+        if (phoneDeviceType != PhoneTypeHelper.DEVICE_TYPE_ANDROID) {
             runOnUiThread {
                 Toast.makeText(this, getText(R.string.toast_err_device_not_supported), Toast.LENGTH_LONG)
                         .show()

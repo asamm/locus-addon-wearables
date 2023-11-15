@@ -94,7 +94,7 @@ class TrackRecordingService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, DEFAULT_CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(getString(R.string.hrm_rec_service_desc))
-            .setSmallIcon(R.mipmap.ic_launcher_no1)
+            .setSmallIcon(R.drawable.ic_launcher_base)
             .setContentIntent(pendingIntent)
             .setTicker(getString(R.string.app_name))
             .setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -108,10 +108,10 @@ class TrackRecordingService : Service() {
 
         // create onGoing status
         val ongoingActivityStatus = Status.Builder()
-            .addTemplate("Test template")
+            .addTemplate(resources.getString(R.string.title_activity_track_record))
             .build()
         val ongoingActivity = OngoingActivity.Builder(applicationContext, 3456, notificationBuilder)
-                .setAnimatedIcon(R.drawable.ic_launcher_base)
+                .setAnimatedIcon(R.drawable.ic_track_record)
                 .setStatus(ongoingActivityStatus)
                 .build()
         ongoingActivity.apply(applicationContext)

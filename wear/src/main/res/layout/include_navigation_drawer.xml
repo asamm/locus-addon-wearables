@@ -1,4 +1,5 @@
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.asamm.locus.addon.wear.gui.custom.MainNavigationDrawer
@@ -34,7 +35,7 @@
                 android:layout_marginTop="32dp"
                 android:fontFamily="monospace"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:textSize="@dimen/text_size_big"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -42,28 +43,28 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/navigation_drawer_item_map"
                 style="@style/navDrawerButton"
+                android:id="@+id/navigation_drawer_item_map"
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_map"
-                android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
                 app:layout_constraintEnd_toEndOf="@+id/x_nav_drawer_vertical_center"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@id/x_nav_drawer_vertical_12_5"
                 app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintVertical_bias="1.0"
+                app:tint="@android:color/white" />
 
             <ImageView
-                android:id="@+id/navigation_drawer_item_track_rec"
                 style="@style/navDrawerButton"
+                android:id="@+id/navigation_drawer_item_track_rec"
                 android:onClick="handleNavigationDrawerItemClicked"
                 android:src="@drawable/ic_track_record"
-                android:tint="@color/white"
                 app:layout_constraintBottom_toBottomOf="@id/x_nav_drawer_horizontal_bottom"
                 app:layout_constraintEnd_toEndOf="@id/x_nav_drawer_vertical_87_5"
                 app:layout_constraintStart_toEndOf="@+id/x_nav_drawer_vertical_center"
-                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5" />
+                app:layout_constraintTop_toTopOf="@id/x_nav_drawer_horizontal_12_5"
+                app:tint="@android:color/white" />
 
             <Button
                 android:id="@+id/btn_settings"

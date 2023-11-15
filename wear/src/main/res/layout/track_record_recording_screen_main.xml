@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/track_main_screen_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout
-        android:id="@+id/track_main_top"
         style="@style/trackStatLayoutStyle"
+        android:id="@+id/track_main_top"
+        android:gravity="center_vertical|right"
         app:layout_constraintBottom_toTopOf="@id/track_main_bottom"
         app:layout_constraintEnd_toStartOf="@+id/x_track_rec_main_guide_center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center_vertical|right"
         app:positionTop="true" />
 
     <com.asamm.locus.addon.wear.features.trackRecord.stats.view.TrackStatLayout
-        android:id="@+id/track_main_bottom"
         style="@style/trackStatLayoutStyle"
+        android:id="@+id/track_main_bottom"
+        android:gravity="center_vertical|right"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/x_track_rec_main_guide_center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/track_main_top"
-        android:gravity="center_vertical|right"
         app:positionTop="false" />
 
     <ImageButton
-        android:id="@+id/image_view_track_rec_pause"
         style="@style/ButtonTrackRecord.Ext"
+        android:id="@+id/image_view_track_rec_pause"
         android:layout_marginTop="5dp"
-        android:scaleType="fitCenter"
         android:onClick="handlePauseClick"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_track_record_pause_normal"
         app:layout_constraintBottom_toTopOf="@id/circular_progress"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,31 +40,31 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <androidx.wear.widget.CircularProgressLayout
-        android:id="@+id/circular_progress"
         style="@style/ButtonTrackRecord"
-        android:padding="4dp"
+        android:id="@+id/circular_progress"
         android:onClick="handleStopClick"
+        android:padding="4dp"
         app:colorSchemeColors="@color/progression_cancel"
-        app:strokeWidth="4dp"
         app:layout_constraintBottom_toTopOf="@id/image_view_track_rec_add_wpt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/x_track_rec_main_guide_center_vertical"
-        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause">
+        app:layout_constraintTop_toBottomOf="@id/image_view_track_rec_pause"
+        app:strokeWidth="4dp">
 
         <ImageView
             android:id="@+id/image_view_track_rec_stop"
-            android:src="@drawable/ic_track_record_stop"
-            android:scaleType="fitCenter"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_track_record_stop" />
     </androidx.wear.widget.CircularProgressLayout>
 
     <ImageButton
-        android:id="@+id/image_view_track_rec_add_wpt"
         style="@style/ButtonTrackRecord.Ext"
+        android:id="@+id/image_view_track_rec_add_wpt"
         android:layout_marginBottom="5dp"
-        android:scaleType="fitCenter"
         android:onClick="handleAddWaypointClick"
+        android:scaleType="fitCenter"
         android:src="@drawable/ic_track_record_add_wpt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -76,10 +77,10 @@
         android:padding="2dp"
         android:scaleType="fitCenter"
         android:src="@drawable/nav_arrow_down_white"
-        android:tint="@color/light_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@android:color/darker_gray" />
 
     <View
         style="@style/SeparatorHorizontal.WithPadding"

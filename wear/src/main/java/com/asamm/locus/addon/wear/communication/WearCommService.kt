@@ -18,6 +18,7 @@ import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.NodeApi.GetConnectedNodesResult
 import com.google.android.gms.wearable.Wearable
 import com.asamm.logger.Logger
+import com.google.android.gms.wearable.NodeClient
 import java.util.concurrent.TimeUnit
 
 /**

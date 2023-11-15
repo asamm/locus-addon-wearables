@@ -35,9 +35,9 @@ dependencies {
     implementation(Libraries.androidXConstraintLayout)
     implementation(Libraries.androidXSplashScreen)
     implementation(Libraries.androidXWear)
+    implementation(Libraries.androidXWearInput)
     implementation(Libraries.androidXWearOngoing)
+    implementation(Libraries.androidXWearPhoneInteraction)
     implementation(Libraries.androidXWearRemoteInteractions)
     implementation(Libraries.googleMaterial)
-    implementation(Libraries.googleSupportWearable)
-    compileOnly(Libraries.googleWearable)
 }

@@ -1,7 +1,6 @@
 package com.asamm.locus.addon.wear.gui;
 
 import android.app.Activity;
-import android.support.wearable.input.WearableButtons;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,7 +12,6 @@ import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum;
 import com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonAutoDetectActionEnum;
 import com.asamm.locus.addon.wear.utils.AppMemoryCache;
 import com.asamm.logger.Logger;
-import com.google.android.wearable.input.RotaryEncoderHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +20,7 @@ import java.util.List;
 import androidx.core.view.InputDeviceCompat;
 import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewConfigurationCompat;
+import androidx.wear.input.WearableButtons;
 
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_LONG_PRESS;
 import static com.asamm.locus.addon.wear.gui.custom.hwcontrols.HwButtonActionDescEnum.BTN_1_PRESS;
@@ -208,7 +207,6 @@ public interface LocusWearActivityHwKeyDelegate {
             rootView.setOnGenericMotionListener((View v, MotionEvent ev) -> {
                 if (ev.getAction() == MotionEvent.ACTION_SCROLL
                         && ev.isFromSource(InputDeviceCompat.SOURCE_ROTARY_ENCODER)) {
-                    //float newRotaryValue = -RotaryEncoderHelper.getRotaryAxisValue(ev) * RotaryEncoderHelper.getScaledScrollFactor(mContext);
                     float newRotaryValue = -ev.getAxisValue(MotionEventCompat.AXIS_SCROLL) *
                             ViewConfigurationCompat.getScaledVerticalScrollFactor(
                                     ViewConfiguration.get(rootView.getContext()),

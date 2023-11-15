@@ -281,7 +281,7 @@ abstract class LocusWearActivity : FragmentActivity(), AmbientModeSupport.Ambien
 
         // check connection to phone
         if (!isNodeConnected) {
-            Logger.d(TAG, "verifyConnection(), node not connected")
+            logD { "verifyConnection(), node not connected" }
             if (!getConnectedNodesSent.getAndSet(true)) {
                 wcs.getConnectedNodes { result: GetConnectedNodesResult ->
                     for (node in result.nodes) {
