@@ -541,9 +541,9 @@ class DeviceCommService private constructor(ctx: Context)
         val trackRec = container?.isTrackRecRecording ?: false
         val trackRecPause = container?.isTrackRecPaused ?: false
         val profileName = container?.trackRecProfileName ?: ""
-        val speed = if (myLoc?.hasSpeed == true) myLoc.speed else 0.0f
-        val hrm = if (myLoc?.hasSensorHeartRate == true) myLoc.sensorHeartRate else 0.toShort()
-        val altitude = if (myLoc?.hasAltitude == true) myLoc.altitude else 0.0
+        val speed = myLoc?.speed ?: 0.0f
+        val hrm = myLoc?.sensorHeartRate ?: 0.toShort()
+        val altitude = myLoc?.altitude ?: 0.0
         val stats = container?.trackRecStats
         val locusInfo = lv?.let { ActionBasics.getLocusInfo(ctx, it) }
         return TrackRecordingValue(

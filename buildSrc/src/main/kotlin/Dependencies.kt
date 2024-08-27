@@ -58,16 +58,16 @@ object Versions {
     // https://developer.android.com/studio/releases/gradle-plugin.html
     // https://mvnrepository.com/artifact/com.android.tools.build/gradle?repo=google
     // change also: buildSrc/build.gradle.kts
-    const val gradle = "8.1.3"
+    const val gradle = "8.5.2"
 
     // https://developer.android.com/studio/releases/build-tools.html
-    const val buildTools = "33.0.2"
+    const val buildTools = "34.0.0"
 
     // ANDROID
 
     const val compileSdk = 34
     const val minSdk = 21
-    const val targetSdk = 33
+    const val targetSdk = 34
 
     const val minSdkWear = 25
     const val targetSdkWear = 33
@@ -83,7 +83,7 @@ object Versions {
  */
 private object VersionsApi {
     // Locus API
-    const val locusApi = "0.9.50"
+    const val locusApi = "0.9.57"
 
     // Logger (Asamm)
     const val logger = "2.2"
