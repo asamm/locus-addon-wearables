@@ -61,13 +61,13 @@ object Versions {
     const val gradle = "8.5.2"
 
     // https://developer.android.com/studio/releases/build-tools.html
-    const val buildTools = "34.0.0"
+    const val buildTools = "35.0.0"
 
     // ANDROID
 
-    const val compileSdk = 34
-    const val minSdk = 21
-    const val targetSdk = 34
+    const val compileSdk = 36
+    const val minSdk = 23
+    const val targetSdk = 35
 
     const val minSdkWear = 25
     const val targetSdkWear = 33
@@ -75,7 +75,7 @@ object Versions {
     // KOTLIN
 
     // https://github.com/JetBrains/kotlin
-    const val kotlin = "1.9.10"
+    const val kotlin = "2.2.20"
 }
 
 /**
@@ -83,7 +83,7 @@ object Versions {
  */
 private object VersionsApi {
     // Locus API
-    const val locusApi = "0.9.57"
+    const val locusApi = "0.9.71"
 
     // Logger (Asamm)
     const val logger = "2.2"
@@ -94,20 +94,20 @@ private object VersionsApi {
  */
 object VersionsAndroidX {
     // https://developer.android.com/jetpack/androidx/releases/activity
-    const val activity = "1.8.0"
-    const val appCompat = "1.6.1"
+    const val activity = "1.12.1"
+    const val appCompat = "1.7.1"
     // https://developer.android.com/training/wearables/compose
     const val compose = "1.2.1"
     // https://developer.android.com/jetpack/androidx/releases/compose-compiler
     const val composeCompiler = "1.5.3"
-    const val constraintLayout = "2.1.4"
-    const val splashScreen = "1.0.1"
+    const val constraintLayout = "2.2.1"
+    const val splashScreen = "1.2.0"
     // https://developer.android.com/jetpack/androidx/releases/wear
     const val wear = "1.3.0"
-    const val wearInput = "1.1.0"
-    const val wearOngoing = "1.0.0"
-    const val wearPhoneInteraction = "1.0.1"
-    const val wearRemoteInteractions = "1.0.0"
+    const val wearInput = "1.2.0"
+    const val wearOngoing = "1.1.0"
+    const val wearPhoneInteraction = "1.1.0"
+    const val wearRemoteInteractions = "1.1.0"
 }
 
 /**
@@ -116,10 +116,10 @@ object VersionsAndroidX {
 private object VersionsGoogle {
     // https://developer.android.com/training/wearables/data/data-layer
     // https://developers.google.com/android/guides/setup?device=wear-os#dependencies
-    const val psWear = "18.1.0"
+    const val psWear = "19.0.0"
 
     // https://github.com/material-components/material-components-android/releases
-    const val material = "1.10.0"
+    const val material = "1.13.0"
 }
 
 //*****************************************************
