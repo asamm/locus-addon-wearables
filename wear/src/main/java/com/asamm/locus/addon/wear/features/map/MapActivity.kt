@@ -107,7 +107,7 @@ open class MapActivity : LocusWearActivity() {
     private var mapZoom = PreferencesEx.mapZoom
 
     @Volatile
-    private var mapZoomRequest = Const.ZOOM_UNKOWN.toInt()
+    private var mapZoomRequest = mapZoom
     private var densityDpi = 0
     private var diagonal = 0
 

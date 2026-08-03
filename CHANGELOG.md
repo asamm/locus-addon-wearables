@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 # [Unreleased]
+### Fixes
+- map briefly zoomed out to the phone's own current zoom level instead of the watch's last-used zoom when the watch screen woke up
 
 ## [1.6.0] - 2023-11-03
 ### Added
